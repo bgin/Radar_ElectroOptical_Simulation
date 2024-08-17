@@ -21,6 +21,7 @@ SOFTWARE.
 
 #include <float.h>
 #include "GMS_pdf_cdf_avx.h"
+#include "GMS_LUT_cdf_pdf_avx.h"
 #include "GMS_simd_utils.h"
 
 
@@ -110,68 +111,7 @@ SOFTWARE.
                     
 		      __m256d gamma_log_ymm4r8(const __m256d x) {
 		      
-                         __attribute__((section(".rodata")))
-                         __ATTR_ALIGN__(32) static __m256d c[7] = { _mm256_set1_pd(-1.910444077728E-03),
-			                                     _mm256_set1_pd(8.4171387781295E-04),
-                                                             _mm256_set1_pd(-5.952379913043012E-04), 
-                                                             _mm256_set1_pd(7.93650793500350248E-04), 
-                                                             _mm256_set1_pd(-2.777777777777681622553E-03), 
-                                                             _mm256_set1_pd(8.333333333333333331554247E-02), 
-                                                             _mm256_set1_pd(5.7083835261E-03)};
-                         __attribute__((section(".rodata")))
-			 __ATTR_ALIGN__(32) static __m256d p1[8] = {_mm256_set1_pd(4.945235359296727046734888E+00), 
-                                                             _mm256_set1_pd(2.018112620856775083915565E+02), 
-                                                             _mm256_set1_pd(2.290838373831346393026739E+03), 
-                                                             _mm256_set1_pd(1.131967205903380828685045E+04),
-                                                             _mm256_set1_pd(2.855724635671635335736389E+04), 
-                                                             _mm256_set1_pd(3.848496228443793359990269E+04), 
-                                                             _mm256_set1_pd(2.637748787624195437963534E+04), 
-                                                             _mm256_set1_pd(7.225813979700288197698961E+03)};
-                         __attribute__((section(".rodata")))
-			 __ATTR_ALIGN__(32) static __m256d p2[8] = {_mm256_set1_pd(4.974607845568932035012064E+00), 
-                                                             _mm256_set1_pd(5.424138599891070494101986E+02), 
-                                                             _mm256_set1_pd(1.550693864978364947665077E+04), 
-                                                             _mm256_set1_pd(1.847932904445632425417223E+05), 
-                                                             _mm256_set1_pd(1.088204769468828767498470E+06), 
-                                                             _mm256_set1_pd(3.338152967987029735917223E+06), 
-                                                             _mm256_set1_pd(5.106661678927352456275255E+06), 
-                                                             _mm256_set1_pd(3.074109054850539556250927E+06)};
-                         __attribute__((section(".rodata")))
-			 __ATTR_ALIGN__(32) static __m256d p4[8] = {_mm256_set1_pd(1.474502166059939948905062E+04), 
-                                                             _mm256_set1_pd(2.426813369486704502836312E+06), 
-                                                             _mm256_set1_pd(1.214755574045093227939592E+08), 
-                                                             _mm256_set1_pd(2.663432449630976949898078E+09), 
-                                                             _mm256_set1_pd(2.940378956634553899906876E+10), 
-                                                             _mm256_set1_pd(1.702665737765398868392998E+11), 
-                                                             _mm256_set1_pd(4.926125793377430887588120E+11), 
-                                                             _mm256_set1_pd(5.606251856223951465078242E+11)};
-                         __attribute__((section(".rodata")))
-                         __ATTR_ALIGN__(32) static __m256d q1[8] = {_mm256_set1_pd(6.748212550303777196073036E+01), 
-                                                             _mm256_set1_pd(1.113332393857199323513008E+03), 
-                                                             _mm256_set1_pd(7.738757056935398733233834E+03), 
-                                                             _mm256_set1_pd(2.763987074403340708898585E+04), 
-                                                             _mm256_set1_pd(5.499310206226157329794414E+04), 
-                                                             _mm256_set1_pd(6.161122180066002127833352E+04), 
-                                                             _mm256_set1_pd(3.635127591501940507276287E+04), 
-                                                             _mm256_set1_pd(8.785536302431013170870835E+03)};
-                         __attribute__((section(".rodata")))
-			 __ATTR_ALIGN__(32) static __m256d q2[8] = {_mm256_set1_pd(1.830328399370592604055942E+02),
-                                                             _mm256_set1_pd(7.765049321445005871323047E+03), 
-                                                             _mm256_set1_pd(1.331903827966074194402448E+05),
-                                                             _mm256_set1_pd(1.136705821321969608938755E+06), 
-                                                             _mm256_set1_pd(5.267964117437946917577538E+06), 
-                                                             _mm256_set1_pd(1.346701454311101692290052E+07), 
-                                                             _mm256_set1_pd(1.782736530353274213975932E+07), 
-                                                             _mm256_set1_pd(9.533095591844353613395747E+06)};
-                         __attribute__((section(".rodata")))
-			 __ATTR_ALIGN__(32) static __m256d q4[8] = {_mm256_set1_pd(2.690530175870899333379843E+03), 
-                                                             _mm256_set1_pd(6.393885654300092398984238E+05), 
-                                                             _mm256_set1_pd(4.135599930241388052042842E+07), 
-                                                             _mm256_set1_pd(1.120872109616147941376570E+09), 
-                                                             _mm256_set1_pd(1.488613728678813811542398E+10), 
-                                                             _mm256_set1_pd(1.016803586272438228077304E+11), 
-                                                             _mm256_set1_pd(3.417476345507377132798597E+11), 
-                                                             _mm256_set1_pd(4.463158187419713286462081E+11)};
+                         
 			    const __m256d d1     = _mm256_set1_pd(-5.772156649015328605195174E-01);
 			    const __m256d d2     = _mm256_set1_pd(4.227843350984671393993777E-01);
                             const __m256d d4     = _mm256_set1_pd(1.791759469228055000094023E+00);
@@ -206,22 +146,41 @@ SOFTWARE.
 			          _mm256_cmp_pd_mask(pnt68,x,_CMP_LE_OQ)) {
                                    xden = _1;
 				   xnum = _0;
-				   xnum = _mm256_fmadd_pd(xnum,xm1,p1[0]);
-				   xden = _mm256_fmadd_pd(xden,xm1,q1[0]);
-				   xnum = _mm256_fmadd_pd(xnum,xm1,p1[1]);
-				   xden = _mm256_fmadd_pd(xden,xm1,q1[1]);
-				   xnum = _mm256_fmadd_pd(xnum,xm1,p1[2]);
-				   xden = _mm256_fmadd_pd(xden,xm1,q1[2]);
-				   xnum = _mm256_fmadd_pd(xnum,xm1,p1[3]);
-				   xden = _mm256_fmadd_pd(xden,xm1,q1[3]);
-				   xnum = _mm256_fmadd_pd(xnum,xm1,p1[4]);
-				   xden = _mm256_fmadd_pd(xden,xm1,q1[4]);
-				   xnum = _mm256_fmadd_pd(xnum,xm1,p1[5]);
-				   xden = _mm256_fmadd_pd(xden,xm1,q1[5]);
-				   xnum = _mm256_fmadd_pd(xnum,xm1,p1[6]);
-				   xden = _mm256_fmadd_pd(xden,xm1,q1[6]);
-				   xnum = _mm256_fmadd_pd(xnum,xm1,p1[7]);
-				   xden = _mm256_fmadd_pd(xden,xm1,q1[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)				   
+				   xnum = _mm256_fmadd_pd(xnum,xm1,*(__m256d*)&gamma_log_ymm4r8_p1[0]);
+				   xden = _mm256_fmadd_pd(xden,xm1,*(__m256d*)&gamma_log_ymm4r8_q1[0]);
+				   xnum = _mm256_fmadd_pd(xnum,xm1,*(__m256d*)&gamma_log_ymm4r8_p1[4]);
+				   xden = _mm256_fmadd_pd(xden,xm1,*(__m256d*)&gamma_log_ymm4r8_q1[4]);
+				   xnum = _mm256_fmadd_pd(xnum,xm1,*(__m256d*)&gamma_log_ymm4r8_p1[8]);
+				   xden = _mm256_fmadd_pd(xden,xm1,*(__m256d*)&gamma_log_ymm4r8_q1[8]);
+				   xnum = _mm256_fmadd_pd(xnum,xm1,*(__m256d*)&gamma_log_ymm4r8_p1[12]);
+				   xden = _mm256_fmadd_pd(xden,xm1,*(__m256d*)&gamma_log_ymm4r8_q1[12]);
+				   xnum = _mm256_fmadd_pd(xnum,xm1,*(__m256d*)&gamma_log_ymm4r8_p1[16]);
+				   xden = _mm256_fmadd_pd(xden,xm1,*(__m256d*)&gamma_log_ymm4r8_q1[16]);
+				   xnum = _mm256_fmadd_pd(xnum,xm1,*(__m256d*)&gamma_log_ymm4r8_p1[20]);
+				   xden = _mm256_fmadd_pd(xden,xm1,*(__m256d*)&gamma_log_ymm4r8_q1[20]);
+				   xnum = _mm256_fmadd_pd(xnum,xm1,*(__m256d*)&gamma_log_ymm4r8_p1[24]);
+				   xden = _mm256_fmadd_pd(xden,xm1,*(__m256d*)&gamma_log_ymm4r8_q1[24]);
+				   xnum = _mm256_fmadd_pd(xnum,xm1,*(__m256d*)&gamma_log_ymm4r8_p1[28]);
+				   xden = _mm256_fmadd_pd(xden,xm1,*(__m256d*)&gamma_log_ymm4r8_q1[28]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                   xnum = _mm256_fmadd_pd(xnum,xm1,gamma_log_ymm4r8_p1[0]);
+				   xden = _mm256_fmadd_pd(xden,xm1,gamma_log_ymm4r8_q1[0]);
+				   xnum = _mm256_fmadd_pd(xnum,xm1,gamma_log_ymm4r8_p1[1]);
+				   xden = _mm256_fmadd_pd(xden,xm1,gamma_log_ymm4r8_q1[1]);
+				   xnum = _mm256_fmadd_pd(xnum,xm1,gamma_log_ymm4r8_p1[2]);
+				   xden = _mm256_fmadd_pd(xden,xm1,gamma_log_ymm4r8_q1[2]);
+				   xnum = _mm256_fmadd_pd(xnum,xm1,gamma_log_ymm4r8_p1[3]);
+				   xden = _mm256_fmadd_pd(xden,xm1,gamma_log_ymm4r8_q1[3]);
+				   xnum = _mm256_fmadd_pd(xnum,xm1,gamma_log_ymm4r8_p1[4]);
+				   xden = _mm256_fmadd_pd(xden,xm1,gamma_log_ymm4r8_q1[4]);
+				   xnum = _mm256_fmadd_pd(xnum,xm1,gamma_log_ymm4r8_p1[5]);
+				   xden = _mm256_fmadd_pd(xden,xm1,gamma_log_ymm4r8_q1[5]);
+				   xnum = _mm256_fmadd_pd(xnum,xm1,gamma_log_ymm4r8_p1[6]);
+				   xden = _mm256_fmadd_pd(xden,xm1,gamma_log_ymm4r8_q1[6]);
+				   xnum = _mm256_fmadd_pd(xnum,xm1,gamma_log_ymm4r8_p1[7]);
+				   xden = _mm256_fmadd_pd(xden,xm1,gamma_log_ymm4r8_q1[7]);
+#endif				   
 				   const __m256d t0 = _mm256_fmadd_pd(xm1,
 				                                  _mm256_div_pd(xnum,xden),d1);
 				   res  = _mm256_add_pd(corr,
@@ -232,22 +191,41 @@ SOFTWARE.
                                    xm2  = _mm256_sub_pd(_mm256_sub_pd(x,_1_2),_1_2);
 				   xden = _1;
 				   xnum = _0;
-				   xnum = _mm256_fmadd_pd(xnum,xm2,p2[0]);
-				   xden = _mm256_fmadd_pd(xden,xm2,q2[0]);
-				   xnum = _mm256_fmadd_pd(xnum,xm2,p2[1]);
-				   xden = _mm256_fmadd_pd(xden,xm2,q2[1]);
-				   xnum = _mm256_fmadd_pd(xnum,xm2,p2[2]);
-				   xden = _mm256_fmadd_pd(xden,xm2,q2[2]);
-				   xnum = _mm256_fmadd_pd(xnum,xm2,p2[3]);
-				   xden = _mm256_fmadd_pd(xden,xm2,q2[3]);
-				   xnum = _mm256_fmadd_pd(xnum,xm2,p2[4]);
-				   xden = _mm256_fmadd_pd(xden,xm2,q2[4]);
-				   xnum = _mm256_fmadd_pd(xnum,xm2,p2[5]);
-				   xden = _mm256_fmadd_pd(xden,xm2,q2[5]);
-				   xnum = _mm256_fmadd_pd(xnum,xm2,p2[6]);
-				   xden = _mm256_fmadd_pd(xden,xm2,q2[6]);
-				   xnum = _mm256_fmadd_pd(xnum,xm2,p2[7]);
-				   xden = _mm256_fmadd_pd(xden,xm2,q2[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)					   
+				   xnum = _mm256_fmadd_pd(xnum,xm2,*(__m256d*)&gamma_log_ymm4r8_p2[0]);
+				   xden = _mm256_fmadd_pd(xden,xm2,*(__m256d*)&gamma_log_ymm4r8_q2[0]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,*(__m256d*)&gamma_log_ymm4r8_p2[4]);
+				   xden = _mm256_fmadd_pd(xden,xm2,*(__m256d*)&gamma_log_ymm4r8_q2[4]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,*(__m256d*)&gamma_log_ymm4r8_p2[8]);
+				   xden = _mm256_fmadd_pd(xden,xm2,*(__m256d*)&gamma_log_ymm4r8_q2[8]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,*(__m256d*)&gamma_log_ymm4r8_p2[12]);
+				   xden = _mm256_fmadd_pd(xden,xm2,*(__m256d*)&gamma_log_ymm4r8_q2[12]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,*(__m256d*)&gamma_log_ymm4r8_p2[16]);
+				   xden = _mm256_fmadd_pd(xden,xm2,*(__m256d*)&gamma_log_ymm4r8_q2[16]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,*(__m256d*)&gamma_log_ymm4r8_p2[20]);
+				   xden = _mm256_fmadd_pd(xden,xm2,*(__m256d*)&gamma_log_ymm4r8_q2[20]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,*(__m256d*)&gamma_log_ymm4r8_p2[24]);
+				   xden = _mm256_fmadd_pd(xden,xm2,*(__m256d*)&gamma_log_ymm4r8_q2[24]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,*(__m256d*)&gamma_log_ymm4r8_p2[28]);
+				   xden = _mm256_fmadd_pd(xden,xm2,*(__m256d*)&gamma_log_ymm4r8_q2[28]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                   xnum = _mm256_fmadd_pd(xnum,xm2,gamma_log_ymm4r8_p2[0]);
+				   xden = _mm256_fmadd_pd(xden,xm2,gamma_log_ymm4r8_q2[0]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,gamma_log_ymm4r8_p2[1]);
+				   xden = _mm256_fmadd_pd(xden,xm2,gamma_log_ymm4r8_q2[1]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,gamma_log_ymm4r8_p2[2]);
+				   xden = _mm256_fmadd_pd(xden,xm2,gamma_log_ymm4r8_q2[2]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,gamma_log_ymm4r8_p2[3]);
+				   xden = _mm256_fmadd_pd(xden,xm2,gamma_log_ymm4r8_q2[3]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,gamma_log_ymm4r8_p2[4]);
+				   xden = _mm256_fmadd_pd(xden,xm2,gamma_log_ymm4r8_q2[4]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,gamma_log_ymm4r8_p2[5]);
+				   xden = _mm256_fmadd_pd(xden,xm2,gamma_log_ymm4r8_q2[5]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,gamma_log_ymm4r8_p2[6]);
+				   xden = _mm256_fmadd_pd(xden,xm2,gamma_log_ymm4r8_q2[6]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,gamma_log_ymm4r8_p2[7]);
+				   xden = _mm256_fmadd_pd(xden,xm2,gamma_log_ymm4r8_q2[7]);
+#endif				   
 				   const __m256d t0 = _mm256_fmadd_pd(xm2,
 				                                  _mm256_div_pd(xnum,xden),d2);
 				   res  = _mm256_add_pd(corr,
@@ -258,22 +236,41 @@ SOFTWARE.
                                    xm2  = _mm256_sub_pd(x,_2);
 				   xden = _1;
 				   xnum = _0;
-				   xnum = _mm256_fmadd_pd(xnum,xm2,p2[0]);
-				   xden = _mm256_fmadd_pd(xden,xm2,q2[0]);
-				   xnum = _mm256_fmadd_pd(xnum,xm2,p2[1]);
-				   xden = _mm256_fmadd_pd(xden,xm2,q2[1]);
-				   xnum = _mm256_fmadd_pd(xnum,xm2,p2[2]);
-				   xden = _mm256_fmadd_pd(xden,xm2,q2[2]);
-				   xnum = _mm256_fmadd_pd(xnum,xm2,p2[3]);
-				   xden = _mm256_fmadd_pd(xden,xm2,q2[3]);
-				   xnum = _mm256_fmadd_pd(xnum,xm2,p2[4]);
-				   xden = _mm256_fmadd_pd(xden,xm2,q2[4]);
-				   xnum = _mm256_fmadd_pd(xnum,xm2,p2[5]);
-				   xden = _mm256_fmadd_pd(xden,xm2,q2[5]);
-				   xnum = _mm256_fmadd_pd(xnum,xm2,p2[6]);
-				   xden = _mm256_fmadd_pd(xden,xm2,q2[6]);
-				   xnum = _mm256_fmadd_pd(xnum,xm2,p2[7]);
-				   xden = _mm256_fmadd_pd(xden,xm2,q2[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)					   
+				   xnum = _mm256_fmadd_pd(xnum,xm2,*(__m256d*)&gamma_log_ymm4r8_p2[0]);
+				   xden = _mm256_fmadd_pd(xden,xm2,*(__m256d*)&gamma_log_ymm4r8_q2[0]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,*(__m256d*)&gamma_log_ymm4r8_p2[4]);
+				   xden = _mm256_fmadd_pd(xden,xm2,*(__m256d*)&gamma_log_ymm4r8_q2[4]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,*(__m256d*)&gamma_log_ymm4r8_p2[8]);
+				   xden = _mm256_fmadd_pd(xden,xm2,*(__m256d*)&gamma_log_ymm4r8_q2[8]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,*(__m256d*)&gamma_log_ymm4r8_p2[12]);
+				   xden = _mm256_fmadd_pd(xden,xm2,*(__m256d*)&gamma_log_ymm4r8_q2[12]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,*(__m256d*)&gamma_log_ymm4r8_p2[16]);
+				   xden = _mm256_fmadd_pd(xden,xm2,*(__m256d*)&gamma_log_ymm4r8_q2[16]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,*(__m256d*)&gamma_log_ymm4r8_p2[20]);
+				   xden = _mm256_fmadd_pd(xden,xm2,*(__m256d*)&gamma_log_ymm4r8_q2[20]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,*(__m256d*)&gamma_log_ymm4r8_p2[24]);
+				   xden = _mm256_fmadd_pd(xden,xm2,*(__m256d*)&gamma_log_ymm4r8_q2[24]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,*(__m256d*)&gamma_log_ymm4r8_p2[28]);
+				   xden = _mm256_fmadd_pd(xden,xm2,*(__m256d*)&gamma_log_ymm4r8_q2[28]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                   xnum = _mm256_fmadd_pd(xnum,xm2,gamma_log_ymm4r8_p2[0]);
+				   xden = _mm256_fmadd_pd(xden,xm2,gamma_log_ymm4r8_q2[0]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,gamma_log_ymm4r8_p2[1]);
+				   xden = _mm256_fmadd_pd(xden,xm2,gamma_log_ymm4r8_q2[1]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,gamma_log_ymm4r8_p2[2]);
+				   xden = _mm256_fmadd_pd(xden,xm2,gamma_log_ymm4r8_q2[2]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,gamma_log_ymm4r8_p2[3]);
+				   xden = _mm256_fmadd_pd(xden,xm2,gamma_log_ymm4r8_q2[3]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,gamma_log_ymm4r8_p2[4]);
+				   xden = _mm256_fmadd_pd(xden,xm2,gamma_log_ymm4r8_q2[4]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,gamma_log_ymm4r8_p2[5]);
+				   xden = _mm256_fmadd_pd(xden,xm2,gamma_log_ymm4r8_q2[5]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,gamma_log_ymm4r8_p2[6]);
+				   xden = _mm256_fmadd_pd(xden,xm2,gamma_log_ymm4r8_q2[6]);
+				   xnum = _mm256_fmadd_pd(xnum,xm2,gamma_log_ymm4r8_p2[7]);
+				   xden = _mm256_fmadd_pd(xden,xm2,gamma_log_ymm4r8_q2[7]);
+#endif				   
 				   res  = _mm256_mul_pd(xm2,
 				                    _mm256_fmadd_pd(xm2,
 						                _mm256_div_pd(xnum,xden),d2));
@@ -282,35 +279,65 @@ SOFTWARE.
                                    xm4  = _mm256_sub_pd(x,_4);
 				   xden = ymm4r8_negate(_1);
 				   xnum = _0;
-				   xnum = _mm256_fmadd_pd(xnum,xm4,p4[0]);
-				   xden = _mm256_fmadd_pd(xden,xm4,q4[0]);
-				   xnum = _mm256_fmadd_pd(xnum,xm4,p4[1]);
-				   xden = _mm256_fmadd_pd(xden,xm4,q4[1]);
-				   xnum = _mm256_fmadd_pd(xnum,xm4,p4[2]);
-				   xden = _mm256_fmadd_pd(xden,xm4,q4[2]);
-				   xnum = _mm256_fmadd_pd(xnum,xm4,p4[3]);
-				   xden = _mm256_fmadd_pd(xden,xm4,q4[3]);
-				   xnum = _mm256_fmadd_pd(xnum,xm4,p4[4]);
-				   xden = _mm256_fmadd_pd(xden,xm4,q4[4]);
-				   xnum = _mm256_fmadd_pd(xnum,xm4,p4[5]);
-				   xden = _mm256_fmadd_pd(xden,xm4,q4[5]);
-				   xnum = _mm256_fmadd_pd(xnum,xm4,p4[6]);
-				   xden = _mm256_fmadd_pd(xden,xm4,q4[6]);
-				   xnum = _mm256_fmadd_pd(xnum,xm4,p4[7]);
-				   xden = _mm256_fmadd_pd(xden,xm4,q4[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)					   
+				   xnum = _mm256_fmadd_pd(xnum,xm4,*(__m256d*)&gamma_log_ymm4r8_p4[0]);
+				   xden = _mm256_fmadd_pd(xden,xm4,*(__m256d*)&gamma_log_ymm4r8_q4[0]);
+				   xnum = _mm256_fmadd_pd(xnum,xm4,*(__m256d*)&gamma_log_ymm4r8_p4[4]);
+				   xden = _mm256_fmadd_pd(xden,xm4,*(__m256d*)&gamma_log_ymm4r8_q4[4]);
+				   xnum = _mm256_fmadd_pd(xnum,xm4,*(__m256d*)&gamma_log_ymm4r8_p4[8]);
+				   xden = _mm256_fmadd_pd(xden,xm4,*(__m256d*)&gamma_log_ymm4r8_q4[8]);
+				   xnum = _mm256_fmadd_pd(xnum,xm4,*(__m256d*)&gamma_log_ymm4r8_p4[12]);
+				   xden = _mm256_fmadd_pd(xden,xm4,*(__m256d*)&gamma_log_ymm4r8_q4[12]);
+				   xnum = _mm256_fmadd_pd(xnum,xm4,*(__m256d*)&gamma_log_ymm4r8_p4[16]);
+				   xden = _mm256_fmadd_pd(xden,xm4,*(__m256d*)&gamma_log_ymm4r8_q4[16]);
+				   xnum = _mm256_fmadd_pd(xnum,xm4,*(__m256d*)&gamma_log_ymm4r8_p4[20]);
+				   xden = _mm256_fmadd_pd(xden,xm4,*(__m256d*)&gamma_log_ymm4r8_q4[20]);
+				   xnum = _mm256_fmadd_pd(xnum,xm4,*(__m256d*)&gamma_log_ymm4r8_p4[24]);
+				   xden = _mm256_fmadd_pd(xden,xm4,*(__m256d*)&gamma_log_ymm4r8_q4[24]);
+				   xnum = _mm256_fmadd_pd(xnum,xm4,*(__m256d*)&gamma_log_ymm4r8_p4[28]);
+				   xden = _mm256_fmadd_pd(xden,xm4,*(__m256d*)&gamma_log_ymm4r8_q4[28]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                   xnum = _mm256_fmadd_pd(xnum,xm4,gamma_log_ymm4r8_p4[0]);
+				   xden = _mm256_fmadd_pd(xden,xm4,gamma_log_ymm4r8_q4[0]);
+				   xnum = _mm256_fmadd_pd(xnum,xm4,gamma_log_ymm4r8_p4[1]);
+				   xden = _mm256_fmadd_pd(xden,xm4,gamma_log_ymm4r8_q4[1]);
+				   xnum = _mm256_fmadd_pd(xnum,xm4,gamma_log_ymm4r8_p4[2]);
+				   xden = _mm256_fmadd_pd(xden,xm4,gamma_log_ymm4r8_q4[2]);
+				   xnum = _mm256_fmadd_pd(xnum,xm4,gamma_log_ymm4r8_p4[3]);
+				   xden = _mm256_fmadd_pd(xden,xm4,gamma_log_ymm4r8_q4[3]);
+				   xnum = _mm256_fmadd_pd(xnum,xm4,gamma_log_ymm4r8_p4[4]);
+				   xden = _mm256_fmadd_pd(xden,xm4,gamma_log_ymm4r8_q4[4]);
+				   xnum = _mm256_fmadd_pd(xnum,xm4,gamma_log_ymm4r8_p4[5]);
+				   xden = _mm256_fmadd_pd(xden,xm4,gamma_log_ymm4r8_q4[5]);
+				   xnum = _mm256_fmadd_pd(xnum,xm4,gamma_log_ymm4r8_p4[6]);
+				   xden = _mm256_fmadd_pd(xden,xm4,gamma_log_ymm4r8_q4[6]);
+				   xnum = _mm256_fmadd_pd(xnum,xm4,gamma_log_ymm4r8_p4[7]);
+				   xden = _mm256_fmadd_pd(xden,xm4,gamma_log_ymm4r8_q4[7]);
+#endif				   
 				   res  = _mm256_fmadd_pd(xm4,_mm256_div_pd(xnum,xden),d4);
 			    }
 			    else {
                                    res  = _0;
 				   if(_mm256_cmp_pd_mask(x,frtbig,_CMP_LE_OQ)) {
-                                      res = c[6];
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)					   
+                                      res = *(__m256d*)&gamma_log_ymm4r8_c[24];
 				      xsq = _mm256_mul_pd(x,x);
-				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),c[0]);
-				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),c[1]);
-				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),c[2]);
-				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),c[3]);
-				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),c[4]);
-				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),c[5]);
+				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),*(__m256d*)&gamma_log_ymm4r8_c[0]);
+				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),*(__m256d*)&gamma_log_ymm4r8_c[4]);
+				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),*(__m256d*)&gamma_log_ymm4r8_c[8]);
+				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),*(__m256d*)&gamma_log_ymm4r8_c[12]);
+				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),*(__m256d*)&gamma_log_ymm4r8_c[16]);
+				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),*(__m256d*)&gamma_log_ymm4r8_c[20]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                      res = gamma_log_ymm4r8_c[6];
+				      xsq = _mm256_mul_pd(x,x);
+				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),gamma_log_ymm4r8_c[0]);
+				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),gamma_log_ymm4r8_c[1]);
+				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),gamma_log_ymm4r8_c[2]);
+				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),gamma_log_ymm4r8_c[3]);
+				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),gamma_log_ymm4r8_c[4]);
+				      res = _mm256_add_pd(_mm256_div_pd(res,xsq),gamma_log_ymm4r8_c[5]);
+#endif				      
 				   }
                                    res  = _mm256_div_pd(res,x);
 				   corr = _mm256_log_pd(x);
