@@ -1875,44 +1875,7 @@ SOFTWARE.
 
                     
 		      __m256d bessel_i1_ymm4r8(const __m256d arg) {
-                           __attribute__((section(".rodata")))
-                           __ATTR_ALIGN__(32) static __m256d  p[15] = {_mm256_set1_pd(-1.9705291802535139930E-19), 
-                                                                      _mm256_set1_pd(-6.5245515583151902910E-16), 
-                                                                      _mm256_set1_pd(-1.1928788903603238754E-12), 
-                                                                      _mm256_set1_pd(-1.4831904935994647675E-09), 
-                                                                      _mm256_set1_pd(-1.3466829827635152875E-06), 
-                                                                      _mm256_set1_pd(-9.1746443287817501309E-04), 
-                                                                      _mm256_set1_pd(-4.7207090827310162436E-01), 
-                                                                      _mm256_set1_pd(-1.8225946631657315931E+02), 
-                                                                      _mm256_set1_pd(-5.1894091982308017540E+04), 
-                                                                      _mm256_set1_pd(-1.0588550724769347106E+07), 
-                                                                      _mm256_set1_pd(-1.4828267606612366099E+09), 
-                                                                      _mm256_set1_pd(-1.3357437682275493024E+11), 
-                                                                      _mm256_set1_pd(-6.9876779648010090070E+12), 
-                                                                      _mm256_set1_pd(-1.7732037840791591320E+14), 
-                                                                      _mm256_set1_pd(-1.4577180278143463643E+15)};
-                           __attribute__((section(".rodata")))
-			   __ATTR_ALIGN__(32) static __m256d pp[8]  = {_mm256_set1_pd(-6.0437159056137600000E-02), 
-                                                                      _mm256_set1_pd(4.5748122901933459000E-01), 
-                                                                      _mm256_set1_pd(-4.2843766903304806403E-01), 
-                                                                      _mm256_set1_pd(9.7356000150886612134E-02), 
-                                                                      _mm256_set1_pd(-3.2457723974465568321E-03), 
-                                                                      _mm256_set1_pd(-3.6395264712121795296E-04), 
-                                                                      _mm256_set1_pd(1.6258661867440836395E-05), 
-                                                                      _mm256_set1_pd(-3.6347578404608223492E-07)};
-                           __attribute__((section(".rodata")))
-			   __ATTR_ALIGN__(32) static __m256d q[5]   = {_mm256_set1_pd(-4.0076864679904189921E+03), 
-                                                                      _mm256_set1_pd(7.4810580356655069138E+06), 
-                                                                      _mm256_set1_pd(-8.0059518998619764991E+09), 
-                                                                      _mm256_set1_pd(4.8544714258273622913E+12), 
-                                                                      _mm256_set1_pd(-1.3218168307321442305E+15)};
-                           __attribute__((section(".rodata")))
-			   __ATTR_ALIGN__(32) static __m256d qq[6]  = {_mm256_set1_pd(-3.8806586721556593450E+00), 
-                                                                      _mm256_set1_pd(3.2593714889036996297E+00), 
-                                                                      _mm256_set1_pd(-8.5017476463217924408E-01), 
-                                                                      _mm256_set1_pd(7.4212010813186530069E-02), 
-                                                                      _mm256_set1_pd(-2.2835624489492512649E-03), 
-                                                                      _mm256_set1_pd(3.7510433111922824643E-05)};
+                          
 			   const __m256d exp40                     =  _mm256_set1_pd(2.353852668370199854E+17);
 			   const __m256d _40                       =  _mm256_set1_pd(40.0);
 			   const __m256d _1_2                      =  _mm256_set1_pd(0.5);
@@ -1934,26 +1897,49 @@ SOFTWARE.
 			   }
 			   else if(_mm256_cmp_pd_mask(x,_15,_CMP_LT_OQ)) {
                                xx   = _mm256_mul_pd(x,x);
-			       sump = p[0];
-			       sump = _mm256_fmadd_pd(sump,xx,p[1]);
-			       sump = _mm256_fmadd_pd(sump,xx,p[2]);
-			       sump = _mm256_fmadd_pd(sump,xx,p[3]);
-			       sump = _mm256_fmadd_pd(sump,xx,p[4]);
-			       sump = _mm256_fmadd_pd(sump,xx,p[5]);
-			       sump = _mm256_fmadd_pd(sump,xx,p[6]);
-			       sump = _mm256_fmadd_pd(sump,xx,p[7]);
-			       sump = _mm256_fmadd_pd(sump,xx,p[8]);
-			       sump = _mm256_fmadd_pd(sump,xx,p[9]);
-			       sump = _mm256_fmadd_pd(sump,xx,p[10]);
-			       sump = _mm256_fmadd_pd(sump,xx,p[11]);
-			       sump = _mm256_fmadd_pd(sump,xx,p[12]);
-			       sump = _mm256_fmadd_pd(sump,xx,p[13]);
-			       sump = _mm256_fmadd_pd(sump,xx,p[14]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                                  
+			       sump = *(__m256d*)&bessel_i1_ymm4r8_p[0];
+			       sump = _mm256_fmadd_pd(sump,xx,*(__m256d*)&bessel_i1_ymm4r8_p[4]);
+			       sump = _mm256_fmadd_pd(sump,xx,*(__m256d*)&bessel_i1_ymm4r8_p[8]);
+			       sump = _mm256_fmadd_pd(sump,xx,*(__m256d*)&bessel_i1_ymm4r8_p[12]);
+			       sump = _mm256_fmadd_pd(sump,xx,*(__m256d*)&bessel_i1_ymm4r8_p[16]);
+			       sump = _mm256_fmadd_pd(sump,xx,*(__m256d*)&bessel_i1_ymm4r8_p[20]);
+			       sump = _mm256_fmadd_pd(sump,xx,*(__m256d*)&bessel_i1_ymm4r8_p[24]);
+			       sump = _mm256_fmadd_pd(sump,xx,*(__m256d*)&bessel_i1_ymm4r8_p[28]);
+			       sump = _mm256_fmadd_pd(sump,xx,*(__m256d*)&bessel_i1_ymm4r8_p[32]);
+			       sump = _mm256_fmadd_pd(sump,xx,*(__m256d*)&bessel_i1_ymm4r8_p[36]);
+			       sump = _mm256_fmadd_pd(sump,xx,*(__m256d*)&bessel_i1_ymm4r8_p[40]);
+			       sump = _mm256_fmadd_pd(sump,xx,*(__m256d*)&bessel_i1_ymm4r8_p[44]);
+			       sump = _mm256_fmadd_pd(sump,xx,*(__m256d*)&bessel_i1_ymm4r8_p[48]);
+			       sump = _mm256_fmadd_pd(sump,xx,*(__m256d*)&bessel_i1_ymm4r8_p[52]);
+			       sump = _mm256_fmadd_pd(sump,xx,*(__m256d*)&bessel_i1_ymm4r8_p[56]);
 			       xx   = _mm256_sub_pd(xx,_225);
-			       const __m256d t0 = _mm256_fmadd_pd(_mm256_add_pd(xx,q[0]),xx,q[1]);
-			       const __m256d t1 = _mm256_fmadd_pd(t0,xx,q[2]);
-			       const __m256d t2 = _mm256_fmadd_pd(t1,xx,q[3]);
-			       const __m256d t3 = _mm256_fmadd_pd(t2,xx,q[4]);
+			       const __m256d t0 = _mm256_fmadd_pd(_mm256_add_pd(xx,*(__m256d*)&bessel_i1_ymm4r8_q[0]),xx,*(__m256d*)&bessel_i1_ymm4r8_q[4]);
+			       const __m256d t1 = _mm256_fmadd_pd(t0,xx,*(__m256d*)&bessel_i1_ymm4r8_q[8]);
+			       const __m256d t2 = _mm256_fmadd_pd(t1,xx,*(__m256d*)&bessel_i1_ymm4r8_q[12]);
+			       const __m256d t3 = _mm256_fmadd_pd(t2,xx,*(__m256d*)&bessel_i1_ymm4r8_q[16]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                               sump = bessel_i1_ymm4r8_p[0];
+			       sump = _mm256_fmadd_pd(sump,xx,bessel_i1_ymm4r8_p[1]);
+			       sump = _mm256_fmadd_pd(sump,xx,bessel_i1_ymm4r8_p[2]);
+			       sump = _mm256_fmadd_pd(sump,xx,bessel_i1_ymm4r8_p[3]);
+			       sump = _mm256_fmadd_pd(sump,xx,bessel_i1_ymm4r8_p[4]);
+			       sump = _mm256_fmadd_pd(sump,xx,bessel_i1_ymm4r8_p[5]);
+			       sump = _mm256_fmadd_pd(sump,xx,bessel_i1_ymm4r8_p[6]);
+			       sump = _mm256_fmadd_pd(sump,xx,bessel_i1_ymm4r8_p[7]);
+			       sump = _mm256_fmadd_pd(sump,xx,bessel_i1_ymm4r8_p[8]);
+			       sump = _mm256_fmadd_pd(sump,xx,bessel_i1_ymm4r8_p[9]);
+			       sump = _mm256_fmadd_pd(sump,xx,bessel_i1_ymm4r8_p[10]);
+			       sump = _mm256_fmadd_pd(sump,xx,bessel_i1_ymm4r8_p[11]);
+			       sump = _mm256_fmadd_pd(sump,xx,bessel_i1_ymm4r8_p[12]);
+			       sump = _mm256_fmadd_pd(sump,xx,bessel_i1_ymm4r8_p[13]);
+			       sump = _mm256_fmadd_pd(sump,xx,bessel_i1_ymm4r8_p[14]);
+			       xx   = _mm256_sub_pd(xx,_225);
+			       const __m256d t0 = _mm256_fmadd_pd(_mm256_add_pd(xx,bessel_i1_ymm4r8_q[0]),xx,bessel_i1_ymm4r8_q[1]);
+			       const __m256d t1 = _mm256_fmadd_pd(t0,xx,bessel_i1_ymm4r8_q[2]);
+			       const __m256d t2 = _mm256_fmadd_pd(t1,xx,bessel_i1_ymm4r8_q[3]);
+			       const __m256d t3 = _mm256_fmadd_pd(t2,xx,bessel_i1_ymm4r8_q[4]);
+#endif			       
 			       sumq             = t3;
 			       value            = _mm256_mul_pd(_mm256_div_pd(sump,sumq),x);
 			   }
@@ -1962,19 +1948,35 @@ SOFTWARE.
 			   }
 			   else {
                                xx               = _mm256_sub_pd(_mm256_div_pd(_1,x),rec15);
-			       const __m256d t0 = _mm256_fmadd_pd(pp[0],xx,pp[1]);
-			       const __m256d c0 = _mm256_fmadd_pd(_mm256_add_pd(xx,qq[0]),xx,qq[1]);
-			       const __m256d t1 = _mm256_fmadd_pd(t0,xx,pp[2]);
-			       const __m256d c1 = _mm256_fmadd_pd(c0,xx,qq[2]);
-			       const __m256d t2 = _mm256_fmadd_pd(t1,xx,pp[3]);
-			       const __m256d c2 = _mm256_fmadd_pd(c1,xx,qq[3]);
-			       const __m256d t3 = _mm256_fmadd_pd(t2,xx,pp[4]);
-			       const __m256d c3 = _mm256_fmadd_pd(c2,xx,qq[4]);
-			       const __m256d t4 = _mm256_fmadd_pd(t3,xx,pp[5]);
-			       const __m256d c4 = _mm256_fmadd_pd(c3,xx,qq[5]);
-			       const __m256d t5 = _mm256_fmadd_pd(t4,xx,pp[6]);
-			       const __m256d c5 = _mm256_fmadd_pd(c4,xx,qq[6]);
-			       const __m256d t6 = _mm256_fmadd_pd(t5,xx,pp[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                                   
+			       const __m256d t0 = _mm256_fmadd_pd(*(__m256d*)&bessel_i1_ymm4r8_pp[0],xx,*(__m256d*)&bessel_i1_ymm4r8_pp[4]);
+			       const __m256d c0 = _mm256_fmadd_pd(_mm256_add_pd(xx,*(__m256d*)&bessel_i1_ymm4r8_qq[0]),xx,*(__m256d*)&bessel_i1_ymm4r8_qq[4]);
+			       const __m256d t1 = _mm256_fmadd_pd(t0,xx,*(__m256d*)&bessel_i1_ymm4r8_pp[8]);
+			       const __m256d c1 = _mm256_fmadd_pd(c0,xx,*(__m256d*)&bessel_i1_ymm4r8_qq[8]);
+			       const __m256d t2 = _mm256_fmadd_pd(t1,xx,*(__m256d*)&bessel_i1_ymm4r8_pp[12]);
+			       const __m256d c2 = _mm256_fmadd_pd(c1,xx,*(__m256d*)&bessel_i1_ymm4r8_qq[12]);
+			       const __m256d t3 = _mm256_fmadd_pd(t2,xx,*(__m256d*)&bessel_i1_ymm4r8_pp[16]);
+			       const __m256d c3 = _mm256_fmadd_pd(c2,xx,*(__m256d*)&bessel_i1_ymm4r8_qq[16]);
+			       const __m256d t4 = _mm256_fmadd_pd(t3,xx,*(__m256d*)&bessel_i1_ymm4r8_pp[20]);
+			       const __m256d c4 = _mm256_fmadd_pd(c3,xx,*(__m256d*)&bessel_i1_ymm4r8_qq[20]);
+			       const __m256d t5 = _mm256_fmadd_pd(t4,xx,*(__m256d*)&bessel_i1_ymm4r8_pp[24]);
+			       const __m256d c5 = _mm256_fmadd_pd(c4,xx,*(__m256d*)&bessel_i1_ymm4r8_qq[24]);
+			       const __m256d t6 = _mm256_fmadd_pd(t5,xx,*(__m256d*)&bessel_i1_ymm4r8_pp[28]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                               const __m256d t0 = _mm256_fmadd_pd(bessel_i1_ymm4r8_pp[0],xx,bessel_i1_ymm4r8_pp[1]);
+			       const __m256d c0 = _mm256_fmadd_pd(_mm256_add_pd(xx,bessel_i1_ymm4r8_qq[0]),xx,bessel_i1_ymm4r8_qq[1]);
+			       const __m256d t1 = _mm256_fmadd_pd(t0,xx,bessel_i1_ymm4r8_pp[2]);
+			       const __m256d c1 = _mm256_fmadd_pd(c0,xx,bessel_i1_ymm4r8_qq[2]);
+			       const __m256d t2 = _mm256_fmadd_pd(t1,xx,bessel_i1_ymm4r8_pp[3]);
+			       const __m256d c2 = _mm256_fmadd_pd(c1,xx,bessel_i1_ymm4r8_qq[3]);
+			       const __m256d t3 = _mm256_fmadd_pd(t2,xx,bessel_i1_ymm4r8_pp[4]);
+			       const __m256d c3 = _mm256_fmadd_pd(c2,xx,bessel_i1_ymm4r8_qq[4]);
+			       const __m256d t4 = _mm256_fmadd_pd(t3,xx,bessel_i1_ymm4r8_pp[5]);
+			       const __m256d c4 = _mm256_fmadd_pd(c3,xx,bessel_i1_ymm4r8_qq[5]);
+			       const __m256d t5 = _mm256_fmadd_pd(t4,xx,bessel_i1_ymm4r8_pp[6]);
+			       const __m256d c5 = _mm256_fmadd_pd(c4,xx,bessel_i1_ymm4r8_qq[6]);
+			       const __m256d t6 = _mm256_fmadd_pd(t5,xx,bessel_i1_ymm4r8_pp[7]);
+#endif			       
 			       sump             = t6;
 			       sumq             = c5;
 			       value            = _mm256_div_pd(sump,sumq);
