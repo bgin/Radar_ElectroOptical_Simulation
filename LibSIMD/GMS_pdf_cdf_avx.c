@@ -24,7 +24,10 @@ SOFTWARE.
 #include "GMS_LUT_cdf_pdf_avx.h"
 #include "GMS_simd_utils.h"
 
-
+#if !defined(__AVX512F__) || !defined(__AVX512VL__)
+#error "Support of AVX512F or AVX512VL ISA required!!"
+#endif
+ 
 /*
       !*****************************************************************************80
 !
