@@ -2263,7 +2263,7 @@ __attribute__((aligned(32))) const static float normal_01_cdf_inv_ymm8r4_f[64] =
 ///////////////////////////////////////////////////////////////////////////
 /* Used by the function: gamma_ymm4r8*/               
 __attribute__((section(".rodata")))
-__attribute__((aligned(32))) const static double gamma_ymm4r8_c[29] = {
+__attribute__((aligned(32))) const static double gamma_ymm4r8_c[28] = {
         -1.910444077728e-03,
         -1.910444077728e-03,
         -1.910444077728e-03,
