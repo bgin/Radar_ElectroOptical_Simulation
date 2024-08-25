@@ -22,7 +22,12 @@ SOFTWARE.
 
 #include <float.h>
 #include "GMS_pdf_cdf_sse.h"
+#include "GMS_LUT_cdf_pdf_sse.h"
 #include "GMS_simd_utils.h"
+
+#if !defined(__AVX512F__) || !defined(__AVX512VL__)
+#error "Support of AVX512F or AVX512VL ISA required!!"
+#endif
 
  /*
       !*****************************************************************************80
@@ -110,72 +115,7 @@ SOFTWARE.
 
         __m128d gamma_log_xmm2r8(const __m128d x) {
 		      
-                           // if(__builtin_expect(_mm_cmp_pd_mask(x,_0,_CMP_LE_OQ),0) ||
-			   //    __builtin_expect(_mm_cmp_pd_mask(x,xbig,_CMP_GT_OQ),0)) {
-                           //    return (huge);
-			   // }
-                         __attribute__((section(".rodata")))
-                         __attribute__((aligned(16))) static __m128d c[7] = { _mm_set1_pd(-1.910444077728E-03),
-			                                     _mm_set1_pd(8.4171387781295E-04),
-                                                             _mm_set1_pd(-5.952379913043012E-04), 
-                                                             _mm_set1_pd(7.93650793500350248E-04), 
-                                                             _mm_set1_pd(-2.777777777777681622553E-03), 
-                                                             _mm_set1_pd(8.333333333333333331554247E-02), 
-                                                             _mm_set1_pd(5.7083835261E-03)};
-                         __attribute__((section(".rodata")))
-			 __attribute__((aligned(16))) static __m128d p1[8] = {_mm_set1_pd(4.945235359296727046734888E+00), 
-                                                             _mm_set1_pd(2.018112620856775083915565E+02), 
-                                                             _mm_set1_pd(2.290838373831346393026739E+03), 
-                                                             _mm_set1_pd(1.131967205903380828685045E+04),
-                                                             _mm_set1_pd(2.855724635671635335736389E+04), 
-                                                             _mm_set1_pd(3.848496228443793359990269E+04), 
-                                                             _mm_set1_pd(2.637748787624195437963534E+04), 
-                                                             _mm_set1_pd(7.225813979700288197698961E+03)};
-                         __attribute__((section(".rodata")))
-			 __attribute__((aligned(16))) static __m128d p2[8] = {_mm_set1_pd(4.974607845568932035012064E+00), 
-                                                             _mm_set1_pd(5.424138599891070494101986E+02), 
-                                                             _mm_set1_pd(1.550693864978364947665077E+04), 
-                                                             _mm_set1_pd(1.847932904445632425417223E+05), 
-                                                             _mm_set1_pd(1.088204769468828767498470E+06), 
-                                                             _mm_set1_pd(3.338152967987029735917223E+06), 
-                                                             _mm_set1_pd(5.106661678927352456275255E+06), 
-                                                             _mm_set1_pd(3.074109054850539556250927E+06)};
-                         __attribute__((section(".rodata")))
-			 __attribute__((aligned(16))) static __m128d p4[8] = {_mm_set1_pd(1.474502166059939948905062E+04), 
-                                                             _mm_set1_pd(2.426813369486704502836312E+06), 
-                                                             _mm_set1_pd(1.214755574045093227939592E+08), 
-                                                             _mm_set1_pd(2.663432449630976949898078E+09), 
-                                                             _mm_set1_pd(2.940378956634553899906876E+10), 
-                                                             _mm_set1_pd(1.702665737765398868392998E+11), 
-                                                             _mm_set1_pd(4.926125793377430887588120E+11), 
-                                                             _mm_set1_pd(5.606251856223951465078242E+11)};
-                         __attribute__((section(".rodata")))
-                         __attribute__((aligned(16))) static __m128d q1[8] = {_mm_set1_pd(6.748212550303777196073036E+01), 
-                                                             _mm_set1_pd(1.113332393857199323513008E+03), 
-                                                             _mm_set1_pd(7.738757056935398733233834E+03), 
-                                                             _mm_set1_pd(2.763987074403340708898585E+04), 
-                                                             _mm_set1_pd(5.499310206226157329794414E+04), 
-                                                             _mm_set1_pd(6.161122180066002127833352E+04), 
-                                                             _mm_set1_pd(3.635127591501940507276287E+04), 
-                                                             _mm_set1_pd(8.785536302431013170870835E+03)};
-                         __attribute__((section(".rodata")))
-			 __attribute__((aligned(16))) static __m128d q2[8] = {_mm_set1_pd(1.830328399370592604055942E+02),
-                                                             _mm_set1_pd(7.765049321445005871323047E+03), 
-                                                             _mm_set1_pd(1.331903827966074194402448E+05),
-                                                             _mm_set1_pd(1.136705821321969608938755E+06), 
-                                                             _mm_set1_pd(5.267964117437946917577538E+06), 
-                                                             _mm_set1_pd(1.346701454311101692290052E+07), 
-                                                             _mm_set1_pd(1.782736530353274213975932E+07), 
-                                                             _mm_set1_pd(9.533095591844353613395747E+06)};
-                         __attribute__((section(".rodata")))
-			 __attribute__((aligned(16))) static __m128d q4[8] = {_mm_set1_pd(2.690530175870899333379843E+03), 
-                                                             _mm_set1_pd(6.393885654300092398984238E+05), 
-                                                             _mm_set1_pd(4.135599930241388052042842E+07), 
-                                                             _mm_set1_pd(1.120872109616147941376570E+09), 
-                                                             _mm_set1_pd(1.488613728678813811542398E+10), 
-                                                             _mm_set1_pd(1.016803586272438228077304E+11), 
-                                                             _mm_set1_pd(3.417476345507377132798597E+11), 
-                                                             _mm_set1_pd(4.463158187419713286462081E+11)};
+                         
 			    const __m128d d1     = _mm_set1_pd(-5.772156649015328605195174E-01);
 			    const __m128d d2     = _mm_set1_pd(4.227843350984671393993777E-01);
                             const __m128d d4     = _mm_set1_pd(1.791759469228055000094023E+00);
@@ -210,22 +150,41 @@ SOFTWARE.
 			          _mm_cmp_pd_mask(pnt68,x,_CMP_LE_OQ)) {
                                    xden = _1;
 				   xnum = _0;
-				   xnum = _mm_fmadd_pd(xnum,xm1,p1[0]);
-				   xden = _mm_fmadd_pd(xden,xm1,q1[0]);
-				   xnum = _mm_fmadd_pd(xnum,xm1,p1[1]);
-				   xden = _mm_fmadd_pd(xden,xm1,q1[1]);
-				   xnum = _mm_fmadd_pd(xnum,xm1,p1[2]);
-				   xden = _mm_fmadd_pd(xden,xm1,q1[2]);
-				   xnum = _mm_fmadd_pd(xnum,xm1,p1[3]);
-				   xden = _mm_fmadd_pd(xden,xm1,q1[3]);
-				   xnum = _mm_fmadd_pd(xnum,xm1,p1[4]);
-				   xden = _mm_fmadd_pd(xden,xm1,q1[4]);
-				   xnum = _mm_fmadd_pd(xnum,xm1,p1[5]);
-				   xden = _mm_fmadd_pd(xden,xm1,q1[5]);
-				   xnum = _mm_fmadd_pd(xnum,xm1,p1[6]);
-				   xden = _mm_fmadd_pd(xden,xm1,q1[6]);
-				   xnum = _mm_fmadd_pd(xnum,xm1,p1[7]);
-				   xden = _mm_fmadd_pd(xden,xm1,q1[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)					   
+				   xnum = _mm_fmadd_pd(xnum,xm1,*(__m128d*)&gamma_log_xmm2r8_p1[0]);
+				   xden = _mm_fmadd_pd(xden,xm1,*(__m128d*)&gamma_log_xmm2r8_q1[0]);
+				   xnum = _mm_fmadd_pd(xnum,xm1,*(__m128d*)&gamma_log_xmm2r8_p1[2]);
+				   xden = _mm_fmadd_pd(xden,xm1,*(__m128d*)&gamma_log_xmm2r8_q1[2]);
+				   xnum = _mm_fmadd_pd(xnum,xm1,*(__m128d*)&gamma_log_xmm2r8_p1[4]);
+				   xden = _mm_fmadd_pd(xden,xm1,*(__m128d*)&gamma_log_xmm2r8_q1[4]);
+				   xnum = _mm_fmadd_pd(xnum,xm1,*(__m128d*)&gamma_log_xmm2r8_p1[6]);
+				   xden = _mm_fmadd_pd(xden,xm1,*(__m128d*)&gamma_log_xmm2r8_q1[6]);
+				   xnum = _mm_fmadd_pd(xnum,xm1,*(__m128d*)&gamma_log_xmm2r8_p1[8]);
+				   xden = _mm_fmadd_pd(xden,xm1,*(__m128d*)&gamma_log_xmm2r8_q1[8]);
+				   xnum = _mm_fmadd_pd(xnum,xm1,*(__m128d*)&gamma_log_xmm2r8_p1[10]);
+				   xden = _mm_fmadd_pd(xden,xm1,*(__m128d*)&gamma_log_xmm2r8_q1[10]);
+				   xnum = _mm_fmadd_pd(xnum,xm1,*(__m128d*)&gamma_log_xmm2r8_p1[12]);
+				   xden = _mm_fmadd_pd(xden,xm1,*(__m128d*)&gamma_log_xmm2r8_q1[12]);
+				   xnum = _mm_fmadd_pd(xnum,xm1,*(__m128d*)&gamma_log_xmm2r8_p1[14]);
+				   xden = _mm_fmadd_pd(xden,xm1,*(__m128d*)&gamma_log_xmm2r8_q1[14]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                   xnum = _mm_fmadd_pd(xnum,xm1,gamma_log_xmm2r8_p1[0]);
+				   xden = _mm_fmadd_pd(xden,xm1,gamma_log_xmm2r8_q1[0]);
+				   xnum = _mm_fmadd_pd(xnum,xm1,gamma_log_xmm2r8_p1[1]);
+				   xden = _mm_fmadd_pd(xden,xm1,gamma_log_xmm2r8_q1[1]);
+				   xnum = _mm_fmadd_pd(xnum,xm1,gamma_log_xmm2r8_p1[2]);
+				   xden = _mm_fmadd_pd(xden,xm1,gamma_log_xmm2r8_q1[2]);
+				   xnum = _mm_fmadd_pd(xnum,xm1,gamma_log_xmm2r8_p1[3]);
+				   xden = _mm_fmadd_pd(xden,xm1,gamma_log_xmm2r8_q1[3]);
+				   xnum = _mm_fmadd_pd(xnum,xm1,gamma_log_xmm2r8_p1[4]);
+				   xden = _mm_fmadd_pd(xden,xm1,gamma_log_xmm2r8_q1[4]);
+				   xnum = _mm_fmadd_pd(xnum,xm1,gamma_log_xmm2r8_p1[5]);
+				   xden = _mm_fmadd_pd(xden,xm1,gamma_log_xmm2r8_q1[5]);
+				   xnum = _mm_fmadd_pd(xnum,xm1,gamma_log_xmm2r8_p1[6]);
+				   xden = _mm_fmadd_pd(xden,xm1,gamma_log_xmm2r8_q1[6]);
+				   xnum = _mm_fmadd_pd(xnum,xm1,gamma_log_xmm2r8_p1[7]);
+				   xden = _mm_fmadd_pd(xden,xm1,gamma_log_xmm2r8_q1[7]);
+#endif				   
 				   const __m128d t0 = _mm_fmadd_pd(xm1,
 				                                  _mm_div_pd(xnum,xden),d1);
 				   res  = _mm_add_pd(corr,
@@ -236,22 +195,41 @@ SOFTWARE.
                                    xm2  = _mm_sub_pd(_mm_sub_pd(x,_1_2),_1_2);
 				   xden = _1;
 				   xnum = _0;
-				   xnum = _mm_fmadd_pd(xnum,xm2,p2[0]);
-				   xden = _mm_fmadd_pd(xden,xm2,q2[0]);
-				   xnum = _mm_fmadd_pd(xnum,xm2,p2[1]);
-				   xden = _mm_fmadd_pd(xden,xm2,q2[1]);
-				   xnum = _mm_fmadd_pd(xnum,xm2,p2[2]);
-				   xden = _mm_fmadd_pd(xden,xm2,q2[2]);
-				   xnum = _mm_fmadd_pd(xnum,xm2,p2[3]);
-				   xden = _mm_fmadd_pd(xden,xm2,q2[3]);
-				   xnum = _mm_fmadd_pd(xnum,xm2,p2[4]);
-				   xden = _mm_fmadd_pd(xden,xm2,q2[4]);
-				   xnum = _mm_fmadd_pd(xnum,xm2,p2[5]);
-				   xden = _mm_fmadd_pd(xden,xm2,q2[5]);
-				   xnum = _mm_fmadd_pd(xnum,xm2,p2[6]);
-				   xden = _mm_fmadd_pd(xden,xm2,q2[6]);
-				   xnum = _mm_fmadd_pd(xnum,xm2,p2[7]);
-				   xden = _mm_fmadd_pd(xden,xm2,q2[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)					   
+				   xnum = _mm_fmadd_pd(xnum,xm2,*(__m128d*)&gamma_log_xmm2r8_p2[2*0]);
+				   xden = _mm_fmadd_pd(xden,xm2,*(__m128d*)&gamma_log_xmm2r8_q2[2*0]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,*(__m128d*)&gamma_log_xmm2r8_p2[2*1]);
+				   xden = _mm_fmadd_pd(xden,xm2,*(__m128d*)&gamma_log_xmm2r8_q2[2*1]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,*(__m128d*)&gamma_log_xmm2r8_p2[2*2]);
+				   xden = _mm_fmadd_pd(xden,xm2,*(__m128d*)&gamma_log_xmm2r8_q2[2*2]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,*(__m128d*)&gamma_log_xmm2r8_p2[2*3]);
+				   xden = _mm_fmadd_pd(xden,xm2,*(__m128d*)&gamma_log_xmm2r8_q2[2*3]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,*(__m128d*)&gamma_log_xmm2r8_p2[2*4]);
+				   xden = _mm_fmadd_pd(xden,xm2,*(__m128d*)&gamma_log_xmm2r8_q2[2*4]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,*(__m128d*)&gamma_log_xmm2r8_p2[2*5]);
+				   xden = _mm_fmadd_pd(xden,xm2,*(__m128d*)&gamma_log_xmm2r8_q2[2*5]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,*(__m128d*)&gamma_log_xmm2r8_p2[2*6]);
+				   xden = _mm_fmadd_pd(xden,xm2,*(__m128d*)&gamma_log_xmm2r8_q2[2*6]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,*(__m128d*)&gamma_log_xmm2r8_p2[2*7]);
+				   xden = _mm_fmadd_pd(xden,xm2,*(__m128d*)&gamma_log_xmm2r8_q2[2*7]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                   xnum = _mm_fmadd_pd(xnum,xm2,gamma_log_xmm2r8_p2[0]);
+				   xden = _mm_fmadd_pd(xden,xm2,gamma_log_xmm2r8_q2[0]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,gamma_log_xmm2r8_p2[1]);
+				   xden = _mm_fmadd_pd(xden,xm2,gamma_log_xmm2r8_q2[1]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,gamma_log_xmm2r8_p2[2]);
+				   xden = _mm_fmadd_pd(xden,xm2,gamma_log_xmm2r8_q2[2]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,gamma_log_xmm2r8_p2[3]);
+				   xden = _mm_fmadd_pd(xden,xm2,gamma_log_xmm2r8_q2[3]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,gamma_log_xmm2r8_p2[4]);
+				   xden = _mm_fmadd_pd(xden,xm2,gamma_log_xmm2r8_q2[4]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,gamma_log_xmm2r8_p2[5]);
+				   xden = _mm_fmadd_pd(xden,xm2,gamma_log_xmm2r8_q2[5]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,gamma_log_xmm2r8_p2[6]);
+				   xden = _mm_fmadd_pd(xden,xm2,gamma_log_xmm2r8_q2[6]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,gamma_log_xmm2r8_p2[7]);
+				   xden = _mm_fmadd_pd(xden,xm2,gamma_log_xmm2r8_q2[7]);
+#endif				   
 				   const __m128d t0 = _mm_fmadd_pd(xm2,
 				                                  _mm_div_pd(xnum,xden),d2);
 				   res  = _mm_add_pd(corr,
@@ -262,22 +240,41 @@ SOFTWARE.
                                    xm2  = _mm_sub_pd(x,_2);
 				   xden = _1;
 				   xnum = _0;
-				   xnum = _mm_fmadd_pd(xnum,xm2,p2[0]);
-				   xden = _mm_fmadd_pd(xden,xm2,q2[0]);
-				   xnum = _mm_fmadd_pd(xnum,xm2,p2[1]);
-				   xden = _mm_fmadd_pd(xden,xm2,q2[1]);
-				   xnum = _mm_fmadd_pd(xnum,xm2,p2[2]);
-				   xden = _mm_fmadd_pd(xden,xm2,q2[2]);
-				   xnum = _mm_fmadd_pd(xnum,xm2,p2[3]);
-				   xden = _mm_fmadd_pd(xden,xm2,q2[3]);
-				   xnum = _mm_fmadd_pd(xnum,xm2,p2[4]);
-				   xden = _mm_fmadd_pd(xden,xm2,q2[4]);
-				   xnum = _mm_fmadd_pd(xnum,xm2,p2[5]);
-				   xden = _mm_fmadd_pd(xden,xm2,q2[5]);
-				   xnum = _mm_fmadd_pd(xnum,xm2,p2[6]);
-				   xden = _mm_fmadd_pd(xden,xm2,q2[6]);
-				   xnum = _mm_fmadd_pd(xnum,xm2,p2[7]);
-				   xden = _mm_fmadd_pd(xden,xm2,q2[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)				   
+				   xnum = _mm_fmadd_pd(xnum,xm2,*(__m128d*)&gamma_log_xmm2r8_p2[2*0]);
+				   xden = _mm_fmadd_pd(xden,xm2,*(__m128d*)&gamma_log_xmm2r8_q2[2*0]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,*(__m128d*)&gamma_log_xmm2r8_p2[2*1]);
+				   xden = _mm_fmadd_pd(xden,xm2,*(__m128d*)&gamma_log_xmm2r8_q2[2*1]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,*(__m128d*)&gamma_log_xmm2r8_p2[2*2]);
+				   xden = _mm_fmadd_pd(xden,xm2,*(__m128d*)&gamma_log_xmm2r8_q2[2*2]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,*(__m128d*)&gamma_log_xmm2r8_p2[2*3]);
+				   xden = _mm_fmadd_pd(xden,xm2,*(__m128d*)&gamma_log_xmm2r8_q2[2*3]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,*(__m128d*)&gamma_log_xmm2r8_p2[2*4]);
+				   xden = _mm_fmadd_pd(xden,xm2,*(__m128d*)&gamma_log_xmm2r8_q2[2*4]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,*(__m128d*)&gamma_log_xmm2r8_p2[2*5]);
+				   xden = _mm_fmadd_pd(xden,xm2,*(__m128d*)&gamma_log_xmm2r8_q2[2*5]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,*(__m128d*)&gamma_log_xmm2r8_p2[2*6]);
+				   xden = _mm_fmadd_pd(xden,xm2,*(__m128d*)&gamma_log_xmm2r8_q2[2*6]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,*(__m128d*)&gamma_log_xmm2r8_p2[2*7]);
+				   xden = _mm_fmadd_pd(xden,xm2,*(__m128d*)&gamma_log_xmm2r8_q2[2*7]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                   xnum = _mm_fmadd_pd(xnum,xm2,gamma_log_xmm2r8_p2[0]);
+				   xden = _mm_fmadd_pd(xden,xm2,gamma_log_xmm2r8_q2[0]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,gamma_log_xmm2r8_p2[1]);
+				   xden = _mm_fmadd_pd(xden,xm2,gamma_log_xmm2r8_q2[1]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,gamma_log_xmm2r8_p2[2]);
+				   xden = _mm_fmadd_pd(xden,xm2,gamma_log_xmm2r8_q2[2]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,gamma_log_xmm2r8_p2[3]);
+				   xden = _mm_fmadd_pd(xden,xm2,gamma_log_xmm2r8_q2[3]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,gamma_log_xmm2r8_p2[4]);
+				   xden = _mm_fmadd_pd(xden,xm2,gamma_log_xmm2r8_q2[4]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,gamma_log_xmm2r8_p2[5]);
+				   xden = _mm_fmadd_pd(xden,xm2,gamma_log_xmm2r8_q2[5]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,gamma_log_xmm2r8_p2[6]);
+				   xden = _mm_fmadd_pd(xden,xm2,gamma_log_xmm2r8_q2[6]);
+				   xnum = _mm_fmadd_pd(xnum,xm2,gamma_log_xmm2r8_p2[7]);
+				   xden = _mm_fmadd_pd(xden,xm2,gamma_log_xmm2r8_q2[7]);
+#endif				   
 				   res  = _mm_mul_pd(xm2,
 				                    _mm_fmadd_pd(xm2,
 						                _mm_div_pd(xnum,xden),d2));
@@ -286,35 +283,65 @@ SOFTWARE.
                                    xm4  = _mm_sub_pd(x,_4);
 				   xden = negate_xmm2r8(_1);
 				   xnum = _0;
-				   xnum = _mm_fmadd_pd(xnum,xm4,p4[0]);
-				   xden = _mm_fmadd_pd(xden,xm4,q4[0]);
-				   xnum = _mm_fmadd_pd(xnum,xm4,p4[1]);
-				   xden = _mm_fmadd_pd(xden,xm4,q4[1]);
-				   xnum = _mm_fmadd_pd(xnum,xm4,p4[2]);
-				   xden = _mm_fmadd_pd(xden,xm4,q4[2]);
-				   xnum = _mm_fmadd_pd(xnum,xm4,p4[3]);
-				   xden = _mm_fmadd_pd(xden,xm4,q4[3]);
-				   xnum = _mm_fmadd_pd(xnum,xm4,p4[4]);
-				   xden = _mm_fmadd_pd(xden,xm4,q4[4]);
-				   xnum = _mm_fmadd_pd(xnum,xm4,p4[5]);
-				   xden = _mm_fmadd_pd(xden,xm4,q4[5]);
-				   xnum = _mm_fmadd_pd(xnum,xm4,p4[6]);
-				   xden = _mm_fmadd_pd(xden,xm4,q4[6]);
-				   xnum = _mm_fmadd_pd(xnum,xm4,p4[7]);
-				   xden = _mm_fmadd_pd(xden,xm4,q4[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)					   
+				   xnum = _mm_fmadd_pd(xnum,xm4,*(__m128d*)&gamma_log_xmm2r8_p4[2*0]);
+				   xden = _mm_fmadd_pd(xden,xm4,*(__m128d*)&gamma_log_xmm2r8_q4[2*0]);
+				   xnum = _mm_fmadd_pd(xnum,xm4,*(__m128d*)&gamma_log_xmm2r8_p4[2*1]);
+				   xden = _mm_fmadd_pd(xden,xm4,*(__m128d*)&gamma_log_xmm2r8_q4[2*1]);
+				   xnum = _mm_fmadd_pd(xnum,xm4,*(__m128d*)&gamma_log_xmm2r8_p4[2*2]);
+				   xden = _mm_fmadd_pd(xden,xm4,*(__m128d*)&gamma_log_xmm2r8_q4[2*2]);
+				   xnum = _mm_fmadd_pd(xnum,xm4,*(__m128d*)&gamma_log_xmm2r8_p4[2*3]);
+				   xden = _mm_fmadd_pd(xden,xm4,*(__m128d*)&gamma_log_xmm2r8_q4[2*3]);
+				   xnum = _mm_fmadd_pd(xnum,xm4,*(__m128d*)&gamma_log_xmm2r8_p4[2*4]);
+				   xden = _mm_fmadd_pd(xden,xm4,*(__m128d*)&gamma_log_xmm2r8_q4[2*4]);
+				   xnum = _mm_fmadd_pd(xnum,xm4,*(__m128d*)&gamma_log_xmm2r8_p4[2*5]);
+				   xden = _mm_fmadd_pd(xden,xm4,*(__m128d*)&gamma_log_xmm2r8_q4[2*5]);
+				   xnum = _mm_fmadd_pd(xnum,xm4,*(__m128d*)&gamma_log_xmm2r8_p4[2*6]);
+				   xden = _mm_fmadd_pd(xden,xm4,*(__m128d*)&gamma_log_xmm2r8_q4[2*6]);
+				   xnum = _mm_fmadd_pd(xnum,xm4,*(__m128d*)&gamma_log_xmm2r8_p4[2*7]);
+				   xden = _mm_fmadd_pd(xden,xm4,*(__m128d*)&gamma_log_xmm2r8_q4[2*7]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                   xnum = _mm_fmadd_pd(xnum,xm4,gamma_log_xmm2r8_p4[0]);
+				   xden = _mm_fmadd_pd(xden,xm4,gamma_log_xmm2r8_q4[0]);
+				   xnum = _mm_fmadd_pd(xnum,xm4,gamma_log_xmm2r8_p4[1]);
+				   xden = _mm_fmadd_pd(xden,xm4,gamma_log_xmm2r8_q4[1]);
+				   xnum = _mm_fmadd_pd(xnum,xm4,gamma_log_xmm2r8_p4[2]);
+				   xden = _mm_fmadd_pd(xden,xm4,gamma_log_xmm2r8_q4[2]);
+				   xnum = _mm_fmadd_pd(xnum,xm4,gamma_log_xmm2r8_p4[3]);
+				   xden = _mm_fmadd_pd(xden,xm4,gamma_log_xmm2r8_q4[3]);
+				   xnum = _mm_fmadd_pd(xnum,xm4,gamma_log_xmm2r8_p4[4]);
+				   xden = _mm_fmadd_pd(xden,xm4,gamma_log_xmm2r8_q4[4]);
+				   xnum = _mm_fmadd_pd(xnum,xm4,gamma_log_xmm2r8_p4[5]);
+				   xden = _mm_fmadd_pd(xden,xm4,gamma_log_xmm2r8_q4[5]);
+				   xnum = _mm_fmadd_pd(xnum,xm4,gamma_log_xmm2r8_p4[6]);
+				   xden = _mm_fmadd_pd(xden,xm4,gamma_log_xmm2r8_q4[6]);
+				   xnum = _mm_fmadd_pd(xnum,xm4,gamma_log_xmm2r8_p4[7]);
+				   xden = _mm_fmadd_pd(xden,xm4,gamma_log_xmm2r8_q4[7]);
+#endif				   
 				   res  = _mm_fmadd_pd(xm4,_mm_div_pd(xnum,xden),d4);
 			    }
 			    else {
                                    res  = _0;
 				   if(_mm_cmp_pd_mask(x,frtbig,_CMP_LE_OQ)) {
-                                      res = c[6];
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)					   
+                                      res = *(__m128d*)&gamma_log_xmm2r8_c[2*6];
 				      xsq = _mm_mul_pd(x,x);
-				      res = _mm_add_pd(_mm_div_pd(res,xsq),c[0]);
-				      res = _mm_add_pd(_mm_div_pd(res,xsq),c[1]);
-				      res = _mm_add_pd(_mm_div_pd(res,xsq),c[2]);
-				      res = _mm_add_pd(_mm_div_pd(res,xsq),c[3]);
-				      res = _mm_add_pd(_mm_div_pd(res,xsq),c[4]);
-				      res = _mm_add_pd(_mm_div_pd(res,xsq),c[5]);
+				      res = _mm_add_pd(_mm_div_pd(res,xsq),*(__m128d*)&gamma_log_xmm2r8_c[2*0]);
+				      res = _mm_add_pd(_mm_div_pd(res,xsq),*(__m128d*)&gamma_log_xmm2r8_c[2*1]);
+				      res = _mm_add_pd(_mm_div_pd(res,xsq),*(__m128d*)&gamma_log_xmm2r8_c[2*2]);
+				      res = _mm_add_pd(_mm_div_pd(res,xsq),*(__m128d*)&gamma_log_xmm2r8_c[2*3]);
+				      res = _mm_add_pd(_mm_div_pd(res,xsq),*(__m128d*)&gamma_log_xmm2r8_c[2*4]);
+				      res = _mm_add_pd(_mm_div_pd(res,xsq),*(__m128d*)&gamma_log_xmm2r8_c[2*5]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                      res = gamma_log_xmm2r8_c[6];
+				      xsq = _mm_mul_pd(x,x);
+				      res = _mm_add_pd(_mm_div_pd(res,xsq),gamma_log_xmm2r8_c[0]);
+				      res = _mm_add_pd(_mm_div_pd(res,xsq),gamma_log_xmm2r8_c[1]);
+				      res = _mm_add_pd(_mm_div_pd(res,xsq),gamma_log_xmm2r8_c[2]);
+				      res = _mm_add_pd(_mm_div_pd(res,xsq),gamma_log_xmm2r8_c[3]);
+				      res = _mm_add_pd(_mm_div_pd(res,xsq),gamma_log_xmm2r8_c[4]);
+				      res = _mm_add_pd(_mm_div_pd(res,xsq),gamma_log_xmm2r8_c[5]);
+#endif				      
 				   }
                                    res  = _mm_div_pd(res,x);
 				   corr = _mm_log_pd(x);
@@ -333,72 +360,7 @@ SOFTWARE.
 		 
 		  __m128 gamma_log_xmm4r4(const __m128 x) {
 		      
-                          //  if(__builtin_expect(_mm_cmp_ps_mask(x,_0,_CMP_LE_OQ),0) ||
-			 //      __builtin_expect(_mm_cmp_ps_mask(x,xbig,_CMP_GT_OQ),0)) {
-                         //      return (huge);
-			 //   }
-                         __attribute__((section(".rodata")))
-                         __attribute__((aligned(16))) static __m128 c[7] = { _mm_set1_ps(-1.910444077728E-03),
-			                                     _mm_set1_ps(8.4171387781295E-04),
-                                                             _mm_set1_ps(-5.952379913043012E-04), 
-                                                             _mm_set1_ps(7.93650793500350248E-04), 
-                                                             _mm_set1_ps(-2.777777777777681622553E-03), 
-                                                             _mm_set1_ps(8.333333333333333331554247E-02), 
-                                                             _mm_set1_ps(5.7083835261E-03)};
-                         __attribute__((section(".rodata")))
-			 __attribute__((aligned(16))) static __m128 p1[8] = {_mm_set1_ps(4.945235359296727046734888E+00), 
-                                                             _mm_set1_ps(2.018112620856775083915565E+02), 
-                                                             _mm_set1_ps(2.290838373831346393026739E+03), 
-                                                             _mm_set1_ps(1.131967205903380828685045E+04),
-                                                             _mm_set1_ps(2.855724635671635335736389E+04), 
-                                                             _mm_set1_ps(3.848496228443793359990269E+04), 
-                                                             _mm_set1_ps(2.637748787624195437963534E+04), 
-                                                             _mm_set1_ps(7.225813979700288197698961E+03)};
-                         __attribute__((section(".rodata")))
-			 __attribute__((aligned(16))) static __m128 p2[8] = {_mm_set1_ps(4.974607845568932035012064E+00), 
-                                                             _mm_set1_ps(5.424138599891070494101986E+02), 
-                                                             _mm_set1_ps(1.550693864978364947665077E+04), 
-                                                             _mm_set1_ps(1.847932904445632425417223E+05), 
-                                                             _mm_set1_ps(1.088204769468828767498470E+06), 
-                                                             _mm_set1_ps(3.338152967987029735917223E+06), 
-                                                             _mm_set1_ps(5.106661678927352456275255E+06), 
-                                                             _mm_set1_ps(3.074109054850539556250927E+06)};
-                         __attribute__((section(".rodata")))
-			 __attribute__((aligned(16))) static __m128 p4[8] = {_mm_set1_ps(1.474502166059939948905062E+04), 
-                                                             _mm_set1_ps(2.426813369486704502836312E+06), 
-                                                             _mm_set1_ps(1.214755574045093227939592E+08), 
-                                                             _mm_set1_ps(2.663432449630976949898078E+09), 
-                                                             _mm_set1_ps(2.940378956634553899906876E+10), 
-                                                             _mm_set1_ps(1.702665737765398868392998E+11), 
-                                                             _mm_set1_ps(4.926125793377430887588120E+11), 
-                                                             _mm_set1_ps(5.606251856223951465078242E+11)};
-                         __attribute__((section(".rodata")))
-                         __attribute__((aligned(16))) static __m128 q1[8] = {_mm_set1_ps(6.748212550303777196073036E+01), 
-                                                             _mm_set1_ps(1.113332393857199323513008E+03), 
-                                                             _mm_set1_ps(7.738757056935398733233834E+03), 
-                                                             _mm_set1_ps(2.763987074403340708898585E+04), 
-                                                             _mm_set1_ps(5.499310206226157329794414E+04), 
-                                                             _mm_set1_ps(6.161122180066002127833352E+04), 
-                                                             _mm_set1_ps(3.635127591501940507276287E+04), 
-                                                             _mm_set1_ps(8.785536302431013170870835E+03)};
-                         __attribute__((section(".rodata")))
-			 __attribute__((aligned(16))) static __m128 q2[8] = {_mm_set1_ps(1.830328399370592604055942E+02),
-                                                             _mm_set1_ps(7.765049321445005871323047E+03), 
-                                                             _mm_set1_ps(1.331903827966074194402448E+05),
-                                                             _mm_set1_ps(1.136705821321969608938755E+06), 
-                                                             _mm_set1_ps(5.267964117437946917577538E+06), 
-                                                             _mm_set1_ps(1.346701454311101692290052E+07), 
-                                                             _mm_set1_ps(1.782736530353274213975932E+07), 
-                                                             _mm_set1_ps(9.533095591844353613395747E+06)};
-                         __attribute__((section(".rodata")))
-			 __attribute__((aligned(16))) static __m128 q4[8] = {_mm_set1_ps(2.690530175870899333379843E+03), 
-                                                             _mm_set1_ps(6.393885654300092398984238E+05), 
-                                                             _mm_set1_ps(4.135599930241388052042842E+07), 
-                                                             _mm_set1_ps(1.120872109616147941376570E+09), 
-                                                             _mm_set1_ps(1.488613728678813811542398E+10), 
-                                                             _mm_set1_ps(1.016803586272438228077304E+11), 
-                                                             _mm_set1_ps(3.417476345507377132798597E+11), 
-                                                             _mm_set1_ps(4.463158187419713286462081E+11)};
+                       
 			    const __m128 d1     = _mm_set1_ps(-5.772156649015328605195174E-01);
 			    const __m128 d2     = _mm_set1_ps(4.227843350984671393993777E-01);
                             const __m128 d4     = _mm_set1_ps(1.791759469228055000094023E+00);
@@ -433,22 +395,41 @@ SOFTWARE.
 			          _mm_cmp_ps_mask(pnt68,x,_CMP_LE_OQ)) {
                                    xden = _1;
 				   xnum = _0;
-				   xnum = _mm_fmadd_ps(xnum,xm1,p1[0]);
-				   xden = _mm_fmadd_ps(xden,xm1,q1[0]);
-				   xnum = _mm_fmadd_ps(xnum,xm1,p1[1]);
-				   xden = _mm_fmadd_ps(xden,xm1,q1[1]);
-				   xnum = _mm_fmadd_ps(xnum,xm1,p1[2]);
-				   xden = _mm_fmadd_ps(xden,xm1,q1[2]);
-				   xnum = _mm_fmadd_ps(xnum,xm1,p1[3]);
-				   xden = _mm_fmadd_ps(xden,xm1,q1[3]);
-				   xnum = _mm_fmadd_ps(xnum,xm1,p1[4]);
-				   xden = _mm_fmadd_ps(xden,xm1,q1[4]);
-				   xnum = _mm_fmadd_ps(xnum,xm1,p1[5]);
-				   xden = _mm_fmadd_ps(xden,xm1,q1[5]);
-				   xnum = _mm_fmadd_ps(xnum,xm1,p1[6]);
-				   xden = _mm_fmadd_ps(xden,xm1,q1[6]);
-				   xnum = _mm_fmadd_ps(xnum,xm1,p1[7]);
-				   xden = _mm_fmadd_ps(xden,xm1,q1[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)					   
+				   xnum = _mm_fmadd_ps(xnum,xm1,*(__m128*)&gamma_log_xmm4r4_p1[4*0]);
+				   xden = _mm_fmadd_ps(xden,xm1,*(__m128*)&gamma_log_xmm4r4_q1[4*0]);
+				   xnum = _mm_fmadd_ps(xnum,xm1,*(__m128*)&gamma_log_xmm4r4_p1[4*1]);
+				   xden = _mm_fmadd_ps(xden,xm1,*(__m128*)&gamma_log_xmm4r4_q1[4*1]);
+				   xnum = _mm_fmadd_ps(xnum,xm1,*(__m128*)&gamma_log_xmm4r4_p1[4*2]);
+				   xden = _mm_fmadd_ps(xden,xm1,*(__m128*)&gamma_log_xmm4r4_q1[4*2]);
+				   xnum = _mm_fmadd_ps(xnum,xm1,*(__m128*)&gamma_log_xmm4r4_p1[4*3]);
+				   xden = _mm_fmadd_ps(xden,xm1,*(__m128*)&gamma_log_xmm4r4_q1[4*3]);
+				   xnum = _mm_fmadd_ps(xnum,xm1,*(__m128*)&gamma_log_xmm4r4_p1[4*4]);
+				   xden = _mm_fmadd_ps(xden,xm1,*(__m128*)&gamma_log_xmm4r4_q1[4*4]);
+				   xnum = _mm_fmadd_ps(xnum,xm1,*(__m128*)&gamma_log_xmm4r4_p1[4*5]);
+				   xden = _mm_fmadd_ps(xden,xm1,*(__m128*)&gamma_log_xmm4r4_q1[4*5]);
+				   xnum = _mm_fmadd_ps(xnum,xm1,*(__m128*)&gamma_log_xmm4r4_p1[4*6]);
+				   xden = _mm_fmadd_ps(xden,xm1,*(__m128*)&gamma_log_xmm4r4_q1[4*6]);
+				   xnum = _mm_fmadd_ps(xnum,xm1,*(__m128*)&gamma_log_xmm4r4_p1[4*7]);
+				   xden = _mm_fmadd_ps(xden,xm1,*(__m128*)&gamma_log_xmm4r4_q1[4*7]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                   xnum = _mm_fmadd_ps(xnum,xm1,gamma_log_xmm4r4_p1[0]);
+				   xden = _mm_fmadd_ps(xden,xm1,gamma_log_xmm4r4_q1[0]);
+				   xnum = _mm_fmadd_ps(xnum,xm1,gamma_log_xmm4r4_p1[1]);
+				   xden = _mm_fmadd_ps(xden,xm1,gamma_log_xmm4r4_q1[1]);
+				   xnum = _mm_fmadd_ps(xnum,xm1,gamma_log_xmm4r4_p1[2]);
+				   xden = _mm_fmadd_ps(xden,xm1,gamma_log_xmm4r4_q1[2]);
+				   xnum = _mm_fmadd_ps(xnum,xm1,gamma_log_xmm4r4_p1[3]);
+				   xden = _mm_fmadd_ps(xden,xm1,gamma_log_xmm4r4_q1[3]);
+				   xnum = _mm_fmadd_ps(xnum,xm1,gamma_log_xmm4r4_p1[4]);
+				   xden = _mm_fmadd_ps(xden,xm1,gamma_log_xmm4r4_q1[4]);
+				   xnum = _mm_fmadd_ps(xnum,xm1,gamma_log_xmm4r4_p1[5]);
+				   xden = _mm_fmadd_ps(xden,xm1,gamma_log_xmm4r4_q1[5]);
+				   xnum = _mm_fmadd_ps(xnum,xm1,gamma_log_xmm4r4_p1[6]);
+				   xden = _mm_fmadd_ps(xden,xm1,gamma_log_xmm4r4_q1[6]);
+				   xnum = _mm_fmadd_ps(xnum,xm1,gamma_log_xmm4r4_p1[7]);
+				   xden = _mm_fmadd_ps(xden,xm1,gamma_log_xmm4r4_q1[7]);
+#endif				   
 				   const __m128 t0 = _mm_fmadd_ps(xm1,
 				                                  _mm_div_ps(xnum,xden),d1);
 				   res  = _mm_add_ps(corr,
@@ -459,22 +440,41 @@ SOFTWARE.
                                    xm2  = _mm_sub_ps(_mm_sub_ps(x,_1_2),_1_2);
 				   xden = _1;
 				   xnum = _0;
-				   xnum = _mm_fmadd_ps(xnum,xm2,p2[0]);
-				   xden = _mm_fmadd_ps(xden,xm2,q2[0]);
-				   xnum = _mm_fmadd_ps(xnum,xm2,p2[1]);
-				   xden = _mm_fmadd_ps(xden,xm2,q2[1]);
-				   xnum = _mm_fmadd_ps(xnum,xm2,p2[2]);
-				   xden = _mm_fmadd_ps(xden,xm2,q2[2]);
-				   xnum = _mm_fmadd_ps(xnum,xm2,p2[3]);
-				   xden = _mm_fmadd_ps(xden,xm2,q2[3]);
-				   xnum = _mm_fmadd_ps(xnum,xm2,p2[4]);
-				   xden = _mm_fmadd_ps(xden,xm2,q2[4]);
-				   xnum = _mm_fmadd_ps(xnum,xm2,p2[5]);
-				   xden = _mm_fmadd_ps(xden,xm2,q2[5]);
-				   xnum = _mm_fmadd_ps(xnum,xm2,p2[6]);
-				   xden = _mm_fmadd_ps(xden,xm2,q2[6]);
-				   xnum = _mm_fmadd_ps(xnum,xm2,p2[7]);
-				   xden = _mm_fmadd_ps(xden,xm2,q2[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)				   
+				   xnum = _mm_fmadd_ps(xnum,xm2,*(__m128*)&gamma_log_xmm4r4_p2[4*0]);
+				   xden = _mm_fmadd_ps(xden,xm2,*(__m128*)&gamma_log_xmm4r4_q2[4*0]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,*(__m128*)&gamma_log_xmm4r4_p2[4*1]);
+				   xden = _mm_fmadd_ps(xden,xm2,*(__m128*)&gamma_log_xmm4r4_q2[4*1]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,*(__m128*)&gamma_log_xmm4r4_p2[4*2]);
+				   xden = _mm_fmadd_ps(xden,xm2,*(__m128*)&gamma_log_xmm4r4_q2[4*2]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,*(__m128*)&gamma_log_xmm4r4_p2[4*3]);
+				   xden = _mm_fmadd_ps(xden,xm2,*(__m128*)&gamma_log_xmm4r4_q2[4*3]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,*(__m128*)&gamma_log_xmm4r4_p2[4*4]);
+				   xden = _mm_fmadd_ps(xden,xm2,*(__m128*)&gamma_log_xmm4r4_q2[4*4]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,*(__m128*)&gamma_log_xmm4r4_p2[4*5]);
+				   xden = _mm_fmadd_ps(xden,xm2,*(__m128*)&gamma_log_xmm4r4_q2[4*5]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,*(__m128*)&gamma_log_xmm4r4_p2[4*6]);
+				   xden = _mm_fmadd_ps(xden,xm2,*(__m128*)&gamma_log_xmm4r4_q2[4*6]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,*(__m128*)&gamma_log_xmm4r4_p2[4*7]);
+				   xden = _mm_fmadd_ps(xden,xm2,*(__m128*)&gamma_log_xmm4r4_q2[4*7]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                   xnum = _mm_fmadd_ps(xnum,xm2,gamma_log_xmm4r4_p2[0]);
+				   xden = _mm_fmadd_ps(xden,xm2,gamma_log_xmm4r4_q2[0]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,gamma_log_xmm4r4_p2[1]);
+				   xden = _mm_fmadd_ps(xden,xm2,gamma_log_xmm4r4_q2[1]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,gamma_log_xmm4r4_p2[2]);
+				   xden = _mm_fmadd_ps(xden,xm2,gamma_log_xmm4r4_q2[2]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,gamma_log_xmm4r4_p2[3]);
+				   xden = _mm_fmadd_ps(xden,xm2,gamma_log_xmm4r4_q2[3]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,gamma_log_xmm4r4_p2[4]);
+				   xden = _mm_fmadd_ps(xden,xm2,gamma_log_xmm4r4_q2[4]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,gamma_log_xmm4r4_p2[5]);
+				   xden = _mm_fmadd_ps(xden,xm2,gamma_log_xmm4r4_q2[5]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,gamma_log_xmm4r4_p2[6]);
+				   xden = _mm_fmadd_ps(xden,xm2,gamma_log_xmm4r4_q2[6]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,gamma_log_xmm4r4_p2[7]);
+				   xden = _mm_fmadd_ps(xden,xm2,gamma_log_xmm4r4_q2[7]);
+#endif				   
 				   const __m128 t0 = _mm_fmadd_ps(xm2,
 				                                  _mm_div_ps(xnum,xden),d2);
 				   res  = _mm_add_ps(corr,
@@ -485,22 +485,41 @@ SOFTWARE.
                                    xm2  = _mm_sub_ps(x,_2);
 				   xden = _1;
 				   xnum = _0;
-				   xnum = _mm_fmadd_ps(xnum,xm2,p2[0]);
-				   xden = _mm_fmadd_ps(xden,xm2,q2[0]);
-				   xnum = _mm_fmadd_ps(xnum,xm2,p2[1]);
-				   xden = _mm_fmadd_ps(xden,xm2,q2[1]);
-				   xnum = _mm_fmadd_ps(xnum,xm2,p2[2]);
-				   xden = _mm_fmadd_ps(xden,xm2,q2[2]);
-				   xnum = _mm_fmadd_ps(xnum,xm2,p2[3]);
-				   xden = _mm_fmadd_ps(xden,xm2,q2[3]);
-				   xnum = _mm_fmadd_ps(xnum,xm2,p2[4]);
-				   xden = _mm_fmadd_ps(xden,xm2,q2[4]);
-				   xnum = _mm_fmadd_ps(xnum,xm2,p2[5]);
-				   xden = _mm_fmadd_ps(xden,xm2,q2[5]);
-				   xnum = _mm_fmadd_ps(xnum,xm2,p2[6]);
-				   xden = _mm_fmadd_ps(xden,xm2,q2[6]);
-				   xnum = _mm_fmadd_ps(xnum,xm2,p2[7]);
-				   xden = _mm_fmadd_ps(xden,xm2,q2[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)				   
+				   xnum = _mm_fmadd_ps(xnum,xm2,*(__m128*)&gamma_log_xmm4r4_p2[4*0]);
+				   xden = _mm_fmadd_ps(xden,xm2,*(__m128*)&gamma_log_xmm4r4_q2[4*0]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,*(__m128*)&gamma_log_xmm4r4_p2[4*1]);
+				   xden = _mm_fmadd_ps(xden,xm2,*(__m128*)&gamma_log_xmm4r4_q2[4*1]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,*(__m128*)&gamma_log_xmm4r4_p2[4*2]);
+				   xden = _mm_fmadd_ps(xden,xm2,*(__m128*)&gamma_log_xmm4r4_q2[4*2]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,*(__m128*)&gamma_log_xmm4r4_p2[4*3]);
+				   xden = _mm_fmadd_ps(xden,xm2,*(__m128*)&gamma_log_xmm4r4_q2[4*3]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,*(__m128*)&gamma_log_xmm4r4_p2[4*4]);
+				   xden = _mm_fmadd_ps(xden,xm2,*(__m128*)&gamma_log_xmm4r4_q2[4*4]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,*(__m128*)&gamma_log_xmm4r4_p2[4*5]);
+				   xden = _mm_fmadd_ps(xden,xm2,*(__m128*)&gamma_log_xmm4r4_q2[4*5]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,*(__m128*)&gamma_log_xmm4r4_p2[4*6]);
+				   xden = _mm_fmadd_ps(xden,xm2,*(__m128*)&gamma_log_xmm4r4_q2[4*6]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,*(__m128*)&gamma_log_xmm4r4_p2[4*7]);
+				   xden = _mm_fmadd_ps(xden,xm2,*(__m128*)&gamma_log_xmm4r4_q2[4*7]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                   xnum = _mm_fmadd_ps(xnum,xm2,gamma_log_xmm4r4_p2[0]);
+				   xden = _mm_fmadd_ps(xden,xm2,gamma_log_xmm4r4_q2[0]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,gamma_log_xmm4r4_p2[1]);
+				   xden = _mm_fmadd_ps(xden,xm2,gamma_log_xmm4r4_q2[1]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,gamma_log_xmm4r4_p2[2]);
+				   xden = _mm_fmadd_ps(xden,xm2,gamma_log_xmm4r4_q2[2]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,gamma_log_xmm4r4_p2[3]);
+				   xden = _mm_fmadd_ps(xden,xm2,gamma_log_xmm4r4_q2[3]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,gamma_log_xmm4r4_p2[4]);
+				   xden = _mm_fmadd_ps(xden,xm2,gamma_log_xmm4r4_q2[4]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,gamma_log_xmm4r4_p2[5]);
+				   xden = _mm_fmadd_ps(xden,xm2,gamma_log_xmm4r4_q2[5]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,gamma_log_xmm4r4_p2[6]);
+				   xden = _mm_fmadd_ps(xden,xm2,gamma_log_xmm4r4_q2[6]);
+				   xnum = _mm_fmadd_ps(xnum,xm2,gamma_log_xmm4r4_p2[7]);
+				   xden = _mm_fmadd_ps(xden,xm2,gamma_log_xmm4r4_q2[7]);
+#endif				   
 				   res  = _mm_mul_ps(xm2,
 				                    _mm_fmadd_ps(xm2,
 						                _mm_div_ps(xnum,xden),d2));
@@ -509,35 +528,65 @@ SOFTWARE.
                                    xm4  = _mm_sub_ps(x,_4);
 				   xden = xmm4r4_negate(_1);
 				   xnum = _0;
-				   xnum = _mm_fmadd_ps(xnum,xm4,p4[0]);
-				   xden = _mm_fmadd_ps(xden,xm4,q4[0]);
-				   xnum = _mm_fmadd_ps(xnum,xm4,p4[1]);
-				   xden = _mm_fmadd_ps(xden,xm4,q4[1]);
-				   xnum = _mm_fmadd_ps(xnum,xm4,p4[2]);
-				   xden = _mm_fmadd_ps(xden,xm4,q4[2]);
-				   xnum = _mm_fmadd_ps(xnum,xm4,p4[3]);
-				   xden = _mm_fmadd_ps(xden,xm4,q4[3]);
-				   xnum = _mm_fmadd_ps(xnum,xm4,p4[4]);
-				   xden = _mm_fmadd_ps(xden,xm4,q4[4]);
-				   xnum = _mm_fmadd_ps(xnum,xm4,p4[5]);
-				   xden = _mm_fmadd_ps(xden,xm4,q4[5]);
-				   xnum = _mm_fmadd_ps(xnum,xm4,p4[6]);
-				   xden = _mm_fmadd_ps(xden,xm4,q4[6]);
-				   xnum = _mm_fmadd_ps(xnum,xm4,p4[7]);
-				   xden = _mm_fmadd_ps(xden,xm4,q4[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)					   
+				   xnum = _mm_fmadd_ps(xnum,xm4,*(__m128*)&gamma_log_xmm4r4_p4[4*0]);
+				   xden = _mm_fmadd_ps(xden,xm4,*(__m128*)&gamma_log_xmm4r4_q4[4*0]);
+				   xnum = _mm_fmadd_ps(xnum,xm4,*(__m128*)&gamma_log_xmm4r4_p4[4*1]);
+				   xden = _mm_fmadd_ps(xden,xm4,*(__m128*)&gamma_log_xmm4r4_q4[4*1]);
+				   xnum = _mm_fmadd_ps(xnum,xm4,*(__m128*)&gamma_log_xmm4r4_p4[4*2]);
+				   xden = _mm_fmadd_ps(xden,xm4,*(__m128*)&gamma_log_xmm4r4_q4[4*2]);
+				   xnum = _mm_fmadd_ps(xnum,xm4,*(__m128*)&gamma_log_xmm4r4_p4[4*3]);
+				   xden = _mm_fmadd_ps(xden,xm4,*(__m128*)&gamma_log_xmm4r4_q4[4*3]);
+				   xnum = _mm_fmadd_ps(xnum,xm4,*(__m128*)&gamma_log_xmm4r4_p4[4*4]);
+				   xden = _mm_fmadd_ps(xden,xm4,*(__m128*)&gamma_log_xmm4r4_q4[4*4]);
+				   xnum = _mm_fmadd_ps(xnum,xm4,*(__m128*)&gamma_log_xmm4r4_p4[4*5]);
+				   xden = _mm_fmadd_ps(xden,xm4,*(__m128*)&gamma_log_xmm4r4_q4[4*5]);
+				   xnum = _mm_fmadd_ps(xnum,xm4,*(__m128*)&gamma_log_xmm4r4_p4[4*6]);
+				   xden = _mm_fmadd_ps(xden,xm4,*(__m128*)&gamma_log_xmm4r4_q4[4*6]);
+				   xnum = _mm_fmadd_ps(xnum,xm4,*(__m128*)&gamma_log_xmm4r4_p4[4*7]);
+				   xden = _mm_fmadd_ps(xden,xm4,*(__m128*)&gamma_log_xmm4r4_q4[4*7]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                   xnum = _mm_fmadd_ps(xnum,xm4,gamma_log_xmm4r4_p4[0]);
+				   xden = _mm_fmadd_ps(xden,xm4,gamma_log_xmm4r4_q4[0]);
+				   xnum = _mm_fmadd_ps(xnum,xm4,gamma_log_xmm4r4_p4[1]);
+				   xden = _mm_fmadd_ps(xden,xm4,gamma_log_xmm4r4_q4[1]);
+				   xnum = _mm_fmadd_ps(xnum,xm4,gamma_log_xmm4r4_p4[2]);
+				   xden = _mm_fmadd_ps(xden,xm4,gamma_log_xmm4r4_q4[2]);
+				   xnum = _mm_fmadd_ps(xnum,xm4,gamma_log_xmm4r4_p4[3]);
+				   xden = _mm_fmadd_ps(xden,xm4,gamma_log_xmm4r4_q4[3]);
+				   xnum = _mm_fmadd_ps(xnum,xm4,gamma_log_xmm4r4_p4[4]);
+				   xden = _mm_fmadd_ps(xden,xm4,gamma_log_xmm4r4_q4[4]);
+				   xnum = _mm_fmadd_ps(xnum,xm4,gamma_log_xmm4r4_p4[5]);
+				   xden = _mm_fmadd_ps(xden,xm4,gamma_log_xmm4r4_q4[5]);
+				   xnum = _mm_fmadd_ps(xnum,xm4,gamma_log_xmm4r4_p4[6]);
+				   xden = _mm_fmadd_ps(xden,xm4,gamma_log_xmm4r4_q4[6]);
+				   xnum = _mm_fmadd_ps(xnum,xm4,gamma_log_xmm4r4_p4[7]);
+				   xden = _mm_fmadd_ps(xden,xm4,gamma_log_xmm4r4_q4[7]);
+#endif				   
 				   res  = _mm_fmadd_ps(xm4,_mm_div_ps(xnum,xden),d4);
 			    }
 			    else {
                                    res  = _0;
 				   if(_mm_cmp_ps_mask(x,frtbig,_CMP_LE_OQ)) {
-                                      res = c[6];
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)				   
+                                      res = *(__m128*)&gamma_log_xmm4r4_c[4*6];
 				      xsq = _mm_mul_ps(x,x);
-				      res = _mm_add_ps(_mm_div_ps(res,xsq),c[0]);
-				      res = _mm_add_ps(_mm_div_ps(res,xsq),c[1]);
-				      res = _mm_add_ps(_mm_div_ps(res,xsq),c[2]);
-				      res = _mm_add_ps(_mm_div_ps(res,xsq),c[3]);
-				      res = _mm_add_ps(_mm_div_ps(res,xsq),c[4]);
-				      res = _mm_add_ps(_mm_div_ps(res,xsq),c[5]);
+				      res = _mm_add_ps(_mm_div_ps(res,xsq),*(__m128*)&gamma_log_xmm4r4_c[4*0]);
+				      res = _mm_add_ps(_mm_div_ps(res,xsq),*(__m128*)&gamma_log_xmm4r4_c[4*1]);
+				      res = _mm_add_ps(_mm_div_ps(res,xsq),*(__m128*)&gamma_log_xmm4r4_c[4*2]);
+				      res = _mm_add_ps(_mm_div_ps(res,xsq),*(__m128*)&gamma_log_xmm4r4_c[4*3]);
+				      res = _mm_add_ps(_mm_div_ps(res,xsq),*(__m128*)&gamma_log_xmm4r4_c[4*4]);
+				      res = _mm_add_ps(_mm_div_ps(res,xsq),*(__m128*)&gamma_log_xmm4r4_c[4*5]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                      res = gamma_log_xmm4r4_c[6];
+				      xsq = _mm_mul_ps(x,x);
+				      res = _mm_add_ps(_mm_div_ps(res,xsq),gamma_log_xmm4r4_c[0]);
+				      res = _mm_add_ps(_mm_div_ps(res,xsq),gamma_log_xmm4r4_c[1]);
+				      res = _mm_add_ps(_mm_div_ps(res,xsq),gamma_log_xmm4r4_c[2]);
+				      res = _mm_add_ps(_mm_div_ps(res,xsq),gamma_log_xmm4r4_c[3]);
+				      res = _mm_add_ps(_mm_div_ps(res,xsq),gamma_log_xmm4r4_c[4]);
+				      res = _mm_add_ps(_mm_div_ps(res,xsq),gamma_log_xmm4r4_c[5]);
+#endif				      
 				   }
                                    res  = _mm_div_ps(res,x);
 				   corr = _mm_log_ps(x);
@@ -891,7 +940,19 @@ SOFTWARE.
 		    }
 		    
 		    
-		    
+		      __m128d  
+		      vpoly_eval_xmm2r8_v2(const int32_t n,
+		                        const __m128d * __restrict __attribute__((aligned(16))) a,
+		                        const __m128d x) {
+		         
+		         register __m128d vpoly;
+		         vpoly = _mm_load_pd(&a[n-2]);
+		         for(int32_t i=n-2; i != 0; i -= 2) {
+		             register __m128d t0 = __mm_load_pd(&a[i]);
+		             vpoly = _mm_fmadd_pd(vpoly,x,t0);   
+		         }  
+		         return (vpoly);              
+		    } 
 		      
 		      __m128  
 		      vpoly_eval_xmm4r4(const int32_t n,
@@ -906,7 +967,22 @@ SOFTWARE.
 		             vpoly = _mm_fmadd_ps(vpoly,x,t0);   
 		         }  
 		         return (vpoly);              
-		    }	 
+		    }	
+		    
+		     __m128
+		     vpoly_eval_xmm4r4_v2(const int32_t n,
+		                        const __m128 * __restrict __attribute__((aligned(16))) a,
+		                        const __m128 x) {
+		         
+		         register __m128 vpoly;
+		         vpoly = _mm_load_ps(&a[n-4]);
+		         for(int32_t i=n-4; i != 0; i -= 4) {
+		             register __m128 t0 = __mm_load_ps(&a[i]);
+		             vpoly = _mm_fmadd_ps(vpoly,x,t0);   
+		         }  
+		         return (vpoly);              
+		    }
+		      
 		    
 		    
 /*
@@ -956,66 +1032,7 @@ SOFTWARE.
 
                       __m128d    
 		      normal_01_cdf_inv_xmm2r8(const __m128d p) {
-		            __attribute__((section(".rodata")))
-		            __attribute__((aligned(16))) static __m128d  a[8] = {
-		                     _mm_set1_pd(3.3871328727963666080e+00),
-                                     _mm_set1_pd(1.3314166789178437745e+02),
-                                     _mm_set1_pd(1.9715909503065514427e+03),
-                                     _mm_set1_pd(1.3731693765509461125e+04),
-                                     _mm_set1_pd(4.5921953931549871457e+04),
-                                     _mm_set1_pd(6.7265770927008700853e+04),
-                                     _mm_set1_pd(3.3430575583588128105e+04),
-                                     _mm_set1_pd(2.5090809287301226727e+03)};   
-                            __attribute__((section(".rodata")))  
-		            __attribute__((aligned(16))) static __m128d   b[8] = {
-		                      _mm_set1_pd(1.0e+00),
-                                      _mm_set1_pd(4.2313330701600911252e+01),
-                                      _mm_set1_pd(6.8718700749205790830e+02),
-                                      _mm_set1_pd(5.3941960214247511077e+03),
-                                      _mm_set1_pd(2.1213794301586595867e+04),
-                                      _mm_set1_pd(3.9307895800092710610e+04),
-                                      _mm_set1_pd(2.8729085735721942674e+04),
-                                      _mm_set1_pd(5.2264952788528545610e+03)}; 
-                            __attribute__((section(".rodata")))
-		            __attribute__((aligned(16))) static __m128d   c[8] = {
-		                      _mm_set1_pd(1.42343711074968357734e+00),
-                                      _mm_set1_pd(4.63033784615654529590e+00),
-                                      _mm_set1_pd(5.76949722146069140550e+00),
-                                      _mm_set1_pd(3.64784832476320460504e+00),
-                                      _mm_set1_pd(1.27045825245236838258e+00),
-                                      _mm_set1_pd(2.41780725177450611770e-01),
-                                      _mm_set1_pd(2.27238449892691845833e-02),
-                                      _mm_set1_pd(7.74545014278341407640e-04)};
-                           __attribute__((section(".rodata")))
-                           __attribute__((aligned(16))) static __m128d   d[8] = {
-                                      _mm_set1_pd(1.0e+00),
-                                      _mm_set1_pd(2.05319162663775882187e+00),
-                                      _mm_set1_pd(1.67638483018380384940e+00),
-                                      _mm_set1_pd(6.89767334985100004550e-01),
-                                      _mm_set1_pd(1.48103976427480074590e-01),
-                                      _mm_set1_pd(1.51986665636164571966e-02),
-                                      _mm_set1_pd(5.47593808499534494600e-04),
-                                      _mm_set1_pd(1.05075007164441684324e-09)};
-                           __attribute__((section(".rodata")))
-                           __attribute__((aligned(16))) static __m128d   e[8] = {
-                                      _mm_set1_pd(6.65790464350110377720e+00),
-                                      _mm_set1_pd(5.46378491116411436990e+00),
-                                      _mm_set1_pd(1.78482653991729133580e+00),
-                                      _mm_set1_pd(2.96560571828504891230e-01),
-                                      _mm_set1_pd(2.65321895265761230930e-02),
-                                      _mm_set1_pd(1.24266094738807843860e-03),
-                                      _mm_set1_pd(2.71155556874348757815e-05),
-                                      _mm_set1_pd(2.01033439929228813265e-07)};
-                           __attribute__((section(".rodata")))
-                           __attribute__((aligned(16))) static __m128d   f[8] = {
-                                      _mm_set1_pd(1.0e+00),
-                                      _mm_set1_pd(5.99832206555887937690e-01),
-                                      _mm_set1_pd(1.36929880922735805310e-01),
-                                      _mm_set1_pd(1.48753612908506148525e-02),
-                                      _mm_set1_pd(7.86869131145613259100e-04), 
-                                      _mm_set1_pd(1.84631831751005468180e-05),
-                                      _mm_set1_pd(1.42151175831644588870e-07),
-                                      _mm_set1_pd(2.04426310338993978564e-15)};
+		           
                           __m128d const1 = _mm_set1_pd(0.180625e+00);
                           __m128d const2 = _mm_set1_pd(1.6e+00);
                           __m128d split1 = _mm_set1_pd(0.425e+00);
@@ -1028,8 +1045,13 @@ SOFTWARE.
                           q = _mm_sub_pd(p,C05);
                           if(_mm_cmp_pd_mask(q,split1,_CMP_LE_OQ)) {
                              r = _mm_sub_pd(const1,_mm_mul_pd(q,q));
-                             t0= vpoly_eval_xmm2r8(8,a,r);
-                             t1= vpoly_eval_xmm2r8(8,b,r);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                               
+                             t0= vpoly_eval_xmm2r8(16,normal_01_cdf_inv_xmm2r8_a,r);
+                             t1= vpoly_eval_xmm2r8(16,normal_01_cdf_inv_xmm2r8_b,r);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                             t0= vpoly_eval_xmm2r8(8,normal_01_cdf_inv_xmm2r8_a,r);
+                             t1= vpoly_eval_xmm2r8(8,normal_01_cdf_inv_xmm2r8_b,r);
+#endif                             
                              x = _mm_div_pd(_mm_mul_pd(q,t0),t1);
                           } 
                           else {
@@ -1045,10 +1067,17 @@ SOFTWARE.
                                 const __mmask8 m = _mm_cmp_pd_mask(r,split2,_CMP_LE_OQ);
                                 r                = _mm_mask_blend_pd(m,_mm_sub_pd(r,split2),
                                                                           _mm_sub_pd(r,const2));
-                                t0               = _mm_div_pd(vpoly_eval_xmm2r8(8,c,r),
-                                                                 vpoly_eval_xmm2r8(8,d,r));
-                                t1               = _mm_div_pd(vpoly_eval_xmm2r8(8,e,r),
-                                                                 vpoly_eval_xmm2r8(8,f,r));
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                                                                            
+                                t0               = _mm_div_pd(vpoly_eval_xmm2r8(16,normal_01_cdf_inv_xmm2r8_c,r),
+                                                                 vpoly_eval_xmm2r8(16,normal_01_cdf_inv_xmm2r8_d,r));
+                                t1               = _mm_div_pd(vpoly_eval_xmm2r8(16,normal_01_cdf_inv_xmm2r8_e,r),
+                                                                 vpoly_eval_xmm2r8(16,normal_01_cdf_inv_xmm2r8_f,r));
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                t0               = _mm_div_pd(vpoly_eval_xmm2r8(8,normal_01_cdf_inv_xmm2r8_c,r),
+                                                                 vpoly_eval_xmm2r8(8,normal_01_cdf_inv_xmm2r8_d,r));
+                                t1               = _mm_div_pd(vpoly_eval_xmm2r8(8,normal_01_cdf_inv_xmm2r8_e,r),
+                                                                 vpoly_eval_xmm2r8(8,normal_01_cdf_inv_xmm2r8_f,r));
+#endif                                                                 
                                 x                = _mm_mask_blend_pd(m,t1,t0);      
                              }
                              if(_mm_cmp_pd_mask(q,C0,_CMP_LT_OQ)) x = negate_xmm2r8(x);
