@@ -1592,45 +1592,7 @@ SOFTWARE.
 		    
 		     
 		      __m128  bessesl_i0_xmm4r4(const __m128 arg) {
-                            __attribute__((section(".rodata")))
-                            __attribute__((aligned(16))) static __m128 p[15] = {_mm_set1_ps(-5.2487866627945699800E-18f),
-                                                                      _mm_set1_ps(-1.5982226675653184646E-14f), 
-                                                                      _mm_set1_ps(-2.6843448573468483278E-11f), 
-                                                                      _mm_set1_ps(-3.0517226450451067446E-08f), 
-                                                                      _mm_set1_ps(-2.5172644670688975051E-05f), 
-                                                                      _mm_set1_ps(-1.5453977791786851041E-02f), 
-                                                                      _mm_set1_ps(-7.0935347449210549190E+00f), 
-                                                                      _mm_set1_ps(-2.4125195876041896775E+03f), 
-                                                                      _mm_set1_ps(-5.9545626019847898221E+05f), 
-                                                                      _mm_set1_ps(-1.0313066708737980747E+08f), 
-                                                                      _mm_set1_ps(-1.1912746104985237192E+10f), 
-                                                                      _mm_set1_ps(-8.4925101247114157499E+11f), 
-                                                                      _mm_set1_ps(-3.2940087627407749166E+13f), 
-                                                                      _mm_set1_ps(-5.5050369673018427753E+14f), 
-                                                                      _mm_set1_ps(-2.2335582639474375249E+15f)};
-                            __attribute__((section(".rodata")))
-			    __attribute__((aligned(16))) static __m128 pp[8] = {_mm_set1_ps(-3.9843750000000000000E-01f), 
-                                                                      _mm_set1_ps(2.9205384596336793945E+00f), 
-                                                                      _mm_set1_ps(-2.4708469169133954315E+00f), 
-                                                                      _mm_set1_ps(4.7914889422856814203E-01f), 
-                                                                      _mm_set1_ps(-3.7384991926068969150E-03f), 
-                                                                      _mm_set1_ps(-2.6801520353328635310E-03f), 
-                                                                      _mm_set1_ps(9.9168777670983678974E-05f), 
-                                                                      _mm_set1_ps(-2.1877128189032726730E-06f)};
-                            __attribute__((section(".rodata")))
-			    __attribute__((aligned(16))) static __m128 q[5]  = {_mm_set1_ps(-3.7277560179962773046E+03f), 
-                                                                      _mm_set1_ps(6.5158506418655165707E+06f), 
-                                                                      _mm_set1_ps(-6.5626560740833869295E+09f), 
-                                                                      _mm_set1_ps(3.7604188704092954661E+12f), 
-                                                                      _mm_set1_ps(-9.7087946179594019126E+14f)};
-                            __attribute__((section(".rodata")))
-			    __attribute__((aligned(16))) static __m128 qq[7] = {_mm_set1_ps(-3.1446690275135491500E+01f), 
-                                                                      _mm_set1_ps(8.5539563258012929600E+01f), 
-                                                                      _mm_set1_ps(-6.0228002066743340583E+01f), 
-                                                                      _mm_set1_ps(1.3982595353892851542E+01f), 
-                                                                      _mm_set1_ps(-1.1151759188741312645E+00f), 
-                                                                      _mm_set1_ps(3.2547697594819615062E-02f), 
-                                                                      _mm_set1_ps(-5.5194330231005480228E-04f)};
+                            
 			    const __m128 rec15                    =  _mm_set1_ps(6.6666666666666666666E-02f);
 			    const __m128 xmax                     =  _mm_set1_ps(91.9E+00f);
 			    const __m128 exp40                    =  _mm_set1_ps(2.353852668370199854E+17f);
@@ -1648,27 +1610,51 @@ SOFTWARE.
 			    }
 			    else if(_mm_cmp_ps_mask(x,_15,_CMP_LT_OQ)) {
                                xx   = _mm_mul_ps(x,x);
-			       sump = p[0];
-			       sump = _mm_fmadd_ps(sump,xx,p[1]);
-			       sump = _mm_fmadd_ps(sump,xx,p[2]);
-			       sump = _mm_fmadd_ps(sump,xx,p[3]);
-			       sump = _mm_fmadd_ps(sump,xx,p[4]);
-			       sump = _mm_fmadd_ps(sump,xx,p[5]);
-			       sump = _mm_fmadd_ps(sump,xx,p[6]);
-			       sump = _mm_fmadd_ps(sump,xx,p[7]);
-			       sump = _mm_fmadd_ps(sump,xx,p[8]);
-			       sump = _mm_fmadd_ps(sump,xx,p[9]);
-			       sump = _mm_fmadd_ps(sump,xx,p[10]);
-			       sump = _mm_fmadd_ps(sump,xx,p[11]);
-			       sump = _mm_fmadd_ps(sump,xx,p[12]);
-			       sump = _mm_fmadd_ps(sump,xx,p[13]);
-			       sump = _mm_fmadd_ps(sump,xx,p[14]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                                    
+			       sump = *(__m128*)&bessel_i0_xmm4r4_p[4*0];
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i0_xmm4r4_p[4*1]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i0_xmm4r4_p[4*2]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i0_xmm4r4_p[4*3]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i0_xmm4r4_p[4*4]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i0_xmm4r4_p[4*5]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i0_xmm4r4_p[4*6]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i0_xmm4r4_p[4*7]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i0_xmm4r4_p[4*8]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i0_xmm4r4_p[4*9]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i0_xmm4r4_p[4*10]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i0_xmm4r4_p[4*11]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i0_xmm4r4_p[4*12]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i0_xmm4r4_p[4*13]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i0_xmm4r4_p[4*14]);
 			       xx   = _mm_sub_ps(xx,_225);
-			       const __m128 xxq0 = _mm_add_ps(xx,q[0]);
-			       const __m128 xxq1 = _mm_add_ps(xx,q[1]);
-			       const __m128 xxq2 = _mm_add_ps(xx,q[2]);
-			       const __m128 xxq3 = _mm_add_ps(xx,q[3]);
-			       const __m128 xxq4 = _mm_add_ps(xx,q[4]);
+			       const __m128 xxq0 = _mm_add_ps(xx,*(__m128*)&bessel_i0_xmm4r4_q[4*0]);
+			       const __m128 xxq1 = _mm_add_ps(xx,*(__m128*)&bessel_i0_xmm4r4_q[4*1]);
+			       const __m128 xxq2 = _mm_add_ps(xx,*(__m128*)&bessel_i0_xmm4r4_q[4*2]);
+			       const __m128 xxq3 = _mm_add_ps(xx,*(__m128*)&bessel_i0_xmm4r4_q[4*3]);
+			       const __m128 xxq4 = _mm_add_ps(xx,*(__m128*)&bessel_i0_xmm4r4_q[4*4]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                               sump = bessel_i0_xmm4r4_p[0];
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i0_xmm4r4_p[1]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i0_xmm4r4_p[2]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i0_xmm4r4_p[3]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i0_xmm4r4_p[4]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i0_xmm4r4_p[5]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i0_xmm4r4_p[6]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i0_xmm4r4_p[7]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i0_xmm4r4_p[8]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i0_xmm4r4_p[9]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i0_xmm4r4_p[10]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i0_xmm4r4_p[11]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i0_xmm4r4_p[12]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i0_xmm4r4_p[13]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i0_xmm4r4_p[14]);
+			       xx   = _mm_sub_ps(xx,_225);
+			       const __m128 xxq0 = _mm_add_ps(xx,bessel_i0_xmm4r4_q[0]);
+			       const __m128 xxq1 = _mm_add_ps(xx,bessel_i0_xmm4r4_q[1]);
+			       const __m128 xxq2 = _mm_add_ps(xx,bessel_i0_xmm4r4_q[2]);
+			       const __m128 xxq3 = _mm_add_ps(xx,bessel_i0_xmm4r4_q[3]);
+			       const __m128 xxq4 = _mm_add_ps(xx,bessel_i0_xmm4r4_q[4]);
+#endif			       
 			       sumq = _mm_mul_ps(xxq0,
 			                        _mm_mul_ps(xxq1,
 						          _mm_mul_ps(xxq2,
@@ -1682,19 +1668,35 @@ SOFTWARE.
 				    }
 				    else {
                                            xx = _mm_sub_ps(_mm_div_ps(_1,x),rec15);
-					   const __m128 t0 = _mm_fmadd_ps(pp[0],xx,pp[1]);
-					   const __m128 c0 = _mm_fmadd_ps(_mm_add_ps(xx,qq[0]),xx,qq[1]);
-					   const __m128 t1 = _mm_fmadd_ps(t0,xx,pp[2]);
-					   const __m128 c1 = _mm_fmadd_ps(c0,xx,qq[2]);
-					   const __m128 t2 = _mm_fmadd_ps(t1,xx,pp[3]);
-					   const __m128 c2 = _mm_fmadd_ps(c1,xx,qq[3]);
-					   const __m128 t3 = _mm_fmadd_ps(t2,xx,pp[4]);
-					   const __m128 c3 = _mm_fmadd_ps(c2,xx,qq[4]);
-					   const __m128 t4 = _mm_fmadd_ps(t3,xx,pp[5]);
-					   const __m128 c4 = _mm_fmadd_ps(c3,xx,qq[5]);
-					   const __m128 t5 = _mm_fmadd_ps(t4,xx,pp[6]);
-					   const __m128 c5 = _mm_fmadd_ps(c4,xx,qq[6]);
-					   const __m128 t6 = _mm_fmadd_ps(t5,xx,pp[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                                             
+					   const __m128 t0 = _mm_fmadd_ps(*(__m128*)&bessel_i0_xmm4r4_pp[4*0],xx,*(__m128*)&bessel_i0_xmm4r4_pp[4*1]);
+					   const __m128 c0 = _mm_fmadd_ps(_mm_add_ps(xx,*(__m128*)&bessel_i0_xmm4r4_qq[4*0]),xx,*(__m128*)&bessel_i0_xmm4r4_qq[4*1]);
+					   const __m128 t1 = _mm_fmadd_ps(t0,xx,*(__m128*)&bessel_i0_xmm4r4_pp[4*2]);
+					   const __m128 c1 = _mm_fmadd_ps(c0,xx,*(__m128*)&bessel_i0_xmm4r4_qq[4*2]);
+					   const __m128 t2 = _mm_fmadd_ps(t1,xx,*(__m128*)&bessel_i0_xmm4r4_pp[4*3]);
+					   const __m128 c2 = _mm_fmadd_ps(c1,xx,*(__m128*)&bessel_i0_xmm4r4_qq[4*3]);
+					   const __m128 t3 = _mm_fmadd_ps(t2,xx,*(__m128*)&bessel_i0_xmm4r4_pp[4*4]);
+					   const __m128 c3 = _mm_fmadd_ps(c2,xx,*(__m128*)&bessel_i0_xmm4r4_qq[4*4]);
+					   const __m128 t4 = _mm_fmadd_ps(t3,xx,*(__m128*)&bessel_i0_xmm4r4_pp[4*5]);
+					   const __m128 c4 = _mm_fmadd_ps(c3,xx,*(__m128*)&bessel_i0_xmm4r4_qq[4*5]);
+					   const __m128 t5 = _mm_fmadd_ps(t4,xx,*(__m128*)&bessel_i0_xmm4r4_pp[4*6]);
+					   const __m128 c5 = _mm_fmadd_ps(c4,xx,*(__m128*)&bessel_i0_xmm4r4_qq[4*6]);
+					   const __m128 t6 = _mm_fmadd_ps(t5,xx,*(__m128*)&bessel_i0_xmm4r4_pp[4*7]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                           const __m128 t0 = _mm_fmadd_ps(bessel_i0_xmm4r4_pp[0],xx,bessel_i0_xmm4r4_pp[1]);
+					   const __m128 c0 = _mm_fmadd_ps(_mm_add_ps(xx,bessel_i0_xmm4r4_qq[0]),xx,bessel_i0_xmm4r4_qq[1]);
+					   const __m128 t1 = _mm_fmadd_ps(t0,xx,bessel_i0_xmm4r4_pp[2]);
+					   const __m128 c1 = _mm_fmadd_ps(c0,xx,bessel_i0_xmm4r4_qq[2]);
+					   const __m128 t2 = _mm_fmadd_ps(t1,xx,bessel_i0_xmm4r4_pp[3]);
+					   const __m128 c2 = _mm_fmadd_ps(c1,xx,bessel_i0_xmm4r4_qq[3]);
+					   const __m128 t3 = _mm_fmadd_ps(t2,xx,bessel_i0_xmm4r4_pp[4]);
+					   const __m128 c3 = _mm_fmadd_ps(c2,xx,bessel_i0_xmm4r4_qq[4]);
+					   const __m128 t4 = _mm_fmadd_ps(t3,xx,bessel_i0_xmm4r4_pp[5]);
+					   const __m128 c4 = _mm_fmadd_ps(c3,xx,bessel_i0_xmm4r4_qq[5]);
+					   const __m128 t5 = _mm_fmadd_ps(t4,xx,bessel_i0_xmm4r4_pp[6]);
+					   const __m128 c5 = _mm_fmadd_ps(c4,xx,bessel_i0_xmm4r4_qq[6]);
+					   const __m128 t6 = _mm_fmadd_ps(t5,xx,bessel_i0_xmm4r4_pp[7]);
+#endif					   
 					   sump             = t6;
 					   sumq             = c5;
 					   value            = _mm_div_ps(sump,sumq);
@@ -1703,8 +1705,13 @@ SOFTWARE.
 					   a                = _mm_mask_blend_ps(m,_mm_exp_ps(_mm_sub_ps(x,_40)),
 					                                             _mm_exp_ps(x));
    					   b                = _mm_mask_blend_ps(m,exp40,_1);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)          					   
 					   const __m128 tmp = _mm_sub_ps(_mm_mul_ps(value,a),
-					                                    _mm_mul_ps(pp[0],a));
+					                                    _mm_mul_ps(*(__m128*)&bessel_i0_xmm4r4_pp[4*0],a));
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                                           const __m128 tmp = _mm_sub_ps(_mm_mul_ps(value,a),
+					                                    _mm_mul_ps(bessel_i0_xmm4r4_pp[0],a));
+#endif					                                    
 					   value            = _mm_mul_ps(_mm_div_ps(tmp,_mm_sqrt_ps(x)),b);
 				    }
 			    }
