@@ -764,7 +764,16 @@ module sse_cvec2
      end function conjugate
      
 
-
+     pure function cnorm_xmm2c8(x) result(cn) 
+#elif defined __ICC || defined __INTEL_COMPILER
+           !DIR$ ATTRIBUTES INLINE :: cnorm_xmm2c8
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: cnorm_xmm2c8
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cnorm_xmm2c8
+#endif
+            type(XMM2c8_t),  intent(in) :: x
+            type(XMM2r8_t) :: cn
+            cn.v = sqrt(x.re*x.re+x.im*x.im)
+       end function cnorm_xmm2c8
 
 
 
