@@ -1920,44 +1920,7 @@ SOFTWARE.
 		    
                    
                           __m128 bessel_i1_xmm4r4(const __m128 arg) {
-                           __attribute__((section(".rodata")))
-                           __attribute__((aligned(16))) static __m128  p[15] = {_mm_set1_ps(-1.9705291802535139930E-19f), 
-                                                                      _mm_set1_ps(-6.5245515583151902910E-16f), 
-                                                                      _mm_set1_ps(-1.1928788903603238754E-12f), 
-                                                                      _mm_set1_ps(-1.4831904935994647675E-09f), 
-                                                                      _mm_set1_ps(-1.3466829827635152875E-06f), 
-                                                                      _mm_set1_ps(-9.1746443287817501309E-04f), 
-                                                                      _mm_set1_ps(-4.7207090827310162436E-01f), 
-                                                                      _mm_set1_ps(-1.8225946631657315931E+02f), 
-                                                                      _mm_set1_ps(-5.1894091982308017540E+04f), 
-                                                                      _mm_set1_ps(-1.0588550724769347106E+07f), 
-                                                                      _mm_set1_ps(-1.4828267606612366099E+09f), 
-                                                                      _mm_set1_ps(-1.3357437682275493024E+11f), 
-                                                                      _mm_set1_ps(-6.9876779648010090070E+12f), 
-                                                                      _mm_set1_ps(-1.7732037840791591320E+14f), 
-                                                                      _mm_set1_ps(-1.4577180278143463643E+15f)};
-                           __attribute__((section(".rodata")))
-			   __attribute__((aligned(16))) static __m128 pp[8]  = {_mm_set1_ps(-6.0437159056137600000E-02f), 
-                                                                      _mm_set1_ps(4.5748122901933459000E-01f), 
-                                                                      _mm_set1_ps(-4.2843766903304806403E-01f), 
-                                                                      _mm_set1_ps(9.7356000150886612134E-02f), 
-                                                                      _mm_set1_ps(-3.2457723974465568321E-03f), 
-                                                                      _mm_set1_ps(-3.6395264712121795296E-04f), 
-                                                                      _mm_set1_ps(1.6258661867440836395E-05f), 
-                                                                      _mm_set1_ps(-3.6347578404608223492E-07f)};
-                           __attribute__((section(".rodata")))
-			   __attribute__((aligned(16))) static __m128 q[5]   = {_mm_set1_ps(-4.0076864679904189921E+03f), 
-                                                                      _mm_set1_ps(7.4810580356655069138E+06f), 
-                                                                      _mm_set1_ps(-8.0059518998619764991E+09f), 
-                                                                      _mm_set1_ps(4.8544714258273622913E+12f), 
-                                                                      _mm_set1_ps(-1.3218168307321442305E+15f)};
-                          __attribute__((section(".rodata")))
-			   __attribute__((aligned(16))) static __m128 qq[6]  = {_mm_set1_ps(-3.8806586721556593450E+00f), 
-                                                                      _mm_set1_ps(3.2593714889036996297E+00f), 
-                                                                      _mm_set1_ps(-8.5017476463217924408E-01f), 
-                                                                      _mm_set1_ps(7.4212010813186530069E-02f), 
-                                                                      _mm_set1_ps(-2.2835624489492512649E-03f), 
-                                                                      _mm_set1_ps(3.7510433111922824643E-05f)};
+                         
 			   const __m128 exp40                     =  _mm_set1_ps(2.353852668370199854E+17f);
 			   const __m128 _40                       =  _mm_set1_ps(40.0f);
 			   const __m128 _1_2                      =  _mm_set1_ps(0.5f);
@@ -1979,26 +1942,49 @@ SOFTWARE.
 			   }
 			   else if(_mm_cmp_ps_mask(x,_15,_CMP_LT_OQ)) {
                                xx   = _mm_mul_ps(x,x);
-			       sump = p[0];
-			       sump = _mm_fmadd_ps(sump,xx,p[1]);
-			       sump = _mm_fmadd_ps(sump,xx,p[2]);
-			       sump = _mm_fmadd_ps(sump,xx,p[3]);
-			       sump = _mm_fmadd_ps(sump,xx,p[4]);
-			       sump = _mm_fmadd_ps(sump,xx,p[5]);
-			       sump = _mm_fmadd_ps(sump,xx,p[6]);
-			       sump = _mm_fmadd_ps(sump,xx,p[7]);
-			       sump = _mm_fmadd_ps(sump,xx,p[8]);
-			       sump = _mm_fmadd_ps(sump,xx,p[9]);
-			       sump = _mm_fmadd_ps(sump,xx,p[10]);
-			       sump = _mm_fmadd_ps(sump,xx,p[11]);
-			       sump = _mm_fmadd_ps(sump,xx,p[12]);
-			       sump = _mm_fmadd_ps(sump,xx,p[13]);
-			       sump = _mm_fmadd_ps(sump,xx,p[14]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                                  
+			       sump = *(__m128*)&bessel_i1_xmm4r4_p[4*0];
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i1_xmm4r4_p[4*1]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i1_xmm4r4_p[4*2]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i1_xmm4r4_p[4*3]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i1_xmm4r4_p[4*4]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i1_xmm4r4_p[4*5]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i1_xmm4r4_p[4*6]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i1_xmm4r4_p[4*7]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i1_xmm4r4_p[4*8]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i1_xmm4r4_p[4*9]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i1_xmm4r4_p[4*10]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i1_xmm4r4_p[4*11]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i1_xmm4r4_p[4*12]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i1_xmm4r4_p[4*13]);
+			       sump = _mm_fmadd_ps(sump,xx,*(__m128*)&bessel_i1_xmm4r4_p[4*14]);
 			       xx   = _mm_sub_ps(xx,_225);
-			       const __m128 t0 = _mm_fmadd_ps(_mm_add_ps(xx,q[0]),xx,q[1]);
-			       const __m128 t1 = _mm_fmadd_ps(t0,xx,q[2]);
-			       const __m128 t2 = _mm_fmadd_ps(t1,xx,q[3]);
-			       const __m128 t3 = _mm_fmadd_ps(t2,xx,q[4]);
+			       const __m128 t0 = _mm_fmadd_ps(_mm_add_ps(xx,*(__m128*)&bessel_i1_xmm4r4_q[4*0]),xx,*(__m128*)&bessel_i1_xmm4r4_q[4*1]);
+			       const __m128 t1 = _mm_fmadd_ps(t0,xx,*(__m128*)&bessel_i1_xmm4r4_q[4*2]);
+			       const __m128 t2 = _mm_fmadd_ps(t1,xx,*(__m128*)&bessel_i1_xmm4r4_q[4*3]);
+			       const __m128 t3 = _mm_fmadd_ps(t2,xx,*(__m128*)&bessel_i1_xmm4r4_q[4*4]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                               sump = bessel_i1_xmm4r4_p[0];
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i1_xmm4r4_p[1]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i1_xmm4r4_p[2]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i1_xmm4r4_p[3]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i1_xmm4r4_p[4]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i1_xmm4r4_p[5]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i1_xmm4r4_p[6]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i1_xmm4r4_p[7]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i1_xmm4r4_p[8]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i1_xmm4r4_p[9]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i1_xmm4r4_p[10]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i1_xmm4r4_p[11]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i1_xmm4r4_p[12]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i1_xmm4r4_p[13]);
+			       sump = _mm_fmadd_ps(sump,xx,bessel_i1_xmm4r4_p[14]);
+			       xx   = _mm_sub_ps(xx,_225);
+			       const __m128 t0 = _mm_fmadd_ps(_mm_add_ps(xx,bessel_i1_xmm4r4_q[0]),xx,bessel_i1_xmm4r4_q[1]);
+			       const __m128 t1 = _mm_fmadd_ps(t0,xx,bessel_i1_xmm4r4_q[2]);
+			       const __m128 t2 = _mm_fmadd_ps(t1,xx,bessel_i1_xmm4r4_q[3]);
+			       const __m128 t3 = _mm_fmadd_ps(t2,xx,bessel_i1_xmm4r4_q[4]);
+#endif			       
 			       sumq             = t3;
 			       value            = _mm_mul_ps(_mm_div_ps(sump,sumq),x);
 			   }
@@ -2007,19 +1993,35 @@ SOFTWARE.
 			   }
 			   else {
                                xx               = _mm_sub_ps(_mm_div_ps(_1,x),rec15);
-			       const __m128 t0 = _mm_fmadd_ps(pp[0],xx,pp[1]);
-			       const __m128 c0 = _mm_fmadd_ps(_mm_add_ps(xx,qq[0]),xx,qq[1]);
-			       const __m128 t1 = _mm_fmadd_ps(t0,xx,pp[2]);
-			       const __m128 c1 = _mm_fmadd_ps(c0,xx,qq[2]);
-			       const __m128 t2 = _mm_fmadd_ps(t1,xx,pp[3]);
-			       const __m128 c2 = _mm_fmadd_ps(c1,xx,qq[3]);
-			       const __m128 t3 = _mm_fmadd_ps(t2,xx,pp[4]);
-			       const __m128 c3 = _mm_fmadd_ps(c2,xx,qq[4]);
-			       const __m128 t4 = _mm_fmadd_ps(t3,xx,pp[5]);
-			       const __m128 c4 = _mm_fmadd_ps(c3,xx,qq[5]);
-			       const __m128 t5 = _mm_fmadd_ps(t4,xx,pp[6]);
-			       const __m128 c5 = _mm_fmadd_ps(c4,xx,qq[6]);
-			       const __m128 t6 = _mm_fmadd_ps(t5,xx,pp[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                                 
+			       const __m128 t0 = _mm_fmadd_ps(*(__m128*)&bessel_i1_xmm4r4_pp[4*0],xx,*(__m128*)&bessel_i1_xmm4r4_pp[4*1]);
+			       const __m128 c0 = _mm_fmadd_ps(_mm_add_ps(xx,*(__m128*)&bessel_i1_xmm4r4_qq[4*0]),xx,*(__m128*)&bessel_i1_xmm4r4_qq[4*1]);
+			       const __m128 t1 = _mm_fmadd_ps(t0,xx,*(__m128*)&bessel_i1_xmm4r4_pp[4*2]);
+			       const __m128 c1 = _mm_fmadd_ps(c0,xx,*(__m128*)&bessel_i1_xmm4r4_qq[4*2]);
+			       const __m128 t2 = _mm_fmadd_ps(t1,xx,*(__m128*)&bessel_i1_xmm4r4_pp[4*3]);
+			       const __m128 c2 = _mm_fmadd_ps(c1,xx,*(__m128*)&bessel_i1_xmm4r4_qq[4*3]);
+			       const __m128 t3 = _mm_fmadd_ps(t2,xx,*(__m128*)&bessel_i1_xmm4r4_pp[4*4]);
+			       const __m128 c3 = _mm_fmadd_ps(c2,xx,*(__m128*)&bessel_i1_xmm4r4_qq[4*4]);
+			       const __m128 t4 = _mm_fmadd_ps(t3,xx,*(__m128*)&bessel_i1_xmm4r4_pp[4*5]);
+			       const __m128 c4 = _mm_fmadd_ps(c3,xx,*(__m128*)&bessel_i1_xmm4r4_qq[4*5]);
+			       const __m128 t5 = _mm_fmadd_ps(t4,xx,*(__m128*)&bessel_i1_xmm4r4_pp[4*6]);
+			       const __m128 c5 = _mm_fmadd_ps(c4,xx,*(__m128*)&bessel_i1_xmm4r4_qq[4*6]);
+			       const __m128 t6 = _mm_fmadd_ps(t5,xx,*(__m128*)&bessel_i1_xmm4r4_pp[4*7]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                               const __m128 t0 = _mm_fmadd_ps(bessel_i1_xmm4r4_pp[0],xx,bessel_i1_xmm4r4_pp[1]);
+			       const __m128 c0 = _mm_fmadd_ps(_mm_add_ps(xx,bessel_i1_xmm4r4_qq[0]),xx,bessel_i1_xmm4r4_qq[1]);
+			       const __m128 t1 = _mm_fmadd_ps(t0,xx,bessel_i1_xmm4r4_pp[2]);
+			       const __m128 c1 = _mm_fmadd_ps(c0,xx,bessel_i1_xmm4r4_qq[2]);
+			       const __m128 t2 = _mm_fmadd_ps(t1,xx,bessel_i1_xmm4r4_pp[3]);
+			       const __m128 c2 = _mm_fmadd_ps(c1,xx,bessel_i1_xmm4r4_qq[3]);
+			       const __m128 t3 = _mm_fmadd_ps(t2,xx,bessel_i1_xmm4r4_pp[4]);
+			       const __m128 c3 = _mm_fmadd_ps(c2,xx,bessel_i1_xmm4r4_qq[4]);
+			       const __m128 t4 = _mm_fmadd_ps(t3,xx,bessel_i1_xmm4r4_pp[5]);
+			       const __m128 c4 = _mm_fmadd_ps(c3,xx,bessel_i1_xmm4r4_qq[5]);
+			       const __m128 t5 = _mm_fmadd_ps(t4,xx,bessel_i1_xmm4r4_pp[6]);
+			       const __m128 c5 = _mm_fmadd_ps(c4,xx,bessel_i1_xmm4r4_qq[6]);
+			       const __m128 t6 = _mm_fmadd_ps(t5,xx,bessel_i1_xmm4r4_pp[7]);
+#endif			       
 			       sump             = t6;
 			       sumq             = c5;
 			       value            = _mm_div_ps(sump,sumq);
@@ -4296,7 +4298,7 @@ SOFTWARE.
 !
 */
 
-
+/*
 		      __m128d owen_tfunc_xmm2r8(const __m128d h,
 		                                const __m128d a) {
 		             
@@ -4424,7 +4426,8 @@ SOFTWARE.
 		             return (tfn);
 		    }   
 		                                           
-                    
+ */
+/*                   
                     
 		      __m128 owen_tfunc_xmm4r4(const __m128 h,
 		                                const __m128 a) {
@@ -4550,6 +4553,7 @@ SOFTWARE.
 		             }
 		             return (tfn);
 		    }  
+*/
 		                                               
 /*                   
 !*****************************************************************************80
@@ -4605,35 +4609,7 @@ SOFTWARE.
                             
                       __m128d 
                       gamma_xmm2r8(const __m128d x) {
-                         __attribute__((section(".rodata")))
-                         __ATTR_ALIGN__(16) static __m128d  c[7] = {
-                                        _mm_set1_pd(-1.910444077728e-03), 
-                                        _mm_set1_pd(8.4171387781295e-04), 
-                                        _mm_set1_pd(-5.952379913043012e-04), 
-                                        _mm_set1_pd(7.93650793500350248e-04),
-                                        _mm_set1_pd(-2.777777777777681622553e-03),
-                                        _mm_set1_pd(8.333333333333333331554247e-02),
-                                        _mm_set1_pd(5.7083835261e-03)};
-                        __attribute__((section(".rodata")))
-                        __ATTR_ALIGN__(16) static __m128d  p[8]  = {
-                                        _mm_set1_pd(-1.71618513886549492533811e+00),
-                                        _mm_set1_pd(2.47656508055759199108314e+01),
-                                        _mm_set1_pd(-3.79804256470945635097577e+02),
-                                        _mm_set1_pd(6.29331155312818442661052e+02),
-                                        _mm_set1_pd(8.66966202790413211295064e+02), 
-                                        _mm_set1_pd(-3.14512729688483675254357e+04), 
-                                        _mm_set1_pd(-3.61444134186911729807069e+04),
-                                        _mm_set1_pd(6.64561438202405440627855e+04)};   
-                       __attribute__((section(".rodata")))       
-                       __ATTR_ALIGN__(16) static __m128d  q[8]   = {
-                                        _mm_set1_pd(-3.08402300119738975254353e+01), 
-                                        _mm_set1_pd(3.15350626979604161529144e+02),
-                                        _mm_set1_pd(-1.01515636749021914166146e+03),
-                                        _mm_set1_pd(-3.10777167157231109440444e+03),
-                                        _mm_set1_pd(2.25381184209801510330112e+04),
-                                        _mm_set1_pd(4.75584627752788110767815e+03),
-                                        _mm_set1_pd(-1.34659959864969306392456e+05),
-                                        _mm_set1_pd(1.15132259675553483497211e+05)};
+                        
                        __m128d pi                          = 
                                         _mm_set1_pd(3.1415926535897932384626434e+00);
                        __m128d eps                         =
@@ -4710,22 +4686,41 @@ SOFTWARE.
                           //  Evaluate approximation for 1.0 < argument < 2.0.
                           xnum = zero;
                           xden = one;
-                          xnum = _mm_mul_pd(_mm_add_pd(xnum,p[0]),z);
-                          xden = _mm_fmadd_pd(xden,z,q[0]);
-                          xnum = _mm_mul_pd(_mm_add_pd(xnum,p[1]),z);
-                          xden = _mm_fmadd_pd(xden,z,q[1]);
-                          xnum = _mm_mul_pd(_mm_add_pd(xnum,p[2]),z);
-                          xden = _mm_fmadd_pd(xden,z,q[2]);
-                          xnum = _mm_mul_pd(_mm_add_pd(xnum,p[3]),z);
-                          xden = _mm_fmadd_pd(xden,z,q[3]);
-                          xnum = _mm_mul_pd(_mm_add_pd(xnum,p[4]),z);
-                          xden = _mm_fmadd_pd(xden,z,q[4]);
-                          xnum = _mm_mul_pd(_mm_add_pd(xnum,p[5]),z);
-                          xden = _mm_fmadd_pd(xden,z,q[5]);
-                          xnum = _mm_mul_pd(_mm_add_pd(xnum,p[6]),z);
-                          xden = _mm_fmadd_pd(xden,z,q[7]);
-                          xnum = _mm_mul_pd(_mm_add_pd(xnum,p[7]),z);
-                          xden = _mm_fmadd_pd(xden,z,q[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                               
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,*(__m128d*)&gamma_xmm2r8_p[2*0]),z);
+                          xden = _mm_fmadd_pd(xden,z,*(__m128d*)&gamma_xmm2r8_q[2*0]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,*(__m128d*)&gamma_xmm2r8_p[2*1]),z);
+                          xden = _mm_fmadd_pd(xden,z,*(__m128d*)&gamma_xmm2r8_q[2*1]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,*(__m128d*)&gamma_xmm2r8_p[2*2]),z);
+                          xden = _mm_fmadd_pd(xden,z,*(__m128d*)&gamma_xmm2r8_q[2*2]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,*(__m128d*)&gamma_xmm2r8_p[2*3]),z);
+                          xden = _mm_fmadd_pd(xden,z,*(__m128d*)&gamma_xmm2r8_q[2*3]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,*(__m128d*)&gamma_xmm2r8_p[2*4]),z);
+                          xden = _mm_fmadd_pd(xden,z,*(__m128d*)&gamma_xmm2r8_q[2*4]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,*(__m128d*)&gamma_xmm2r8_p[2*5]),z);
+                          xden = _mm_fmadd_pd(xden,z,*(__m128d*)&gamma_xmm2r8_q[2*5]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,*(__m128d*)&gamma_xmm2r8_p[2*6]),z);
+                          xden = _mm_fmadd_pd(xden,z,*(__m128d*)&gamma_xmm2r8_q[2*7]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,*(__m128d*)&gamma_xmm2r8_p[2*7]),z);
+                          xden = _mm_fmadd_pd(xden,z,*(__m128d*)&gamma_xmm2r8_q[2*7]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,gamma_xmm2r8_p[0]),z);
+                          xden = _mm_fmadd_pd(xden,z,gamma_xmm2r8_q[0]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,gamma_xmm2r8_p[1]),z);
+                          xden = _mm_fmadd_pd(xden,z,gamma_xmm2r8_q[1]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,gamma_xmm2r8_p[2]),z);
+                          xden = _mm_fmadd_pd(xden,z,gamma_xmm2r8_q[2]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,gamma_xmm2r8_p[3]),z);
+                          xden = _mm_fmadd_pd(xden,z,gamma_xmm2r8_q[3]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,gamma_xmm2r8_p[4]),z);
+                          xden = _mm_fmadd_pd(xden,z,gamma_xmm2r8_q[4]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,gamma_xmm2r8_p[5]),z);
+                          xden = _mm_fmadd_pd(xden,z,gamma_xmm2r8_q[5]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,gamma_xmm2r8_p[6]),z);
+                          xden = _mm_fmadd_pd(xden,z,gamma_xmm2r8_q[7]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,gamma_xmm2r8_p[7]),z);
+                          xden = _mm_fmadd_pd(xden,z,gamma_xmm2r8_q[7]);
+#endif                          
                           res  = _mm_add_pd(_mm_div_pd(xnum,xden),one);
                           // Adjust result for case  0.0 < argument < 1.0.
                           if(_mm_cmp_pd_mask(y1,y,_CMP_LT_OQ)) 
@@ -4761,13 +4756,23 @@ SOFTWARE.
                             //  Evaluate for 12.0 <= argument.
                             if(_mm_cmp_pd_mask(y,xbig,_CMP_LE_OQ)) {
                                ysq = _mm_mul_pd(y,y);
-                               sum = c[6];
-                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),c[0]);
-                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),c[1]);
-                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),c[2]);
-                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),c[3]);
-                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),c[4]);
-                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),c[5]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                                   
+                               sum = *(__m128d*)&gamma_xmm2r8_c[6];
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),*(__m128d*)&gamma_xmm2r8_c[0]);
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),*(__m128d*)&gamma_xmm2r8_c[1]);
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),*(__m128d*)&gamma_xmm2r8_c[2]);
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),*(__m128d*)&gamma_xmm2r8_c[3]);
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),*(__m128d*)&gamma_xmm2r8_c[4]);
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),*(__m128d*)&gamma_xmm2r8_c[5]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                               sum = gamma_xmm2r8_c[6];
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),gamma_xmm2r8_c[0]);
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),gamma_xmm2r8_c[1]);
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),gamma_xmm2r8_c[2]);
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),gamma_xmm2r8_c[3]);
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),gamma_xmm2r8_c[4]);
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),gamma_xmm2r8_c[5]);
+#endif                               
                                sum = _mm_sub_pd(_mm_div_pd(sum,y),
                                                    _mm_add_pd(y,sqrtpi));
                                sum = _mm_mul_pd(_mm_add_pd(sum,
@@ -4790,35 +4795,7 @@ SOFTWARE.
                        
                       __m128 
                       gamma_xmm4r4(const __m128 x) {
-                         __attribute__((section(".rodata")))
-                         __ATTR_ALIGN__(16) static __m128  c[7] = {
-                                        _mm_set1_ps(-1.910444077728e-03f), 
-                                        _mm_set1_ps(8.4171387781295e-04f), 
-                                        _mm_set1_ps(-5.952379913043012e-04f), 
-                                        _mm_set1_ps(7.93650793500350248e-04f),
-                                        _mm_set1_ps(-2.777777777777681622553e-03f),
-                                        _mm_set1_ps(8.333333333333333331554247e-02f),
-                                        _mm_set1_ps(5.7083835261e-03f)};
-                        __attribute__((section(".rodata")))
-                        __ATTR_ALIGN__(16) static __m128  p[8]  = {
-                                        _mm_set1_ps(-1.71618513886549492533811e+00f),
-                                        _mm_set1_ps(2.47656508055759199108314e+01f),
-                                        _mm_set1_ps(-3.79804256470945635097577e+02f),
-                                        _mm_set1_ps(6.29331155312818442661052e+02f),
-                                        _mm_set1_ps(8.66966202790413211295064e+02f), 
-                                        _mm_set1_ps(-3.14512729688483675254357e+04f), 
-                                        _mm_set1_ps(-3.61444134186911729807069e+04f),
-                                        _mm_set1_ps(6.64561438202405440627855e+04f)}; 
-                       __attribute__((section(".rodata")))         
-                       __ATTR_ALIGN__(16) static __m128  q[8]   = {
-                                        _mm_set1_ps(-3.08402300119738975254353e+01f), 
-                                        _mm_set1_ps(3.15350626979604161529144e+02f),
-                                        _mm_set1_ps(-1.01515636749021914166146e+03f),
-                                        _mm_set1_ps(-3.10777167157231109440444e+03f),
-                                        _mm_set1_ps(2.25381184209801510330112e+04f),
-                                        _mm_set1_ps(4.75584627752788110767815e+03f),
-                                        _mm_set1_ps(-1.34659959864969306392456e+05f),
-                                        _mm_set1_ps(1.15132259675553483497211e+05f)};
+                        
                        __m128 pi                          = 
                                         _mm_set1_ps(3.1415926535897932384626434e+00f);
                        __m128 eps                         =
@@ -4895,22 +4872,41 @@ SOFTWARE.
                           //  Evaluate approximation for 1.0 < argument < 2.0.
                           xnum = zero;
                           xden = one;
-                          xnum = _mm_mul_ps(_mm_add_ps(xnum,p[0]),z);
-                          xden = _mm_fmadd_ps(xden,z,q[0]);
-                          xnum = _mm_mul_ps(_mm_add_ps(xnum,p[1]),z);
-                          xden = _mm_fmadd_ps(xden,z,q[1]);
-                          xnum = _mm_mul_ps(_mm_add_ps(xnum,p[2]),z);
-                          xden = _mm_fmadd_ps(xden,z,q[2]);
-                          xnum = _mm_mul_ps(_mm_add_ps(xnum,p[3]),z);
-                          xden = _mm_fmadd_ps(xden,z,q[3]);
-                          xnum = _mm_mul_ps(_mm_add_ps(xnum,p[4]),z);
-                          xden = _mm_fmadd_ps(xden,z,q[4]);
-                          xnum = _mm_mul_ps(_mm_add_ps(xnum,p[5]),z);
-                          xden = _mm_fmadd_ps(xden,z,q[5]);
-                          xnum = _mm_mul_ps(_mm_add_ps(xnum,p[6]),z);
-                          xden = _mm_fmadd_ps(xden,z,q[7]);
-                          xnum = _mm_mul_ps(_mm_add_ps(xnum,p[7]),z);
-                          xden = _mm_fmadd_ps(xden,z,q[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                            
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,*(__m128*)&gamma_xmm4r4_p[4*0]),z);
+                          xden = _mm_fmadd_ps(xden,z,*(__m128*)&gamma_xmm4r4_q[4*0]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,*(__m128*)&gamma_xmm4r4_p[4*1]),z);
+                          xden = _mm_fmadd_ps(xden,z,*(__m128*)&gamma_xmm4r4_q[4*1]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,*(__m128*)&gamma_xmm4r4_p[4*2]),z);
+                          xden = _mm_fmadd_ps(xden,z,*(__m128*)&gamma_xmm4r4_q[4*2]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,*(__m128*)&gamma_xmm4r4_p[4*3]),z);
+                          xden = _mm_fmadd_ps(xden,z,*(__m128*)&gamma_xmm4r4_q[4*3]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,*(__m128*)&gamma_xmm4r4_p[4*4]),z);
+                          xden = _mm_fmadd_ps(xden,z,*(__m128*)&gamma_xmm4r4_q[4*4]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,*(__m128*)&gamma_xmm4r4_p[4*5]),z);
+                          xden = _mm_fmadd_ps(xden,z,*(__m128*)&gamma_xmm4r4_q[4*5]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,*(__m128*)&gamma_xmm4r4_p[4*6]),z);
+                          xden = _mm_fmadd_ps(xden,z,*(__m128*)&gamma_xmm4r4_q[4*7]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,*(__m128*)&gamma_xmm4r4_p[4*7]),z);
+                          xden = _mm_fmadd_ps(xden,z,*(__m128*)&gamma_xmm4r4_q[4*7]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,gamma_xmm4r4_p[0]),z);
+                          xden = _mm_fmadd_ps(xden,z,gamma_xmm4r4_q[0]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,gamma_xmm4r4_p[1]),z);
+                          xden = _mm_fmadd_ps(xden,z,gamma_xmm4r4_q[1]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,gamma_xmm4r4_p[2]),z);
+                          xden = _mm_fmadd_ps(xden,z,gamma_xmm4r4_q[2]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,gamma_xmm4r4_p[3]),z);
+                          xden = _mm_fmadd_ps(xden,z,gamma_xmm4r4_q[3]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,gamma_xmm4r4_p[4]),z);
+                          xden = _mm_fmadd_ps(xden,z,gamma_xmm4r4_q[4]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,gamma_xmm4r4_p[5]),z);
+                          xden = _mm_fmadd_ps(xden,z,gamma_xmm4r4_q[5]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,gamma_xmm4r4_p[6]),z);
+                          xden = _mm_fmadd_ps(xden,z,gamma_xmm4r4_q[7]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,gamma_xmm4r4_p[7]),z);
+                          xden = _mm_fmadd_ps(xden,z,gamma_xmm4r4_q[7]);
+#endif                          
                           res  = _mm_add_ps(_mm_div_ps(xnum,xden),one);
                           // Adjust result for case  0.0 < argument < 1.0.
                           if(_mm_cmp_ps_mask(y1,y,_CMP_LT_OQ)) 
@@ -4954,13 +4950,23 @@ SOFTWARE.
                             //  Evaluate for 12.0 <= argument.
                             if(_mm_cmp_ps_mask(y,xbig,_CMP_LE_OQ)) {
                                ysq = _mm_mul_ps(y,y);
-                               sum = c[6];
-                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),c[0]);
-                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),c[1]);
-                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),c[2]);
-                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),c[3]);
-                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),c[4]);
-                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),c[5]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                                   
+                               sum = *(__m128*)&gamma_xmm4r4_c[4*6];
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),*(__m128*)&gamma_xmm4r4_c[4*0]);
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),*(__m128*)&gamma_xmm4r4_c[4*1]);
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),*(__m128*)&gamma_xmm4r4_c[4*2]);
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),*(__m128*)&gamma_xmm4r4_c[4*3]);
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),*(__m128*)&gamma_xmm4r4_c[4*4]);
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),*(__m128*)&gamma_xmm4r4_c[4*5]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                               sum = gamma_xmm4r4_c[6];
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),gamma_xmm4r4_c[0]);
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),gamma_xmm4r4_c[1]);
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),gamma_xmm4r4_c[2]);
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),gamma_xmm4r4_c[3]);
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),gamma_xmm4r4_c[4]);
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),gamma_xmm4r4_c[5]);
+#endif                               
                                sum = _mm_sub_ps(_mm_div_ps(sum,y),
                                                    _mm_add_ps(y,sqrtpi));
 
