@@ -131,13 +131,13 @@ module mueller_types_avx
     !  Stokes Vector based on four 8-tuple SIMD real types.
     !==============================================================
 
-    type, public :: SVec4x8v8
+    type, public :: SVec4x8v4
        sequence
        type(YMM8r4_t) :: s0
        type(YMM8r4_t) :: s1
        type(YMM8r4_t) :: s2
        type(YMM8r4_t) :: s3
-    end type SVec4x8v18
+    end type SVec4x8v4
 
 
     !==============================================================
