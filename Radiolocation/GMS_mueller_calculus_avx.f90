@@ -43,8 +43,8 @@ module mueller_calculus_avx
      ! Tab:10,11 col - Type , function and subroutine code blocks.
      use mod_kinds,         only : i4, sp, dp
      use mod_vectypes,      only : YMM8r4_t, YMM4r8_t
-     use mod_avx512_cvec8,  only : YMM8c4
-     use mod_avx512_cvec4,  only : YMM4c8
+     use mod_avx_cvec8,  only : YMM8c4
+     use mod_avx_cvec4,  only : YMM4c8
      use mueller_types_avx
      implicit none
      public
@@ -341,7 +341,7 @@ module mueller_calculus_avx
           ! Locals
           type(YMM8r4_t), automatic :: v1,v2
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-          !DIR$ ATTRIBUTES ALIGN : 64 :: v1,v2
+          !dir$ attributes align : 32:: v1,v2
 #endif
           ! Exec code ....
           v1 = cnorm(jv.p)
@@ -361,7 +361,7 @@ module mueller_calculus_avx
            ! LOcals
            type(YMM8r4_t), automatic :: v1,v2
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-          !DIR$ ATTRIBUTES ALIGN : 64 :: v1,v2
+          !dir$ attributes align : 32:: v1,v2
 #endif
           ! Exec code ....
           v1.v = cabs_ymm8c4(jv.p)
@@ -381,7 +381,7 @@ module mueller_calculus_avx
           ! Locals
           type(YMM8r4_t), automatic :: v1,v2
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-          !DIR$ ATTRIBUTES ALIGN : 64 :: v1,v2
+          !dir$ attributes align : 32:: v1,v2
 #endif
           ! Exec code ....
           v1.v = carg_ymm8c4(jv.p)
@@ -643,7 +643,7 @@ module mueller_calculus_avx
           ! Locals
           type(YMM4r8_t), automatic :: v1,v2
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-          !DIR$ ATTRIBUTES ALIGN : 64 :: v1,v2
+          !dir$ attributes align : 32:: v1,v2
 #endif
           ! Exec code ....
           v1 = cnorm(jv.p)
@@ -663,7 +663,7 @@ module mueller_calculus_avx
            ! LOcals
            type(YMM4r8_t), automatic :: v1,v2
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-          !DIR$ ATTRIBUTES ALIGN : 64 :: v1,v2
+          !dir$ attributes align : 32:: v1,v2
 #endif
           ! Exec code ....
           v1.v = cabs_ymm4c8(jv.p)
@@ -683,7 +683,7 @@ module mueller_calculus_avx
           ! Locals
           type(YMM4r8_t), automatic :: v1,v2
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-          !DIR$ ATTRIBUTES ALIGN : 64 :: v1,v2
+          !dir$ attributes align : 32:: v1,v2
 #endif
           ! Exec code ....
           v1.v = carg_ymm4c8(jv.p)
@@ -730,7 +730,7 @@ module mueller_calculus_avx
       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) ::  JMat4x8c4_set_1
 
              type( JMat4x8c4) :: mat
-             !dir$ attributes align : 64 :: mat
+             !dir$ attributes align : 32:: mat
              !Executable code ....
              mat.j0 = default_init() ! 'pp' component
              mat.j1 = default_init() ! 'ss' component
@@ -762,12 +762,12 @@ module mueller_calculus_avx
       !DIR$ ATTRIBUTES INLINE ::  JMat4x8c4_set_2
       !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  JMat4x8c4_set_2
       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) ::  JMat4x8c4_set_2
-             complex(kind=dp), intent(in) :: pp
+             complex(kind=sp), intent(in) :: pp
              complex(kind=sp), intent(in) :: ss
              complex(kind=sp), intent(in) :: ps
              complex(kind=sp), intent(in) :: sp
              type( JMat4x8c4) :: mat
-             !dir$ attributes align : 64 :: mat
+             !dir$ attributes align : 32:: mat
              ! Executable code ....
              mat.j0 = complex1_init(pp)
              mat.j1 = complex1_init(ss)
@@ -780,7 +780,7 @@ module mueller_calculus_avx
       !DIR$ ATTRIBUTES INLINE ::  JMat4x8c4_set2
       !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  JMat4x8c4_set2
       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) ::  JMat4x8c4_set2
-             complex(kind=dp),  intent(in) :: pp
+             complex(kind=sp),  intent(in) :: pp
              complex(kind=sp),  intent(in) :: ss
              complex(kind=sp),  intent(in) :: ps
              complex(kind=sp),  intent(in) :: sp
@@ -809,7 +809,7 @@ module mueller_calculus_avx
             real(kind=sp), dimension(0:7), intent(in) :: re4
             real(kind=sp), dimension(0:7), intent(in) :: im4
             type( JMat4x8c4) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             !Executable code ....
             mat.j0 = array_init(re1,im1)
             mat.j1 = array_init(re2,im2)
@@ -857,7 +857,7 @@ module mueller_calculus_avx
             real(kind=sp),      intent(in) :: re4
             real(kind=sp),      intent(in) :: im4
             type( JMat4x8c4) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             complex(kind=sp), automatic :: c1,c2,c3,c4
             ! Executable code ....
             c1 = cmplx(re1,im1)
@@ -915,7 +915,7 @@ module mueller_calculus_avx
             type(YMM8r4_t),  intent(in) :: re4
             type(YMM8r4_t),  intent(in) :: im4
             type( JMat4x8c4) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             ! Executable code .....
             mat.j0 = ymm4r82x_init(re1,im1)
             mat.j1 = ymm4r82x_init(re2,im2)
@@ -956,7 +956,7 @@ module mueller_calculus_avx
             !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) ::  JMat4x8c4_copy
             type( JMat4x8c4),  intent(in) :: x
             type( JMat4x8c4) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             ! Executable code ....
             mat.j0 = copy_init(x.j0)
             mat.j1 = copy_init(x.j1)
@@ -998,7 +998,7 @@ module mueller_calculus_avx
             type( JMat4x8c4),  intent(in) :: m1
             type( JMat4x8c4),  intent(in) :: m2
             type( JMat4x8c4) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             ! Executable code ....
             mat.j0 = m1.j3*m2.j2+m1.j0*m2.j0
             mat.j1 = m1.j1*m2.j1+m1.j2*m2.j1
@@ -1034,7 +1034,7 @@ module mueller_calculus_avx
             type( JMat4x8c4),  intent(in) :: m
             type(YMM8c4),      intent(in) :: v
             type( JMat4x8c4) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             ! Executable code .....
             mat.j0 = m.j0*x
             mat.j1 = m.j1*x
@@ -1053,7 +1053,7 @@ module mueller_calculus_avx
             type( JMat4x8c4),  intent(in)  :: m
             type(YMM8c4),      intent(in)  :: v
             type( JMat4x8c4),  intent(out) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             ! Executable code .....
             mat.j0 = m.j0*x
             mat.j1 = m.j1*x
@@ -1072,7 +1072,7 @@ module mueller_calculus_avx
             type(JVec2x8c4),  intent(in) :: v
             type( JMat4x8c4),  intent(in) :: m
             type(JVec2x8c4) :: jvec
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             ! Executable code ....
             jvec.p = m.j1*v.p+m.j3*v.s
             jvec.s = m.j3*v.p+m.j0*v.s
@@ -1104,7 +1104,7 @@ module mueller_calculus_avx
             type( JMat4x8c4),  intent(in) :: m
             type(YMM8c4),      intent(in) :: x
             type( JMat4x8c4) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             ! Executable code ....
             mat.j0 = m.j0/x
             mat.j1 = m.j1/x
@@ -1122,7 +1122,7 @@ module mueller_calculus_avx
             type( JMat4x8c4),  intent(in) :: m
             type(YMM8c4),      intent(in) :: x
             type( JMat4x8c4),  intent(out) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             ! Executable code ....
             mat.j0 = m.j0/x
             mat.j1 = m.j1/x
@@ -1140,7 +1140,7 @@ module mueller_calculus_avx
             type( JMat4x8c4),   intent(in) :: x
             type( JMat4x8c4),   intent(in) :: y
             type( JMat4x8c4) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             mat.j0 = x.j0+y.j0
             mat.j1 = x.j1+y.j1
             mat.j2 = x.j2+y.j2
@@ -1174,7 +1174,7 @@ module mueller_calculus_avx
             type( JMat4x8c4),   intent(in) :: x
             type( JMat4x8c4),   intent(in) :: y
             type( JMat4x8c4) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             mat.j0 = x.j0-y.j0
             mat.j1 = x.j1-y.j1
             mat.j2 = x.j2-y.j2
@@ -1207,9 +1207,9 @@ module mueller_calculus_avx
             !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) ::  JMat4x8c4_rotator_v1
             type(YMM8r4_t),  intent(in) :: theta
             type( JMat4x8c4) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             type(YMM8r4_t) :: vc,vs,nvs
-            !dir$ attributes align : 64 :: vc,vs,nvs
+            !dir$ attributes align : 32:: vc,vs,nvs
             type(YMM8r4_t), parameter :: zero = YMM8r4_t()
             ! Exec code .... 
             vc.v   = cos(theta.v)
@@ -1232,7 +1232,7 @@ module mueller_calculus_avx
             type( JMat4x8c4),  intent(out) :: mat
           
             type(YMM8r4_t) :: vc,vs,nvs
-            !dir$ attributes align : 64 :: vc,vs,nvs
+            !dir$ attributes align : 32:: vc,vs,nvs
             type(YMM8r4_t), parameter :: zero = YMM8r4_t()
             ! Exec code .... 
             vc.v   = cos(theta.v)
@@ -1254,14 +1254,14 @@ module mueller_calculus_avx
             type(YMM8r4_t),   intent(in) :: phi
             type(YMM8r4_t),   intent(in) :: ang
             type( JMat4x8c4) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             type(YMM8r4_t), parameter :: n1   = YMM8r4_t(-1.0_sp)
             type(YMM8r4_t), parameter :: zero = YMM8r4_t(0.0_sp)
             type(YMM8r4_t), parameter :: half = YMM8r4_t(0.5_sp)
             type(YMM8r4_t), parameter :: one  = YMM8r4_t(1.0_sp)
             type(YMM8c4),   automatic :: phasor
             type(YMM8r4_t), automatic :: h_phi
-            !dir$ attributes align : 64 :: phasor,h_phi
+            !dir$ attributes align : 32:: phasor,h_phi
             ! Exec code ....
             phasor = cexp_ymm8c4(j*h_phi)
             mat.j0 = phasor
@@ -1281,14 +1281,14 @@ module mueller_calculus_avx
             type(YMM8r4_t),    intent(in)  :: phi
             type(YMM8r4_t),    intent(in)  :: ang
             type( JMat4x8c4),  intent(out) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             type(YMM8r4_t), parameter :: n1   = YMM8r4_t(-1.0_sp)
             type(YMM8r4_t), parameter :: zero = YMM8r4_t(0.0_sp)
             type(YMM8r4_t), parameter :: half = YMM8r4_t(0.5_sp)
             type(YMM8r4_t), parameter :: one  = YMM8r4_t(1.0_sp)
             type(YMM8c4),   automatic :: phasor
             type(YMM8r4_t), automatic :: h_phi
-            !dir$ attributes align : 64 :: phasor,h_phi
+            !dir$ attributes align : 32:: phasor,h_phi
             ! Exec code ....
             phasor = cexp_ymm8c4(j*h_phi)
             mat.j0 = phasor
@@ -1307,14 +1307,14 @@ module mueller_calculus_avx
             !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) ::  JMat4x8c4_circ_retarder
             type(YMM8r4_t),  intent(in) :: phi
             type( JMat4x8c4) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             type(YMM8r4_t), parameter :: half  = YMM8r4_t(0.5_sp)
             type(YMM8c4),   automatic :: nre
             type(YMM8r4_t), automatic :: h_phi,ch_phi,sh_phi
-            !dir$ attributes align : 64 :: nre
-            !dir$ attributes align : 64 :: h_phi
-            !dir$ attributes align : 64 :: ch_phi
-            !dir$ attributes align : 64 :: sh_phi
+            !dir$ attributes align : 32:: nre
+            !dir$ attributes align : 32:: h_phi
+            !dir$ attributes align : 32:: ch_phi
+            !dir$ attributes align : 32:: sh_phi
             ! Exec code ....
             ch_phi = cos(phi.v)
             mat.j0 = ymm8r41x_init(ch_phi)
@@ -1333,14 +1333,14 @@ module mueller_calculus_avx
             !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) ::  JMat4x8c4_circ_retarder_v2
             type(YMM8r4_t),   intent(in) :: phi
             type( JMat4x8c4), intent(out) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             type(YMM8r4_t), parameter :: half  = YMM8r4_t(0.5_sp)
             type(YMM8c4),   automatic :: nre
             type(YMM8r4_t), automatic :: h_phi,ch_phi,sh_phi
-            !dir$ attributes align : 64 :: nre
-            !dir$ attributes align : 64 :: h_phi
-            !dir$ attributes align : 64 :: ch_phi
-            !dir$ attributes align : 64 :: sh_phi
+            !dir$ attributes align : 32:: nre
+            !dir$ attributes align : 32:: h_phi
+            !dir$ attributes align : 32:: ch_phi
+            !dir$ attributes align : 32:: sh_phi
             ! Exec code ....
             ch_phi = cos(phi.v)
             mat.j0 = ymm8r41x_init(ch_phi)
@@ -1359,12 +1359,12 @@ module mueller_calculus_avx
             !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) ::  JMat4x8c4_circ_polar
             type(YMM8r4_t),   intent(in) :: atten
             type( JMat4x8c4)  :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             type(YMM8r4_t), parameter :: one  = YMM8r4_t(1.0_sp)
             type(YMM8r4_t), parameter :: half = YMM8r4_t(0.5_sp)
             type(YMM8r4_t), parameter :: zero = YMM8r4_t(0.0_sp)
             type(YMM8r4_t), automatic :: t0,e,t1,t2
-            !dir$ attributes align : 64 :: t0,e,t1,t2
+            !dir$ attributes align : 32:: t0,e,t1,t2
             ! Exec code ....
             t0.v   = (atten.v-one.v)/(atten.v+one.v)
             e.v    = sqrt(t0.v)
@@ -1385,12 +1385,12 @@ module mueller_calculus_avx
             !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) ::  JMat4x8c4_circ_polar_v2
             type(YMM8r4_t),   intent(in) :: atten
             type( JMat4x8c4), intent(out) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             type(YMM8r4_t), parameter :: one  = YMM8r4_t(1.0_sp)
             type(YMM8r4_t), parameter :: half = YMM8r4_t(0.5_sp)
             type(YMM8r4_t), parameter :: zero = YMM8r4_t(0.0_sp)
             type(YMM8r4_t), automatic :: t0,e,t1,t2
-            !dir$ attributes align : 64 :: t0,e,t1,t2
+            !dir$ attributes align : 32:: t0,e,t1,t2
             ! Exec code ....
             t0.v   = (atten.v-one.v)/(atten.v+one.v)
             e.v    = sqrt(t0.v)
@@ -1414,9 +1414,9 @@ module mueller_calculus_avx
             type(YMM8c4),      intent(in) :: ca
             type(YMM8c4),      intent(in) :: cb
             type( JMat4x8c4) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             type(YMM8c4), automatic :: det,t0,t1
-            !dir$ attributes align : 64 :: det,t0,t1
+            !dir$ attributes align : 32:: det,t0,t1
             ! Exec code .....
             t0     = a.p*b.s
             t1     = a.s*b.p
@@ -1443,9 +1443,9 @@ module mueller_calculus_avx
             type(YMM8c4),      intent(in) :: ca
             type(YMM8c4),      intent(in) :: cb
             type( JMat4x8c4),  intent(out) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             type(YMM8c4), automatic :: det,t0,t1
-            !dir$ attributes align : 64 :: det,t0,t1
+            !dir$ attributes align : 32:: det,t0,t1
             ! Exec code .....
             t0     = a.p*b.s
             t1     = a.s*b.p
@@ -1469,7 +1469,7 @@ module mueller_calculus_avx
             !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) ::  JMat4x8c4_transpose
             type( JMat4x8c4),  intent(in) :: x
             type( JMat4x8c4) :: mat
-            !dir$ attributes align : 64 :: mat
+            !dir$ attributes align : 32:: mat
             mat.j0 = x.j0
             mat.j1 = x.j1
             mat.j2 = mat.j3
@@ -1499,8 +1499,8 @@ module mueller_calculus_avx
             !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  JMat4x8c4_conj
             !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) ::  JMat4x8c4_conj
             type( JMat4x8c4),  intent(in) :: x
-            type(JMat47x16c16) :: mat
-            !dir$ attributes align : 64 :: mat
+            type(JMat4x8c4) :: mat
+            !dir$ attributes align : 32:: mat
             mat.j0 = conjugate(x.j0)
             mat.j1 = conjugate(x.j1)
             mat.j2 = conjugate(x.j2)
@@ -1515,8 +1515,8 @@ module mueller_calculus_avx
             !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  JMat4x8c4_conj_v2
             !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) ::  JMat4x8c4_conj_v2
             type( JMat4x8c4),  intent(in) :: x
-            type(JMat47x16c16) :: mat
-            !dir$ attributes align : 64 :: mat
+            type(JMat4x8c4) :: mat
+            !dir$ attributes align : 32:: mat
             mat.j0 = conjugate(x.j0)
             mat.j1 = conjugate(x.j1)
             mat.j2 = conjugate(x.j2)
@@ -1680,4 +1680,4 @@ module mueller_calculus_avx
 
 
 
-end module mueller_calculus_avx512
+end module mueller_calculus_avx
