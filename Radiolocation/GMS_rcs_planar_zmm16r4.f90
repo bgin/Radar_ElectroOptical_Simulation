@@ -101,11 +101,11 @@ module rcs_planar_zmm16r4
         !           */
 
 
-      pure function zi_f716_zmm16r4(tht,mu,eps) result(z)
+      pure function zi_f716_v512b_ps(tht,mu,eps) result(z)
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: zi_f716_zmm16r4
-            !dir$ attributes forceinline :: zi_f716_zmm16r4
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: zi_f716_zmm16r4
+            !dir$ attributes code_align : 32 :: zi_f716_v512b_ps
+            !dir$ attributes forceinline :: zi_f716_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: zi_f716_v512b_ps
             use mod_vecconsts, only : v16_0,v16_1
             type(ZMM16r4_t),   intent(in) :: tht
             type(ZMM16c4),     intent(in) :: mu
@@ -129,7 +129,7 @@ module rcs_planar_zmm16r4
             csq    = csqrt_c16(div)
             z.re   = invc.v*csq.re
             z.im   = invc.v*csq.im
-      end function zi_f716_zmm16r4
+      end function zi_f716_v512b_ps
       
       
        !/*
@@ -137,11 +137,11 @@ module rcs_planar_zmm16r4
        !                   Formula 7.1-4
        !             */
       
-      pure function R_f714_zmm16r4(tht1,mu1,eps1,tht2,mu2,eps2) result(R)
+      pure function R_f714_v512b_ps(tht1,mu1,eps1,tht2,mu2,eps2) result(R)
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: R_f714_zmm16r4
-            !dir$ attributes forceinline :: R_f714_zmm16r4
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: R_f714_zmm16r4
+            !dir$ attributes code_align : 32 :: R_f714_v512b_ps
+            !dir$ attributes forceinline :: R_f714_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: R_f714_v512b_ps
             type(ZMM16r4_t),    intent(in) :: tht1
             type(ZMM16c4),      intent(in) :: mu1
             type(ZMM16c4),      intent(in) :: eps1
@@ -158,14 +158,14 @@ module rcs_planar_zmm16r4
             !dir$ attributes align : 64 :: z2
             !dir$ attributes align : 64 :: t0
             !dir$ attributes align : 64 :: t1
-            z1    = zi_f716_zmm16r4(tht1,mu1,eps1)
-            z2    = zi_f716_zmm16r4(tht2,mu2,eps2)
+            z1    = zi_f716_v512b_ps(tht1,mu1,eps1)
+            z2    = zi_f716_v512b_ps(tht2,mu2,eps2)
             t0    = z1-z2
             t1    = z1+z2
             t0.re = -t0.re
             t0.im = -t0.im
             R     = t0/t1 
-      end function R_f714_zmm16r4
+      end function R_f714_v512b_ps
       
       
       !            /*
@@ -173,11 +173,11 @@ module rcs_planar_zmm16r4
       !                  Formula 7.1-5
       !              */
       
-       pure function T_f715_zmm16r4(tht1,mu1,eps1,tht2,mu2,eps2) result(T)
+       pure function T_f715_v512b_ps(tht1,mu1,eps1,tht2,mu2,eps2) result(T)
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: T_f715_zmm16r4
-            !dir$ attributes forceinline :: T_f715_zmm16r4
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: T_f715_zmm16r4
+            !dir$ attributes code_align : 32 :: T_f715_v512b_ps
+            !dir$ attributes forceinline :: T_f715_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: T_f715_v512b_ps
             type(ZMM16r4_t),      intent(in) :: tht1
             type(ZMM16c4),        intent(in) :: mu1
             type(ZMM16c4),        intent(in) :: eps1
@@ -196,12 +196,12 @@ module rcs_planar_zmm16r4
              !dir$ attributes align : 64 :: z2
              !dir$ attributes align : 64 :: t0
              !dir$ attributes align : 64 :: t1
-            z2 = zi_f716_zmm16r4(tht2,mu2,eps2)
-            z1 = zi_f716_zmm16r4(tht1,mu1,eps1)
+            z2 = zi_f716_v512b_ps(tht2,mu2,eps2)
+            z1 = zi_f716_v512b_ps(tht1,mu1,eps1)
             t0 = z2*C20
             t1 = z1+z2
             R  = t0/t1
-       end function T_f715_zmm16r4
+       end function T_f715_v512b_ps
        
        ! /*
        !                 Reflection coefficient special cases:
@@ -209,11 +209,11 @@ module rcs_planar_zmm16r4
        !                 Formula 7.1-17
        !            */
        
-       pure function R_f7117_zmm16r4(tht,eps1,eps2) result(R)
+       pure function R_f7117_v512b_ps(tht,eps1,eps2) result(R)
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: R_f7117_zmm16r4
-            !dir$ attributes forceinline :: R_f7117_zmm16r4
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: R_f7117_zmm16r4
+            !dir$ attributes code_align : 32 :: R_f7117_v512b_ps
+            !dir$ attributes forceinline :: R_f7117_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: R_f7117_v512b_ps
             type(ZMM16r4_t),          intent(in) :: tht
             type(ZMM16r4_t),          intent(in) :: eps1
             type(ZMM16r4_t),          intent(in) :: eps2
@@ -268,7 +268,76 @@ module rcs_planar_zmm16r4
                 den.v  = x0.v+x1.v
                 R.v    = num.v/den.v      
 #endif
-       end function R_f7117_zmm16r4
+       end function R_f7117_v512b_ps
+       
+       
+       !  /*
+       !                 Reflection coefficient special cases:
+       !                 1) k1<k2, eps1,eps2 (real), mu1 = m2 = mu0
+       !                 Formula 7.1-18
+       !            */
+       
+       pure function R_f7118_v512b_ps(tht,eps1,eps2) result(R)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: R_f7118_v512b_ps
+            !dir$ attributes forceinline :: R_f7118_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: R_f7118_v512b_ps
+            type(ZMM16r4_t),          intent(in) :: tht
+            type(ZMM16r4_t),          intent(in) :: eps1
+            type(ZMM16r4_t),          intent(in) :: eps2
+            type(ZMM16r4_t)  :: R
+            ! Locals
+            type(ZMM16r4_t), automatic :: e1e2
+            type(ZMM16r4_t), automatic :: sqr1
+            type(ZMM16r4_t), automatic :: sqr2
+            type(ZMM16r4_t), automatic :: num
+            type(ZMM16r4_t), automatic :: den
+            type(ZMM16r4_t), automatic :: cost
+            type(ZMM16r4_t), automatic :: sint
+            type(ZMM16r4_t), automatic :: x0
+            type(ZMM16r4_t), automatic :: x1
+            !dir$ attributes align : 64 :: e1e2
+            !dir$ attributes align : 64 :: sqr1
+            !dir$ attributes align : 64 :: sqr2
+            !dir$ attributes align : 64 :: num
+            !dir$ attributes align : 64 :: den
+            !dir$ attributes align : 64 :: cost
+            !dir$ attributes align : 64 :: sint
+            !dir$ attributes align : 64 :: x0
+            !dir$ attributes align : 64 :: x1
+            type(ZMM16r4_t), parameter :: C1 = ZMM16r4_t(1.0_sp)
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+             !dir$ loop_count(16)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+             do j=0,15
+                e1e2.v(j) = eps2.v(j)/eps1.v(j)
+                cost.v(j) = cos(tht.v(j))
+                sqr1.v(j) = sqrt(e1e2.v(j))
+                sint.v(j) = sin(tht.v(j))
+                x0.v(j)   = sqr1.v(j)*cost.v(j)
+                x1.v(j)   = C1.v(j)-e1e2.v(j)*(sint.v(j)*sint.v(j))
+                sqr2.v(j) = sqrt(x1.v(j))
+                num.v(j)  = x0.v(j)-x1.v(j)
+                den.v(j)  = x0.v(j)+x1.v(j)
+                R.v(j)    = num.v(j)/den.v(j)
+             end do
+#else
+                e1e2.v = eps2.v/eps1.v
+                cost.v = cos(tht.v)
+                sqr1.v = sqrt(e1e2.v)
+                sint.v = sin(tht.v)
+                x0.v   = sqr1.v*cost.v
+                x1.v   = C1.v-e1e2.v*(sint.v*sint.v)
+                sqr2.v = sqrt(x1.v)
+                num.v  = x0.v-x1.v
+                den.v  = x0.v+x1.v
+                R.v   = num.v/den.v
+#endif            
+       end function R_f7118_v512b_ps
+
 
 
 
