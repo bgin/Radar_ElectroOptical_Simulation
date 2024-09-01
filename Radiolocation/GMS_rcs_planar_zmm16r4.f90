@@ -337,6 +337,82 @@ module rcs_planar_zmm16r4
                 R.v   = num.v/den.v
 #endif            
        end function R_f7118_v512b_ps
+       
+        !  /*
+        !                Reflection coefficient special cases:
+        !                2) k2<k1, eps1,eps2 (real), mu1 = mu2 = mu0
+        !                Formula 7.1-23
+        !           */
+        
+        pure function R_f7123_v512b_ps(tht,eps1,eps2) result(R)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: R_f7123_v512b_ps
+            !dir$ attributes forceinline :: R_f7123_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: R_f7123_v512b_ps
+            use mod_vecconsts, only : v16_0
+            type(ZMM16r4_t),          intent(in) :: tht
+            type(ZMM16r4_t),          intent(in) :: eps1
+            type(ZMM16r4_t),          intent(in) :: eps2
+            type(ZMM16c4)  :: R
+            ! Locals
+            type(ZMM16r4_t), parameter :: CN20 = ZMM16r4_t(-2.0f)
+            type(ZMM16c4),   automatic :: ea
+            type(ZMM16r4_t), automatic :: sint
+            type(ZMM16r4_t), automatic :: cost
+            type(ZMM16r4_t), automatic :: e2e1
+            type(ZMM16r4_t), automatic :: rat
+            type(ZMM16r4_t), automatic :: arg
+            type(ZMM16r4_t), automatic :: atarg
+            type(ZMM16r4_t), automatic :: x0
+            type(ZMM16r4_t), automatic :: x1
+            !dir$ attributes align : 64 :: CN20
+            !dir$ attributes align : 64 :: ea
+            !dir$ attributes align : 64 :: sint
+            !dir$ attributes align : 64 :: cost
+            !dir$ attributes align : 64 :: e2e1
+            !dir$ attributes align : 64 :: rat
+            !dir$ attributes align : 64 :: arg
+            !dir$ attributes align : 64 :: atarg
+            !dir$ attributes align : 64 :: x0
+            !dir$ attributes align : 64 :: x1
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             type(ZMM16r4_t), automatic :: t0
+             !dir$ attributes align : 64 :: t0
+             integer(kind=i4) :: j
+             !dir$ loop_count(16)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+             do j=0,15
+                 e2e1.v(j) = eps2.v(j)/eps1.v(j)
+                 cost.v(j) = cos(tht.v(j))
+                 ea.re(j)  = v16_0.v(j)
+                 sint.v(j) = sin(tht.v(j))
+                 x0.v(j)   = cost.v(j)*cost.v(j)
+                 x1.v(j)   = (sint.v(j)*sint.v(j))-e2e1.v(j)
+                 rat.v(j)  = x1.v(j)/x0.v(j)
+                 arg.v(j)  = sqrt(rat.v(j))
+                 atarg.v(j)= atan(arg.v(j))
+                 ea.im(j)  = CN20.v(j)*atarg.v(j)
+                 t0.v(j)   = exp(ea.re(j))
+                 R.re(j)   = t0.v(j)*cos(ea.re(j))
+                 R.im(j)   = t0.v(j)*sin(ea.im(j))
+             end do
+#else            
+            e2e1.v = eps2.v/eps1.v
+            cost.v = cos(tht.v)
+            ea.re  = v16_0.v
+            sint.v = sin(tht.v)
+            x0.v   = cost.v*cost.v
+            x1.v   = sint.v*sint.v-e2e1.v
+            rat.v  = x1.v/x0.v
+            arg.v  = sqrt(rat.v)
+            atarg.v= atan(arg.v)
+            ea.im  = CN20.v*atarg.v
+            R      = cexp_c16(ea)
+#endif
+        end function R_f7123_v512b_ps
+        
 
 
 
