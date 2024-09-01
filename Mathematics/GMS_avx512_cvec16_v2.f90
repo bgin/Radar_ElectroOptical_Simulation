@@ -1074,27 +1074,27 @@ module  avx512_cvec16_v2
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c1_div_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_div_c16
         complex(kind=sp),      intent(in) :: x
-        type(AVX512c16f32_t),  intent(in) :: y
+        type(ZMM16c4),  intent(in) :: y
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
         type(ZMM16c4) :: iq
         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3,den
         type(ZMM16r4_t), automatic :: zmm0,zmm1,zmm2,zmm3,den
         real(kind=sp), automatic :: r,i
-        integer(kind=i4) :: i
+        integer(kind=i4) :: j
         r = real(x,kind=sp)
         i = aimag(x,kind=sp)
         !dir$ loop_count(16)
         !dir$ vector aligned
         !dir$ vector vectorlength(4)
         !dir$ vector always
-        do i=0, 15
-           zmm0.v(i) = r*y.re(i)
-           zmm1.v(i) = i*y.im(i)
-           zmm2.v(i) = i*y.re(i)
-           zmm3.v(i) = r*y.im(i)
-           den.v(i)  = (y.re(i)*y.re(i))+(y.im(i)*y.im(i))
-           iq.re(i)  = (zmm0.v(i)+zmm1.v(i))/den.v(i)
-           iq.im(i)  = (zmm2.v(i)-zmm3.v(i))/den.v(i)
+        do j=0, 15
+           zmm0.v(j) = r*y.re(j)
+           zmm1.v(j) = i*y.im(j)
+           zmm2.v(j) = i*y.re(j)
+           zmm3.v(j) = r*y.im(j)
+           den.v(j)  = (y.re(j)*y.re(j))+(y.im(j)*y.im(j))
+           iq.re(j)  = (zmm0.v(j)+zmm1.v(j))/den.v(j)
+           iq.im(j)  = (zmm2.v(j)-zmm3.v(j))/den.v(j)
         end do
       end function c1_div_c16
 
@@ -2662,9 +2662,9 @@ module  avx512_cvec16_v2
           !dir$ vector vectorlength(4)
           !dir$ vector always
           do i=0, 15
-             t1.v(i)  = v16_1over2.v(i)*(t0.v(i)+c16.re(i))
+             t1.v(i)  = v16_1over2.v(i)*(t0.v(i)+x.re(i))
              iq.re(i) = sqrt(t1.v(i))
-             t2.v(i)  = v16_1over2.v(i)*(t0.v(i)-c16.re(i))
+             t2.v(i)  = v16_1over2.v(i)*(t0.v(i)-x.re(i))
              iq.im(i) = sqrt(t2.v(i))
           end do
       end function csqrt_c16
@@ -2761,4 +2761,4 @@ module  avx512_cvec16_v2
       end function cdiv_smith
         
       
-end module avx512_cvec16
+end module avx512_cvec16_v2
