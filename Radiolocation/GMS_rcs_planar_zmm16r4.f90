@@ -166,6 +166,41 @@ module rcs_planar_zmm16r4
             t0.im = -t0.im
             R     = t0/t1 
       end function R_f714_zmm16r4
+      
+      
+      !            /*
+      !                  Transmission coefficient components.
+      !                  Formula 7.1-5
+      !              */
+       pure function T_f715_zmm16r4(tht1,mu1,eps1,tht2,mu2,eps2) result(T)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: T_f715_zmm16r4
+            !dir$ attributes forceinline :: T_f715_zmm16r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: T_f715_zmm16r4
+            type(ZMM16r4_t),      intent(in) :: tht1
+            type(ZMM16c4),        intent(in) :: mu1
+            type(ZMM16c4),        intent(in) :: eps1
+            type(ZMM16r4_t),      intent(in) :: tht2
+            type(ZMM16c4),        intent(in) :: mu2
+            type(ZMM16c4),        intent(in) :: eps2
+            type(ZMM16c4) :: T
+            ! Locals
+            type(ZMM16r4_t), parameter :: C20 = ZMM16r4_t(2.0_sp)
+            type(ZMM16c4), automatic   :: z1
+            type(ZMM16c4), automatic   :: z2
+            type(ZMM16c4), automatic   :: t0
+            type(ZMM16c4), automatic   :: t1
+             !dir$ attributes align : 64 :: C20
+             !dir$ attributes align : 64 :: z1
+             !dir$ attributes align : 64 :: z2
+             !dir$ attributes align : 64 :: t0
+             !dir$ attributes align : 64 :: t1
+            z2 = zi_f716_zmm16r4(tht2,mu2,eps2)
+            z1 = zi_f716_zmm16r4(tht1,mu1,eps1)
+            t0 = z2*C20
+            t1 = z1+z2
+            R  = t0/t1
+       end function T_f715_zmm16r4
 
 
 
