@@ -2428,7 +2428,7 @@ module  avx512_cvec16_v2
         !dir$ vector always
          do i=0, 15
             t0.v(i)  = exp(x.re(i))
-            iq.re(i) = t0.v(i)*cos(x.im(i))
+            iq.re(i) = t0.v(i)*cos(x.re(i))
             iq.im(i) = t0.v(i)*sin(x.im(i))
          end do
       end function cexp_c16
