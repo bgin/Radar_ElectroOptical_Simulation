@@ -773,6 +773,127 @@ module rcs_planar_zmm16r4
 #endif                                  
         end function R_f7130_v512b_ps
 
+        ! /*
+        !               Reflection coefficients for (alpha<cos^2(theta)).
+        !               Formula 7.2-15
+        !          */
+        
+        pure function R_f7215_to_f7216_v512b_ps(d,k0,alp,tht) result(R)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: R_f7215_to_f7216_v512b_ps
+            !dir$ attributes forceinline :: R_f7215_to_f7216_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: R_f7215_to_f7216_v512b_ps
+            use mod_fpcompare, only : zmm16r4_equalto_zmm16r4
+            use mod_vecconsts, only : v16_1
+            type(ZMM16r4_t),   intent(in) :: d
+            type(ZMM16r4_t),   intent(in) :: k0
+            type(ZMM16r4_t),   intent(in) :: alp
+            type(ZMM16r4_t),   intent(in) :: tht
+            type(ZMM16r4_t) :: R
+            ! Locals
+            type(ZMM16r4_t), parameter :: C117549e38 = ZMM16r4_t(1.17549e-38_sp)
+            type(ZMM16r4_t), parameter :: C05        = ZMM16r4_t(0.5_sp)
+            type(ZMM16r4_t), parameter :: C314159265358979323846264338328 = &
+                                                       ZMM16r4_t(3.14159265358979323846264338328_sp)
+            
+            type(ZMM16r4_t), automatic :: pid2
+            type(ZMM16r4_t), automatic :: cost
+            type(ZMM16r4_t), automatic :: cos2t
+            type(ZMM16r4_t), automatic :: num
+            type(ZMM16r4_t), automatic :: den
+            type(ZMM16r4_t), automatic :: x0
+            type(ZMM16r4_t), automatic :: x1
+            type(ZMM16r4_t), automatic :: x2
+            type(ZMM16r4_t), automatic :: k
+            type(ZMM16r4_t), automatic :: k01a
+            type(ZMM16r4_t), automatic :: sin2t
+            type(ZMM16r4_t), automatic :: k02k
+            type(ZMM16r4_t), automatic :: sqr
+            type(Mask16_t),  automatic :: d_eq_C117549e38
+            !dir$ attributes align : 64 :: C117549e38
+            !dir$ attributes align : 64 :: C05
+            !dir$ attributes align : 64 :: C314159265358979323846264338328 
+            !dir$ attributes align : 64 :: pid2
+            !dir$ attributes align : 64 :: cost
+            !dir$ attributes align : 64 :: cos2t
+            !dir$ attributes align : 64 :: num
+            !dir$ attributes align : 64 :: den
+            !dir$ attributes align : 64 :: x0
+            !dir$ attributes align : 64 :: x1
+            !dir$ attributes align : 64 :: x2
+            !dir$ attributes align : 64 :: k
+            !dir$ attributes align : 64 :: k01a
+            !dir$ attributes align : 64 :: sin2t
+            !dir$ attributes align : 64 :: k02k
+            !dir$ attributes align : 64 :: sqr
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+#endif
+            d_eq_C117549e38 = zmm16r4_equalto_zmm16r4(d,C117549e38)
+            if(all(d_eq_C117549e38)==.false.) then
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+               !dir$ loop_count(16)
+               !dir$ vector aligned
+               !dir$ vector vectorlength(4)
+               !dir$ vector always
+               do j=0, 15  
+                  pid2.v(j) = C314159265358979323846264338328.v(j)* &
+                              d.v(j)*C05.v(j)
+                  cost.v(j) = cos(tht.v(j))
+                  cos2t.v(j)= (cost.v(j)*cost.v(j))+alp.v(j)
+                  x0.v(j)   = sqrt(cos2t.v(j))
+                  x1.v(j)   = (pid2.v(j)*cost.v(j))-x0.v(j)
+                  num.v(j)  = sinh(x1.v(j))
+                  x2.v(j)   = (pid2.v(j)*cost.v(j))+x0.v(j)
+                  den.v(j)  = sinh(x2.v(j))
+                  R.v(j)    = num.v(j)/den.v(j)
+               end do
+#else
+                  pid2.v = C314159265358979323846264338328.v* &
+                              d.v*C05.v
+                  cost.v = cos(tht.v)
+                  cos2t.v= (cost.v*cost.v)+alp.v
+                  x0.v   = sqrt(cos2t.v)
+                  x1.v   = (pid2.v*cost.v)-x0.v
+                  num.v  = sinh(x1.v)
+                  x2.v   = (pid2.v*cost.v)+x0.v
+                  den.v  = sinh(x2.v)
+                  R.v    = num.v/den.v  
+#endif     
+            else
+#if (GMS_EXPLICIT_VECTORIZE) == 1            
+               !dir$ loop_count(16)
+               !dir$ vector aligned
+               !dir$ vector vectorlength(4)
+               !dir$ vector always
+               do j=0, 15 
+                  k.v(j)    = sqrt(v16_1.v(j)-alp.v(j))
+                  cost.v(j) = cos(tht.v(j))
+                  k02k.v(j) = (k0.v(j)*k0.v(j))/k.v(j)
+                  sint.v(j) = sin(tht.v(j))
+                  sin2t.v(j)= sint.v(j)*sint.v(j)
+                  x0.v(j)   = v16_1.v(j)-(k02k.v(j)-sin2t.v(j))
+                  sqr.v(j)  = sqrt(x0.v(j))
+                  x1.v(j)   = k.v(j)*sqr.v(j)
+                  num.v(j)  = (k0.v(j)*cost.v(j))-x1.v(j)
+                  den.v(j)  = (k0.v(j)*cost.v(j))+x1.v(j)
+                  R.v(j)    = num.v(j)/den.v(j)
+               end do
+#else
+                  k.v    = sqrt(v16_1.v-alp.v)
+                  cost.v = cos(tht.v)
+                  k02k.v = (k0.v*k0.v)/k.v
+                  sint.v = sin(tht.v)
+                  sin2t.v= sint.v*sint.v
+                  x0.v   = v16_1.v-(k02k.v-sin2t.v)
+                  sqr.v  = sqrt(x0.v)
+                  x1.v   = k.v*sqr.v
+                  num.v  = (k0.v*cost.v)-x1.v
+                  den.v  = (k0.v*cost.v)+x1.v
+                  R.v(j)    = num.v/den.v 
+#endif
+            end if       
+        end function R_f7215_to_f7216_v512b_ps
 
 
         
