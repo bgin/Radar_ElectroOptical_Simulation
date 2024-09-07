@@ -689,6 +689,89 @@ module rcs_planar_zmm16r4
                  R      = num/den
 #endif       
         end function R_f7129_v512b_ps
+        
+        
+        !          /*
+        !                     For (k1/k2)^2*sin^2(theta)<<1 (Simplification
+        !                     of formulae 7.1-9 and 7.1-10).
+        !                     Formula 7.1-30
+        !!
+        !             */
+
+        pure function R_f7130_v512b_ps(tht,mu1,eps1,mu2,eps2) result(R)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: R_f7130_v512b_ps
+            !dir$ attributes forceinline :: R_f7130_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: R_f7130_v512b_ps
+            type(ZMM16r4_t),  intent(in) :: tht
+            type(ZMM16c4),    intent(in) :: mu1
+            type(ZMM16c4),    intent(in) :: eps1
+            type(ZMM16c4),    intent(in) :: mu2
+            type(ZMM16c4),    intent(in) :: eps2
+            type(ZMM16c4) :: R
+            !Locals
+            type(ZMM16c4),   automatic :: z1
+            type(ZMM16c4),   automatic :: z2
+            type(ZMM16c4),   automatic :: num
+            type(ZMM16c4),   automatic :: den
+            type(ZMM16c4),   automatic :: t0
+            type(ZMM16r4_t), automatic :: cost
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+            type(ZMM16r4_t), automatic :: zmm0
+            type(ZMM16r4_t), automatic :: zmm1
+            type(ZMM16r4_t), automatic :: zmm2
+            type(ZMM16r4_t), automatic :: zmm3
+            type(ZMM16r4_t), automatic :: denom
+            integer(kind=i4) :: j
+#endif            
+            !dir$ attributes align : 64 :: z1
+            !dir$ attributes align : 64 :: z2
+            !dir$ attributes align : 64 :: num
+            !dir$ attributes align : 64 :: den
+            !dir$ attributes align : 64 :: t0
+            !dir$ attributes align : 64 :: cost  
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+            !dir$ attributes align : 64 :: zmm0
+            !dir$ attributes align : 64 :: zmm1
+            !dir$ attributes align : 64 :: zmm2
+            !dir$ attributes align : 64 :: zmm3
+            !dir$ attributes align : 64 :: denom
+#endif 
+            z1 = zi_f716_v512b_ps(tht,mu1,eps1)
+            z2 = zi_f716_v512b_ps(tht,mu2,eps2)
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             !dir$ loop_count(16)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+             do j=0, 15  
+                cost.v(j) = cos(tht.v(j))
+                t0.re(j)  = z1.re(j)*cost.v(j)
+                t0.im(j)  = z1.im(j)*cost.v(j)
+                num.re(j) = z2.re(j)-t0.re(j)
+                den.re(j) = z2.re(j)+t0.re(j)
+                num.im(j) = z2.im(j)-t0.im(j)
+                den.im(j) = z2.im(j)+t0.im(j)
+                zmm0.v(j) = num.re(j)*den.re(j)
+                zmm1.v(j) = num.im(j)*den.im(j)
+                zmm2.v(j) = num.im(j)*den.re(j)
+                zmm3.v(j) = num.re(j)*den.im(j)
+                denom.v(j)= (den.re(j)*den.re(j))+ &
+                            (den.im(j)*den.im(j))
+                R.re(j)  =  (zmm0.v(j)+zmm1.v(j))/denom.v(j)
+                R.im(j)  =  (zmm2.v(j)-zmm3.v(j))/denom.v(j) 
+             end do
+#else
+                cost.v = cos(tht.v)
+                t0.re  = z1.re*cost.v
+                t0.im  = z1.im*cost.v
+                num.re = z2.re-t0.re
+                den.re = z2.re+t0.re
+                num.im = z2.im-t0.im
+                den.im = z2.im+t0.im  
+                R      = num/den 
+#endif                                  
+        end function R_f7130_v512b_ps
 
 
 
