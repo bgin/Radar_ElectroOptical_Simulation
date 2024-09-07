@@ -502,7 +502,6 @@ module rcs_planar_zmm16r4
             !dir$ attributes code_align : 32 :: D_f7127_v512b_ps
             !dir$ attributes forceinline :: D_f7127_v512b_ps
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: D_f7127_v512b_ps
-            use mod_vecconsts, only : v16_0, v16_1
             type(ZMM16r4_t),          intent(in) :: gam0
             type(ZMM16r4_t),          intent(in) :: tht
             type(ZMM16r4_t),          intent(in) :: eps1
@@ -517,6 +516,13 @@ module rcs_planar_zmm16r4
             type(ZMM16r4_t), automatic :: e2e1
             type(ZMM16r4_t), automatic :: sqr
             type(ZMM16r4_t), automatic :: rat
+            !dir$ attributes align : 64 :: C0318309886183790671537767526745
+            !dir$ attributes align : 64 :: g0pi
+            !dir$ attributes align : 64 :: ttht
+            !dir$ attributes align : 64 :: sint
+            !dir$ attributes align : 64 :: e2e1
+            !dir$ attributes align : 64 :: sqr
+            !dir$ attributes align : 64 :: rat
 #if (GMS_EXPLICIT_VECTORIZE) == 1
              integer(kind=i4) :: j
              !dir$ loop_count(16)
@@ -525,6 +531,7 @@ module rcs_planar_zmm16r4
              !dir$ vector always
              do j=0, 15
                 g0pi.v(j) = gam0.v(j)*C0318309886183790671537767526745.v(j)
+                sint.v(j) = sin(tht.v(j))
                 e2e1.v(j) = eps2.v(j)/eps1.v(j)
                 ttht.v(j) = tan(tht.v(j))
                 sint.v(j) = (sint.v(j)*sint.v(j))-e2e1.v(j)
@@ -534,6 +541,7 @@ module rcs_planar_zmm16r4
              end do
 #else
                 g0pi.v = gam0.v*C0318309886183790671537767526745.v
+                sint.v = sin(tht.v)
                 e2e1.v = eps2.v/eps1.v
                 ttht.v = tan(tht.v)
                 sint.v = (sint.v*sint.v)-e2e1.v
@@ -542,6 +550,147 @@ module rcs_planar_zmm16r4
                 D.v    = g0pi.v*rat.v
 #endif
         end function D_f7127_v512b_ps
+        
+        ! /*
+        !               Lateral displacement of the incident ray.
+        !               Formula 7.1-28
+        !           */
+        
+        pure function D_f7128_v512b_ps(gam0,tht,eps2,eps1) result(D)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: D_f7128_v512b_ps
+            !dir$ attributes forceinline :: D_f7128_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: D_f7128_v512b_ps
+            type(ZMM16r4_t),          intent(in) :: gam0
+            type(ZMM16r4_t),          intent(in) :: tht
+            type(ZMM16r4_t),          intent(in) :: eps1
+            type(ZMM16r4_t),          intent(in) :: eps2
+            type(ZMM16r4_t)  :: D
+            ! Locals
+            type(ZMM16r4_t),  parameter :: C0318309886183790671537767526745 =  &
+                                                         ZMM16r4_t(0.318309886183790671537767526745_sp)
+            type(ZMM16r4_t), automatic :: g0pi
+            type(ZMM16r4_t), automatic :: ttht
+            type(ZMM16r4_t), automatic :: sint
+            type(ZMM16r4_t), automatic :: e2e1
+            type(ZMM16r4_t), automatic :: e1e2
+            type(ZMM16r4_t), automatic :: sqr
+            type(ZMM16r4_t), automatic :: rat
+            !dir$ attributes align : 64 :: C0318309886183790671537767526745
+            !dir$ attributes align : 64 :: g0pi
+            !dir$ attributes align : 64 :: ttht
+            !dir$ attributes align : 64 :: sint
+            !dir$ attributes align : 64 :: e2e1
+            !dir$ attributes align : 64 :: e1e2
+            !dir$ attributes align : 64 :: sqr
+            !dir$ attributes align : 64 :: rat   
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+             !dir$ loop_count(16)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+             do j=0, 15
+                g0pi.v(j) = gam0.v(j)*C0318309886183790671537767526745.v(j)
+                sint.v(j) = sin(tht.v(j))
+                e2e1.v(j) = eps2.v(j)/eps1.v(j)
+                ttht.v(j) = tan(tht.v(j))
+                sint.v(j) = (sint.v(j)*sint.v(j))-e2e1.v(j)
+                e1e2.v(j) = eps1.v(j)/eps2.v(j)
+                sqr.v(j)  = sqrt(sint.v(j))
+                rat.v(j)  = ttht.v(j)/sqr.v(j)
+                D.v(j)    = g0pi.v(j)*(e1e2.v(j)*rat.v(j))
+             end do
+#else
+                g0pi.v = gam0.v*C0318309886183790671537767526745.v
+                sint.v = sin(tht.v)
+                e2e1.v = eps2.v/eps1.v
+                ttht.v = tan(tht.v)
+                sint.v = (sint.v*sint.v)-e2e1.v
+                e1e2.v = eps1.v/eps2.v
+                sqr.v  = sqrt(sint.v)
+                rat.v  = ttht.v/sqr.v
+                D.v    = g0pi.v*(e1e2.v*rat.v)
+#endif                                         
+        end function D_f7128_v512b_ps
+        
+        ! /*
+        !                     For (k1/k2)^2*sin^2(theta)<<1 (Simplification
+        !                     of formulae 7.1-9 and 7.1-10).
+        !                     Formula 7.1-29
+        !                */
+        
+        pure function R_f7129_v512b_ps(tht,mu1,eps1,mu2,eps2) result(R)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: R_f7129_v512b_ps
+            !dir$ attributes forceinline :: R_f7129_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: R_f7129_v512b_ps
+            type(ZMM16r4_t),  intent(in) :: tht
+            type(ZMM16c4),    intent(in) :: mu1
+            type(ZMM16c4),    intent(in) :: eps1
+            type(ZMM16c4),    intent(in) :: mu2
+            type(ZMM16c4),    intent(in) :: eps2
+            type(ZMM16c4) :: R
+            ! Locals
+            type(ZMM16c4),   automatic :: z1
+            type(ZMM16c4),   automatic :: z2
+            type(ZMM16c4),   automatic :: num
+            type(ZMM16c4),   automatic :: den
+            type(ZMM16r4_t), automatic :: cost
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+            type(ZMM16r4_t), automatic :: zmm0
+            type(ZMM16r4_t), automatic :: zmm1
+            type(ZMM16r4_t), automatic :: zmm2
+            type(ZMM16r4_t), automatic :: zmm3
+            type(ZMM16r4_t), automatic :: denom
+            integer(kind=i4) :: j
+#endif            
+            !dir$ attributes align : 64 :: z1
+            !dir$ attributes align : 64 :: z2
+            !dir$ attributes align : 64 :: num
+            !dir$ attributes align : 64 :: den
+            !dir$ attributes align : 64 :: cost
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+            !dir$ attributes align : 64 :: zmm0
+            !dir$ attributes align : 64 :: zmm1
+            !dir$ attributes align : 64 :: zmm2
+            !dir$ attributes align : 64 :: zmm3
+            !dir$ attributes align : 64 :: denom
+#endif            
+            z1 = zi_f716_v512b_ps(tht,mu1,eps1)
+            z1 = zi_f716_v512b_ps(tht,mu2,eps2)
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             !dir$ loop_count(16)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+             do j=0, 15     
+                 cost.v(j) = cos(tht.v(j))
+                 num.re(j) = (z2.re(j)*cost.v(j))-z1.re(j) 
+                 den.re(j) = (z2.re(j)*cost.v(j))+z2.re(j)
+                 num.im(j) = (z2.im(j)*cost.v(j))-z1.im(j)
+                 den.im(j) = (z2.im(j)*cost.v(j))+z2.re(j)
+                 ! body of cdiv operator
+                 zmm0.v(j) = num.re(j)*den.re(j)
+                 zmm1.v(j) = num.im(j)*den.im(j)
+                 zmm2.v(j) = num.im(j)*den.re(j)
+                 zmm3.v(j) = num.re(j)*den.im(j)
+                 denom.v(j)= (den.re(j)*den.re(j))+ &
+                             (den.im(j)*den.im(j))
+                 R.re(j)  =  (zmm0.v(j)+zmm1.v(j))/denom.v(j)
+                 R.im(j)  =  (zmm2.v(j)-zmm3.v(j))/denom.v(j)          
+             end do
+#else
+                 cost.v = cos(tht.v)
+                 num.re = (z2.re*cost.v)-z1.re
+                 den.re = (z2.re*cost.v)+z2.re
+                 num.im = (z2.im*cost.v)-z1.im
+                 den.im = (z2.im*cost.v)+z2.re
+                 R      = num/den
+#endif       
+        end function R_f7129_v512b_ps
+
+
 
         
 
