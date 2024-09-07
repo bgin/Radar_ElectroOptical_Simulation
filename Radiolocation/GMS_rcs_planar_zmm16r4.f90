@@ -491,6 +491,58 @@ module rcs_planar_zmm16r4
                 R      = cexp_c16(ea)
 #endif            
          end function R_f7124_v512b_ps
+         
+        !  /*
+        !               Lateral displacement of the incident ray.
+        !               Formula 7.1-27
+        !           */
+        
+        pure function D_f7127_v512b_ps(gam0,tht,eps2,eps1) result(D)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: D_f7127_v512b_ps
+            !dir$ attributes forceinline :: D_f7127_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: D_f7127_v512b_ps
+            use mod_vecconsts, only : v16_0, v16_1
+            type(ZMM16r4_t),          intent(in) :: gam0
+            type(ZMM16r4_t),          intent(in) :: tht
+            type(ZMM16r4_t),          intent(in) :: eps1
+            type(ZMM16r4_t),          intent(in) :: eps2
+            type(ZMM16r4_t)  :: D
+            ! Locals
+            type(ZMM16r4_t),  parameter :: C0318309886183790671537767526745 =  &
+                                                         ZMM16r4_t(0.318309886183790671537767526745_sp)
+            type(ZMM16r4_t), automatic :: g0pi
+            type(ZMM16r4_t), automatic :: ttht
+            type(ZMM16r4_t), automatic :: sint
+            type(ZMM16r4_t), automatic :: e2e1
+            type(ZMM16r4_t), automatic :: sqr
+            type(ZMM16r4_t), automatic :: rat
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+             !dir$ loop_count(16)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+             do j=0, 15
+                g0pi.v(j) = gam0.v(j)*C0318309886183790671537767526745.v(j)
+                e2e1.v(j) = eps2.v(j)/eps1.v(j)
+                ttht.v(j) = tan(tht.v(j))
+                sint.v(j) = (sint.v(j)*sint.v(j))-e2e1.v(j)
+                sqr.v(j)  = sqrt(sint.v(j))
+                rat.v(j)  = ttht.v(j)/sqr.v(j)
+                D.v(j)    = g0pi.v(j)*rat.v(j)
+             end do
+#else
+                g0pi.v = gam0.v*C0318309886183790671537767526745.v
+                e2e1.v = eps2.v/eps1.v
+                ttht.v = tan(tht.v)
+                sint.v = (sint.v*sint.v)-e2e1.v
+                sqr.v  = sqrt(sint.v)
+                rat.v  = ttht.v/sqr.v
+                D.v    = g0pi.v*rat.v
+#endif
+        end function D_f7127_v512b_ps
+
         
 
 
