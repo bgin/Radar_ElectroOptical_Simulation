@@ -895,7 +895,121 @@ module rcs_planar_zmm16r4
             end if       
         end function R_f7215_to_f7216_v512b_ps
 
-
+        ! /*
+        !                    Infinite strips, low frequency region.
+        !                    E-field (scattered) along 'z'.
+        !                    Formula 7.4-1
+        !                */
+        
+        pure function Ezs_f741_v512b_ps(k0,r,a,tht,Ei) result(Es)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: Ezs_f741_v512b_ps
+            !dir$ attributes forceinline :: Ezs_f741_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Ezs_f741_v512b_ps
+            use mod_vecconsts, only : v16_1, v16_0
+            type(ZMM16r4_t),   intent(in) :: k0
+            type(ZMM16r4_t),   intent(in) :: r
+            type(ZMM16r4_t),   intent(in) :: a
+            type(ZMM16r4_t),   intent(in) :: tht
+            type(ZMM16c4),     intent(in) :: Ei
+            type(ZMM16c4)  :: Es
+            ! Locals
+            type(ZMM16r4_t),  parameter :: C17811 = ZMM16r4_t(1.7811_sp)
+            type(ZMM16r4_t),  parameter :: C025   = ZMM16r4_t(0.25_sp)
+            type(ZMM16r4_t),  parameter :: C314159265358979323846264338328 = &
+                                                    ZMM16r4_t(3.14159265358979323846264338328_sp)
+            type(ZMM16r4_t),  parameter :: C157079632679489661923132       = &
+                                                    ZMM16r4_t(1.57079632679489661923132_sp)
+            type(ZMM16r4_t),  parameter :: C4     = ZMM16r4_t(4.0_sp)
+            type(ZMM16r4_t),  parameter :: C078539816339744830961566       = &
+                                                    ZMM16r4_t(0.78539816339744830961566_sp)
+            type(ZMM16c4),    automatic :: den
+            type(ZMM16c4),    automatic :: ea
+            type(ZMM16c4),    automatic :: ce
+            type(ZMM16c4),    automatic :: t0
+            type(ZMM16c4),    automatic :: t1
+            type(ZMM16r4_t),  automatic :: arg
+            type(ZMM16r4_t),  automatic :: num
+            type(ZMM16r4_t),  automatic :: k02
+            type(ZMM16r4_t),  automatic :: a2
+            type(ZMM16r4_t),  automatic :: k0a
+            type(ZMM16r4_t),  automatic :: k0r
+            type(ZMM16r4_t),  automatic :: cost
+            type(ZMM16r4_t),  automatic :: trm
+            type(ZMM16r4_t),  automatic :: x0
+            type(ZMM16r4_t),  automatic :: x1
+            !dir$ attributes align : 64 :: den
+            !dir$ attributes align : 64 :: ea
+            !dir$ attributes align : 64 :: ce
+            !dir$ attributes align : 64 :: t0
+            !dir$ attributes align : 64 :: t1
+            !dir$ attributes align : 64 :: arg
+            !dir$ attributes align : 64 :: num
+            !dir$ attributes align : 64 :: k02
+            !dir$ attributes align : 64 :: a2
+            !dir$ attributes align : 64 :: k0a
+            !dir$ attributes align : 64 :: k0r
+            !dir$ attributes align : 64 :: cost
+            !dir$ attributes align : 64 :: trm
+            !dir$ attributes align : 64 :: x0
+            !dir$ attributes align : 64 :: x1
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+            type(ZMM16r4_t), automatic :: tmp
+            !dir$ attributes align : 64 :: tmp
+            integer(kind=i4) :: j
+             !dir$ loop_count(16)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+             do j=0, 15
+                den.im(j) = C157079632679489661923132.v(j)
+                cost.v(j) = cos(tht.v(j))
+                k0r.v(j)  = k0.v(j)*r.v(j)
+                a2.v(j)   = a.v(j)*a.v(j)
+                ea.re(j)  = v16_0.v(j)
+                k0a.v(j)  = k0.v(j)*a.v(j)
+                ea.im(j)  = k0r.v(j)+C078539816339744830961566.v(j)
+                k02.v(j)  = k0.v(j)*k0.v(j)
+                x0.v(j)   = C314159265358979323846264338328.v(j)/ &
+                            (k0r.v(j)+k0r.v(j))
+                tmp.v(j)  = exp(ea.re(j))
+                ce.re(j)  = tmp.v(j)*cos(ea.re(j))
+                ce.im(j)  = tmp.v(j)*sin(ea.im(j))
+                arg.v(j)  = C4.v(j)/(gam.v(j)*k0a.v(j))
+                trm.v(j)  = sqrt(x0.v(j))
+                x1.v(j)   = cost.v(j)*cost.v(j)
+                den.re(j) = log(arg.v(j))
+                x0.v(j)   = k02.v(j)*a2.v(j)*qtr.v(j)+v16_1.v(j)
+                num.v(j)  = x0.v(j)*x1.v(j)
+                t0.re(j)  = (num.v(j)/den.re(j))*trm.v(j)
+                t0.im(j)  = (num.v(j)/den.im(j))*trm.v(j)
+             end do
+             t1 = t0*ce
+             Es = Ei*t1
+#else
+                den.im = C157079632679489661923132.v
+                cost.v = cos(tht.v)
+                k0r.v  = k0.v*r.v
+                a2.v   = a.v*a.v
+                ea.re  = v16_0.v
+                k0a.v  = k0.v*a.v
+                ea.im  = k0r.v+C078539816339744830961566.v
+                k02.v  = k0.v*k0.v
+                x0.v   = C314159265358979323846264338328.v/ &
+                         (k0r.v+k0r.v)
+                ce     = cexp_c16(ea)
+                arg.v  = C4.v/(gam.v*k0a.v)
+                trm.v  = sqrt(x0.v)
+                x1.v   = cost.v*cost.v
+                den.re = log(arg.v)
+                x0.v   = k02.v*a2.v*qtr.v+v16_1.v
+                num.v  = x0.v*x1.v
+                t0.re  = (num.v/den.re)*trm.v
+                t0.im  = (num.v/den.im)*trm.v
+                t1 = t0*ce
+                Es = Ei*t1
+#endif
+        end function Ezs_f741_v512b_ps
         
 
 
