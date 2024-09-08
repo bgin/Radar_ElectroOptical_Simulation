@@ -1303,8 +1303,104 @@ module rcs_planar_zmm16r4
 #endif            
        end function RCS_f744_v512b_ps
         
-        
+       
+      !            /*
+      !                    General bistatic case.
+      !                    The Rayleigh scattering results.
+      !                    Plane-perpendicular.
+      !                    Formula 7.4-5
+      !               */
 
+      pure function RCS_f745_v512b_ps(k0,a,tht,tht2) result(RCS)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: RCS_f745_v512b_ps
+            !dir$ attributes forceinline :: RCS_f745_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: RCS_f745_v512b_ps
+            use mod_vecconsts, only :  v16_1
+            type(ZMM16r4_t),  intent(in) :: k0
+            type(ZMM16r4_t),  intent(in) :: a
+            type(ZMM16r4_t),  intent(in) :: tht
+            type(ZMM16r4_t),  intent(in) :: tht2
+            type(ZMM16r4_t) :: RCS
+            type(ZMM16r4_t),  parameter :: C9869604401089358618834490999876 = &
+                                                ZMM16r4_t(9.869604401089358618834490999876_sp)
+            type(ZMM16r4_t),  parameter :: C2467401100272339654708622749969 = &
+                                                ZMM16r4_t(2.467401100272339654708622749969_sp)
+            type(ZMM16r4_t),  parameter :: C025 = ZMM16r4_t(0.25_sp)
+            type(ZMM16r4_t),  parameter :: C448 = ZMM16r4_t(4.48_sp)
+            type(ZMM16r4_t),  automatic :: fac
+            type(ZMM16r4_t),  automatic :: num
+            type(ZMM16r4_t),  automatic :: den
+            type(ZMM16r4_t),  automatic :: cost
+            type(ZMM16r4_t),  automatic :: k02
+            type(ZMM16r4_t),  automatic :: a2
+            type(ZMM16r4_t),  automatic :: k0a
+            type(ZMM16r4_t),  automatic :: x0
+            type(ZMM16r4_t),  automatic :: x1
+            type(ZMM16r4_t),  automatic :: arg
+            type(ZMM16r4_t),  automatic :: larg
+            type(ZMM16r4_t),  automatic :: rat
+            type(ZMM16r4_t),  automatic :: cost2
+            !dir$ attributes align : 64 :: C9869604401089358618834490999876
+            !dir$ attributes align : 64 :: C2467401100272339654708622749969
+            !dir$ attributes align : 64 :: C025
+            !dir$ attributes align : 64 :: C448
+            !dir$ attributes align : 64 :: fac
+            !dir$ attributes align : 64 :: num
+            !dir$ attributes align : 64 :: den
+            !dir$ attributes align : 64 :: cost
+            !dir$ attributes align : 64 :: k02
+            !dir$ attributes align : 64 :: a2
+            !dir$ attributes align : 64 :: k0a
+            !dir$ attributes align : 64 :: x0
+            !dir$ attributes align : 64 :: x1
+            !dir$ attributes align : 64 :: arg
+            !dir$ attributes align : 64 :: larg
+            !dir$ attributes align : 64 :: rat
+            !dir$ attributes align : 64 :: cost2
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+             !dir$ loop_count(16)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+             do j=0, 15
+                  k0a.v(j)  = k0.v(j)*a.v(j)
+                  fac.v(j)  = C9869604401089358618834490999876.v(j)/ &
+                              k0.v(j)
+                  k02.v(j)  = k0.v(j)*k0.v(j)
+                  a2.v(j)   = a.v(j)*a.v(j)
+                  cost.v(j) = cos(tht.v(j))
+                  x0.v(j)   = k02.v(j)*a2.v(j)*C025.v(j)+v16_1.v(j)
+                  cost2.v(j)= cos(tht2.v(j))
+                  arg.v(j)  = C448.v(j)/(k0a.v(j)+k0a.v(j))
+                  x1.v(j)   = x0.v(j)*cost.v(j)*cost2.v(j)
+                  larg.v(j) = log(arg.v(j))
+                  num.v(j)  = x1.v(j)*x.v(j)
+                  den.v(j)  = larg.v(j)*larg.v(j)+ &
+                              C2467401100272339654708622749969.v(j)
+                  rat.v(j)  = num.v(j)/den.v(j)
+                  RCS.v(j)  = fac.v(j)*rat.v(j)
+             end do   
+#else
+                  k0a.v  = k0.v*a.v
+                  fac.v  = C9869604401089358618834490999876.v/ &
+                              k0.v
+                  k02.v  = k0.v*k0.v
+                  a2.v   = a.v*a.v
+                  cost.v = cos(tht.v)
+                  x0.v   = k02.v*a2.v*C025.v+v16_1.v
+                  cost2.v= cos(tht2.v)
+                  arg.v  = C448.v/(k0a.v+k0a.v)
+                  x1.v   = x0.v*cost.v*cost2.v
+                  larg.v = log(arg.v)
+                  num.v  = x1.v*x.v
+                  den.v  = larg.v*larg.v+ &
+                              C2467401100272339654708622749969.v
+                  rat.v  = num.v/den.v
+                  RCS.v  = fac.v*rat.v
+#endif         
+      end function RCS_f745_v512b_ps
 
 
 
