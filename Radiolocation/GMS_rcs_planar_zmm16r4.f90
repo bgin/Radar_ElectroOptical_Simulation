@@ -1032,6 +1032,112 @@ module rcs_planar_zmm16r4
 #endif
         end function Ezs_f741_v512b_ps
         
+        !/*
+        !                    Infinite strips, low frequency region.
+        !                    H-field (scattered) along 'z'.
+        !                    Formula 7.4-2
+        !                */
+        
+        pure function Hzs_f742_v512b_ps(k0a,k0r,tht,Hi) result(Hs)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: Hzs_f742_v512b_ps
+            !dir$ attributes forceinline :: Hzs_f742_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Hzs_f742_v512b_ps
+            use mod_vecconsts, only : v16_1, v16_0
+            type(ZMM16r4_t),    intent(in) :: k0a
+            type(ZMM16r4_t),    intent(in) :: k0r
+            type(ZMM16r4_t),    intent(in) :: tht
+            type(ZMM16c4),      intent(in) :: Hi
+            type(ZMM16c4)  :: Hs
+            ! Locals
+            type(ZMM16r4_t),  parameter :: C0125 = ZMM16r4_t(0.125_sp)
+            type(ZMM16r4_t),  parameter :: C314159265358979323846264338328 = &
+                                                    ZMM16r4_t(3.14159265358979323846264338328_sp)
+            type(ZMM16r4_t),  parameter :: C078539816339744830961566       = &
+                                                    ZMM16r4_t(0.78539816339744830961566_sp)
+            type(ZMM16c4),    automatic :: ea
+            type(ZMM16c4),    automatic :: ce
+            type(ZMM16c4),    automatic :: t0
+            type(ZMM16c4),    automatic :: ctmp
+            type(ZMM16r4_t),  automatic :: trm
+            type(ZMM16r4_t),  automatic :: num
+            type(ZMM16r4_t),  automatic :: cost
+            type(ZMM16r4_t),  automatic :: x0
+            type(ZMM16r4_t),  automatic :: x1
+            !dir$ attributes align : 64 :: C0125
+            !dir$ attributes align : 64 :: C314159265358979323846264338328
+            !dir$ attributes align : 64 :: C078539816339744830961566 
+            !dir$ attributes align : 64 :: ea
+            !dir$ attributes align : 64 :: ce
+            !dir$ attributes align : 64 :: t0
+            !dir$ attributes align : 64 :: trm
+            !dir$ attributes align : 64 :: num
+            !dir$ attributes align : 64 :: cost
+            !dir$ attributes align : 64 :: x0
+            !dir$ attributes align : 64 :: x1
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+            type(ZMM16r4_t), automatic :: tmp
+            type(ZMM16r4_t), automatic :: zmm0
+            type(ZMM16r4_t), automatic :: zmm1
+            type(ZMM16r4_t), automatic :: zmm2
+            type(ZMM16r4_t), automatic :: zmm3
+            !dir$ attributes align : 64 :: tmp
+            !dir$ attributes align : 64 :: zmm0
+            !dir$ attributes align : 64 :: zmm1
+            !dir$ attributes align : 64 :: zmm2
+            !dir$ attributes align : 64 :: zmm3   
+            integer(kind=i4) :: j
+             !dir$ loop_count(16)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+             do j=0, 15
+                ea.re(j)  = v16_0.v(j)
+                cost.v(j) = cos(tht.v(j))
+                ea.im(j)  = k0r.v(j)+C078539816339744830961566.v(j)
+                x0.v(j)   = C314159265358979323846264338328.v(j)/ &
+                            (k0r.v(j)+k0r.v(j))
+                tmp.v(j)  = exp(ea.re(j))
+                ce.re(j)  = tmp.v(j)*cos(ea.re(j))
+                ce.im(j)  = tmp.v(j)*sin(ea.im(j))   
+                trm.v(j)  = sqrt(x0.v(j))
+                x1.v(j)   = k0a.v(j)+k0a.v(j)
+                x0.v(j)   = cost.v(j)*cost.v(j)
+                num.v(j)  = x1.v(j)*x1.v(j)*x0.v(j)
+                t0.re(j)  = trm.v(j)*ce.re(j)
+                t0.im(j)  = trm.v(j)*ce.im(j)
+                num.v(j)  = C0125.v(j)*num.v(j)
+                x0.v(j)   = Hs.re(j)*num.v(j)
+                x1.v(j)   = Hs.im(j)*num.v(j)
+                ! Body of operator*
+                zmm0.v(j) = x0.re(j)*t0.re(j)
+                zmm1.v(j) = x1.im(j)*t0.im(j)
+                Hs.re(j)  = zmm0.v(j)+zmm1.v(j)
+                zmm2.v(j) = x0.im(j)*t0.re(j)
+                zmm3.v(j) = x1.re(j)*t0.im(j)
+                Hs.im(j)  = zmm2.v(j)-zmm3.v(j)   
+             end do
+#else
+                ea.re  = v16_0.v
+                cost.v = cos(tht.v)
+                ea.im  = k0r.v+C078539816339744830961566.v
+                x0.v   = C314159265358979323846264338328.v/ &
+                            (k0r.v+k0r.v)
+                ce     = cexp_c16(ea)  
+                trm.v  = sqrt(x0.v)
+                x1.v   = k0a.v+k0a.v
+                x0.v   = cost.v*cost.v
+                num.v  = x1.v*x1.v*x0.v
+                t0.re  = trm.v*ce.re
+                t0.im  = trm.v*ce.im
+                num.v  = C0125.v*num.v
+                x0.v   = Hs.re*num.v
+                x1.v   = Hs.im*num.v
+                ctmp   = zmm16r42x_init(x0,x1)
+                Hs     = ctmp*t0
+#endif            
+        end function Hzs_f742_v512b_ps
+        
         
         
 
