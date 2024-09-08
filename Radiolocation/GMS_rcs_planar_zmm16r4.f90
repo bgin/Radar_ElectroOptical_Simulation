@@ -955,7 +955,15 @@ module rcs_planar_zmm16r4
             !dir$ attributes align : 64 :: x1
 #if (GMS_EXPLICIT_VECTORIZE) == 1
             type(ZMM16r4_t), automatic :: tmp
+            type(ZMM16r4_t), automatic :: zmm0
+            type(ZMM16r4_t), automatic :: zmm1
+            type(ZMM16r4_t), automatic :: zmm2
+            type(ZMM16r4_t), automatic :: zmm3
             !dir$ attributes align : 64 :: tmp
+            !dir$ attributes align : 64 :: zmm0
+            !dir$ attributes align : 64 :: zmm1
+            !dir$ attributes align : 64 :: zmm2
+            !dir$ attributes align : 64 :: zmm3   
             integer(kind=i4) :: j
              !dir$ loop_count(16)
              !dir$ vector aligned
@@ -983,9 +991,22 @@ module rcs_planar_zmm16r4
                 num.v(j)  = x0.v(j)*x1.v(j)
                 t0.re(j)  = (num.v(j)/den.re(j))*trm.v(j)
                 t0.im(j)  = (num.v(j)/den.im(j))*trm.v(j)
+                ! Body of operator*
+                zmm0.v(j) = t0.re(j)*ce.re(j)
+                zmm1.v(j) = t0.im(j)*ce.im(j)
+                t1.re(j)  = zmm0.v(j)+zmm1.v(j)
+                zmm2.v(j) = t0.im(j)*ce.re(j)
+                zmm3.v(j) = t0.re(j)*ce.im(j)
+                t1.im(j)  = zmm2.v(j)-zmm3.v(j)
+                ! Body of operator*
+                zmm0.v(j) = Ei.re(j)*t1.re(j)
+                zmm1.v(j) = EI.im(j)*t1.im(j)
+                Es.re(j)  = zmm0.v(j)+zmm1.v(j)
+                zmm2.v(j) = Ei.im(j)*t1.re(j)
+                zmm3.v(j) = Ei.re(j)*ti.im(j)
+                Es.im(j)  = zmm2.v(j)-zmm3.v(j)
              end do
-             t1 = t0*ce
-             Es = Ei*t1
+            
 #else
                 den.im = C157079632679489661923132.v
                 cost.v = cos(tht.v)
@@ -1010,6 +1031,8 @@ module rcs_planar_zmm16r4
                 Es = Ei*t1
 #endif
         end function Ezs_f741_v512b_ps
+        
+        
         
 
 
