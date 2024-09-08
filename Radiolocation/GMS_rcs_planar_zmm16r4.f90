@@ -1230,7 +1230,78 @@ module rcs_planar_zmm16r4
 #endif            
         end function RCS_f743_v512b_ps
 
-        
+       !  /*
+       !                 
+       !                The resultant backscatter RCS of parallel
+       !                polarization.
+       !                Formula 7.4-4  
+       !!
+       !              */
+       
+       pure function RCS_f744_v512b_ps(k0,a,tht) result(RCS)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: RCS_f744_v512b_ps
+            !dir$ attributes forceinline :: RCS_f744_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: RCS_f744_v512b_ps
+            type(ZMM16r4_t),  intent(in) :: k0
+            type(ZMM16r4_t),  intent(in) :: a
+            type(ZMM16r4_t),  intent(in) :: tht
+            type(ZMM16r4_t) :: RCS
+            ! Locals
+            type(ZMM16r4_t),  parameter :: C9869604401089358618834490999876 = &
+                                                ZMM16r4_t(9.869604401089358618834490999876_sp)
+            type(ZMM16r4_t),  parameter :: C0015625 = ZMM16r4_t(0.015625_sp)
+            type(ZMM16r4_t),  automatic :: k0a
+            type(ZMM16r4_t),  automatic :: k0a2
+            type(ZMM16r4_t),  automatic :: x0
+            type(ZMM16r4_t),  automatic :: x1
+            type(ZMM16r4_t),  automatic :: x2
+            type(ZMM16r4_t),  automatic :: cost
+            type(ZMM16r4_t),  automatic :: cos2t
+            type(ZMM16r4_t),  automatic :: fac
+            type(ZMM16r4_t),  automatic :: num
+            !dir$ attributes align : 64 :: C9869604401089358618834490999876
+            !dir$ attributes align : 64 :: C0015625
+            !dir$ attributes align : 64 :: k0a
+            !dir$ attributes align : 64 :: k0a2
+            !dir$ attributes align : 64 :: x0
+            !dir$ attributes align : 64 :: x1
+            !dir$ attributes align : 64 :: x2
+            !dir$ attributes align : 64 :: cost
+            !dir$ attributes align : 64 :: cos2t
+            !dir$ attributes align : 64 :: fac
+            !dir$ attributes align : 64 :: num
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+             !dir$ loop_count(16)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+             do j=0, 15
+                k0a.v(j)  = k0.v(j)*a.v(j)
+                cost.v(j) = cos(tht.v(j))
+                k0a2.v(j) = k0a.v(j)+k0a.v(j)
+                fac.v(j)  = C9869604401089358618834490999876.v(j)/ &
+                            k0.v(j)
+                x2.v(j)   = cos2t.v(j)*cos2t.v(j)
+                x0.v(j)   = k0a2.v(j)*k0a2.v(j)
+                x1.v(j)   = x0.v(j)*x0.v(j)
+                num.v(j)  = (x1.v(j)*x2.v(j))*C0015625.v(j)
+                RCS.v(j)  = fac.v(j)*num.v(j)    
+             end do
+#else
+                k0a.v  = k0.v*a.v
+                cost.v = cos(tht.v)
+                k0a2.v = k0a.v+k0a.v
+                fac.v  = C9869604401089358618834490999876.v/ &
+                            k0.v
+                x2.v   = cos2t.v*cos2t.v
+                x0.v   = k0a2.v*k0a2.v
+                x1.v   = x0.v*x0.v
+                num.v  = (x1.v*x2.v)*C0015625.v
+                RCS.v  = fac.v*num.v  
+#endif            
+       end function RCS_f744_v512b_ps
         
         
 
