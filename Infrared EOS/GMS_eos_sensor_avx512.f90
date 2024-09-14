@@ -13696,9 +13696,9 @@ module eos_sensor_avx512
            real(kind=sp), dimension(1:n), intent(in)  :: freq
            integer(kind=i4),              intent(in)  :: n
            type(ZMM16r4_t),                intent(in)  :: T      !vector enhanced i.e. broadcast
-           type(ZMM16r4_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_sp)
-           type(ZMM16r4_r), parameter :: half  = YMM8r4_t(0.5_sp)
-           type(ZMM16r4_t), parameter :: one   = YMM8r4_t(1.0_sp)
+           type(ZMM16r4_t), parameter :: twopi = ZMM16r4_t(6.283185307179586476925286766559_sp)
+           type(ZMM16r4_r), parameter :: half  = ZMM16r4_t(0.5_sp)
+           type(ZMM16r4_t), parameter :: one   = ZMM16r4_t(1.0_sp)
            type(ZMM16r4_t) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
            !dir$ attributes align : 64 :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
            type(ZMM16r4_t) :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
@@ -13876,9 +13876,9 @@ module eos_sensor_avx512
            real(kind=sp), dimension(1:n), intent(in)  :: freq
            integer(kind=i4),              intent(in)  :: n
            type(ZMM16r4_t),                intent(in)  :: T      !vector enhanced i.e. broadcast
-           type(ZMM16r4_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_sp)
-           type(ZMM16r4_r), parameter :: half  = YMM8r4_t(0.5_sp)
-           type(ZMM16r4_t), parameter :: one   = YMM8r4_t(1.0_sp)
+           type(ZMM16r4_t), parameter :: twopi = ZMM16r4_t(6.283185307179586476925286766559_sp)
+           type(ZMM16r4_r), parameter :: half  = ZMM16r4_t(0.5_sp)
+           type(ZMM16r4_t), parameter :: one   = ZMM16r4_t(1.0_sp)
            type(ZMM16r4_t) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
            !dir$ attributes align : 64 :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
            type(ZMM16r4_t) :: f0,f1,f2,f3,f4,f5,f6,f7
@@ -14008,9 +14008,9 @@ module eos_sensor_avx512
            real(kind=sp), dimension(1:n), intent(in)  :: freq
            integer(kind=i4),              intent(in)  :: n
            type(ZMM16r4_t),                intent(in)  :: T      !vector enhanced i.e. broadcast
-           type(ZMM16r4_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_sp)
-           type(ZMM16r4_r), parameter :: half  = YMM8r4_t(0.5_sp)
-           type(ZMM16r4_t), parameter :: one   = YMM8r4_t(1.0_sp)
+           type(ZMM16r4_t), parameter :: twopi = ZMM16r4_t(6.283185307179586476925286766559_sp)
+           type(ZMM16r4_r), parameter :: half  = ZMM16r4_t(0.5_sp)
+           type(ZMM16r4_t), parameter :: one   = ZMM16r4_t(1.0_sp)
            type(ZMM16r4_t) :: arg0,arg1,arg2,arg3
            !dir$ attributes align : 64 :: arg0,arg1,arg2,arg3
            type(ZMM16r4_t) :: f0,f1,f2,f3
@@ -14120,9 +14120,9 @@ module eos_sensor_avx512
            real(kind=dp), dimension(1:n), intent(in)  :: freq
            integer(kind=i4),              intent(in)  :: n
            type(ZMM8r8_t),                intent(in)  :: T      !vector enhanced i.e. broadcast
-           type(ZMM8r8_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_dp)
-           type(ZMM8r8_r), parameter :: half  = YMM8r4_t(0.5_dp)
-           type(ZMM8r8_t), parameter :: one   = YMM8r4_t(1.0_dp)
+           type(ZMM8r8_t), parameter :: twopi = ZMM8r8_t(6.283185307179586476925286766559_dp)
+           type(ZMM8r8_r), parameter :: half  = ZMM8r8_t(0.5_dp)
+           type(ZMM8r8_t), parameter :: one   = ZMM8r8_t(1.0_dp)
            type(ZMM8r8_t) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
            !dir$ attributes align : 64 :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
            type(ZMM8r8_t) :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
@@ -14300,9 +14300,9 @@ module eos_sensor_avx512
            real(kind=dp), dimension(1:n), intent(in)  :: freq
            integer(kind=i4),              intent(in)  :: n
            type(ZMM8r8_t),                intent(in)  :: T      !vector enhanced i.e. broadcast
-           type(ZMM8r8_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_dp)
-           type(ZMM8r8_r), parameter :: half  = YMM8r4_t(0.5_dp)
-           type(ZMM8r8_t), parameter :: one   = YMM8r4_t(1.0_dp)
+           type(ZMM8r8_t), parameter :: twopi = ZMM8r8_t(6.283185307179586476925286766559_dp)
+           type(ZMM8r8_r), parameter :: half  = ZMM8r8_t(0.5_dp)
+           type(ZMM8r8_t), parameter :: one   = ZMM8r8_t(1.0_dp)
            type(ZMM8r8_t) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
            !dir$ attributes align : 64 :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
            type(ZMM8r8_t) :: f0,f1,f2,f3,f4,f5,f6,f7
@@ -14432,9 +14432,9 @@ module eos_sensor_avx512
            real(kind=dp), dimension(1:n), intent(in)  :: freq
            integer(kind=i4),              intent(in)  :: n
            type(ZMM8r8_t),                intent(in)  :: T      !vector enhanced i.e. broadcast
-           type(ZMM8r8_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_dp)
-           type(ZMM8r8_r), parameter :: half  = YMM8r4_t(0.5_dp)
-           type(ZMM8r8_t), parameter :: one   = YMM8r4_t(1.0_dp)
+           type(ZMM8r8_t), parameter :: twopi = ZMM8r8_t(6.283185307179586476925286766559_dp)
+           type(ZMM8r8_r), parameter :: half  = ZMM8r8_t(0.5_dp)
+           type(ZMM8r8_t), parameter :: one   = ZMM8r8_t(1.0_dp)
            type(ZMM8r8_t) :: arg0,arg1,arg2,arg3
            !dir$ attributes align : 64 :: arg0,arg1,arg2,arg3
            type(ZMM8r8_t) :: f0,f1,f2,f3
@@ -14995,7 +14995,7 @@ module eos_sensor_avx512
            type(ZMM8r8_t),               intent(in)  :: phi0
            type(ZMM8r8_t),               intent(in)  :: rho0
            type(ZMM8r8_t),               intent(in)  :: rho1
-           type(ZMM8r8_t), parameter :: twopi = ZMM16r4_t(6.283185307179586476925286766559_dp)
+           type(ZMM8r8_t), parameter :: twopi = ZMM8r8_t(6.283185307179586476925286766559_dp)
            type(ZMM8r8_t) :: t0,t1,t2,t3,t4,t5,t6,t7
            type(ZMM8r8_t) :: t8,t9,t10,t11,t12,t13,t14,t15
            type(ZMM8r8_t) :: s0,s1,s2,s3,s4,s5,s6,s7
@@ -15186,7 +15186,7 @@ module eos_sensor_avx512
            type(ZMM8r8_t),               intent(in)  :: phi0
            type(ZMM8r8_t),               intent(in)  :: rho0
            type(ZMM8r8_t),               intent(in)  :: rho1
-           type(ZMM8r8_t), parameter :: twopi = ZMM16r4_t(6.283185307179586476925286766559_dp)
+           type(ZMM8r8_t), parameter :: twopi = ZMM8r8_t(6.283185307179586476925286766559_dp)
            type(ZMM8r8_t) :: t0,t1,t2,t3,t4,t5,t6,t7
            type(ZMM8r8_t) :: s0,s1,s2,s3,s4,s5,s6,s7
            type(ZMM8r8_t) :: c0,c1,c2,c3,c4,c5,c6,c7
@@ -16623,8 +16623,8 @@ module eos_sensor_avx512
            type(ZMM8r8_t),                intent(in)  :: T
            real(kind=sp), dimension(1:n),  intent(in)  :: k
            type(ZMM8r8_t),                intent(in)  :: tin
-           type(ZMM8r8_t), parameter :: pi2 = ZMM16r4_t(1.5707963267948966192313216916398_dp)
-           type(ZMM8r8_t), parameter :: two = ZMM16r4_t(2.0_dp)
+           type(ZMM8r8_t), parameter :: pi2 = ZMM8r8_t(1.5707963267948966192313216916398_dp)
+           type(ZMM8r8_t), parameter :: two = ZMM8r8_t(2.0_dp)
            type(ZMM8r8_t) :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
            !dir$ attributes align : 64 :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
            type(ZMM8r8_t) :: phik8,phik9,phik10,phik11,phik12,phik13,phik14,phik15
@@ -16844,8 +16844,8 @@ module eos_sensor_avx512
            type(ZMM8r8_t),                intent(in)  :: T
            real(kind=sp), dimension(1:n),  intent(in)  :: k
            type(ZMM8r8_t),                intent(in)  :: tin
-           type(ZMM8r8_t), parameter :: pi2 = ZMM16r4_t(1.5707963267948966192313216916398_dp)
-           type(ZMM8r8_t), parameter :: two = ZMM16r4_t(2.0_dp)
+           type(ZMM8r8_t), parameter :: pi2 = ZMM8r8_t(1.5707963267948966192313216916398_dp)
+           type(ZMM8r8_t), parameter :: two = ZMM8r8_t(2.0_dp)
            type(ZMM8r8_t) :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
            !dir$ attributes align : 64 :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
            type(ZMM8r8_t) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
@@ -17019,8 +17019,8 @@ module eos_sensor_avx512
            type(ZMM8r8_t),                intent(in)  :: T
            real(kind=sp), dimension(1:n),  intent(in)  :: k
            type(ZMM8r8_t),                intent(in)  :: tin
-           type(ZMM8r8_t), parameter :: pi2 = ZMM16r4_t(1.5707963267948966192313216916398_dp)
-           type(ZMM8r8_t), parameter :: two = ZMM16r4_t(2.0_dp)
+           type(ZMM8r8_t), parameter :: pi2 = ZMM8r8_t(1.5707963267948966192313216916398_dp)
+           type(ZMM8r8_t), parameter :: two = ZMM8r8_t(2.0_dp)
            type(ZMM8r8_t) :: phik0,phik1,phik2,phik3
            !dir$ attributes align : 64 :: phik0,phik1,phik2,phik3
            type(ZMM8r8_t) :: arg0,arg1,arg2,arg3
