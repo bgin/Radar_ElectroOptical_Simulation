@@ -1413,8 +1413,7 @@ module rcs_planar_zmm16r4
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: RCS_f746_v512b_ps
             !dir$ attributes forceinline :: RCS_f746_v512b_ps
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: RCS_f745_v512b_ps
-            use mod_vecconsts, only :  v16_1
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: RCS_f746_v512b_ps
             type(ZMM16r4_t),  intent(in) :: k0
             type(ZMM16r4_t),  intent(in) :: a
             type(ZMM16r4_t),  intent(in) :: tht
@@ -1484,7 +1483,66 @@ module rcs_planar_zmm16r4
       !                   For k0a>>1, PO solution of backscatter RCS.
       !                   Formula 7.4-7
        !              */
-       
+      
+       pure function RCS_f747_v512b_ps(k0,a,tht) result(RCS)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: RCS_f747_v512b_ps
+            !dir$ attributes forceinline :: RCS_f747_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: RCS_f747_v512b_ps
+            use mod_vecconsts, only :  v16_1
+            type(ZMM16r4_t),  intent(in) :: k0
+            type(ZMM16r4_t),  intent(in) :: a
+            type(ZMM16r4_t),  intent(in) :: tht
+            type(ZMM16r4_t) :: RCS
+            type(ZMM16r4_t), automatic :: invk0
+            type(ZMM16r4_t), automatic :: k0a
+            type(ZMM16r4_t), automatic :: cost
+            type(ZMM16r4_t), automatic :: sint
+            type(ZMM16r4_t), automatic :: arg
+            type(ZMM16r4_t), automatic :: sarg
+            type(ZMM16r4_t), automatic :: num
+            type(ZMM16r4_t), automatic :: sqr
+            type(ZMM16r4_t), automatic :: x0
+            !dir$ attributes align : 64 :: invk0
+            !dir$ attributes align : 64 :: k0a
+            !dir$ attributes align : 64 :: cost
+            !dir$ attributes align : 64 :: sint
+            !dir$ attributes align : 64 :: arg
+            !dir$ attributes align : 64 :: sarg
+            !dir$ attributes align : 64 :: num
+            !dir$ attributes align : 64 :: sqr
+            !dir$ attributes align : 64 :: x0
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+             !dir$ loop_count(16)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+             do j=0, 15
+                k0a.v(j)   = k0.v(j)*a.v(j)
+                cost.v(j)  = cos(tht.v(j))
+                invk0.v(j) = v16_1.v(j)/k0.v(j)
+                sint.v(j)  = sin(tht.v(j))
+                arg.v(j)   = (k0a.v(j)+k0a.v(j))*sint.v(j)
+                sarg.v(j)  = sin(arg.v(j))
+                num.v(j)   = cost.v(j)*sarg.v(j)
+                x0.v(j)    = num.v(j)/sint.v(j)
+                sqr.v(j)   = x0.v(j)*x0.v(j)
+                RCS.v(j)   = invk0.v(j)*sqr.v(j)        
+             end do
+#else
+                k0a.v   = k0.v*a.v
+                cost.v  = cos(tht.v)
+                invk0.v = v16_1.v/k0.v
+                sint.v  = sin(tht.v)
+                arg.v   = (k0a.v+k0a.v)*sint.v
+                sarg.v  = sin(arg.v)
+                num.v   = cost.v*sarg.v
+                x0.v    = num.v/sint.v
+                sqr.v   = x0.v*x0.v
+                RCS.v   = invk0.v*sqr.v   
+#endif            
+       end function RCS_f746_v512b_ps 
       
 
 
