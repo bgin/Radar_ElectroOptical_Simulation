@@ -1544,6 +1544,75 @@ module rcs_planar_zmm16r4
 #endif            
        end function RCS_f746_v512b_ps 
       
+      ! /*
+      !                 Backscattered fields from the edges of strips.
+      !                 Helper function for the formula 7.4-9
+      !                 Electric-field (over z).
+      !                 Formula 7.4-15
+      !            */
+      
+      subroutine CoefG12_f7415_v512b_ps(k0a,tht,gamm1,gamm2)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: CoefG12_f7415_v512b_ps
+            !dir$ attributes forceinline :: CoefG12_f7415_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: CoefG12_f7415_v512b_ps
+            type(ZMM16r4_t),   intent(in)  :: k0a
+            type(ZMM16r4_t),   intent(in)  :: tht
+            type(ZMM16r4_t),   intent(out) :: gamm1
+            type(ZMM16r4_t),   intent(out) :: gamm2
+            ! Locals
+            type(ZMM16r4_t),  parameter :: C0318309886183790671537767526745 =  &
+                                           ZMM16r4_t(0.318309886183790671537767526745_sp)
+            type(ZMM16r4_t),  parameter :: C078539816339744830961566084582  =  &
+                                           ZMM16r4_t(0.78539816339744830961566084582_sp)
+            type(ZMM16r4_t),  parameter :: C05 = ZMM16r4_t(0.5_sp)
+            type(ZMM16r4_t),  automatic :: thth
+            type(ZMM16r4_t),  automatic :: arg1
+            type(ZMM16r4_t),  automatic :: arg2
+            type(ZMM16r4_t),  automatic :: carg1
+            type(ZMM16r4_t),  automatic :: carg2
+            type(ZMM16r4_t),  automatic :: sqr
+            type(ZMM16r4_t),  automatic :: x0
+            !dir$ attributes align : 64 ::  C0318309886183790671537767526745
+            !dir$ attributes align : 64 ::  C078539816339744830961566084582
+            !dir$ attributes align : 64 ::  thth
+            !dir$ attributes align : 64 ::  arg1
+            !dir$ attributes align : 64 ::  arg2
+            !dir$ attributes align : 64 ::  carg1
+            !dir$ attributes align : 64 ::  carg2
+            !dir$ attributes align : 64 ::  sqr
+            !dir$ attributes align : 64 ::  x0
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+             !dir$ loop_count(16)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+             do j=0, 15
+                x0.v(j)   = k0a.v(j)+k0a.v(j)
+                thth.v(j) = C05.v(j)*tht.v(j)
+                sqr.v(j)  = sqr(x0.v(j)*C0318309886183790671537767526745.v(j))
+                arg1.v(j) = C078539816339744830961566084582.v(j)+thth.v(j)
+                carg1.v(j)= cos(arg1.v(j))
+                x0.v(j)   = sqr.v(j)+sqr.v(j)
+                arg2.v(j) = C078539816339744830961566084582.v(j)+thth.v(j)
+                carg2.v(j)= cos(arg2.v(j))
+                gamm1.v(j)= x0.v(j)*abs(carg1.v(j))
+                gamm2.v(j)= x0.v(j)*abs(carg2.v(j))
+             end do
+#else
+                x0.v   = k0a.v+k0a.v
+                thth.v = C05.v*tht.v
+                sqr.v  = sqr(x0.v*C0318309886183790671537767526745.v)
+                arg1.v = C078539816339744830961566084582.v+thth.v
+                carg1.v= cos(arg1.v)
+                x0.v   = sqr.v+sqr.v
+                arg2.v = C078539816339744830961566084582.v+thth.v
+                carg2.v= cos(arg2.v)
+                gamm1.v= x0.v*abs(carg1.v)
+                gamm2.v= x0.v*abs(carg2.v)
+#endif                 
+      end subroutine CoefG12_f7415_v512b_ps
 
 
 
