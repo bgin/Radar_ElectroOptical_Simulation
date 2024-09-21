@@ -1913,6 +1913,211 @@ module rcs_planar_zmm16r4
                 B2.im   = A2.im*x5.v
 #endif                          
      end subroutine CoefB12_f7414_v512b_ps
+     
+     !   /*
+     !                  Very Important!!
+     !                  Backscattered fields from the edges of strips.
+     !                  Ufimtsev derivation.
+     !                  Electric-field (over z).
+     !                  Formula 7.4-9
+     !            */
+     
+     subroutine Esz_f749_v512b_ps(tht,k0a,k0r,Ei,Es)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: Esz_f749_v512b_ps
+            !dir$ attributes forceinline :: Esz_f749_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Esz_f749_v512b_ps
+            use mod_vecconsts,      only :  v16_1, v16_0
+            type(ZMM16r4_t),   intent(in)  :: tht
+            type(ZMM16r4_t),   intent(in)  :: k0a
+            type(ZMM16r4_t),   intent(in)  :: k0r
+            type(ZMM16c4),     intent(in)  :: Ei
+            type(ZMM16c4),     intent(out) :: Es
+            type(ZMM16r4_t),   parameter :: C078539816339744830961566084582 = &
+                                            ZMM16r4_t(0.78539816339744830961566084582_sp)
+            type(ZMM16r4_t),   parameter :: C314159265358979323846264338328 = &
+                                            ZMM16r4_t(3.14159265358979323846264338328_sp)
+            type(ZMM16r4_t),   parameter :: C6283185307179586476925286766559 = &
+                                            ZMM16r4_t(6.283185307179586476925286766559_sp)
+            type(ZMM16c4),     automatic :: ea1
+            type(ZMM16c4),     automatic :: ce1
+            type(ZMM16c4),     automatic :: B1
+            type(ZMM16c4),     automatic :: B2
+            type(ZMM16c4),     automatic :: B1s
+            type(ZMM16c4),     automatic :: B2s
+            type(ZMM16c4),     automatic :: ea2
+            type(ZMM16c4),     automatic :: ea3
+            type(ZMM16c4),     automatic :: ce2
+            type(ZMM16c4),     automatic :: ce3
+            type(ZMM16c4),     automatic :: t0
+            type(ZMM16c4),     automatic :: t1
+            type(ZMM16c4),     automatic :: t2
+            type(ZMM16c4),     automatic :: ctmp
+            type(ZMM16r4_t),   automatic :: sint
+            type(ZMM16r4_t),   automatic :: sin2t
+            type(ZMM16r4_t),   automatic :: sin1
+            type(ZMM16r4_t),   automatic :: sin2
+            type(ZMM16r4_t),   automatic :: sqr
+            type(ZMM16r4_t),   automatic :: x0
+            type(ZMM16r4_t),   automatic :: x1
+            type(ZMM16r4_t),   automatic :: k0a2
+            type(ZMM16r4_t),   automatic :: y0
+            !dir$ attributes align : 64 :: C078539816339744830961566084582
+            !dir$ attributes align : 64 :: C314159265358979323846264338328
+            !dir$ attributes align : 64 :: C6283185307179586476925286766559
+            !dir$ attributes align : 64 :: ea1
+            !dir$ attributes align : 64 :: ce1
+            !dir$ attributes align : 64 :: B1
+            !dir$ attributes align : 64 :: B2
+            !dir$ attributes align : 64 :: B1s
+            !dir$ attributes align : 64 :: B2s
+            !dir$ attributes align : 64 :: ea2
+            !dir$ attributes align : 64 :: ea3
+            !dir$ attributes align : 64 :: ce2
+            !dir$ attributes align : 64 :: ce3
+            !dir$ attributes align : 64 :: t0
+            !dir$ attributes align : 64 :: t1
+            !dir$ attributes align : 64 :: t2
+            !dir$ attributes align : 64 :: ctmp
+            !dir$ attributes align : 64 :: sint
+            !dir$ attributes align : 64 :: sin2t
+            !dir$ attributes align : 64 :: sin1
+            !dir$ attributes align : 64 :: sin2
+            !dir$ attributes align : 64 :: sqr
+            !dir$ attributes align : 64 :: x0
+            !dir$ attributes align : 64 :: x1
+            !dir$ attributes align : 64 :: k0a2
+            !dir$ attributes align : 64 :: y0
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+            type(ZMM16r4_t),  automatic :: ct0
+            type(ZMM16r4_t), automatic :: zmm0
+            type(ZMM16r4_t), automatic :: zmm1
+            type(ZMM16r4_t), automatic :: zmm2
+            type(ZMM16r4_t), automatic :: zmm3
+            !dir$ attributes align : 64 :: zmm0
+            !dir$ attributes align : 64 :: zmm1
+            !dir$ attributes align : 64 :: zmm2
+            !dir$ attributes align : 64 :: zmm3   
+            !dir$ attributes align : 64 :: ct0
+             integer(kind=i4) :: j
+#endif      
+            call CoefB12_f7414_v512b_ps(k0a,tht,B1,B2)
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             !dir$ loop_count(16)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+             do j=0, 15
+                ea1.re(j)   = v16_0.v(j)
+                sqr.v(j)    = sqrt(C6283185307179586476925286766559.v(j)* &
+                                   k0r.v(j))
+                k0a2.v(j)   = k0a.v(j)+k0a.v(j)
+                ea1.im(j)   = k0r.v(j)+  &
+                              C078539816339744830961566084582.v(j)
+                sint.v(j)   = sin(tht.v(j))
+                 ! complex exp
+                ct0.v(j)   = exp(ea1.re(j))
+                ce1.re(j)  = ct0.v(j)*cos(ea1.re(j))
+                ce1.im(j)  = ct0.v(j)*sin(ea1.im(j))
+                sin2t.v(j) = sint.v(j)+sint.v(j)
+                sin1.v(j)  = (v16_1.v(j)-sint.v(j))/sin2t.v(j)
+                ! operator*
+                zmm0.v(j) = B1.re(j)*B1.re(j)
+                zmm1.v(j) = B1.im(j)*B1.im(j)
+                B1s.re(j) = zmm0.v(j)+zmm1.v(j)
+                zmm2.v(j) = B1.im(j)*B1.re(j)
+                zmm3.v(j) = B1.re(j)*B1.im(j)
+                B1s.im(j) = zmm2.v(j)-zmm3.v(j)
+                ea2.re(j) = ea1.re(j)
+                sin2.v(j) = (v16_1.v(j)+sint.v(j))/sin2t.v(j)
+                y0.v(j)   = k0a2.v(j)*sint.v(j)
+                ea2.im(j) = y0.v(j)
+                ! complex exp
+                ct0.v(j)   = exp(ea2.re(j))
+                ce2.re(j)  = ct0.v(j)*cos(ea2.re(j))
+                ce2.im(j)  = ct0.v(j)*sin(ea2.im(j))
+                ce2.re(j)  = sin1.v(j)*ce2.re(j)
+                ce2.im(j)  = sin1.v(j)*ce2.im(j)
+                ea3.re(j)  = ea1.re(j)
+                ! operator*
+                zmm0.v(j) = B2.re(j)*B2.re(j)
+                zmm1.v(j) = B2.im(j)*B2.im(j)
+                B2s.re(j) = zmm0.v(j)+zmm1.v(j)
+                zmm2.v(j) = B2.im(j)*B2.re(j)
+                zmm3.v(j) = B2.re(j)*B2.im(j)
+                B2s.im(j) = zmm2.v(j)-zmm3.v(j)
+                ea3.im(j) = -y0.v(j)
+                ! complex exp
+                ct0.v(j)   = exp(ea3.re(j))
+                ce3.re(j)  = ct0.v(j)*cos(ea3.re(j))
+                ce3.im(j)  = ct0.v(j)*sin(ea3.im(j))
+                ce3.re(j)  = sin2.v(j)*ce3.re(j)
+                ce3.im(j)  = sin2.v(j)*ce3.im(j)
+                ! operator*
+                zmm0.v(j) = B2s.re(j)*ce2.re(j)
+                zmm1.v(j) = B2s.im(j)*ce2.im(j)
+                t0.re(j)  = zmm0.v(j)+zmm1.v(j)
+                zmm2.v(j) = B2s.im(j)*ce2.re(j)
+                zmm3.v(j) = B2s.re(j)*ce2.im(j)
+                t0.im(j) = zmm2.v(j)-zmm3.v(j)
+                !  operator*
+                zmm0.v(j) = B1s.re(j)*ce3.re(j)
+                zmm1.v(j) = B1s.im(j)*ce3.im(j)
+                t1.re(j)  = zmm0.v(j)+zmm1.v(j)
+                zmm2.v(j) = B1s.im(j)*ce3.re(j)
+                zmm3.v(j) = B1s.re(j)*ce3.im(j)
+                t1.im(j)  = zmm2.v(j)-zmm3.v(j)
+                t2.re(j)  = t0.re(j)-t1.re(j)
+                t2.im(j)  = t0.im(j)-t1.im(j)
+                ! operator*
+                zmm0.v(j) = Ei.re(j)*t2.re(j)
+                zmm1.v(j) = Ei.im(j)*t2.im(j)
+                x0.v(j)   = zmm0.v(j)+zmm1.v(j)
+                zmm2.v(j) = Ei.im(j)*t2.re(j)
+                zmm3.v(j) = Ei.re(j)*t2.im(j)
+                x1.im(j)  = zmm2.v(j)-zmm3.v(j)
+                ! operator*
+                zmm0.v(j) = x0.v(j)*ce1.re(j)
+                zmm1.v(j) = x1.v(j)*ce1.im(j)
+                Es.re(j)  = zmm0.v(j)+zmm1.v(j)
+                zmm2.v(j) = x1.v(j)*ce1.re(j)
+                zmm3.v(j) = x0.v(j)*ce1.im(j)
+                Es.im(j)  = zmm2.v(j)-zmm3.v(j)
+             end do
+#else
+                ea1.re   = v16_0.v
+                sqr.v    = sqrt(C6283185307179586476925286766559.v* &
+                                   k0r.v)
+                k0a2.v   = k0a.v+k0a.v
+                ea1.im   = k0r.v+  &
+                              C078539816339744830961566084582.v
+                sint.v   = sin(tht.v)
+                ce1      = cexp_c16(ea1)
+                sin2t.v  = sint.v+sint.v
+                sin1.v   = (v16_1.v-sint.v)/sin2t.v
+                B1s      = B1*B1
+                ea2.re   = ea1.re
+                sin2.v   = (v16_1.v+sint.v)/sin2t.v
+                y0.v     = k0a2.v*sint.v
+                ea2.im   = y0.v
+                ce2      = cexp_c16(ea2)
+                ce2.re  = sin1.v*ce2.re
+                ce2.im  = sin1.v*ce2.im
+                ea3.re  = ea1.re
+                B2s     = B2*B2
+                ea3.im  = -y0.v
+                ce3     = cexp_c16(ea3)
+                ce3.re  = sin2.v*ce3.re
+                ce3.im  = sin2.v*ce3.im
+                t0      = B2s*ce2
+                t1      = B1s*ce3
+                t2.re   = t0.re-t1.re
+                t2.im   = t0.im-t1.im
+                ctmp    = zmm16r42x_init(x0,x1)
+                ctmp    = Ei*t2
+                Es      = ctmp*ce
+#endif                     
+     end subroutine Esz_f749_v512b_ps
 
 
 
