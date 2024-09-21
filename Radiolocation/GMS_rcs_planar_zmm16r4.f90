@@ -1811,7 +1811,7 @@ module rcs_planar_zmm16r4
             !dir$ attributes align : 64 :: ct0
              integer(kind=i4) :: j
 #endif                   
-            call CoefA12_f7413_v512ps(k0a,tht,A1,A2)
+            call CoefA12_f7413_v512b_ps(k0a,tht,A1,A2)
 #if (GMS_EXPLICIT_VECTORIZE) == 1
              !dir$ loop_count(16)
              !dir$ vector aligned
@@ -1905,7 +1905,7 @@ module rcs_planar_zmm16r4
                 t1.re   = ce1.re/abs2.v
                 ctmp1   = zmm16r42x_init(x2,x3)
                 ctmp1   = I*t0
-                ctmp2   = zmm16r42x(x4,x5)
+                ctmp2   = zmm16r42x_init(x4,x5)
                 ctmp2   = I*t1
                 B1.re   = A1.re*x2.v
                 B2.re   = A2.re*x4.v
