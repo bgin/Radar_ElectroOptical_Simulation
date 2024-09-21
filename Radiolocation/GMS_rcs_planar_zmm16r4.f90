@@ -94,6 +94,8 @@ module rcs_planar_zmm16r4
 #define __RCS_PLANAR_PF_CACHE_HINT__ 1
 #endif 
     
+    
+    contains
 
         !/*
         !               Complex impedances.
@@ -1634,9 +1636,9 @@ module rcs_planar_zmm16r4
             type(ZMM16c4),     intent(out) :: A1
             type(ZMM16c4),     intent(out) :: A2
             ! Locals
-            type(ZMM16r4_t),  parameter :: C078539816339744830961566084582 = 
+            type(ZMM16r4_t),  parameter :: C078539816339744830961566084582 = &
                                                 ZMM16r4_t(-0.78539816339744830961566084582_sp)
-            type(ZMM16r4_t),  parameter :: C141421356237309504880168872421 = 
+            type(ZMM16r4_t),  parameter :: C141421356237309504880168872421 = &
                                                 ZMM16r4_t(1.41421356237309504880168872421_sp)
             type(ZMM16c4),    automatic :: ea
             type(ZMM16c4),    automatic :: ce
@@ -1717,6 +1719,201 @@ module rcs_planar_zmm16r4
 #endif
                 
       end subroutine CoefA12_f7413_v512b_ps
+      
+      ! /*
+      !                 Backscattered fields from the edges of strips.
+      !                 Helper function for the formula 7.4-9
+      !                 Electric-field (over z).
+      !                 Formula 7.4-14
+      !            */
+      
+      subroutine CoefB12_f7414_v512b_ps(k0a,tht,B1,B2)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: CoefB12_f7414_v512b_ps
+            !dir$ attributes forceinline :: CoefB12_f7414_v512b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: CoefB12_f7414_v512b_ps
+            use mod_vecconsts,      only :  v16_0, v16_1
+            type(ZMM16r4_t),   intent(in)  :: k0a
+            type(ZMM16r4_t),   intent(in)  :: tht
+            type(ZMM16c4),     intent(out) :: B1
+            type(ZMM16c4),     intent(out) :: B2
+            ! Locals
+            type(ZMM16r4_t),  parameter :: C078539816339744830961566084582 = &
+                                                ZMM16r4_t(-0.78539816339744830961566084582_sp)
+            type(ZMM16r4_t),  parameter :: C314159265358979323846264338328 = &
+                                                ZMM16r4_t(3.14159265358979323846264338328_sp)
+            type(ZMM16r4_t),  parameter :: C05 = ZMM16r4_t(0.5_sp)    
+            type(ZMM16c4),    automatic :: A1
+            type(ZMM16c4),    automatic :: A2                               
+            type(ZMM16c4),    automatic :: ea1
+            type(ZMM16c4),    automatic :: ea2
+            type(ZMM16c4),    automatic :: ce1
+            type(ZMM16c4),    automatic :: ce2
+            type(ZMM16c4),    automatic :: I
+            type(ZMM16c4),    automatic :: t0
+            type(ZMM16c4),    automatic :: t1
+            type(ZMM16c4),    automatic :: ctmp1
+            type(ZMM16c4),    automatic :: ctmp2
+            type(ZMM16r4_t),  automatic :: sint
+            type(ZMM16r4_t),  automatic :: htht
+            type(ZMM16r4_t),  automatic :: carg1
+            type(ZMM16r4_t),  automatic :: carg2
+            type(ZMM16r4_t),  automatic :: arg1
+            type(ZMM16r4_t),  automatic :: arg2
+            type(ZMM16r4_t),  automatic :: abs1
+            type(ZMM16r4_t),  automatic :: abs2
+            type(ZMM16r4_t),  automatic :: x0
+            type(ZMM16r4_t),  automatic :: x1
+            type(ZMM16r4_t),  automatic :: x2
+            type(ZMM16r4_t),  automatic :: x3
+            type(ZMM16r4_t),  automatic :: x4
+            type(ZMM16r4_t),  automatic :: x5            
+            type(ZMM16r4_t),  automatic :: k0a2
+            !dir$ attributes align : 64 ::  C078539816339744830961566084582
+            !dir$ attributes align : 64 ::  C314159265358979323846264338328
+            !dir$ attributes align : 64 ::  A1
+            !dir$ attributes align : 64 ::  A2
+            !dir$ attributes align : 64 ::  C05
+            !dir$ attributes align : 64 ::  ea1
+            !dir$ attributes align : 64 ::  ea2
+            !dir$ attributes align : 64 ::  ce1
+            !dir$ attributes align : 64 ::  ce2
+            !dir$ attributes align : 64 ::  I
+            !dir$ attributes align : 64 ::  t0
+            !dir$ attributes align : 64 ::  t1
+            !dir$ attributes align : 64 ::  ctmp1
+            !dir$ attributes align : 64 ::  ctmp2
+            !dir$ attributes align : 64 ::  sint
+            !dir$ attributes align : 64 ::  htht
+            !dir$ attributes align : 64 ::  carg1
+            !dir$ attributes align : 64 ::  carg2
+            !dir$ attributes align : 64 ::  arg1
+            !dir$ attributes align : 64 ::  arg2
+            !dir$ attributes align : 64 ::  abs1
+            !dir$ attributes align : 64 ::  abs2
+            !dir$ attributes align : 64 ::  x0
+            !dir$ attributes align : 64 ::  x1
+            !dir$ attributes align : 64 ::  x2
+            !dir$ attributes align : 64 ::  x3
+            !dir$ attributes align : 64 ::  x4
+            !dir$ attributes align : 64 ::  x5
+            !dir$ attributes align : 64 ::  k0a2
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+            type(ZMM16r4_t),  automatic :: ct0
+            type(ZMM16r4_t), automatic :: zmm0
+            type(ZMM16r4_t), automatic :: zmm1
+            type(ZMM16r4_t), automatic :: zmm2
+            type(ZMM16r4_t), automatic :: zmm3
+            !dir$ attributes align : 64 :: zmm0
+            !dir$ attributes align : 64 :: zmm1
+            !dir$ attributes align : 64 :: zmm2
+            !dir$ attributes align : 64 :: zmm3   
+            !dir$ attributes align : 64 :: ct0
+             integer(kind=i4) :: j
+#endif                   
+            call CoefA12_f7413_v512ps(k0a,tht,A1,A2)
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             !dir$ loop_count(16)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+             do j=0, 15
+                I.re(j)    = v16_0.v(j)
+                x0.v(j)    = sqrt(C314159265358979323846264338328.v(j)* &
+                                  k0a.v(j))
+                htht.v(j)  = C05.v(j)*tht.v(j)
+                ea1.re(j)  = I.re(j)
+                sint.v(j)  = sin(tht.v(j))
+                I.im(j)    = x0.v(j)+x0.v(j)
+                k0a2.v(j)  = k0a.v(j)+k0a.v(j)
+                x0.v(j)    = v16_1.v(j)+sint.v(j)
+                ea2.im(j)  = (k0a2.v(j)*x0.v(j))- &
+                              C078539816339744830961566084582.v(j)
+                ! complex exp
+                ct0.v(j)   = exp(ea1.re(j))
+                ce1.re(j)  = ct0.v(j)*cos(ea1.re(j))
+                ce1.im(j)  = ct0.v(j)*sin(ea2.im(j))
+                arg1.v(j)  = C078539816339744830961566084582.v(j)- &
+                             htht.v(j)
+                carg1.v(j) = cos(arg1.v(j))
+                x1.v(j)    = v16_1.v(j)-sint.v(j)
+                ea1.im(j)  = (k0a2.v(j)*x1.v(j))- &
+                             C078539816339744830961566084582.v(j)
+                ! complex exp
+                ct0.v(j)   = exp(ea1.re(j))
+                ce2.re(j)  = ct0.v(j)*cos(ea1.re(j))
+                ce2.im(j)  = ct0.v(j)*sin(ea1.im(j)) 
+                abs1.v(j)  = abs(carg1.v(j))
+                t0.re(j)   = ce2.re(j)/abs1.v(j)
+                arg2.v(j)  = C078539816339744830961566084582.v(j)/ &
+                             htht.v(j)
+                t0.im(j)   = ce2.im(j)/abs1.v(j)
+                carg2.v(j) = cos(arg2.v(j))
+                abs2.v(j)  = abs(carg2.v(j))
+                t1.re(j)   = ce1.re(j)/abs2.v(j)
+                ! Body of operator*
+                zmm0.v(j) = I.re(j)*t0.re(j)
+                zmm1.v(j) = I.im(j)*t0.im(j)
+                x2.v(j)   = zmm0.v(j)+zmm1.v(j)
+                zmm2.v(j) = I.im(j)*t0.re(j)
+                zmm3.v(j) = I.re(j)*t0.im(j)
+                x3.v(j)   = zmm2.v(j)-zmm3.v(j)  
+                t1.im(j)  = ce1.im(j)/abs2.v(j)
+                ! Body of operator*
+                zmm0.v(j) = I.re(j)*t1.re(j)
+                zmm1.v(j) = I.im(j)*t1.im(j)
+                x4.v(j)   = zmm0.v(j)+zmm1.v(j)
+                zmm2.v(j) = I.im(j)*t1.re(j)
+                zmm3.v(j) = I.re(j)*t1.im(j)
+                x5.v(j)   = zmm2.v(j)-zmm3.v(j)  
+                B1.re(j)  = A1.re(j)+x2.v(j)
+                B2.re(j)  = A2.re(j)+x4.v(j)
+                B1.im(j)  = A1.im(j)+x3.v(j)
+                B2.im(j)  = A2.im(j)+x5.v(j)
+             end do
+#else
+                I.re    = v16_0.v
+                x0.v    = sqrt(C314159265358979323846264338328.v* &
+                                  k0a.v)
+                htht.v  = C05.v*tht.v
+                ea1.re  = I.re
+                sint.v  = sin(tht.v)
+                I.im    = x0.v+x0.v
+                k0a2.v  = k0a.v+k0a.v
+                x0.v    = v16_1.v+sint.v
+                ea2.im  = (k0a2.v*x0.v)- &
+                              C078539816339744830961566084582.v
+                ct0.v   = exp(ea1.re)
+                ce1.re = ct0.v*cos(ea1.re)
+                ce1.im  = ct0.v*sin(ea2.im)
+                arg1.v  = C078539816339744830961566084582.v- &
+                             htht.v
+                carg1.v = cos(arg1.v)
+                x1.v    = v16_1.v-sint.v
+                ea1.im  = (k0a2.v*x1.v)- &
+                             C078539816339744830961566084582.v
+                ct0.v   = exp(ea1.re)
+                ce2.re  = ct0.v*cos(ea1.re)
+                ce2.im  = ct0.v*sin(ea1.im) 
+                abs1.v  = abs(carg1.v)
+                t0.re   = ce2.re/abs1.v
+                arg2.v  = C078539816339744830961566084582.v/ &
+                             htht.v
+                t0.im   = ce2.im/abs1.v
+                carg2.v = cos(arg2.v)
+                abs2.v  = abs(carg2.v)
+                t1.re   = ce1.re/abs2.v
+                ctmp1   = zmm16r42x_init(x2,x3)
+                ctmp1   = I*t0
+                ctmp2   = zmm16r42x(x4,x5)
+                ctmp2   = I*t1
+                B1.re   = A1.re*x2.v
+                B2.re   = A2.re*x4.v
+                B1.im   = A1.im*x3.v
+                B2.im   = A2.im*x5.v
+#endif                          
+     end subroutine CoefB12_f7414_v512b_ps
+
 
 
 
