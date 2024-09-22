@@ -215,6 +215,66 @@ module sph_complex_xmm4r4
             tmp    = tmp/rsqr
             y2     = tmp*C0772548404046379160684385470623           
      end function Y2_inv1_v128b_ps
+     
+     pure function Y2_0_v128b_ps(z,r) result(y2)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: Y2_0_v128b_ps
+            !dir$ attributes forceinline :: Y2_0_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Y2_0_v128b_ps
+#endif       
+            type(XMM4r4_t),   intent(in) :: z
+            type(XMM4r4_t),   intent(in) :: r
+            type(XMM4r4_t)  :: y2
+            type(XMM4r4_t),   parameter :: C0630783130505040012061787380591 = 
+                                   XMM4r4_t(0.630783130505040012061787380591_sp)
+            type(XMM4r4_t),   parameter :: C3 = XMM4r4_t(3.0_sp)
+            type(XMM4r4_t),   automatic :: zsqr
+            type(XMM4r4_t),   automatic :: rsqr
+            type(XMM4r4_t),   automatic :: diff
+            type(XMM4r4_t),   automatic :: rat 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)       
+            !dir$ attributes align : 16 :: C0630783130505040012061787380591
+            !dir$ attributes align : 16 :: C3
+            !dir$ attributes align : 16 :: zsqr
+            !dir$ attributes align : 16 :: rsqr
+            !dir$ attributes align : 16 :: diff
+            !dir$ attributes align : 16 :: rat
+#endif
+            zsqr.v = z.v*z.v
+            rsqr.v = r.v*r.v
+            diff.v = (C3.v*zsqr.v)-rsqr.v
+            rat.v  = diff.v/rsqr.v
+            y2.v   = C0630783130505040012061787380591.v*rat.v
+     end function Y2_0_v128b_ps
+     
+     pure function Y2_1_v128b_ps(c,z,r) result(y2)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: Y2_1_v128b_ps
+            !dir$ attributes forceinline :: Y2_1_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Y2_1_v128b_ps
+#endif     
+            type(XMM4c4),    intent(in) :: c
+            type(XMM4r4_t),  intent(in) :: z  
+            type(XMM4r4_t),  intent(in) :: r
+            type(XMM4c4)  :: y2
+            type(XMM4r4_t),  parameter :: C0772548404046379160684385470623 = &
+                                    XMM4r4_t(-0.772548404046379160684385470623_sp)
+            type(XMM4c4),    automatic :: tmp
+            type(XMM4r4_t),  automatic :: rsqr
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)             
+            !dir$ attributes align : 16 :: C0772548404046379160684385470623
+            !dir$ attributes align : 16 :: tmp
+            !dir$ attributes align : 16 :: rsqr
+#endif  
+            rsqr.v = r.v*r.v
+            tmp    = c*z
+            tmp    = tmp/rsqr
+            y2     = tmp*C0772548404046379160684385470623     
+     end function Y2_1_v128b_ps
+     
+     
 
 
 
