@@ -84,52 +84,60 @@ module rcs_common_xmm4r4
      character(*),        parameter :: RCS_COMMON_XMM4R4_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
      ! Short description
      character(*),        parameter :: RCS_COMMON_XMM4R4_SYNOPSIS  = "Helper functions for the RCS implementations" 
-     
-     !dir$ attributes align : 32 :: sn0
-     !dir$ attributes align : 32 :: sn1
-     !dir$ attributes align : 32 :: sn2
-     !dir$ attributes align : 32 :: sn3
-     !dir$ attributes align : 32 :: sn4
-     !dir$ attributes align : 32 :: sn5
+
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)     
+     !dir$ attributes align : 16 :: sn0
+     !dir$ attributes align : 16 :: sn1
+     !dir$ attributes align : 16 :: sn2
+     !dir$ attributes align : 16 :: sn3
+     !dir$ attributes align : 16 :: sn4
+     !dir$ attributes align : 16 :: sn5
+#endif     
      type(XMM4r4_t), save :: sn0 = XMM4r4_t(-2.99181919401019853726E3_sp)
      type(XMM4r4_t), save :: sn1 = XMM4r4_t(7.08840045257738576863E5_sp)
      type(XMM4r4_t), save :: sn2 = XMM4r4_t(-6.29741486205862506537E7_sp)
      type(XMM4r4_t), save :: sn3 = XMM4r4_t(2.54890880573376359104E9_sp)
      type(XMM4r4_t), save :: sn4 = XMM4r4_t(-4.42979518059697779103E10_sp)
      type(XMM4r4_t), save :: sn5 = XMM4r4_t(3.18016297876567817986E11_sp)
-     
-     !dir$ attributes align : 32 :: sd0
-     !dir$ attributes align : 32 :: sd1
-     !dir$ attributes align : 32 :: sd2
-     !dir$ attributes align : 32 :: sd3
-     !dir$ attributes align : 32 :: sd4
-     !dir$ attributes align : 32 :: sd5
+
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)       
+     !dir$ attributes align : 16 :: sd0
+     !dir$ attributes align : 16 :: sd1
+     !dir$ attributes align : 16 :: sd2
+     !dir$ attributes align : 16 :: sd3
+     !dir$ attributes align : 16 :: sd4
+     !dir$ attributes align : 16 :: sd5
+#endif
      type(XMM4r4_t), save :: sd0 = XMM4r4_t(2.81376268889994315696E2_sp)
      type(XMM4r4_t), save :: sd1 = XMM4r4_t(4.55847810806532581675E4_sp)
      type(XMM4r4_t), save :: sd2 = XMM4r4_t(5.17343888770096400730E6_sp)
      type(XMM4r4_t), save :: sd3 = XMM4r4_t(4.19320245898111231129E8_sp)
      type(XMM4r4_t), save :: sd4 = XMM4r4_t(2.24411795645340920940E10_sp)
      type(XMM4r4_t), save :: sd5 = XMM4r4_t(6.07366389490084639049E11_sp)
-     
-     !dir$ attributes align : 32 :: cn0
-     !dir$ attributes align : 32 :: cn1
-     !dir$ attributes align : 32 :: cn2
-     !dir$ attributes align : 32 :: cn3
-     !dir$ attributes align : 32 :: cn4
-     !dir$ attributes align : 32 :: cn5
+
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)       
+     !dir$ attributes align : 16 :: cn0
+     !dir$ attributes align : 16 :: cn1
+     !dir$ attributes align : 16 :: cn2
+     !dir$ attributes align : 16 :: cn3
+     !dir$ attributes align : 16 :: cn4
+     !dir$ attributes align : 16 :: cn5
+#endif     
      type(XMM4r4_t), save :: cn0 = XMM4r4_t(-4.98843114573573548651E-8_sp)
      type(XMM4r4_t), save :: cn1 = XMM4r4_t(9.50428062829859605134E-6_sp)
      type(XMM4r4_t), save :: cn2 = XMM4r4_t(-6.45191435683965050962E-4_sp)
      type(XMM4r4_t), save :: cn3 = XMM4r4_t(1.88843319396703850064E-2_sp)
      type(XMM4r4_t), save :: cn4 = XMM4r4_t(-2.05525900955013891793E-1_sp)
      type(XMM4r4_t), save :: cn5 = XMM4r4_t(9.99999999999999998822E-1_sp)
-     
-     !dir$ attributes align : 32 :: cd0
-     !dir$ attributes align : 32 :: cd1
-     !dir$ attributes align : 32 :: cd2
-     !dir$ attributes align : 32 :: cd3
-     !dir$ attributes align : 32 :: cd4
-     !dir$ attributes align : 32 :: cd5
+
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)        
+     !dir$ attributes align : 16 :: cd0
+     !dir$ attributes align : 16 :: cd1
+     !dir$ attributes align : 16 :: cd2
+     !dir$ attributes align : 16 :: cd3
+     !dir$ attributes align : 16 :: cd4
+     !dir$ attributes align : 16 :: cd5
+#endif
      type(XMM4r4_t), save :: cd0 = XMM4r4_t(3.99982968972495980367E-12_sp)
      type(XMM4r4_t), save :: cd1 = XMM4r4_t(9.15439215774657478799E-10_sp)
      type(XMM4r4_t), save :: cd2 = XMM4r4_t(1.25001862479598821474E-7_sp)
@@ -137,17 +145,18 @@ module rcs_common_xmm4r4
      type(XMM4r4_t), save :: cd4 = XMM4r4_t(8.68029542941784300606E-4_sp)
      type(XMM4r4_t), save :: cd5 = XMM4r4_t(4.12142090722199792936E-2)
      type(XMM4r4_t), save :: cd6 = XMM4r4_t(1.00000000000000000118E0_sp)
-     
-     !dir$ attributes align : 32 :: fn0
-     !dir$ attributes align : 32 :: fn1
-     !dir$ attributes align : 32 :: fn2
-     !dir$ attributes align : 32 :: fn3
-     !dir$ attributes align : 32 :: fn4
-     !dir$ attributes align : 32 :: fn5
-     !dir$ attributes align : 32 :: fn6
-     !dir$ attributes align : 32 :: fn7
-     !dir$ attributes align : 32 :: fn8
-     !dir$ attributes align : 32 :: fn9
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)     
+     !dir$ attributes align : 16 :: fn0
+     !dir$ attributes align : 16 :: fn1
+     !dir$ attributes align : 16 :: fn2
+     !dir$ attributes align : 16 :: fn3
+     !dir$ attributes align : 16 :: fn4
+     !dir$ attributes align : 16 :: fn5
+     !dir$ attributes align : 16 :: fn6
+     !dir$ attributes align : 16 :: fn7
+     !dir$ attributes align : 16 :: fn8
+     !dir$ attributes align : 16 :: fn9
+#endif
      type(XMM4r4_t), save :: fn0 = XMM4r4_t(4.21543555043677546506E-1_sp)
      type(XMM4r4_t), save :: fn1 = XMM4r4_t(1.43407919780758885261E-1_sp)
      type(XMM4r4_t), save :: fn2 = XMM4r4_t(1.15220955073585758835E-2_sp)
@@ -158,17 +167,18 @@ module rcs_common_xmm4r4
      type(XMM4r4_t), save :: fn7 = XMM4r4_t(1.72010743268161828879E-13_sp)
      type(XMM4r4_t), save :: fn8 = XMM4r4_t(1.34283276233062758925E-16_sp)
      type(XMM4r4_t), save :: fn9 = XMM4r4_t(3.76329711269987889006E-20_sp)
-     
-     !dir$ attributes align : 32 :: fd0
-     !dir$ attributes align : 32 :: fd1
-     !dir$ attributes align : 32 :: fd2
-     !dir$ attributes align : 32 :: fd3
-     !dir$ attributes align : 32 :: fd4
-     !dir$ attributes align : 32 :: fd5
-     !dir$ attributes align : 32 :: fd6
-     !dir$ attributes align : 32 :: fd7
-     !dir$ attributes align : 32 :: fd8
-     !dir$ attributes align : 32 :: fd9
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)          
+     !dir$ attributes align : 16 :: fd0
+     !dir$ attributes align : 16 :: fd1
+     !dir$ attributes align : 16 :: fd2
+     !dir$ attributes align : 16 :: fd3
+     !dir$ attributes align : 16 :: fd4
+     !dir$ attributes align : 16 :: fd5
+     !dir$ attributes align : 16 :: fd6
+     !dir$ attributes align : 16 :: fd7
+     !dir$ attributes align : 16 :: fd8
+     !dir$ attributes align : 16 :: fd9
+#endif
      type(XMM4r4_t), save :: fd0 = XMM4r4_t(7.51586398353378947175E-1_sp)
      type(XMM4r4_t), save :: fd1 = XMM4r4_t(1.16888925859191382142E-1_sp)
      type(XMM4r4_t), save :: fd2 = XMM4r4_t(6.44051526508858611005E-3_sp)
@@ -179,18 +189,19 @@ module rcs_common_xmm4r4
      type(XMM4r4_t), save :: fd7 = XMM4r4_t(5.88754533621578410010E-14_sp)
      type(XMM4r4_t), save :: fd8 = XMM4r4_t(4.52001434074129701496E-17_sp)
      type(XMM4r4_t), save :: fd9 = XMM4r4_t(1.25443237090011264384E-20_sp)
-     
-     !dir$ attributes align : 32 :: gn0
-     !dir$ attributes align : 32 :: gn1
-     !dir$ attributes align : 32 :: gn2
-     !dir$ attributes align : 32 :: gn3
-     !dir$ attributes align : 32 :: gn4
-     !dir$ attributes align : 32 :: gn5
-     !dir$ attributes align : 32 :: gn6
-     !dir$ attributes align : 32 :: gn7
-     !dir$ attributes align : 32 :: gn8
-     !dir$ attributes align : 32 :: gn9
-     !dir$ attributes align : 32 :: gn10
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)          
+     !dir$ attributes align : 16 :: gn0
+     !dir$ attributes align : 16 :: gn1
+     !dir$ attributes align : 16 :: gn2
+     !dir$ attributes align : 16 :: gn3
+     !dir$ attributes align : 16 :: gn4
+     !dir$ attributes align : 16 :: gn5
+     !dir$ attributes align : 16 :: gn6
+     !dir$ attributes align : 16 :: gn7
+     !dir$ attributes align : 16 :: gn8
+     !dir$ attributes align : 16 :: gn9
+     !dir$ attributes align : 16 :: gn10
+#endif
      type(XMM4r4_t), save :: gn0 = XMM4r4_t(5.04442073643383265887E-1_sp)
      type(XMM4r4_t), save :: gn1 = XMM4r4_t(1.97102833525523411709E-1_sp)
      type(XMM4r4_t), save :: gn2 = XMM4r4_t(1.87648584092575249293E-2_sp)
@@ -202,18 +213,19 @@ module rcs_common_xmm4r4
      type(XMM4r4_t), save :: gn8 = XMM4r4_t(1.37555460633261799868E-15_sp)
      type(XMM4r4_t), save :: gn9 = XMM4r4_t(8.36354435630677421531E-19_sp)
      type(XMM4r4_t), save :: gn10= XMM4r4_t(1.86958710162783235106E-22_sp)
-     
-     !dir$ attributes align : 32 :: gd0
-     !dir$ attributes align : 32 :: gd1
-     !dir$ attributes align : 32 :: gd2
-     !dir$ attributes align : 32 :: gd3
-     !dir$ attributes align : 32 :: gd4
-     !dir$ attributes align : 32 :: gd5
-     !dir$ attributes align : 32 :: gd6
-     !dir$ attributes align : 32 :: gd7
-     !dir$ attributes align : 32 :: gd8
-     !dir$ attributes align : 32 :: gd9
-     !dir$ attributes align : 32 :: gd10
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)          
+     !dir$ attributes align : 16 :: gd0
+     !dir$ attributes align : 16 :: gd1
+     !dir$ attributes align : 16 :: gd2
+     !dir$ attributes align : 16 :: gd3
+     !dir$ attributes align : 16 :: gd4
+     !dir$ attributes align : 16 :: gd5
+     !dir$ attributes align : 16 :: gd6
+     !dir$ attributes align : 16 :: gd7
+     !dir$ attributes align : 16 :: gd8
+     !dir$ attributes align : 16 :: gd9
+     !dir$ attributes align : 16 :: gd10
+#endif
      type(XMM4r4_t), save :: gd0 = XMM4r4_t(1.47495759925128324529E0_sp)
      type(XMM4r4_t), save :: gd1 = XMM4r4_t(3.37748989120019970451E-1_sp)
      type(XMM4r4_t), save :: gd2 = XMM4r4_t(2.53603741420338795122E-2_sp)
@@ -235,11 +247,12 @@ module rcs_common_xmm4r4
         !! 'saved' constant data , i.e. sn.
         !!
         pure function preload_sn() result(s)
-             
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: preload_sn
               !dir$ attributes forceinline :: preload_sn
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_sn
+#endif
               type(XMM4r4_t) :: s
               type(XMM4r4_t), automatic :: t0,t1,t2
               t0.v = sn0.v+sn1.v
@@ -254,11 +267,12 @@ module rcs_common_xmm4r4
         !! 'saved' constant data , i.e. sd.
         !!
         pure function preload_sd() result(s)
-             
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: preload_sd
               !dir$ attributes forceinline :: preload_sd
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_sd
+#endif
               type(XMM4r4_t) :: s
               type(XMM4r4_t), automatic :: t0,t1,t2
               t0.v = sd0.v+sd1.v
@@ -273,11 +287,12 @@ module rcs_common_xmm4r4
         !! 'saved' constant data , i.e. cn.
         !!
         pure function preload_cn() result(s)
-             
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                 
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: preload_cn
               !dir$ attributes forceinline :: preload_cn
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_cn
+#endif
               type(XMM4r4_t) :: s
               type(XMM4r4_t), automatic :: t0,t1,t2
               t0.v = cn0.v+cn1.v
@@ -292,11 +307,12 @@ module rcs_common_xmm4r4
         !! 'saved' constant data , i.e. cd.
         !!
         pure function preload_cd() result(s)
-             
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: preload_cd
               !dir$ attributes forceinline :: preload_cd
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_cd
+#endif
               type(XMM4r4_t) :: s
               type(XMM4r4_t), automatic :: t0,t1,t2
               t0.v = cd0.v+cd1.v
@@ -311,11 +327,12 @@ module rcs_common_xmm4r4
         !! 'saved' constant data , i.e. fn.
         !!
         pure function preload_fn() result(s)
-             
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                 
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: preload_fn
               !dir$ attributes forceinline :: preload_fn
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_fn
+#endif              
               type(XMM4r4_t) :: s
               type(XMM4r4_t), automatic :: t0,t1,t2,t3,t4
               t0.v = fn0.v+fn1.v
@@ -332,11 +349,12 @@ module rcs_common_xmm4r4
         !! 'saved' constant data , i.e. fd.
         !!
         pure function preload_fd() result(s)
-             
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: preload_fd
               !dir$ attributes forceinline :: preload_fd
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_fd
+#endif              
               type(XMM4r4_t) :: s
               type(XMM4r4_t), automatic :: t0,t1,t2,t3,t4
               t0.v = fd0.v+fd1.v
@@ -353,11 +371,12 @@ module rcs_common_xmm4r4
         !! 'saved' constant data , i.e. gn.
         !!
         pure function preload_gn() result(s)
-             
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: preload_gn
               !dir$ attributes forceinline :: preload_gn
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_gn
+#endif
               type(XMM4r4_t) :: s
               type(XMM4r4_t), automatic :: t0,t1,t2,t3,t4
               t0.v = gn0.v+gn1.v
@@ -374,11 +393,12 @@ module rcs_common_xmm4r4
         !! 'saved' constant data , i.e. gn.
         !!
         pure function preload_gd() result(s)
-             
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: preload_gd
               !dir$ attributes forceinline :: preload_gd
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_gd
+#endif
               type(XMM4r4_t) :: s
               type(XMM4r4_t), automatic :: t0,t1,t2,t3,t4
               t0.v = gd0.v+gd1.v
@@ -406,18 +426,19 @@ module rcs_common_xmm4r4
         
         
         pure function k_xmm4c4(mu,eps,om) result(k)
-             
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: k_xmm4c4
               !dir$ attributes forceinline :: k_xmm4c4
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: k_xmm4c4
+#endif              
               use sse_cvec4
               type(XMM4c4),  intent(in) :: mu
               type(XMM4c4),  intent(in) :: eps
               type(XMM4r4_t),intent(in) :: om
               type(XMM4c4) :: k
-              !dir$ attributes align : 32 :: sqr
-              !dir$ attributes align : 32 :: tc0
+              !dir$ attributes align : 16 :: sqr
+              !dir$ attributes align : 16 :: tc0
               type(XMM4c4), automatic :: sqr
               type(XMM4c4), automatic :: tc0
               tc0 = mu*eps
@@ -499,31 +520,32 @@ c
  
 
         pure function rc_xmm4r4(x,y,errt) result(rc)
-             
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: rc_xmm4r4
               !dir$ attributes forceinline :: rc_xmm4r4
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rc_xmm4r4
+#endif              
               !use mod_vecconsts, only : v16_1
               type(XMM4r4_t),   intent(in) :: x
               type(XMM4r4_t),   intent(in) :: y
               type(XMM4r4_t),   intent(in) :: errt
               type(XMM4r4_t)  :: rc
-              !dir$ attributes align : 32 :: C0142857142857142857142857142857 
-              !dir$ attributes align : 32 :: C0409090909090909090909090909091
-              !dir$ attributes align : 32 :: C0333333333333333333333333333333
-              !dir$ attributes align : 32 :: C0375
-              !dir$ attributes align : 32 :: C20
-              !dir$ attributes align : 32 :: C025
-              !dir$ attributes align : 32 :: C03
-              !dir$ attributes align : 32 :: xn
-              !dir$ attributes align : 32 :: yn
-              !dir$ attributes align : 32 :: mu
-              !dir$ attributes align : 32 :: s
-              !dir$ attributes align : 32 :: sn
-              !dir$ attributes align : 32 :: lamda
-              !dir$ attributes align : 32 :: sxn
-              !dir$ attributes align : 32 :: syn
+              !dir$ attributes align : 16 :: C0142857142857142857142857142857 
+              !dir$ attributes align : 16 :: C0409090909090909090909090909091
+              !dir$ attributes align : 16 :: C0333333333333333333333333333333
+              !dir$ attributes align : 16 :: C0375
+              !dir$ attributes align : 16 :: C20
+              !dir$ attributes align : 16 :: C025
+              !dir$ attributes align : 16 :: C03
+              !dir$ attributes align : 16 :: xn
+              !dir$ attributes align : 16 :: yn
+              !dir$ attributes align : 16 :: mu
+              !dir$ attributes align : 16 :: s
+              !dir$ attributes align : 16 :: sn
+              !dir$ attributes align : 16 :: lamda
+              !dir$ attributes align : 16 :: sxn
+              !dir$ attributes align : 16 :: syn
               type(XMM4r4_t),  parameter :: C0142857142857142857142857142857 = &
                                                  XMM4r4_t(0.142857142857142857142857142857_sp)
               type(XMM4r4_t),  parameter :: C0409090909090909090909090909091 = &
@@ -549,10 +571,12 @@ c
 
 #if (GMS_EXPLICIT_VECTORIZE) == 1
               do while (.true.)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                   
                       !dir$ loop_count(4)
                       !dir$ vector aligned
                       !dir$ vector vectorlength(4)
                       !dir$ vector always
+#endif                      
                       do j=0,3    
                          mu.v(j) = (xn.v(j)+yn.v(j)+yn.v(j))* &
                                     C0333333333333333333333333333333.v(j)
@@ -673,11 +697,12 @@ c    1, abnormal termination.
 
 
         pure function rd_xmm4r4(x,y,z,errt) result(rd)
-             
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: rd_xmm4r4
               !dir$ attributes forceinline :: rd_xmm4r4
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rd_xmm4r4
+#endif              
               !use mod_vecconsts, only : v16_1,v16_0
               type(XMM4r4_t),   intent(in) :: x
               type(XMM4r4_t),   intent(in) :: y
@@ -717,10 +742,12 @@ c    1, abnormal termination.
               pow4.v  = v16_1.v
 #if (GMS_EXPLICIT_VECTORIZE) == 1
               do while (.true.)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                   
                       !dir$ loop_count(4)
                       !dir$ vector aligned
                       !dir$ vector vectorlength(4)
                       !dir$ vector always
+#endif                      
                   do j=0,3   
                       t0.v(j) = zn.v(j)*C30.v(j)+xn.v(j)+yn.v(j)
                       mu.v(j) = C02.v(j)*t0.v(j)
@@ -880,34 +907,35 @@ c    1, abnormal termination.
 
 
        subroutine fresnel_xmm4r4(xxa,ssa,cca)
-            
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                 
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: fresnel_xmm4r4
               !dir$ attributes forceinline :: fresnel_xmm4r4
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fresnel_xmm4r4
+#endif              
               !use mod_vecconsts, only : v16_1,v16_0
               type(XMM4r4_t),  intent(in) :: xxa
               type(XMM4r4_t),  intent(out):: ssa
               type(XMM4r4_t),  intent(out):: cca
-              !dir$ attributes align : 32 :: C25625
-              !dir$ attributes align : 32 :: C369740
-              !dir$ attributes align : 32 :: C05
-              !dir$ attributes align : 32 :: C314159265358979323846264338328
-              !dir$ attributes align : 32 :: C157079632679489661923132169164
-              !dir$ attributes align : 32 :: f
-              !dir$ attributes align : 32 :: g
-              !dir$ attributes align : 32 :: cc
-              !dir$ attributes align : 32 :: ss
-              !dir$ attributes align : 32 :: t
-              !dir$ attributes align : 32 :: u
-              !dir$ attributes align : 32 :: t0
-              !dir$ attributes align : 32 :: t1
-              !dir$ attributes align : 32 :: x
-              !dir$ attributes align : 32 :: x2
-              !dir$ attributes align : 32 :: acc1
-              !dir$ attributes align : 32 :: acc2
-              !dir$ attributes align : 32 :: acc3
-              !dir$ attributes align : 32 :: acc4
+              !dir$ attributes align : 16 :: C25625
+              !dir$ attributes align : 16 :: C369740
+              !dir$ attributes align : 16 :: C05
+              !dir$ attributes align : 16 :: C314159265358979323846264338328
+              !dir$ attributes align : 16 :: C157079632679489661923132169164
+              !dir$ attributes align : 16 :: f
+              !dir$ attributes align : 16 :: g
+              !dir$ attributes align : 16 :: cc
+              !dir$ attributes align : 16 :: ss
+              !dir$ attributes align : 16 :: t
+              !dir$ attributes align : 16 :: u
+              !dir$ attributes align : 16 :: t0
+              !dir$ attributes align : 16 :: t1
+              !dir$ attributes align : 16 :: x
+              !dir$ attributes align : 16 :: x2
+              !dir$ attributes align : 16 :: acc1
+              !dir$ attributes align : 16 :: acc2
+              !dir$ attributes align : 16 :: acc3
+              !dir$ attributes align : 16 :: acc4
               type(XMM4r4_t),  parameter :: C25625 = XMM4r4_t(2.5625_sp)
               type(XMM4r4_t),  parameter :: C369740= XMM4r4_t(36974.0_sp)
               type(XMM4r4_t),  parameter :: C05    = XMM4r4_t(0.5_sp)
@@ -926,11 +954,12 @@ c    1, abnormal termination.
               integer(kind=i4) :: j
 #endif   
 #if (GMS_EXPLICIT_VECTORIZE) == 1
-           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                
                       !dir$ loop_count(4)
                       !dir$ vector aligned
                       !dir$ vector vectorlength(4)
                       !dir$ vector always
+#endif                      
               do j=0,3 
                    x.v(j)   = abs(xxa.v(j))
                    x2.v(j)  = x.v(j)*x.v(j)
@@ -1159,33 +1188,34 @@ c    1, abnormal termination.
        
        
        pure function fresnel_C_xmm4r4(xxa) result(cca)
-            
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                 
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: fresnel_C_xmm4r4
               !dir$ attributes forceinline :: fresnel_C_xmm4r4
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fresnel_C_xmm4r4 
               !use mod_vecconsts, only : v16_1, v16_0
+#endif              
               type(XMM4r4_t),    intent(in) :: xxa
               type(XMM4r4_t)  :: cca
-              !dir$ attributes align : 32 :: C25625
-              !dir$ attributes align : 32 :: C369740
-              !dir$ attributes align : 32 :: C05
-              !dir$ attributes align : 32 :: C314159265358979323846264338328
-              !dir$ attributes align : 32 :: C157079632679489661923132169164
-              !dir$ attributes align : 32 :: f
-              !dir$ attributes align : 32 :: g
-              !dir$ attributes align : 32 :: cc
-              !dir$ attributes align : 32 :: c
-              !dir$ attributes align : 32 :: t
-              !dir$ attributes align : 32 :: u
-              !dir$ attributes align : 32 :: t0
-              !dir$ attributes align : 32 :: t1
-              !dir$ attributes align : 32 :: x
-              !dir$ attributes align : 32 :: x2
-              !dir$ attributes align : 32 :: acc1
-              !dir$ attributes align : 32 :: acc2
-              !dir$ attributes align : 32 :: acc3
-              !dir$ attributes align : 32 :: acc4
+              !dir$ attributes align : 16 :: C25625
+              !dir$ attributes align : 16 :: C369740
+              !dir$ attributes align : 16 :: C05
+              !dir$ attributes align : 16 :: C314159265358979323846264338328
+              !dir$ attributes align : 16 :: C157079632679489661923132169164
+              !dir$ attributes align : 16 :: f
+              !dir$ attributes align : 16 :: g
+              !dir$ attributes align : 16 :: cc
+              !dir$ attributes align : 16 :: c
+              !dir$ attributes align : 16 :: t
+              !dir$ attributes align : 16 :: u
+              !dir$ attributes align : 16 :: t0
+              !dir$ attributes align : 16 :: t1
+              !dir$ attributes align : 16 :: x
+              !dir$ attributes align : 16 :: x2
+              !dir$ attributes align : 16 :: acc1
+              !dir$ attributes align : 16 :: acc2
+              !dir$ attributes align : 16 :: acc3
+              !dir$ attributes align : 16 :: acc4
               type(XMM4r4_t),  parameter :: C25625 = XMM4r4_t(2.5625_sp)
               type(XMM4r4_t),  parameter :: C369740= XMM4r4_t(36974.0_sp)
               type(XMM4r4_t),  parameter :: C05    = XMM4r4_t(0.5_sp)
@@ -1207,11 +1237,12 @@ c    1, abnormal termination.
               integer(kind=i4) :: j
 #endif   
 #if (GMS_EXPLICIT_VECTORIZE) == 1
-           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                
                       !dir$ loop_count(4)
                       !dir$ vector aligned
                       !dir$ vector vectorlength(4)
                       !dir$ vector always
+#endif                      
               do j=0,3  
                     x.v(j)   = abs(xxa.v(j))
                     x2.v(j)  = x.v(j)*x.v(j)
@@ -1382,33 +1413,34 @@ c    1, abnormal termination.
        
        
        pure function fresnel_S_xmm4r4(xxa) result(ssa)
-            
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                 
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: fresnel_S_xmm4r4
               !dir$ attributes forceinline :: fresnel_S_xmm4r4
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fresnel_S_xmm4r4 
+#endif              
               !use mod_vecconsts, only : v16_1, v16_0
               type(XMM4r4_t),    intent(in) :: xxa
               type(XMM4r4_t)  :: ssa
-              !dir$ attributes align : 32 :: C25625
-              !dir$ attributes align : 32 :: C369740
-              !dir$ attributes align : 32 :: C05
-              !dir$ attributes align : 32 :: C314159265358979323846264338328
-              !dir$ attributes align : 32 :: C157079632679489661923132169164
-              !dir$ attributes align : 32 :: f
-              !dir$ attributes align : 32 :: g
-              !dir$ attributes align : 32 :: ss
-              !dir$ attributes align : 32 :: c
-              !dir$ attributes align : 32 :: t
-              !dir$ attributes align : 32 :: u
-              !dir$ attributes align : 32 :: t0
-              !dir$ attributes align : 32 :: t1
-              !dir$ attributes align : 32 :: x
-              !dir$ attributes align : 32 :: x2
-              !dir$ attributes align : 32 :: acc1
-              !dir$ attributes align : 32 :: acc2
-              !dir$ attributes align : 32 :: acc3
-              !dir$ attributes align : 32 :: acc4
+              !dir$ attributes align : 16 :: C25625
+              !dir$ attributes align : 16 :: C369740
+              !dir$ attributes align : 16 :: C05
+              !dir$ attributes align : 16 :: C314159265358979323846264338328
+              !dir$ attributes align : 16 :: C157079632679489661923132169164
+              !dir$ attributes align : 16 :: f
+              !dir$ attributes align : 16 :: g
+              !dir$ attributes align : 16 :: ss
+              !dir$ attributes align : 16 :: c
+              !dir$ attributes align : 16 :: t
+              !dir$ attributes align : 16 :: u
+              !dir$ attributes align : 16 :: t0
+              !dir$ attributes align : 16 :: t1
+              !dir$ attributes align : 16 :: x
+              !dir$ attributes align : 16 :: x2
+              !dir$ attributes align : 16 :: acc1
+              !dir$ attributes align : 16 :: acc2
+              !dir$ attributes align : 16 :: acc3
+              !dir$ attributes align : 16 :: acc4
               type(XMM4r4_t),  parameter :: C25625 = XMM4r4_t(2.5625_sp)
               type(XMM4r4_t),  parameter :: C369740= XMM4r4_t(36974.0_sp)
               type(XMM4r4_t),  parameter :: C05    = XMM4r4_t(0.5_sp)
@@ -1430,11 +1462,12 @@ c    1, abnormal termination.
               integer(kind=i4) :: j
 #endif   
 #if (GMS_EXPLICIT_VECTORIZE) == 1
-           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                
                       !dir$ loop_count(4)
                       !dir$ vector aligned
                       !dir$ vector vectorlength(4)
                       !dir$ vector always
+#endif                      
               do j=0,3  
                     x.v(j)   = abs(xxa.v(j))
                     x2.v(j)  = x.v(j)*x.v(j)
