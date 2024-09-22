@@ -1,0 +1,169 @@
+
+#include "GMS_config.fpp"
+
+!/*MIT License
+!Copyright (c) 2020 Bernard Gingold
+!Permission is hereby granted, free of charge, to any person obtaining a copy
+!of this software and associated documentation files (the "Software"), to deal
+!in the Software without restriction, including without limitation the rights
+!to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+!copies of the Software, and to permit persons to whom the Software is
+!furnished to do so, subject to the following conditions:
+!The above copyright notice and this permission notice shall be included in all
+!copies or substantial portions of the Software.
+!THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+!IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+!FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+!AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+!LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+!OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+!SOFTWARE.
+!*/
+
+module sph_complex_xmm4r4
+
+
+!===================================================================================85
+ !---------------------------- DESCRIPTION ------------------------------------------85
+ !
+ !
+ !
+ !          Module  name:
+ !                         sph_complex_xmm4r4
+ !          
+ !          Purpose:
+ !                       Complex Spherical Harmonics up to degree (l=10).
+ !                        
+ !          History:
+ !                        Date: 22-09-2024
+ !                        Time: 09:13 GMT+2
+ !                        
+ !          Version:
+ !
+ !                      Major: 1
+ !                      Minor: 0
+ !                      Micro: 0
+ !
+ !          Author:  
+ !                      Bernard Gingold
+ !                 
+ !          References:
+ !         
+ !                      https://en.wikipedia.org/wiki/Table_of_spherical_harmonics
+ !         
+ !          E-mail:
+ !                  
+ !                      beniekg@gmail.com
+!==================================================================================85
+    ! Tab:5 col - Type and etc.. definitions
+    ! Tab:10,11 col - Type , function and subroutine code blocks.
+
+    use mod_kinds,    only : i4,sp
+    use sse_cvec4
+    use mod_vectypes, only : XMM4r4_t,Mask4_t
+    
+    public
+    implicit none
+    
+    
+      ! Major version
+     integer(kind=i4),  parameter :: SPH_COMPLEX_XMM4R4_MAJOR = 1
+     ! Minor version
+     integer(kind=i4),  parameter :: SPH_COMPLEX_XMM4R4_MINOR = 0
+     ! Micro version
+     integer(kind=i4),  parameter :: SPH_COMPLEX_XMM4R4_MICRO = 0
+     ! Full version
+     integer(kind=i4),  parameter :: SPH_COMPLEX_XMM4R4_FULLVER =   &
+            1000*SPH_COMPLEX_XMM4R4_MAJOR+100*SPH_COMPLEX_XMM4R4_MINOR+10*SPH_COMPLEX_XMM4R4_MICRO
+     ! Module creation date
+     character(*),        parameter :: SPH_COMPLEX_XMM4R4_CREATE_DATE = "22-09-2024 09:15AM +00200 (SUN 22 SEP 2024 GMT+2)"
+     ! Module build date
+     character(*),        parameter :: SPH_COMPLEX_XMM4R4_BUILD_DATE  = __DATE__ " " __TIME__
+     ! Module author info
+     character(*),        parameter :: SPH_COMPLEX_XMM4R4_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
+     ! Short description
+     character(*),        parameter :: SPH_COMPLEX_XMM4R4_SYNOPSIS  = "Complex Spherical Harmonics up to degree (l=10)." 
+     
+     contains
+     
+     ! Degree l=0
+     
+     pure function Y0_0_v128b_ps() result(y0)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: Y0_0_v128b_ps
+            !dir$ attributes forceinline :: Y0_0_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Y0_0_v128b_ps
+#endif
+            type(XMM4r4_t) :: y0
+            y0 = XMM4r4_t(0.28209479177387814347403972578_sp)
+     end function Y0_0_v128b_ps
+     
+     ! Degree l=1
+     
+     pure function Y1_inv1_v128b_ps(c,r) result(y1)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: Y1_inv1_v128b_ps
+            !dir$ attributes forceinline :: Y1_inv1_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Y1_inv1_v128b_ps
+#endif     
+            type(XMM4c4),    intent(in) :: c
+            type(XMM4r4_t),  intent(in) :: r
+            type(XMM4c4) :: y1
+            type(XMM4r4_t),  parameter :: C0345494149471335479265244646032 = &
+                                   XMM4r4_t(0.345494149471335479265244646032_sp)
+            type(XMM4c4),    automatic :: tmp
+            tmp = c/r
+            y0  = tmp*C0345494149471335479265244646032
+     end function Y1_inv1_v128b_ps
+     
+     pure function Y1_inv0_v128b_ps(z,r) result(y0)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: Y1_inv0_v128b_ps
+            !dir$ attributes forceinline :: Y1_inv0_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Y1_inv0_v128b_ps
+#endif          
+            type(XMM4r4_t),   intent(in) :: z
+            type(XMM4r4_t),   intent(in) :: r
+            type(XMM4r4_t) :: y0
+            type(XMM4r4_t),   parameter :: C1534990061919732732719327437334 = &
+                                  XMM4r4_t(1.534990061919732732719327437334_sp)
+            y0.v = C1534990061919732732719327437334.v*(z.v/r.v)
+     end function Y1_inv0_v128b_ps
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
