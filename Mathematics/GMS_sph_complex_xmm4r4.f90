@@ -363,7 +363,42 @@ module sph_complex_xmm4r4
             y3.v  = C0373176332590115391414395913199.v*(t2.v/rrr.v)
      end function Y3_0_v128b_ps
      
-
+     pure function Y3_1_v128b_ps(c,z,r) result(y3)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: Y3_1_v128b_ps
+            !dir$ attributes forceinline :: Y3_1_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Y3_1_v128b_ps
+            type(XMM4c4),    intent(in) :: c
+            type(XMM4r4_t),  intent(in) :: z
+            type(XMM4r4_t),  intent(in) :: r
+            type(XMM4c4)  ::               y3
+            type(XMM4r4_t),  parameter  :: C032318018411415065300739416333 = &
+                                    XMM4r4_t(-0.32318018411415065300739416333_sp)
+            type(XMM4r4_t),  parameter  :: C5 = XMM4r4_t(5.0_sp)
+            type(XMM4c4),    automatic :: ct1
+            type(XMM4c4),    automatic :: ct2
+            type(XMM4r4_t),  automatic :: zz
+            type(XMM4r4_t),  automatic :: rr
+            type(XMM4r4_t),  automatic :: rrr
+            type(XMM4r4_t),  automatic :: t0
+            
+            !dir$ attributes align : 16 :: C032318018411415065300739416333
+            !dir$ attributes align : 16 :: C5
+            !dir$ attributes align : 16 :: ct1
+            !dir$ attributes align : 16 :: ct2
+            !dir$ attributes align : 16 :: zz
+            !dir$ attributes align : 16 :: rr
+            !dir$ attributes align : 16 :: rrr
+            !dir$ attributes align : 16 :: t0
+           
+            zz.v = z.v*z.v
+            rr.v = r.v*r.v
+            ct0.v= C5.v*zz.v-rr.v
+            rrr.v= rr.v*r.v
+            ct1  = c*t0
+            ct2  = ct1/rrr
+            y3   = ct2*C032318018411415065300739416333
+     end function Y3_1_v128b_ps
 
 
 
