@@ -291,10 +291,12 @@ module sph_complex_xmm4r4
      ! Degree l=3
 
      pure function SphcY3_inv1_v128b_ps(c,z,r) result(y3)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: SphcY3_inv1_v128b_ps
             !dir$ attributes forceinline :: SphcY3_inv1_v128b_ps
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY3_inv1_v128b_ps
+#endif
             type(XMM4c4),    intent(in) :: c
             type(XMM4r4_t),  intent(in) :: z
             type(XMM4r4_t),  intent(in) :: r
@@ -328,10 +330,12 @@ module sph_complex_xmm4r4
      end function SphcY3_inv1_v128b_ps
      
      pure function SphcY3_0_v128b_ps(z,r) result(y3)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)  
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: SphcY3_0_v128b_ps
             !dir$ attributes forceinline :: SphcY3_0_v128b_ps
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY3_0_v128b_ps
+#endif
             type(XMM4r4_t),  intent(in) :: z
             type(XMM4r4_t),  intent(in) :: r
             type(XMM4r4_t)  ::             y3
@@ -364,10 +368,12 @@ module sph_complex_xmm4r4
      end function SphcY3_0_v128b_ps
      
      pure function SphcY3_1_v128b_ps(c,z,r) result(y3)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)  
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: SphcY3_1_v128b_ps
             !dir$ attributes forceinline :: SphcY3_1_v128b_ps
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY3_1_v128b_ps
+#endif
             type(XMM4c4),    intent(in) :: c
             type(XMM4r4_t),  intent(in) :: z
             type(XMM4r4_t),  intent(in) :: r
@@ -401,10 +407,12 @@ module sph_complex_xmm4r4
      end function SphcY3_1_v128b_ps
      
      pure function SphcY3_2_v128b_ps(c,z,r) result(y32)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)       
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: SphcY3_1_v128b_ps
-            !dir$ attributes forceinline :: SphcY3_1_v128b_ps
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY3_1_v128b_ps
+            !dir$ attributes code_align : 32 :: SphcY3_2_v128b_ps
+            !dir$ attributes forceinline :: SphcY3_2_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY3_2_v128b_ps
+#endif
             type(XMM4c4),    intent(in) :: c
             type(XMM4r4_t),  intent(in) :: z
             type(XMM4r4_t),  intent(in) :: r
@@ -427,7 +435,28 @@ module sph_complex_xmm4r4
             y32   = ct1*C10219854764332823633961144917
      end function SphcY3_2_v128v_ps
 
-
+     pure function SphcY3_3_v128b_ps(c,r) result(y33)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: SphcY3_3_v128b_ps
+            !dir$ attributes forceinline :: SphcY3_3_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY3_3_v128b_ps
+#endif
+            type(XMM4c4),    intent(in) :: c
+            type(XMM4r4_t),  intent(in) :: r
+            type(XMM4c4)  ::               y33
+            type(XMM4r4_t),  parameter :: C0417223823632784089724427015737 =  &
+                                  XMM4r4_t(0.417223823632784089724427015737_sp)
+            type(XMM4c4),    automatic :: pow3c
+            type(XMM4c4),    automatic :: rat
+            type(XMM4r4_t),  automatic :: rrr
+            !dir$ attributes align : 16 :: C0417223823632784089724427015737
+            !dir$ attributes align : 16 :: pow3c
+            !dir$ attributes align : 16 :: rat
+            rrr.v = r.v*r.v*r.v
+            pow3c = cpow_xmm4c4(c,3.0_sp)
+            rat   = pow3c/rrr
+            y33   = rat*C0417223823632784089724427015737
+     end function SPhcY3_3_v128b_ps
 
 
 
