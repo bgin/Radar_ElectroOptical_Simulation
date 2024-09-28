@@ -436,6 +436,7 @@ module sph_complex_xmm4r4
      end function SphcY3_2_v128v_ps
 
      pure function SphcY3_3_v128b_ps(c,r) result(y33)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)     
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: SphcY3_3_v128b_ps
             !dir$ attributes forceinline :: SphcY3_3_v128b_ps
@@ -456,9 +457,34 @@ module sph_complex_xmm4r4
             pow3c = cpow_xmm4c4(c,3.0_sp)
             rat   = pow3c/rrr
             y33   = rat*C0417223823632784089724427015737
-     end function SPhcY3_3_v128b_ps
-
-
+     end function SphcY3_3_v128b_ps
+     
+     
+     ! Degree l=4
+     pure function SphcY4_inv4_v128b_ps(c,r) result(y4)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)         
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: SphcY4_inv4_v128b_ps
+            !dir$ attributes forceinline :: SphcY4_inv4_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY4_inv4_v128b_ps
+#endif
+            type(XMM4c4),    intent(in) :: c
+            type(XMM4r4_t),  intent(in) :: r
+            type(XMM4c4)  ::               y4
+            type(XMM4r4_t),  parameter :: C0442532692444982632759207708156 = &
+                                  XMMr4_t(0.442532692444982632759207708156_sp)
+            type(XMM4c4),    automatic :: powc4
+            type(XMM4c4),    automatic :: rat
+            type(XMM4r4_t),  automatic :: powr4
+            !dir$ attributes align : 16 :: C0442532692444982632759207708156
+            !dir$ attributes align : 16 :: powc4
+            !dir$ attributes align : 16 :: rat
+            !dir$ attributes align : 16 :: powr4
+            pow4r = r.v*r.v*r.v*r.v
+            powc4 = cpow_xmm4c4(c,4.0_sp)
+            rat   = powc4/powr4
+            y4    = rat*C0442532692444982632759207708156
+     end function SphcY4_inv4_v128b_ps
 
 
 
