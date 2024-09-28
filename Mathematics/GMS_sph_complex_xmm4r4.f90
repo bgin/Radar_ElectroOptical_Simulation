@@ -274,11 +274,95 @@ module sph_complex_xmm4r4
             y2     = tmp*C0772548404046379160684385470623     
      end function Y2_1_v128b_ps
      
+     pure function Y2_2_v128b_ps(c,r) result(y2)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: Y2_2_v128b_ps
+            !dir$ attributes forceinline :: Y2_2_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Y2_2_v128b_ps
+#endif     
+            type(XMM4c4),    intent(in) :: c
+            type(XMM4r4_t),  intent(in) :: r
+            type(XMM4c4) :: y2  
+            y2 = Y2_inv2_v128b_ps(c,r)     
+     end function Y2_2_v128b_ps
+
      
+     ! Degree l=3
 
-
-
-
+     pure function Y3_inv1_v128b_ps(c,z,r) result(y3)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: Y3_inv1_v128b_ps
+            !dir$ attributes forceinline :: Y3_inv1_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Y3_inv1_v128b_ps
+            type(XMM4c4),    intent(in) :: c
+            type(XMM4r4_t),  intent(in) :: z
+            type(XMM4r4_t),  intent(in) :: r
+            type(XMM4c4)  ::               y3
+            type(XMM4r4_t),  parameter  :: C032318018411415065300739416333 = &
+                                    XMM4r4_t(0.32318018411415065300739416333_sp)
+            type(XMM4r4_t),  parameter  :: C5 = XMM4r4_t(5.0_sp)
+            type(XMM4c4),    automatic :: ct1
+            type(XMM4c4),    automatic :: ct2
+            type(XMM4r4_t),  automatic :: zz
+            type(XMM4r4_t),  automatic :: rr
+            type(XMM4r4_t),  automatic :: rrr
+            type(XMM4r4_t),  automatic :: t0
+            
+            !dir$ attributes align : 16 :: C032318018411415065300739416333
+            !dir$ attributes align : 16 :: C5
+            !dir$ attributes align : 16 :: ct1
+            !dir$ attributes align : 16 :: ct2
+            !dir$ attributes align : 16 :: zz
+            !dir$ attributes align : 16 :: rr
+            !dir$ attributes align : 16 :: rrr
+            !dir$ attributes align : 16 :: t0
+           
+            zz.v = z.v*z.v
+            rr.v = r.v*r.v
+            ct0.v= C5.v*zz.v-rr.v
+            rrr.v= rr.v*r.v
+            ct1  = c*t0
+            ct2  = ct1/rrr
+            y3   = ct2*C032318018411415065300739416333
+     end function Y3_inv1_v128b_ps
+     
+     pure function Y3_0_v128b_ps(z,r) result(y3)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: Y3_0_v128b_ps
+            !dir$ attributes forceinline :: Y3_0_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Y3_0_v128b_ps
+            type(XMM4r4_t),  intent(in) :: z
+            type(XMM4r4_t),  intent(in) :: r
+            type(XMM4r4_t)  ::             y3
+            type(XMM4r4_t),  parameter :: C0373176332590115391414395913199 = &
+                                   XMM4r4_t(0.373176332590115391414395913199_sp)
+            type(XMM4r4_t),  parameter :: C5 = XMM4r4_t(0.5_sp)
+            type(XMM4r4_t),  parameter :: C3 = XMM4r4_t(3.0_sp)
+            type(XMM4r4_t),  automatic :: zzz
+            type(XMM4r4_t),  automatic :: rr
+            type(XMM4r4_t),  automatic :: rrr
+            type(XMM4r4_t),  automatic :: t0
+            type(XMM4r4_t),  automatic :: t1
+            type(XMM4r4_t),  automatic :: t2
+            !dir$ attributes align : 16 :: C0373176332590115391414395913199
+            !dir$ attributes align : 16 :: C5
+            !dir$ attributes align : 16 :: C3
+            !dir$ attributes align : 16 :: zzz
+            !dir$ attributes align : 16 :: rr
+            !dir$ attributes align : 16 :: rrr
+            !dir$ attributes align : 16 :: t0
+            !dir$ attributes align : 16 :: t1 
+            !dir$ attributes align : 16 :: t2
+            zzz.v = z.v*z.v*z.v
+            rr.v  = r.v*r.v
+            rrr.v = rr.v*r.v
+            t0.v  = C5.v*zzz.v
+            t1.v  = C3.v*z.v*rr.v
+            t2.v  = t0.v-t1.v
+            y3.v  = C0373176332590115391414395913199.v*(t2.v/rrr.v)
+     end function Y3_0_v128b_ps
+     
 
 
 
