@@ -515,6 +515,47 @@ module sph_complex_xmm4r4
             y43     = rat*C125167147089835226917328104721
      end function SphcY4_inv3_v128b_ps
      
+     pure function SphcY4_inv2_v128b_ps(c,z,r) result(y42)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)          
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: SphcY4_inv2_v128b_ps
+            !dir$ attributes forceinline :: SphcY4_inv2_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY4_inv2_v128b_ps   
+#endif            
+            type(XMM4c4),    intent(in) :: c
+            type(XMM4r4_t),  intent(in) :: z
+            type(XMM4r4_t),  intent(in) :: r
+            type(XMM4c4)  ::               y42
+            type(XMM4r4_t),  parameter :: C0334523271778644583976056194856 = &
+                                XMM4r4_t(0.334523271778644583976056194856_sp)
+            type(XMM4r4_t),  parameter :: C7 = XMM4r4_t(7.0_sp)
+            type(XMM4c4),    automatic :: powc2
+            type(XMM4c4),    automatic :: ct0
+            type(XMM4c4),    automatic :: rat
+            type(XMM4r4_t),  automatic :: zz
+            type(XMM4r4_t),  automatic :: rr
+            type(XMM4r4_t),  automatic :: powr4
+            type(XMM4r4_t),  automatic :: t0
+            type(XMM4r4_t),  automatic :: t1
+            !dir$ attributes align : 16 :: C0334523271778644583976056194856
+            !dir$ attributes align : 16 :: C7
+            !dir$ attributes align : 16 :: powc2
+            !dir$ attributes align : 16 :: ct0
+            !dir$ attributes align : 16 :: rat
+            !dir$ attributes align : 16 :: zz
+            !dir$ attributes align : 16 :: rr
+            !dir$ attributes align : 16 :: t0
+            !dir$ attributes align : 16 :: t1
+            rr.v    = r.v*r.v
+            powr4.v = rr.v*rr.v
+            zz.v    = z.v*z.v
+            powc2   = c*c
+            t0      = C7.v*zz.v-rr.v
+            ct0     = powc2*t0
+            rat     = ct0/powr4
+            y42     = rat*C0334523271778644583976056194856 
+     end function SphcY4_inv2_v128b_ps
+     
      
      
      
