@@ -598,7 +598,53 @@ module sph_complex_xmm4r4
             ct0      = c*t2.v
             rat      = ct0/powr4
             y41      = rat*C0473087347878780009046340535444
-    end function SPhcY4_inv1_v128b_ps 
+    end function SphcY4_inv1_v128b_ps 
+    
+    pure function SphcY4_0_v128b_ps(z,r) result(y40)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)          
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: SphcY4_0_v128b_ps
+            !dir$ attributes forceinline :: SphcY4_0_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY4_0_v128b_ps   
+#endif           
+            type(XMM4r4_t),  intent(in) :: z
+            type(XMM4r4_t),  intent(in) :: r
+            type(XMM4r4_t)              :: y41   
+            type(XMM4r4_t),  parameter  :: C0105785546915204303802764897168 = &
+                                XMM4r4_t(0.105785546915204303802764897168_sp)
+            type(XMM4r4_t),  parameter  :: C35 = XMM4r4_t(35.0_sp)
+            type(XMM4r4_t),  parameter  :: C30 = XMM4r4_t(30.0_sp)
+            type(XMM4r4_t),  parameter  :: C3  = XMM4r4_t(3.0_sp)
+            type(XMM4r4_t),  automatic  :: powr4
+            type(XMM4r4_t),  automatic  :: powz4
+            type(XMM4r4_t),  automatic  :: zz
+            type(XMM4r4_t),  automatic  :: rr 
+            type(XMM4r4_t),  automatic  :: t0
+            type(XMM4r4_t),  automatic  :: t1
+            type(XMM4r4_t),  automatic  :: rat
+            !dir$ attributes align : 16 :: C0105785546915204303802764897168
+            !dir$ attributes align : 16 :: C35
+            !dir$ attributes align : 16 :: C30
+            !dir$ attributes align : 16 :: C3
+            !dir$ attributes align : 16 :: powr4
+            !dir$ attributes align : 16 :: powzr
+            !dir$ attributes align : 16 :: zz
+            !dir$ attributes align : 16 :: rr
+            !dir$ attributes align : 16 :: t0
+            !dir$ attributes align : 16 :: t1
+            !dir$ attributes align : 16 :: rat
+            zz.v    = z.v*z.v
+            rr.v    = r.v*r.v
+            powr4.v = rr.v*rr.v
+            powz4.v = zz.v*zz.v
+            t0.v    = C35.v*z-C30.v*zz.v*rr.v
+            t1.v    = C3.v*powr4.v
+            rat.v   = (t0.v+t1.v)/powr4.v
+            y40.v   = rat.v*C0105785546915204303802764897168.v
+    end function SphcY4_0_v128b_ps
+           
+           
+       
      
      
      
