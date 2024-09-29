@@ -556,7 +556,49 @@ module sph_complex_xmm4r4
             y42     = rat*C0334523271778644583976056194856 
      end function SphcY4_inv2_v128b_ps
      
-     
+     pure function SphcY4_inv1_v128b_ps(c,z,r) result(y41)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)          
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: SphcY4_inv1_v128b_ps
+            !dir$ attributes forceinline :: SphcY4_inv1_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY4_inv1_v128b_ps   
+#endif            
+            type(XMM4c4),    intent(in) :: c
+            type(XMM4r4_t),  intent(in) :: z
+            type(XMM4r4_t),  intent(in) :: r
+            type(XMM4c4)  ::               y41
+            type(XMM4r4_t),  parameter :: C0473087347878780009046340535444 = &
+                                XMM4r4_t(0.473087347878780009046340535444_sp)
+            type(XMM4r4_t),  parameter :: C7 = XMM4r4_t(7.0_sp)
+            type(XMM4r4_t),  parameter :: C3 = XMM4r4_t(3.0_sp)
+            type(XMM4c4),    automatic :: ct0
+            type(XMM4c4),    automatic :: rat
+            type(XMM4r4_t),  automatic :: zzz
+            type(XMM4r4_t),  automatic :: rr
+            type(XMM4r4_t),  automatic :: powr4
+            type(XMM4r4_t),  automatic :: t0
+            type(XMM4r4_t),  automatic :: t1
+            type(XMM4r4_t),  automatic :: t2
+            !dir$ attributes align : 16 :: C0473087347878780009046340535444
+            !dir$ attributes align : 16 :: C7
+            !dir$ attributes align : 16 :: C2
+            !dir$ attributes align : 16 :: ct0
+            !dir$ attributes align : 16 :: rat
+            !dir$ attributes align : 16 :: zzz
+            !dir$ attributes align : 16 :: rr
+            !dir$ attributes align : 16 :: t0
+            !dir$ attributes align : 16 :: t1
+            !dir$ attributes align : 16 :: t2
+            zzz.v    = z.v*z.v*z.v
+            rr.v     = r.v*r.v
+            t0.v     = C3.v*z.v*rr.v
+            powr4.v  = rr.v*rr.v
+            t1.v     = C7.v*zzz.v
+            t2.v     = t1.v-t0.v
+            ct0      = c*t2.v
+            rat      = ct0/powr4
+            y41      = rat*C0473087347878780009046340535444
+    end function SPhcY4_inv1_v128b_ps 
      
      
      
