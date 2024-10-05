@@ -84,6 +84,35 @@ module sph_complex_xmm4r4
      ! Short description
      character(*),        parameter :: SPH_COMPLEX_XMM4R4_SYNOPSIS  = "Complex Spherical Harmonics up to degree (l=10)." 
      
+     
+     ! Data types
+     
+     type, public :: csph_harmonic_deg1_4_t
+           type(XMM4c4),   dimension(:), allocatable :: yxx
+           !dir$ attributes align : 16 :: yxx
+           type(XMM4c4),   dimension(:), allocatable :: c
+           !dir$ attributes align : 16 :: c
+           type(XMM4r4_t), dimension(:), allocatable :: z
+           !dir$ attributes align : 16 :: z
+           type(XMM4r4_t), dimension(:), allocatable :: r
+           !dir$ attributes align : 16 :: r
+           integer(i4)                               :: nz   
+           integer(i4)                               :: nr
+           integer(i4)                               :: deg ! degree
+     end type csph_harmonic_deg1_4_t
+     
+     type, public :: csph_harmonic_deg5_10_t
+           type(XMM4r4_t),  dimension(:), allocatable :: theta
+           !dir$ attributes align : 16 :: theta
+           type(XMM4r4_t),  dimension(:), allocatable :: phi
+           !dir$ attributes align : 16 :: phi
+           type(XMM4c4),    dimension(:), allocatable :: yxx
+           !dir$ attributes align : 16 :: yxx
+           integer(i4)                                :: deg
+           integer(i4)                                :: ntheta
+           integer(i4)                                :: nphi
+     end type csph_harmonic_deg5_10_t
+     
      contains
      
      ! Degree l=0
@@ -642,6 +671,68 @@ module sph_complex_xmm4r4
             rat.v   = (t0.v+t1.v)/powr4.v
             y40.v   = rat.v*C0105785546915204303802764897168.v
     end function SphcY4_0_v128b_ps
+    
+    pure function SphycY4_1_v128b_ps(c,z,r) result(y41)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)          
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: SphcY4_1_v128b_ps
+            !dir$ attributes forceinline :: SphcY4_1_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY4_1_v128b_ps   
+#endif            
+            type(XMM4c4),    intent(in) :: c
+            type(XMM4r4_t),  intent(in) :: z
+            type(XMM4r4_t),  intent(in) :: r
+            type(XMM4c4)  ::               y41
+            type(XMM4r4_t),  parameter :: C0473087347878780009046340535444 = &
+                                XMM4r4_t(-0.473087347878780009046340535444_sp)
+            type(XMM4r4_t),  parameter :: C7 = XMM4r4_t(7.0_sp)
+            type(XMM4r4_t),  parameter :: C3 = XMM4r4_t(3.0_sp)
+            type(XMM4c4),    automatic :: ct0
+            type(XMM4c4),    automatic :: rat
+            type(XMM4r4_t),  automatic :: zzz
+            type(XMM4r4_t),  automatic :: rr
+            type(XMM4r4_t),  automatic :: powr4
+            type(XMM4r4_t),  automatic :: t0
+            type(XMM4r4_t),  automatic :: t1
+            type(XMM4r4_t),  automatic :: t2
+            !dir$ attributes align : 16 :: C0473087347878780009046340535444
+            !dir$ attributes align : 16 :: C7
+            !dir$ attributes align : 16 :: C2
+            !dir$ attributes align : 16 :: ct0
+            !dir$ attributes align : 16 :: rat
+            !dir$ attributes align : 16 :: zzz
+            !dir$ attributes align : 16 :: rr
+            !dir$ attributes align : 16 :: t0
+            !dir$ attributes align : 16 :: t1
+            !dir$ attributes align : 16 :: t2
+            zzz.v    = z.v*z.v*z.v
+            rr.v     = r.v*r.v
+            t0.v     = C3.v*z.v*rr.v
+            powr4.v  = rr.v*rr.v
+            t1.v     = C7.v*zzz.v
+            t2.v     = t1.v-t0.v
+            ct0      = c*t2.v
+            rat      = ct0/powr4
+            y41      = rat*C0473087347878780009046340535444
+    end function SphycY4_1_v128b_ps
+    
+    pure function SphcY4_2_v128b_ps(c,z,r) result(y42)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)          
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: SphcY4_2_v128b_ps
+            !dir$ attributes forceinline :: SphcY4_2_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY4_2_v128b_ps   
+#endif            
+            type(XMM4c4),    intent(in) :: c
+            type(XMM4r4_t),  intent(in) :: z
+            type(XMM4r4_t),  intent(in) :: r
+            type(XMM4c4)  ::               y42
+            y42 = SphycY4_inv2_v128b_ps(c,z,r)
+     end function SphcY4_2_v128b_ps
+     
+     
+     
+     
            
            
        
