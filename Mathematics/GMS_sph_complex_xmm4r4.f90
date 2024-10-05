@@ -84,7 +84,7 @@ module sph_complex_xmm4r4
      ! Short description
      character(*),        parameter :: SPH_COMPLEX_XMM4R4_SYNOPSIS  = "Complex Spherical Harmonics up to degree (l=10)." 
      
-     
+     type(XMM4c4), parameter, public :: I = XMM4c4(0.0_sp,1.0_sp)
      ! Data types
      
      type, public :: csph_harmonic_deg1_4_t
@@ -759,7 +759,7 @@ module sph_complex_xmm4r4
             y43     = rat*C125167147089835226917328104721
      end function SphcY4_3_v128b_ps
      
-     pure function SphcY_4_v128b_ps(c,r) result(y44)
+     pure function SphcY4_4_v128b_ps(c,r) result(y44)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)         
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: SphcY4_4_v128b_ps
@@ -770,7 +770,47 @@ module sph_complex_xmm4r4
             type(XMM4r4_t),  intent(in) :: r
             type(XMM4c4)  ::               y44 
             y44 = SphcY4_inv4_v128b_ps(c,r)    
-     end function SphcY_4_v128b_ps
+     end function SphcY4_4_v128b_ps
+     
+     
+     ! Degree l=5
+     
+     pure function SphcY5_inv5_v128b_ps(tht,phi) result(y5i5)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)          
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: SphcY5_inv5_v128b_ps
+            !dir$ attributes forceinline :: SphcY5_inv5_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY5_inv5_v128b_ps  
+#endif       
+            type(XMM4r4_t),   intent(in) :: tht
+            type(XMM4r4_t),   intent(in) :: phi
+            type(XMM4c4)                 :: y5i5
+            type(XMM4r4_t),   parameter  :: C0464132203440858160657998605534 = &
+                                                  XMM4r4_t(0.464132203440858160657998605534_sp)
+            type(XMM4r4_t),   parameter  :: C5  = XMM4r4_t(-5.0_sp)
+            type(XMM4c4),     automatic  :: carg
+            type(XMM4c4),     automatic  :: cexp
+            type(XMM4c4),     automatic  :: ct0
+            type(XMM4r4_t),   automatic  :: sint
+            type(XMM4r4_t),   automatic  :: psin2
+            type(XMM4r4_t),   automatic  :: psin5
+            !dir$ attributes align : 16 :: C0464132203440858160657998605534
+            !dir$ attributes align : 16 :: C5
+            !dir$ attributes align : 16 :: carg
+            !dir$ attributes align : 16 :: ct0
+            !dir$ attributes align : 16 :: cexp
+            !dir$ attributes align : 16 :: sint
+            !dir$ attributes align : 16 :: psin2
+            !dir$ attributes align : 16 :: psin5
+            ct0    = I*C5
+            carg   = ct0*phi
+            sint.v = sin(tht.v)
+            psin2.v= sint.v*sint.v
+            cexp   = cexp_xmm4c4(carg)
+            psin5.v= psin2.v*psin2.v*sint.v
+            ct0    = cexp*C0464132203440858160657998605534
+            y5i5   = ct0*psin5
+     end function SphcY5_inv5_v128b_ps
      
      
      
