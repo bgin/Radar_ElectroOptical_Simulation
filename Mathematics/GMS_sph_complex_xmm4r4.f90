@@ -812,6 +812,44 @@ module sph_complex_xmm4r4
             y5i5   = ct0*psin5
      end function SphcY5_inv5_v128b_ps
      
+      pure function SphcY5_inv4_v128b_ps(tht,phi) result(y5i4)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)          
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: SphcY5_inv4_v128b_ps
+            !dir$ attributes forceinline :: SphcY5_inv4_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY5_inv4_v128b_ps  
+#endif       
+            type(XMM4r4_t),   intent(in) :: tht
+            type(XMM4r4_t),   intent(in) :: phi
+            type(XMM4c4)                 :: y5i4
+            type(XMM4r4_t),   parameter  :: C1467714898305751163052026147529 = &
+                                                 XMM4r4_t(1.467714898305751163052026147529_sp)
+            type(XMM4r4_t),   parameter  :: C4 = XMM4r4_t(-4.0_sp)       
+            type(XMM4c4),     automatic  :: carg
+            type(XMM4c4),     automatic  :: cexp
+            type(XMM4c4),     automatic  :: ct0
+            type(XMM4r4_t),   automatic  :: sint
+            type(XMM4r4_t),   automatic  :: cost
+            type(XMM4r4_t),   automatic  :: psin4
+            !dir$ attributes align : 16 ::  C1467714898305751163052026147529
+            !dir$ attributes align : 16 ::  C4
+            !dir$ attributes align : 16 ::  carg
+            !dir$ attributes align : 16 ::  cexp
+            !dir$ attributes align : 16 ::  ct0
+            !dir$ attributes align : 16 ::  sint
+            !dir$ attributes align : 16 ::  cost
+            !dir$ attributes align : 16 ::  psin4
+            ct0    =  I*C4
+            sint.v =  sin(tht.v)
+            carg   =  ct0*phi
+            cost.v =  cos(tht.v)
+            psin4.v=  sint.v*sint.v*sint.v*sint.v
+            cexp   =  cexp_xmm4c4(carg)
+            psin4.v=  psin4.v*cost.v
+            ct0    =  cexp*psin4
+            y5i4   =  ct0*C1467714898305751163052026147529    
+      end function SphcY5_inv4_v128b_ps
+     
      
      
      
