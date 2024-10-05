@@ -759,6 +759,19 @@ module sph_complex_xmm4r4
             y43     = rat*C125167147089835226917328104721
      end function SphcY4_3_v128b_ps
      
+     pure function SphcY_4_v128b_ps(c,r) result(y44)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)         
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: SphcY4_4_v128b_ps
+            !dir$ attributes forceinline :: SphcY4_4_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY4_4_v128b_ps
+#endif
+            type(XMM4c4),    intent(in) :: c
+            type(XMM4r4_t),  intent(in) :: r
+            type(XMM4c4)  ::               y44 
+            y44 = SphcY4_inv4_v128b_ps(c,r)    
+     end function SphcY_4_v128b_ps
+     
      
      
      
