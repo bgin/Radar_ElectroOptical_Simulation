@@ -1,0 +1,48 @@
+*
+*  Example of an input file for the program CSGPM containing user
+*  specified parameters.
+*
+*  The enclosed program CSGPM re-writes GEMM-Based Level 3 BLAS source
+*  files replacing lines containing old PARAMETER statements for user
+*  specified parameters, with lines containing new PARAMETER statements
+*  given in an input file. The user can conveniently assign new values
+*  to the PARAMETER statements in the input file, and then run CSGPM to
+*  distribute these values to the GEMM-based routines. An input file
+*  consists of three different types of lines, except for empty lines.
+*
+*  o  Comment lines starting with the character '*'.
+*
+*  o  Lines containing single file-names for GEMM-based source files.
+*
+*  o  Lines containing PARAMETER statements that replaces the
+*     corresponding lines in the GEMM-based routines.
+*
+*  The lines with single filenames are followed by lines containing the
+*  new PARAMETER statements for that particular file. Read the file
+*  INSTALL for further instructions on how to use this file.
+*
+
+csymm.f
+      PARAMETER        ( RCB = 128, CB = 64 )
+chemm.f
+      PARAMETER        ( RCB = 128, CB = 64 )
+csyr2k.f
+      PARAMETER        ( RCB = 128, CB = 64 )
+cher2k.f
+      PARAMETER        ( RCB = 128, CB = 64 )
+csyrk.f
+      PARAMETER        ( RCB = 64, RB = 64, CB = 64 )
+cherk.f
+      PARAMETER        ( RCB = 64, RB = 64, CB = 64 )
+ctrmm.f
+      PARAMETER        ( RCB = 64, RB = 64, CB = 64 )
+ctrsm.f
+      PARAMETER        ( RCB = 64, RB = 64, CB = 64 )
+cbigp.f
+      PARAMETER        ( CIP41 = 4, CIP42 = 3,
+     $                   CIP51 = 4, CIP52 = 3,
+     $                   CIP81 = 4, CIP82 = 3, CIP83 = 4,
+     $                   CIP91 = 4, CIP92 = 3, CIP93 = 4 )
+ccld.f
+      PARAMETER        ( LNSZ = 64, NPRT = 128, PRTSZ = 3,
+     $                   LOLIM = 64, CP = 8 )
