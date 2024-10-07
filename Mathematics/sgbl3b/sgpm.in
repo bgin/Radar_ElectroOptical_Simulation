@@ -1,0 +1,41 @@
+*
+*  Example of an input file for the program SSGPM containing user
+*  specified parameters.
+*
+*  The enclosed program SSGPM re-writes GEMM-Based Level 3 BLAS source
+*  files replacing lines containing old PARAMETER statements for user
+*  specified parameters, with lines containing new PARAMETER statements
+*  given in an input file. The user can conveniently assign new values
+*  to the PARAMETER statements in the input file, and then run SSGPM to
+*  distribute these values to the GEMM-based routines. An input file
+*  consists of three different types of lines, except for empty lines.
+*
+*  o  Comment lines starting with the character '*'.
+*
+*  o  Lines containing single file-names for GEMM-based source files.
+*
+*  o  Lines containing PARAMETER statements that replaces the
+*     corresponding lines in the GEMM-based routines.
+*
+*  The lines with single filenames are followed by lines containing the
+*  new PARAMETER statements for that particular file. Read the file
+*  INSTALL for further instructions on how to use this file.
+*
+
+ssymm.f
+      PARAMETER        ( RCB = 128, CB = 64 )
+ssyr2k.f
+      PARAMETER        ( RCB = 128, CB = 64 )
+ssyrk.f
+      PARAMETER        ( RCB = 64, RB = 64, CB = 64 )
+strmm.f
+      PARAMETER        ( RCB = 64, RB = 64, CB = 64 )
+strsm.f
+      PARAMETER        ( RCB = 64, RB = 64, CB = 64 )
+sbigp.f
+      PARAMETER        ( SIP41 = 4, SIP42 = 3,
+     $                   SIP81 = 4, SIP82 = 3, SIP83 = 4,
+     $                   SIP91 = 4, SIP92 = 3, SIP93 = 4 )
+scld.f
+      PARAMETER        ( LNSZ = 64, NPRT = 128, PRTSZ = 3,
+     $                   LOLIM = 64, SP = 8 )
