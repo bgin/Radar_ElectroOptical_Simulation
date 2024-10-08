@@ -1,0 +1,41 @@
+*
+*  Example of an input file for the program DSGPM containing user
+*  specified parameters.
+*
+*  The enclosed program DSGPM re-writes GEMM-Based Level 3 BLAS source
+*  files replacing lines containing old PARAMETER statements for user
+*  specified parameters, with lines containing new PARAMETER statements
+*  given in an input file. The user can conveniently assign new values
+*  to the PARAMETER statements in the input file, and then run DSGPM to
+*  distribute these values to the GEMM-based routines. An input file
+*  consists of three different types of lines, except for empty lines.
+*
+*  o  Comment lines starting with the character '*'.
+*
+*  o  Lines containing single file-names for GEMM-based source files.
+*
+*  o  Lines containing PARAMETER statements that replaces the
+*     corresponding lines in the GEMM-based routines.
+*
+*  The lines with single filenames are followed by lines containing the
+*  new PARAMETER statements for that particular file. Read the file
+*  INSTALL for further instructions on how to use this file.
+*
+
+dsymm.f
+      PARAMETER        ( RCB = 128, CB = 64 )
+dsyr2k.f
+      PARAMETER        ( RCB = 128, CB = 64 )
+dsyrk.f
+      PARAMETER        ( RCB = 64, RB = 64, CB = 64 )
+dtrmm.f
+      PARAMETER        ( RCB = 64, RB = 64, CB = 64 )
+dtrsm.f
+      PARAMETER        ( RCB = 64, RB = 64, CB = 64 )
+dbigp.f
+      PARAMETER        ( DIP41 = 4, DIP42 = 3,
+     $                   DIP81 = 4, DIP82 = 3, DIP83 = 4,
+     $                   DIP91 = 4, DIP92 = 3, DIP93 = 4 )
+dcld.f
+      PARAMETER        ( LNSZ = 64, NPRT = 128, PRTSZ = 3,
+     $                   LOLIM = 64, DP = 8 )

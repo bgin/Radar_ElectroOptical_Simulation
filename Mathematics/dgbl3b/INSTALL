@@ -1,0 +1,521 @@
+   Double Precision           Version 1.0                  December-1993
+
+
+
+                          Installation guide
+                    for the GEMM-Based Level 3 BLAS
+                         model implementations
+
+                               Per Ling
+                  Institute of Information Processing
+                      University of Umea, Sweden
+
+                            December 15, 1993
+
+
+
+   1. Introduction
+
+   The purpose of this guide is to facilitate installation of the
+   GEMM-Based Level 3 BLAS model implementations [5],[6],[7] so that
+   correct results are produced and high and uniform performance is
+   achieved. The model implementations are primarily intended for single
+   processor use, on machines with local or global caches, and for micro
+   processors with on-chip caches. They can also be parallelized using
+   a parallelizing compiler, or linked with underlying parallel BLAS
+   routines. The compiler and processor dependent parts of the programs
+   are concentrated in calls to underlying routines. These are the
+   Level 3 BLAS routine DGEMM for general matrix multiply and add
+   operations and some Level 1 and Level 2 BLAS routines. All GEMM-Based
+   Level 3 BLAS routines are structured to reduce data traffic in the
+   memory hierarchy.
+
+
+   2. Auxiliary routines
+
+   The original Fortran 77 model implementations of the Level-3 BLAS
+   [1],[2] include two auxiliary subprograms, LSAME and XERBLA. The
+   GEMM-Based Level 3 BLAS model implementations have two additional
+   auxiliary subprograms, DBIGP and DCLD.
+
+   o  DBIGP determines which of two alternative code sections, in a
+      GEMM-Based Level 3 routine, that will be the fastest for a
+      particular problem configuration.
+
+   o  DCLD determines whether the size of the leading dimension of a
+      2-dimensional array is appropriate for the target memory
+      hierarchy. A ``critical'' size of the leading dimension may cause
+      a substantial increase in the amount of data movements in the
+      memory hierarchy, resulting in severe performance degradation.
+      Particularly, this may happen if the array is referenced by row.
+
+   DCLD is designed for a multi-way associative cache in this
+   implementation. DBIGP looks at only one of the dimensions of a
+   problem to determine the fastest code section. It may be rewarding to
+   rewrite DCLD for a machine with different cache policy, and DBIGP to
+   involve both of the dimensions.
+
+   The model implementations of the GEMM-Based Level 3 BLAS assumes that
+   arbitrary locations in the cache memory can be accessed in constant
+   time. It is also assumed that references by column, to the main
+   memory, generally are faster than references by row.
+
+
+   3. User specified parameters
+
+   Each of the GEMM-Based routines has system dependent parameters
+   which are assigned values at compile time. These values are given in
+   PARAMETER statements, by the user or by the system manager. A simple
+   program DSGPM that facilitates tuning of the parameters is enclosed.
+   DSGPM reads an input file with new PARAMETER statements, and re-
+   writes the GEMM-Based routines replacing old PARAMETER statements
+   with the new ones. The parameters specify internal block sizes, cache
+   characteristics, and intersection points for alternative code
+   sections in the GEMM-Based routines.
+
+   The block dimensions RCB, RB, and CB specified in the Level 3
+   routines have the following interpretation.
+
+      RCB    - Dimension of a square matrix block.
+
+      RB     - Number of rows in a rectangular matrix block.
+
+      CB     - Number of columns in a rectangular block (RB*CB) and
+               dimension of a square matrix block (CB*CB).
+
+   The intersection points DIPx, where x is a number identifying a
+   specific break point in a particular GEMM-Based Level 3 BLAS routine,
+   are specified in DBIGP. These intersection points are used to
+   determine which of two alternative code sections that will be the
+   fastest, depending on the size of a problem.
+
+      DIPx   - Break point value for a selected matrix dimension. If the
+               selected matrix dimension for a problem is smaller than
+               DIPx, then DBIGP returns .FALSE., and the problem is
+               executed in the first alternative code section.
+               Otherwise, if the dimension is larger than, or equal to,
+               DIPx, DBIGP returns .TRUE., and the problem executes in
+               the second code section.
+
+   DCLD has parameters specifying characteristics of the cache memory
+   to determine which sizes of the leading dimension of a 2-dimensional
+   array that should be considered critical. The cache lines in a
+   multi-way associative cache are divided among a number of partitions,
+   each containing the same number of lines. The number of lines in a
+   partition equals the associativity of the cache. For example, in a
+   four way associative cache, each partition contains four cache lines.
+
+      LNSZ   - Size of a cache line in number of bytes.
+
+      NPRT   - Number of partitions in the cache memory.
+
+      PRTSZ  - The largest number of cache lines in each partition, that
+               can be used exclusively to hold a local array containing
+               a matrix block, during the execution of a GEMM-Based
+               Level 3 routine. The remaining cache lines may be
+               occupied by scalars, vectors and possibly program code,
+               depending on properties of the system.
+
+      LOLIM  - leading dimensions smaller than or equal to LOLIM are not
+               regarded as critical.
+
+      DP     - Size of a double-precision word in number of bytes.
+
+
+   4. Level 3 BLAS performance from the Level 2 BLAS
+
+   This section describes a required property of the underlying Level 2
+   BLAS routines [3],[4] in order to get uniformly high performance from
+   the GEMM-Based Level 3 BLAS model implementations. The underlying
+   Level 2 BLAS routines DGEMV, DSYR, DTRMV, and DTRSV perform matrix-
+   vector operations involving a single matrix. For example, the routine
+   DGEMV performs the matrix-vector multiply operation:
+
+      y := alpha*A*x + beta*y,
+
+   where alpha and beta are scalars, x and y are vectors, and A is a
+   general matrix. Typically, one of the vectors x and y will be
+   referenced repeatedly during a call, depending on whether the
+   operation A*x is performed as multiple dot-products or as multiple
+   axpy-products. For dot-products, the vector x is referenced
+   repeatedly, once for each row of A. Sections of x may be kept in
+   processor registers to provide for efficient register reuse. It may
+   also be possible to reuse a large portion of x in the cache memory.
+   We refer to this approach as register reuse using the cache memory as
+   registers, rather than ``true'' cache reuse. True cache reuse is
+   usually not associated with the Level 2 BLAS since elements of the
+   involved matrix are referenced only once, and true cache reuse
+   requires multiple references of a matrix. However, for multiple calls
+   to a Level 2 BLAS routine it is possible to attain true cache reuse,
+   under certain conditions. If DGEMV, for instance, is called
+   repeatedly with different x and y vectors each time but with the same
+   matrix A, then it is possible to reuse A provided that A fits
+   properly in the cache and remains there between the calls. Notice
+   that this technique does not prevent from further reuse of x or y in
+   registers. Except for the overhead arising from multiple calls to the
+   Level 2 BLAS routines (parameter checking etc.), this technique for
+   cache reuse makes it possible to attain performance levels generally
+   associated with the Level 3 BLAS. The GEMM-Based Level 3 BLAS model
+   implementations rely extensively on this technique for the Level 2
+   computations, performed on blocks of matrices. Therefore, it is
+   necessary for the underlying Level 2 BLAS routines to allow the
+   matrix to be stored in the cache memory over multiple calls, in order
+   to get high performance.
+
+   On machines that allow programmers to have explicit control over
+   which data resides in the cache, it is possible to implement Level 2
+   BLAS routines that explicitly reuses a large section of x or y in the
+   cache. This is likely to be a good approach for conventional use of
+   the Level 2 BLAS, but prevents from true cache reuse over multiple
+   calls, as utilized in the GEMM-Based Level 3 BLAS model
+   implementations. Obviously, if DGEMV is implemented to explicitly
+   fill the cache with a large section of x, we cannot reuse A in the
+   cache over multiple calls. On machines with a virtual memory system
+   that fully controls the cache and causes the most recently referenced
+   data to always reside in the cache, this problem does not occur.
+
+
+   5. Guidelines for assigning values to the user specified parameters
+
+   The performance of the GEMM-Based Level 3 BLAS model implementations
+   depend highly on the performance of the underlying BLAS routines, and
+   of values assigned to the user specified parameters. The underlying
+   BLAS routines are the Level 3 routine DGEMM, the Level 2 routines
+   DGEMV, DSYR, DTRMV, and DTRSV, and the Level 1 routines DAXPY, DCOPY,
+   and DSCAL. Memory hierarchies are often quite complex systems, with
+   different peculiarities that may affect the performance. The user
+   specified parameters for the GEMM-Based Level 3 BLAS provide means
+   for adjustment to some of the intricacies of a memory hierarchy.
+   Considering the diversity of memory systems, the following guidelines
+   for assigning values to the user specified parameters must be
+   viewed as rules of thumb, rather than regulations.
+
+   o  The block dimensions RCB, RB, and CB, should all be multiples of
+      the number of double-precision words that fits in a cache line
+      (LNSZ/DP).
+
+   o  The three items that follow apply only to DSYRK, DTRMM, and
+      DTRSM.
+
+      -   If the machine has vector registers, RB should equal the
+          number of double-precision words that goes into a vector
+          register.
+
+      -   A block of size (RB*CB) double-precision words should safely
+          fit in the local cache memory, possibly together with scalars,
+          two column vectors, of size RB and CB, and program code. RB*CB
+          double-precision words may, for instance, constitute half or
+          three quarters of the size of a local cache.
+
+      -   A block of size (RCB*RCB) double-precision words should safely
+          fit in cache and occupy, for instance, half or three quarters
+          of a local cache.
+
+   o  The following two items apply only to DSYMM and DSYR2K.
+
+      -   A local array of size (RCB*RCB) will be allocated. The array
+          does not need to fit in cache and should be fairly large but
+          still reasonable in size. If vector registers are present, a
+          good choice for RCB may be the number of words that fit in a
+          vector register, or possibly a multiple of that number.
+
+      -   In some cases, rows of length CB are referenced. CB cache
+          lines should safely fit in the cache in order to become reused
+          efficiently. RCB constitutes an upper limit for CB in this
+          case. If CB is larger than RCB, RCB is used instead of CB.
+
+   o  Local arrays of size (RCB*RCB) double precision words are
+      allocated in each of the GEMM-Based routines to hold general,
+      symmetric, or triangular matrix blocks temporarily. Further, a
+      local array of size (RB*CB) is allocated in each of DSYRK, DTRMM,
+      and DTRSM, and a local array of size (CB*CB) in DTRMM and DTRSM.
+
+   o  The intersection points DIPx used in DSYRK, DTRMM, and DTRSM, are
+      assigned values in the routine DBIGP. They provide means for
+      chosing between two alternative code sections that perform the
+      same operation but have different performance characteristics.
+      Often, the choice is between a code section that calls the Level 2
+      BLAS routine DGEMV and a code section that calls some other
+      Level 2 BLAS routine. If the crucial dimension of the problem is
+      larger than or equal to DIPx, then DGEMV is invoked. The block
+      sizes may differ between the alternative code sections depending
+      on the values of RCB, RB, and CB. Proper values for DIPx depend
+      highly on the performance of the underlying Level 2 BLAS routines.
+      Values returned from DBIGP should effectively reflect the
+      performance characteristics of the underlying BLAS routines. If
+      DGEMV is carefully optimized, a proper value for DIPx may be found
+      in the range 0 - 10. Timing experiments, with small matrix
+      dimensions, are recommended.
+
+   o  Values for the parameters LNSZ, NPRT, and DP are obvious from the
+      definitions (see section 3).
+
+   o  PRTSZ should be assigned the largest number of cache lines that,
+      in each partition, can be used to hold a local array containing a
+      matrix block. The remaining cache lines may be occupied by
+      scalars, vectors, and possibly program code depending on
+      properties of the system. If the cache is shared for program
+      instructions and data, a suitable value for PRTSZ may be the total
+      number of cache lines in a partition minus one, or two, leaving
+      one or two cache lines in each partition for vectors, scalars, and
+      program code.
+
+   o  LOLIM constitutes a lower limit for the size of the leading
+      dimension that may be considered critical. A suitable value may be
+      LOLIM = max( RCB, RB ), where RCB and RB are the block dimensions
+      given for DSYRK, DTRMM, and DTRSM.
+
+   The parameter values for internal block sizes and intersection points
+   are adjusted separately for each routine. It may be rewarding to
+   experiment with a range of different values for these parameters in
+   order to optimize the performance.
+
+   If you are unable to make the function DCLD safely predict which
+   leading dimensions that will cause substantial performance
+   degradation, you may consider rewriting DCLD so that the value .TRUE.
+   is always returned for values greater than LOLIM. In this case, all
+   leading dimensions greater than LOLIM are regarded as critical. The
+   risk of severe performance degradation for the GEMM-Based routines
+   becomes significantly reduced, at the small expense of copying of
+   matrix blocks to local arrays a few more times.
+
+   The GEMM-Based Level 3 BLAS Benchmark can be used to fine-tune the
+   user specified parameters for high performance. This benchmark is
+   designed as a tool for evaluation of Level 3 BLAS kernel programs. It
+   measures and compares the performance of a set of user specified
+   Level 3 BLAS routines and a set of GEMM-Based Level 3 BLAS routines
+   included in the benchmark. The Level 3 routines specified by the user
+   may, for instance, be routines in a vendor supplied highly optimized
+   library. Another useful timing program, distributed with the original
+   Level 3 BLAS [1],[2], can be obtained by sending the E-mail message
+   'send dblas3time from blas' to netlib@ornl.gov.
+
+   If you intend to really squeeze the maximum performance out of the
+   GEMM-Based Level 3 BLAS concept, you may consider replacing calls to
+   auxiliary routines and Level 1 and Level 2 BLAS routines, with highly
+   optimized inline Fortran 77 code, which often is done in vendor
+   manufactured kernels in order to reduce the overhead.
+
+
+   6. Example values for the user specified parameters
+
+   The program DSGPM rewrites the GEMM-Based Level 3 BLAS source files
+   replacing lines containing old PARAMETER statements for user
+   specified parameters, with lines containing new PARAMETER statements
+   given in the input file. The user can conveniently assign new values
+   to the PARAMETER statements in the input file, and then run DSGPM to
+   distribute the values among the GEMM-Based routines. The enclosed
+   files 'dsgpm.f' and 'dgpm.in' contain the program DSGPM and an
+   example input file, respectively. Input files may consist of three
+   different types of lines, apart from empty lines.
+
+   o  Comment lines starting with the character '*'.
+
+   o  Lines containing single filenames for GEMM-Based source files.
+
+   o  Lines containing PARAMETER statements that replaces the
+      corresponding lines in the GEMM-Based routines.
+
+   A line containing a filename is followed by lines containing the new
+   PARAMETER statements for the particular file (see the input file
+   'dgpm.in' and the examples below).
+
+   The values for the user specified parameters presented in this
+   section have been used during the development of the GEMM-Based
+   Level 3 BLAS model implementations. They are not thoroughly optimized
+   for their respective machines and should merely be viewed as start-
+   values for further refinement.
+
+
+
+   Example 1.  IBM RS/6000 530H
+
+      Machine characteristics:
+
+      Separate caches for data and instructions.
+      Data cache size               =  64 Kbyte.
+      Cache line size               =  128 byte
+      Cache scheme (mapping)        =  4-way associative.
+      Size of a double word         =  8 bytes
+
+      User specified parameters:
+
+      dsymm.f
+            PARAMETER        ( RCB = 128, CB = 64 )
+      dsyr2k.f
+            PARAMETER        ( RCB = 128, CB = 64 )
+      dsyrk.f
+            PARAMETER        ( RCB = 64, RB = 64, CB = 64 )
+      dtrmm.f
+            PARAMETER        ( RCB = 64, RB = 64, CB = 64 )
+      dtrsm.f
+            PARAMETER        ( RCB = 64, RB = 64, CB = 64 )
+      dbigp.f
+            PARAMETER        ( DIP41 = 4, DIP42 = 3,
+           $                   DIP81 = 4, DIP82 = 3, DIP83 = 4,
+           $                   DIP91 = 4, DIP92 = 3, DIP93 = 4 )
+      dcld.f
+            PARAMETER        ( LNSZ = 128, NPRT = 128, PRTSZ = 3,
+           $                   LOLIM = 128, DP = 8 )
+
+
+   Example 2.  Alliant FX/2800, 1 processor
+
+      Machine characteristics (Intel i860 processor):
+
+      Separate caches for data and instructions.
+      Data cache size               =  8 Kbyte.
+      Cache line size               =  32 byte
+      Data cache scheme (mapping)   =  2-way associative.
+      Size of a double word         =  8 bytes
+
+      User specified parameters:
+
+      dsymm.f
+            PARAMETER        ( RCB = 128, CB = 32 )
+      dsyr2k.f
+            PARAMETER        ( RCB = 128, CB = 32 )
+      dsyrk.f
+            PARAMETER        ( RCB = 32, RB = 32, CB = 32 )
+      dtrmm.f
+            PARAMETER        ( RCB = 32, RB = 32, CB = 32 )
+      dtrsm.f
+            PARAMETER        ( RCB = 32, RB = 32, CB = 32 )
+      dbigp.f
+            PARAMETER        ( DIP41 = 3, DIP42 = 3,
+           $                   DIP81 = 3, DIP82 = 3, DIP83 = 3,
+           $                   DIP91 = 3, DIP92 = 3, DIP93 = 3 )
+      dcld.f
+            PARAMETER        ( LNSZ = 32, NPRT = 128, PRTSZ = 2,
+           $                   LOLIM = 32, DP = 8 )
+
+
+   Example 3.  IBM 3090J VF
+
+      Machine characteristics (vector processor with vector registers):
+
+      Shared cache for data and instructions.
+      Vector register length (VSS)  =  256 words
+      Cache size                    =  256 Kbyte.
+      Cache line size               =  128 byte
+      Cache scheme (mapping)        =  4-way associative.
+      Size of a double word         =  8 bytes
+
+      User specified parameters:
+
+      dsymm.f
+            PARAMETER        ( RCB = 256, CB = 96 )
+      dsyr2k.f
+            PARAMETER        ( RCB = 256, CB = 96 )
+      dsyrk.f
+            PARAMETER        ( RCB = 144, RB = 256, CB = 96 )
+      dtrmm.f
+            PARAMETER        ( RCB = 144, RB = 256, CB = 96 )
+      dtrsm.f
+            PARAMETER        ( RCB = 144, RB = 256, CB = 96 )
+      dbigp.f
+            PARAMETER        ( DIP41 = 4, DIP42 = 3,
+           $                   DIP81 = 4, DIP82 = 3, DIP83 = 4,
+           $                   DIP91 = 4, DIP92 = 3, DIP93 = 4 )
+      dcld.f
+            PARAMETER        ( LNSZ = 128, NPRT = 512, PRTSZ = 3,
+           $                   LOLIM = 128, DP = 8 )
+
+
+   7. Installing the programs
+
+   This section describes how to install the GEMM-Based Level 3 BLAS
+   model implementations on a unix-like system. A 'Makefile' is enclosed
+   to facilitate the installation.
+
+   The user specified parameters come with default values. These values
+   need to be optimized for different target machines according to the
+   guidelines in section 5. Some experiments with different values may
+   result in a remarkable increase in performance, and is therefore
+   recommended.
+
+   The enclosed program DSGPM together with an input file can be used
+   to assign values to the user specified parameters (see section 6).
+   Compile and link the program DSGPM:
+
+      % make dsgpm
+
+   Create a copy, 'newdgpm.in', of the enclosed input file 'dgpm.in'.
+   Assign new values to the user specified parameters in 'newdgpm.in'
+   (see the guidelines in section 5 and the examples in section 6).
+   Run the program which rewrites the GEMM-Based routines with the
+   new parameter values given in 'newdgpm.in':
+
+      % dsgpm < newdgpm.in
+
+   Decide whether you wish to create a complete Level 3 BLAS library,
+   including the underlying BLAS routines, or a library with only the
+   GEMM-Based Level 3 BLAS routines, which need to be linked with the
+   underlying BLAS at a later stage, when an executable program is
+   created.
+
+   For a complete library, assign the underlying BLAS (paths to
+   routines, or to a library, containing the underlying BLAS) to the
+   variable LIB12B in the file 'Makefile'. If you wish, you may specify
+   a separate underlying DGEMM routine to the variable DGEMM. For a
+   library containing only the GEMM-Based routines, do not specify any
+   routines or libraries. You may also specify compiler flags in the file
+   'Makefile'. Create a GEMM-Based Level 3 BLAS library:
+
+       % make libgbl3b
+
+   Hopefully, a library named libgbl3b.a is now created in the directory
+   above the current directory.
+
+
+   8. Verify the correctness of the installed programs
+
+   Be sure to verify the correctness of the compiled routines
+   thoroughly, before production use. Do not trust the underlying BLAS,
+   or the compiler used, especially if compiler options for code
+   optimization, inlineing, etc., were used. We recommend the test
+   program DBLAT3 for verification of double-precision Level 3 BLAS.
+   This program can be obtained from netlib by sending an e-mail
+   containing the message 'send dblat3 from blas'. Apart from the block
+   sizes you have selected for best performance, make some tests with
+   small block dimensions. For example, different combinations of the
+   values 3, 4, and 7 for the parameters RCB, RB, and CB, respectively.
+   Matrix dimensions in the range 0-60 should be satisfactory. Include
+   at least one test with dimensions larger than 30, to make sure that
+   the block partitioning works correctly. For the scalars ALPHA and
+   BETA use, for instance, the values 0.0, 1.0, -1.0, -0.8, and 1.2.
+   Finally, notice that this code is free and comes with no guarantee.
+
+
+   References
+
+   [1] Dongarra J. J., DuCroz J., Duff I., and Hammarling S., "A Set of
+       Level 3 Basic Linear Algebra Subprograms", ACM Trans. Math.
+       Softw., Vol. 16, No. 1, 1990, pp.1-17.
+
+   [2] Dongarra J. J., DuCroz J., Duff I., and Hammarling S., "Algorithm
+       679: A Set of Level 3 Basic Linear Algebra Subprograms: Model
+       Implementation and Test Programs", ACM Trans. Math. Softw.,
+       Vol. 16, No. 1, 1990, pp.18-28.
+
+   [3] Dongarra J. J., DuCroz J., Hammarling S., and Hanson R., "An
+       Extended Set of Fortran Basic Linear Algebra Subprograms",
+       ACM Trans. Math. Softw., Vol. 14, No. 1, 1988, pp.1-17.
+
+   [4] Dongarra J. J., DuCroz J., Hammarling S., and Hanson R.,
+       "Algorithm 656: An Extended Set of Basic Linear Algebra
+       Subprograms: Model Implementation and Test Programs", ACM Trans.
+       Math. Softw., Vol. 14, No. 1, 1988, pp.18-32.
+
+   [5] Kagstrom B., Ling P., and Van Loan C. "High Performance GEMM-
+       Based Level-3 BLAS: Sample Routines for Double Precision Real
+       Data", in High Performance Computing II, Durand M. and
+       El Dabaghi F., eds., Amsterdam, 1991, North-Holland, pp.269-281.
+
+   [6] Kagstrom B., Ling P. and Van Loan C. "Portable High Performance
+       GEMM-Based Level-3 BLAS, in R. F. Sincovec et al, eds., Parallel
+       Processing for Scientific Computing, SIAM Publications, 1993.
+
+   [7] Kagstrom B. and Van Loan C. "GEMM-Based Level-3 BLAS", Tech. rep.
+       CTC91TR47, Department of Computer Science, Cornell University,
+       Dec. 1989.
