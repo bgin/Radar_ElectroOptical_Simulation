@@ -23,7 +23,7 @@ const char * const pgGMS_AVX512_WRAPPERS_SYNOPSIS = "Callable from Fortran C wra
         }v8f64;
 
         typedef struct __attribute__((align(64))) v16f32 {
-                 double v[16];
+                 float v[16];
 	}v16f32;
 
 
