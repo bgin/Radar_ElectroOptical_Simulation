@@ -74,14 +74,60 @@
 				  
       			          
        v8f64
-       masked_zero_4x64_to_8x64_v8f64(v8f64,
+       masked_zero_4x64_to_8x64_v8f64_eq(v8f64,
                                       v8f64)
                                   __attribute__((hot))
 				  __attribute__((regcall))
 				  __attribute__((aligned(32)));			  
 
+/////////////////////////////////////////////////////////////////////////////////////
 
 
+       v8f32 
+       masked_2x32_to_8x32_v8f32_neq(v8f32,
+	                             v8f32)	                             
+                                  __attribute__((hot))
+				  __attribute__((regcall))
+				  __attribute__((aligned(32)));
+				  
+        v8f32 
+	masked_zero_2x32_to_8x32_v8f32_neq(v8f32,
+	                                  v8f32)	                                  
+                                  __attribute__((hot))
+				  __attribute__((regcall))
+				  __attribute__((aligned(32)));
+
+#if defined(__AVX512DQ__)				          
+	v16f32
+	masked_2x32_to_16x32_v16f32_neq(v16f32,
+	                               v16f32)	                             
+	                          __attribute__((hot))
+				  __attribute__((regcall))
+				  __attribute__((aligned(32)));	
+				  
+       v16f32
+       masked_zero_2x32_to_16x32_v16f32_neq(v16f32,
+                                           v16f32)
+	                          __attribute__((hot))
+				  __attribute__((regcall))
+				  __attribute__((aligned(32)));				  		       
+#endif	
+
+        			          
+       v8f64
+       masked_4x64_to_8x64_v8f64_neq(v8f64,
+                                    v8f64)
+                                   __attribute__((hot))
+				  __attribute__((regcall))
+				  __attribute__((aligned(32)));	
+				  
+      			          
+       v8f64
+       masked_zero_4x64_to_8x64_v8f64_neq(v8f64,
+                                          v8f64)
+                                  __attribute__((hot))
+				  __attribute__((regcall))
+				  __attribute__((aligned(32)));		
 
 
 
