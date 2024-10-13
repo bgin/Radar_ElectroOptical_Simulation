@@ -1075,6 +1075,51 @@ module sph_complex_xmm4r4
             ct0    = cexp*C0320281648576215127537161432847
             y51   = ct0*t2
       end function SphcY5_1_v128b_ps
+      
+      pure function SphcY5_2_v128b_ps(tht,phi) result(y52)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)          
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: SphcY5_2_v128b_ps
+            !dir$ attributes forceinline :: SphcY5_2_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY5_2_v128b_ps  
+#endif       
+            type(XMM4r4_t),   intent(in) :: tht
+            type(XMM4r4_t),   intent(in) :: phi
+            type(XMM4c4)                 :: y5i2
+            type(XMM4r4_t),   parameter  :: C1694771183260899275815691555511 = 
+                                            XMM4r4_t(1.694771183260899275815691555511_sp)
+            type(XMM4r4_t),   parameter  :: C2 = XMM4r4_t(-2.0_sp)
+            type(XMM4r4_t),   parameter  :: C3 = XMM4r4_t(3.0_sp) 
+            type(XMM4c4),     automatic  :: carg
+            type(XMM4c4),     automatic  :: cexp
+            type(XMM4c4),     automatic  :: ct0
+            type(XMM4r4_t),   automatic  :: sint
+            type(XMM4r4_t),   automatic  :: psin
+            type(XMM4r4_t),   automatic  :: cost
+            type(XMM4r4_t),   automatic  :: pcos3
+            type(XMM4r4_t),   automatic  :: t0
+             !dir$ attributes align : 16 :: C1694771183260899275815691555511
+             !dir$ attributes align : 16 :: C2
+             !dir$ attributes align : 16 :: C3
+             !dir$ attributes align : 16 :: carg
+             !dir$ attributes align : 16 :: cexp
+             !dir$ attributes align : 16 :: ct0
+             !dir$ attributes align : 16 :: sint
+             !dir$ attributes align : 16 :: psin
+             !dir$ attributes align : 16 :: cost
+             !dir$ attributes align : 16 :: pcos3
+             !dir$ attributes align : 16 :: t0
+            ct0    = I
+            cost.v = cos(tht.v)
+            carg   = ct0*phi
+            pcos3.v= cost.v*cost.v*cost.v
+            t0.v   = C3.v*pcos3.v-cost.v
+            cexp   = cexp_xmm4c4(carg)
+            sint.v = sin(tht.v)
+            t0.v   = sint.v*sint.v*t0.v
+            ct0    = cexp*C1694771183260899275815691555511
+            y5i2   = ct0*t0
+      end function SphcY5_2_v128b_ps
      
      
            
