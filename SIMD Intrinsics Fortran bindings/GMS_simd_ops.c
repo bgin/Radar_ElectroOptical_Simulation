@@ -316,12 +316,24 @@ masked_zero_4x64_8x64_v8f64_gt(v8f64 a,
 }     
                                                                     
                        
+//////////////////////////////////////////////////////////////////////////////////////                       
                        
+v2f64
+shuffle_2x64_v2f64(v2f64 a,
+                   v4i32 b)                       
+{
+     __m128i t0   = _mm_add_epi32(*(__m128i*)&b,*(__m128i*)&b);
+     __m128d xmm0 = _mm_permutevar_pd(*(__m128d*)&a,t0);
+     return (*(__m128d*)&xmm0);      
+}                       
                        
-                       
-                       
-                       
-                       
+v4f32
+shuffle_4x32_v4f32(v4f32 a,
+                   v4i32 b)
+{
+    __m128 xmm0 = _mm_permutevar_ps(*(__m128*)&a,*(__m128i*)&b);
+    return (*(__m128*)&xmm0);
+}                       
                        
                        
                        
