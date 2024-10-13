@@ -3,7 +3,7 @@
 #define __GMS_SIMD_OPS_H__
 
 #include <immintrin.h>
-
+#include <stdint.h>
 
 
     // Interoperable with corresponding Fortran derived type
@@ -31,7 +31,54 @@
         typedef struct __attribute__((align(16))) v4f32 {
                  float v[4];
 	}v4f32;
+	//512-bit size (signed-int)
+	typedef struct __attribute__((align(64))) v8i64 {
+                 int64_t v[8];
+        }v8i64;
+        
+        typedef struct __attribute__((align(64))) v16i32 {
+                 int32_t v[16];
+	}v16i32;
 	
+	typedef struct __attribute__((align(64))) v32i16 {
+                 int16_t v[32];
+	}v32i32;
+	
+	typedef struct __attribute__((align(64))) v64i8 {
+                 int8_t v[64];
+	}v64i32;
+	//256-bit size (signed-int)
+	typedef struct __attribute__((align(32))) v4i64 {
+                 int64_t v[4];
+        }v4i64;
+        
+        typedef struct __attribute__((align(32))) v8i32 {
+                 int32_t v[8];
+	}v8i32;
+	
+	typedef struct __attribute__((align(32))) v16i16 {
+                 int16_t v[16];
+	}v16i16;
+	
+	typedef struct __attribute__((align(32))) v32i8 {
+                 int8_t v[32];
+	}v32i8;
+	//128-bit size (signed-int)
+	typedef struct __attribute__((align(16))) v2i64 {
+                 int64_t v[2];
+        }v2i64;
+        
+        typedef struct __attribute__((align(16))) v4i32 {
+                 int32_t v[4];
+	}v4i32;
+	
+	typedef struct __attribute__((align(16))) v8i16 {
+                 int16_t v[8];
+	}v8i16;
+	
+	typedef struct __attribute__((align(16))) v16i8 {
+                 int8_t v[16];
+	}v16i8;
 ///////////////////////////////////////////////////////////////////////////////////
 	
 	v8f32 
@@ -229,6 +276,11 @@
                                   __attribute__((hot))
 				  __attribute__((regcall))
 				  __attribute__((aligned(32)));	
+				  
+				  
+				  
+				  
+
 
 
 
