@@ -1202,6 +1202,43 @@ module sph_complex_xmm4r4
             y54   =  ct0*C1467714898305751163052026147529    
       end function SphcY5_4_v128b_ps
       
+      pure function SphcY5_5_v128b_ps(tht,phi) result(y55)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)          
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: SphcY5_5_v128b_ps
+            !dir$ attributes forceinline :: SphcY5_5_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY5_5_v128b_ps  
+#endif       
+            type(XMM4r4_t),   intent(in) :: tht
+            type(XMM4r4_t),   intent(in) :: phi
+            type(XMM4c4)                 :: y5i5
+            type(XMM4r4_t),   parameter  :: C0464132203440858160657998605534 = &
+                                                  XMM4r4_t(0.464132203440858160657998605534_sp)
+            type(XMM4r4_t),   parameter  :: C5  = XMM4r4_t(-5.0_sp)
+            type(XMM4c4),     automatic  :: carg
+            type(XMM4c4),     automatic  :: cexp
+            type(XMM4c4),     automatic  :: ct0
+            type(XMM4r4_t),   automatic  :: sint
+            type(XMM4r4_t),   automatic  :: psin2
+            type(XMM4r4_t),   automatic  :: psin5
+            !dir$ attributes align : 16 :: C0464132203440858160657998605534
+            !dir$ attributes align : 16 :: C5
+            !dir$ attributes align : 16 :: carg
+            !dir$ attributes align : 16 :: ct0
+            !dir$ attributes align : 16 :: cexp
+            !dir$ attributes align : 16 :: sint
+            !dir$ attributes align : 16 :: psin2
+            !dir$ attributes align : 16 :: psin5
+            ct0    = I
+            carg   = ct0*phi
+            sint.v = sin(tht.v)
+            psin2.v= sint.v*sint.v
+            cexp   = cexp_xmm4c4(carg)
+            psin5.v= psin2.v*psin2.v*sint.v
+            ct0    = cexp*C0464132203440858160657998605534
+            y55   = ct0*psin5
+     end function SphcY5_5_v128b_ps
+      
       
            
            
