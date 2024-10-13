@@ -1239,7 +1239,8 @@ module sph_complex_xmm4r4
             y55   = ct0*psin5
      end function SphcY5_5_v128b_ps
       
-      
+
+end module sph_complex_xmm4r4      
            
            
        
