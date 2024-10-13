@@ -945,7 +945,7 @@ module sph_complex_xmm4r4
             !dir$ attributes forceinline :: SphcY5_inv1_v128b_ps
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY5_inv1_v128b_ps  
 #endif       
-            type(XMM4r4_t),   intent(in) :: tht
+            type(XMM4r4_t),   intent(in) :: theta
             type(XMM4r4_t),   intent(in) :: phi
             type(XMM4c4)                 :: y5i1
             type(XMM4r4_t),   parameter  :: C0320281648576215127537161432847 = 
@@ -986,8 +986,46 @@ module sph_complex_xmm4r4
             ct0    = cexp*C0320281648576215127537161432847
             y5i1   = ct0*t2
       end function SphcY5_inv1_v128b_ps
-     
-     
+      
+      pure function SphcY5_0_v128b_ps(theta,phi) result(y50)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)          
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: SphcY5_0_v128b_ps
+            !dir$ attributes forceinline :: SphcY5_0_v128b_ps
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY5_0_v128b_ps  
+#endif       
+            type(XMM4r4_t),   intent(in) :: theta
+            type(XMM4r4_t),   intent(in) :: phi
+            type(XMM4c4)                 :: y50
+            type(XMM4r4_t),   parameter  :: C011695032245342359643971519209 = &
+                                                   XMM4r4_t(0.11695032245342359643971519209_sp)
+            type(XMM4r4_t),   parameter  :: C63 =  XMM4r4_t(63.0_sp)
+            type(XMM4r4_t),   parameter  :: C70 =  XMM4r4_t(70.0_sp)
+            type(XMM4r4_t),   parameter  :: C15 =  XMM4r4_t(15.0_sp)
+            type(XMM4r4_t),   automatic  :: cost
+            type(XMM4r4_t),   automatic  :: costp2
+            type(XMM4r4_t),   automatic  :: t0
+            type(XMM4r4_t),   automatic  :: t1
+            type(XMM4r4_t),   automatic  :: t2
+            type(XMM4r4_t),   automatic  :: t3
+            !dir$ attributes align : 16 :: C011695032245342359643971519209
+            !dir$ attributes align : 16 :: C63
+            !dir$ attributes align : 16 :: C70
+            !dir$ attributes align : 16 :: C15
+            !dir$ attributes align : 16 :: cost
+            !dir$ attributes align : 16 :: costp2
+            !dir$ attributes align : 16 :: t0
+            !dir$ attributes align : 16 :: t1
+            !dir$ attributes align : 16 :: t2
+            !dir$ attributes align : 16 :: t3
+            cost.v  = cos(theta.v)
+            t0.v    = C15.v*cost.v
+            costp2.v= cost.v*cost.v
+            t1.v    = C70.v*(costp2.v*cost.v)
+            t2.v    = C63.v*(costp2.v*costp2.v*cost.v)
+            t3.v    = t2.v-t1.v+t0.v
+            y50.v   = C011695032245342359643971519209.v*t3.v
+      end function SphcY5_0_v128b_ps
      
      
            
