@@ -278,8 +278,22 @@
 				  __attribute__((aligned(32)));	
 				  
 				  
+//////////////////////////////////////////////////////////////////////////
+       
+       v2f64
+       shuffle_2x64_v2f64(v2f64,
+                          v4i32)			  
+			          __attribute__((hot))
+				  __attribute__((regcall))
+				  __attribute__((aligned(32)));	
 				  
-				  
+      v4f32
+      shuffle_4x32_v4f32(v4f32,
+                         v4i32)
+				  __attribute__((hot))
+				  __attribute__((regcall))
+				  __attribute__((aligned(32)));	  
+      	  
 
 
 
