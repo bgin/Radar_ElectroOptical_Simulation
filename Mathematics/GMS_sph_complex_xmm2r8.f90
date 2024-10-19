@@ -87,45 +87,7 @@ module sph_complex_xmm2r8
      type(XMM2c8), parameter, public :: I = XMM2c8(0.0_dp,1.0_dp)
      ! Data types
      
-     type, public :: csph_harmonic_deg1_4_t
-           type(XMM2c8),   dimension(:), allocatable :: yxx
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)  
-           !dir$ attributes align : 16 :: yxx
-#endif
-           type(XMM2c8),   dimension(:), allocatable :: c
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)  
-           !dir$ attributes align : 16 :: c
-#endif
-           type(XMM2r8_t), dimension(:), allocatable :: z
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)  
-           !dir$ attributes align : 16 :: z
-#endif
-           type(XMM2r8_t), dimension(:), allocatable :: r
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)  
-           !dir$ attributes align : 16 :: r
-#endif
-           integer(i4)                               :: nz   
-           integer(i4)                               :: nr
-           integer(i4)                               :: deg ! degree
-     end type csph_harmonic_deg1_4_t
-     
-     type, public :: csph_harmonic_deg5_10_t
-           type(XMM2r8_t),  dimension(:), allocatable :: theta
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)  
-           !dir$ attributes align : 16 :: theta
-#endif
-           type(XMM2r8_t),  dimension(:), allocatable :: phi
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)  
-           !dir$ attributes align : 16 :: phi
-#endif
-           type(XMM2c8),    dimension(:), allocatable :: yxx
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)  
-           !dir$ attributes align : 16 :: yxx
-#endif
-           integer(i4)                                :: deg
-           integer(i4)                                :: ntheta
-           integer(i4)                                :: nphi
-     end type csph_harmonic_deg5_10_t
+    
      
      contains
      
