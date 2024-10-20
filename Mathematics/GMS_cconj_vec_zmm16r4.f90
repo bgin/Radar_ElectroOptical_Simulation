@@ -577,6 +577,102 @@ subroutine cconjv_v512_8x16_ps(xim,cxim,n)
        end if
 end subroutine cconjv_v512_8x16_ps
 
+
+subroutine cconjv_v512_4x16_ps(xim,cxim,n)
+#if defined(__ICC) || defined(__INTEL_COMPILER)    
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cconjv_v512_4x16_ps
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cconjv_v512_4x16_ps
+#endif     
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
+         real(kind=sp), allocatable, dimension(:), intent(out) :: cxim
+         integer(kind=i4),                         intent(in)  :: n
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+      !DIR$ ASSUME_ALIGNED : 64 :: xim
+      !DIR$ ASSUME_ALIGNED : 64 :: cxim
+#endif
+         
+         type(ZMM16r4_t), automatic :: zmm0
+         type(ZMM16r4_t), automatic :: zmm1
+         type(ZMM16r4_t), automatic :: zmm2
+         type(ZMM16r4_t), automatic :: zmm3
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm1
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm2
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm3
+         type(XMM4r4_t),  automatic  :: xmm0
+         type(YMM8r4_t),  automatic  :: ymm0 
+         real(sp),         automatic :: z0
+         integer(kind=i4), automatic :: i,ii,j
+         if(n<=0) then
+            return
+         else if(n==1) then
+            z0      = xim(0)
+            cxim(0) = -1.0_sp*z0
+            return
+         else if(n>1 && n<=4) then
+!$omp simd linear(i:1)
+            do i=0, 3
+               xmm0.v(i) = xim(i)
+               cxim(i)   = CN1v4.v(i)*xmm0.v(i)
+            end do
+            return
+         else if(n>4 && n<=8) then
+!$omp simd linear(i:1)
+            do i=0, 7
+               ymm0.v(i) = xim(i)
+               cxim(i)   = CN1v8.v(i)*ymm0.v(i)
+            end do
+            return
+         else if(n>8 && n<=16) then
+!$omp simd aligned(xim:64) aligned(cxim:64) linear(i:1)
+            do i=0, 15
+               zmm0.v(i) = xim(i)
+               cxim(i)   = CN1v16.v(i)*zmm0.v(i)
+            end do
+            return
+         else if(n>16 && n<=32) then
+            do i = 0,iand(n-1,inot(15)),16
+!$omp simd aligned(xim:64) aligned(cxim:64) linear(ii:1)
+               do ii = 0, 15
+                  zmm0.v(ii)  = xim(i+ii)
+                  cxim(i+ii)  = CN1v16.v(ii)*zmm0.v(ii)
+               end do
+           end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
+#endif            
+            do j = i,n-1
+               dst(j) = src(j)
+            end do
+          return
+       else if(n>32) then
+          do i=0, iand(n-1,inot(ZMM_LEN-1), ZMM_LEN*8
+!$omp simd aligned(xim:64) aligned(cxim:64) linear(ii:1)              
+              do ii = 0, ZMM_LEN-1
+                  call mm_prefetch(xim(i+0+ii),FOR_K_PREFETCH_T1)
+                  zmm0.v(ii)            = xim(i+0+ii)
+                  cxim(i+0+ii)          = CN1v16.v(ii)*zmm0.v(ii)
+                  zmm0.v(ii)            = xim(i+1*ZMM_LEN+ii)
+                  cxim(i+1*ZMM_LEN+ii)  = CN1v16.v(ii)*zmm0.v(ii)
+                  zmm0.v(ii)            = xim(i+2*ZMM_LEN+ii)
+                  cxim(i+2*ZMM_LEN+ii)  = CN1v16.v(ii)*zmm0.v(ii)
+                  zmm0.v(ii)            = xim(i+3*ZMM_LEN+ii)
+                  cxim(i+3*zmm_len+ii)  = CN1v16.v(ii)*zmm0.v(ii)
+             end do
+          end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
+#endif            
+          do j = i, n-1
+            z0 =    xim(j)
+            cxim(j) = -1.0_sp*z0
+          end do
+          return
+       end if
+end subroutine cconjv_v512_4x16_ps
+
+
      
      
      
