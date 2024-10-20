@@ -88,13 +88,16 @@ module cconj_vec_zmm16r4
      type(YMM8r4_t),   parameter          :: CN1v8   = YMM8r4_t(-1.0_sp)
      type(XMM4r4_t),   parameter          :: CN1v4   = XMM4r4_t(-1.0_sp)
      integer(kind=i4), parameter, private :: ZMM_LEN = 16
+     
      contains
+     
+     
      
 subroutine cconjv_zmm16r4_unroll_16x(xim,cxim,n)
 #if defined(__ICC) || defined(__INTEL_COMPILER)    
-        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8r4_memcpy_unroll8x
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cconjv_zmm16r4_unroll_16x
         !DIR$ OPTIMIZE : 3
-        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ymm8r4_memcpy_unroll8x
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cconjv_zmm16r4_unroll_16x
 #endif     
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
          real(kind=sp), allocatable, dimension(:), intent(out) :: cxim
@@ -218,7 +221,7 @@ subroutine cconjv_zmm16r4_unroll_16x(xim,cxim,n)
                   zmm0.v(ii)            = xim(i+14*ZMM_LEN+ii)
                   cxim(i+14*zmm_len+ii) = CN1v16.v(ii)*zmm0.v(ii)
                   zmm0.v(ii)            = xim(i+15*ZMM_LEN+ii)
-                  cxim(i+15*zmm_len+ii)  = CN1v16.v(ii)*zmm0.v(ii)
+                  cxim(i+15*zmm_len+ii) = CN1v16.v(ii)*zmm0.v(ii)
               end do
           end do
 #if defined(__ICC) || defined(__INTEL_COMPILER)
