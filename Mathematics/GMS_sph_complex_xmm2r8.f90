@@ -782,7 +782,7 @@ module sph_complex_xmm2r8
             carg   = ct0*phi
             sint.v = sin(tht.v)
             psin2.v= sint.v*sint.v
-            cexp   = cexp_xmm4c4(carg)
+            cexp   = cexp_xmm2c8(carg)
             psin5.v= psin2.v*psin2.v*sint.v
             ct0    = cexp*C0464132203440858160657998605534
             y5i5   = ct0*psin5
@@ -820,7 +820,7 @@ module sph_complex_xmm2r8
             carg   =  ct0*phi
             cost.v =  cos(tht.v)
             psin4.v=  sint.v*sint.v*sint.v*sint.v
-            cexp   =  cexp_xmm4c4(carg)
+            cexp   =  cexp_xmm2c8(carg)
             psin4.v=  psin4.v*cost.v
             ct0    =  cexp*psin4
             y5i4   =  ct0*C1467714898305751163052026147529    
@@ -860,7 +860,7 @@ module sph_complex_xmm2r8
             ct0    = I*C3
             carg   = ct0*phi
             sint.v = sin(tht.v)
-            cexp   = cexp_xmm4c4(carg)
+            cexp   = cexp_xmm2c8(carg)
             cost.v = cos(tht.v)
             t0.v   = (C9.v*cost.v*cost.v)-C1.v
             psin3.v= sint.v*sint.v*sint.v
@@ -907,7 +907,7 @@ module sph_complex_xmm2r8
             carg   = ct0*phi
             pcos3.v= cost.v*cost.v*cost.v
             t0.v   = C3.v*pcos3.v-cost.v
-            cexp   = cexp_xmm4c4(carg)
+            cexp   = cexp_xmm2c8(carg)
             sint.v = sin(tht.v)
             t0.v   = sint.v*sint.v*t0.v
             ct0    = cexp*C1694771183260899275815691555511
@@ -955,7 +955,7 @@ module sph_complex_xmm2r8
             sint.v = sin(tht.v)
             carg   = ct0*phi
             cost.v = cos(tht.v)
-            cexp   = cexp_xmm4c4(carg)
+            cexp   = cexp_xmm2c8(carg)
             t0.v   = (C14*cost.v*cost.v)-C1.V
             t1.v   = C21.v*cost.v*cost.v*cost.v*cost.v
             t2.v   = sint.v*(t0.v-t1.v)
@@ -1044,7 +1044,7 @@ module sph_complex_xmm2r8
             sint.v = sin(tht.v)
             carg   = ct0*phi
             cost.v = cos(tht.v)
-            cexp   = cexp_xmm4c4(carg)
+            cexp   = cexp_xmm2c8(carg)
             t0.v   = (C14*cost.v*cost.v)-C1.V
             t1.v   = C21.v*cost.v*cost.v*cost.v*cost.v
             t2.v   = sint.v*(t0.v-t1.v)
@@ -1090,7 +1090,7 @@ module sph_complex_xmm2r8
             carg   = ct0*phi
             pcos3.v= cost.v*cost.v*cost.v
             t0.v   = C3.v*pcos3.v-cost.v
-            cexp   = cexp_xmm4c4(carg)
+            cexp   = cexp_xmm2c8(carg)
             sint.v = sin(tht.v)
             t0.v   = sint.v*sint.v*t0.v
             ct0    = cexp*C1694771183260899275815691555511
@@ -1131,7 +1131,7 @@ module sph_complex_xmm2r8
             ct0    = I
             carg   = ct0*phi
             sint.v = sin(tht.v)
-            cexp   = cexp_xmm4c4(carg)
+            cexp   = cexp_xmm2c8(carg)
             cost.v = cos(tht.v)
             t0.v   = (C9.v*cost.v*cost.v)-C1.v
             psin3.v= sint.v*sint.v*sint.v
@@ -1172,7 +1172,7 @@ module sph_complex_xmm2r8
             carg   =  ct0*phi
             cost.v =  cos(tht.v)
             psin4.v=  sint.v*sint.v*sint.v*sint.v
-            cexp   =  cexp_xmm4c4(carg)
+            cexp   =  cexp_xmm2c8(carg)
             psin4.v=  psin4.v*cost.v
             ct0    =  cexp*psin4
             y54   =  ct0*C1467714898305751163052026147529    
@@ -1187,10 +1187,9 @@ module sph_complex_xmm2r8
 #endif       
             type(XMM2r8_t),   intent(in) :: tht
             type(XMM2r8_t),   intent(in) :: phi
-            type(XMM2c8)                 :: y5i5
+            type(XMM2c8)                 :: y55
             type(XMM2r8_t),   parameter  :: C0464132203440858160657998605534 = &
                                                   XMM2r8_t(0.464132203440858160657998605534_dp)
-            type(XMM2r8_t),   parameter  :: C5  = XMM2r8_t(-5.0_dp)
             type(XMM2c8),     automatic  :: carg
             type(XMM2c8),     automatic  :: cexp
             type(XMM2c8),     automatic  :: ct0
@@ -1209,11 +1208,53 @@ module sph_complex_xmm2r8
             carg   = ct0*phi
             sint.v = sin(tht.v)
             psin2.v= sint.v*sint.v
-            cexp   = cexp_xmm4c4(carg)
+            cexp   = cexp_xmm2c8(carg)
             psin5.v= psin2.v*psin2.v*sint.v
             ct0    = cexp*C0464132203440858160657998605534
             y55   = ct0*psin5
      end function SphcY5_5_v128b_pd
+     
+      ! Degree l=6
+      
+     pure function SphcY6_inv6_v128b_pd(tht,phi) result(y6i6)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)          
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: SphcY6_inv6_v128b_pd
+            !dir$ attributes forceinline :: SphcY6_inv6_v128b_pd
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: SphcY6_inv6_v128b_pd  
+#endif       
+            type(XMM2r8_t),   intent(in) :: tht
+            type(XMM2r8_t),   intent(in) :: phi
+            type(XMM2c8)                 :: y6i6
+            type(XMM2r8_t),   parameter  :: C0483084113580066226972961123235 = &
+                                                 XMM2r8_t(0.483084113580066226972961123235_dp)
+            type(XMM2r8_t),   parameter  :: CN6  = XMM2r8_t(-6.0_dp)
+            type(XMM2c8),     automatic  :: carg
+            type(XMM2c8),     automatic  :: cexp
+            type(XMM2c8),     automatic  :: ct0
+            type(XMM2r8_t),   automatic  :: sint
+            type(XMM2r8_t),   automatic  :: sintp2
+            type(XMM2r8_t),   automatic  :: sintp6
+            !dir$ attributes align : 16 :: C0483084113580066226972961123235 
+            !dir$ attributes align : 16 :: CN6
+            !dir$ attributes align : 16 :: carg
+            !dir$ attributes align : 16 :: cexp
+            !dir$ attributes align : 16 :: ct0
+            !dir$ attributes align : 16 :: sint
+            !dir$ attributes align : 16 :: sintp2
+            !dir$ attributes align : 16 :: sintp6
+            ct0     = I*CN6
+            carg    = ct0*phi
+            sint.v  = sin(tht.v)
+            sintp2.v= sint.v*sint.v
+            cexp    = cexp_xmm2c8(carg)
+            sintp6.v= sintp2.v*sintp2.v*sintp2.v
+            ct0     = cexp*C0483084113580066226972961123235 
+            y6i6    = ct0*sintp6
+     end function SphcY6_inv6_v128b_pd
+     
+     
+     
       
       
 end module sph_complex_xmm2r8        
