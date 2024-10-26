@@ -100,10 +100,7 @@ subroutine cconjv_v512_32x16_ps(xim,cxim,n)
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
          real(kind=sp), allocatable, dimension(:), intent(out) :: cxim
          integer(kind=i4),                         intent(in)  :: n
-#if defined(__ICC) || defined(__INTEL_COMPILER)
-      !DIR$ ASSUME_ALIGNED : 64 :: xim
-      !DIR$ ASSUME_ALIGNED : 64 :: cxim
-#endif
+
          
          type(ZMM16r4_t), automatic :: zmm0
          type(ZMM16r4_t), automatic :: zmm1
@@ -211,9 +208,10 @@ subroutine cconjv_v512_32x16_ps(xim,cxim,n)
 #if defined(__ICC) || defined(__INTEL_COMPILER)
          !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
 #endif            
-            do j = i,n-1
-               dst(j) = src(j)
-            end do
+            do j = i, n-1
+               z0 =    xim(j)
+               cxim(j) = -1.0_sp*z0
+          end do
           return
        else if(n>64 && n<=128) then
           do i = 0,iand(n-1,inot(15)),16
@@ -226,9 +224,10 @@ subroutine cconjv_v512_32x16_ps(xim,cxim,n)
 #if defined(__ICC) || defined(__INTEL_COMPILER)
          !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
 #endif            
-            do j = i,n-1
-               dst(j) = src(j)
-            end do
+              do j = i, n-1
+                 z0 =    xim(j)
+                cxim(j) = -1.0_sp*z0
+              end do
           return
        else if(n>128) then
           do i=0, iand(n-1,inot(ZMM_LEN-1), ZMM_LEN*32
@@ -329,10 +328,7 @@ subroutine cconjv_v512_16x16_ps(xim,cxim,n)
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
          real(kind=sp), allocatable, dimension(:), intent(out) :: cxim
          integer(kind=i4),                         intent(in)  :: n
-#if defined(__ICC) || defined(__INTEL_COMPILER)
-      !DIR$ ASSUME_ALIGNED : 64 :: xim
-      !DIR$ ASSUME_ALIGNED : 64 :: cxim
-#endif
+
          
          type(ZMM16r4_t), automatic :: zmm0
          type(ZMM16r4_t), automatic :: zmm1
@@ -475,10 +471,7 @@ subroutine cconjv_v512_8x16_ps(xim,cxim,n)
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
          real(kind=sp), allocatable, dimension(:), intent(out) :: cxim
          integer(kind=i4),                         intent(in)  :: n
-#if defined(__ICC) || defined(__INTEL_COMPILER)
-      !DIR$ ASSUME_ALIGNED : 64 :: xim
-      !DIR$ ASSUME_ALIGNED : 64 :: cxim
-#endif
+
          
          type(ZMM16r4_t), automatic :: zmm0
          type(ZMM16r4_t), automatic :: zmm1
@@ -587,10 +580,7 @@ subroutine cconjv_v512_4x16_ps(xim,cxim,n)
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
          real(kind=sp), allocatable, dimension(:), intent(out) :: cxim
          integer(kind=i4),                         intent(in)  :: n
-#if defined(__ICC) || defined(__INTEL_COMPILER)
-      !DIR$ ASSUME_ALIGNED : 64 :: xim
-      !DIR$ ASSUME_ALIGNED : 64 :: cxim
-#endif
+
          
          type(ZMM16r4_t), automatic :: zmm0
          type(ZMM16r4_t), automatic :: zmm1
