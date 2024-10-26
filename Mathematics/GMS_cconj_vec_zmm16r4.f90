@@ -230,7 +230,7 @@ subroutine cconjv_v512_32x16_ps(xim,cxim,n)
               end do
           return
        else if(n>128) then
-          do i=0, iand(n-1,inot(ZMM_LEN-1), ZMM_LEN*32
+          do i=0, iand(n-1,inot(ZMM_LEN-1)), ZMM_LEN*32
 !$omp simd aligned(xim:64) aligned(cxim:64) linear(ii:1)              
               do ii = 0, ZMM_LEN-1
                   call mm_prefetch(xim(i+0+ii),FOR_K_PREFETCH_T1)
@@ -404,12 +404,13 @@ subroutine cconjv_v512_16x16_ps(xim,cxim,n)
 #if defined(__ICC) || defined(__INTEL_COMPILER)
          !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
 #endif            
-            do j = i,n-1
-               dst(j) = src(j)
-            end do
+          do j = i, n-1
+            z0 =    xim(j)
+            cxim(j) = -1.0_sp*z0
+          end do
           return
        else if(n>64) then
-          do i=0, iand(n-1,inot(ZMM_LEN-1), ZMM_LEN*16
+          do i=0, iand(n-1,inot(ZMM_LEN-1)), ZMM_LEN*16
 !$omp simd aligned(xim:64) aligned(cxim:64) linear(ii:1)              
               do ii = 0, ZMM_LEN-1
                   call mm_prefetch(xim(i+0+ii),FOR_K_PREFETCH_T1)
@@ -531,12 +532,14 @@ subroutine cconjv_v512_8x16_ps(xim,cxim,n)
 #if defined(__ICC) || defined(__INTEL_COMPILER)
          !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
 #endif            
-            do j = i,n-1
-               dst(j) = src(j)
-            end do
+          do j = i, n-1
+            z0 =    xim(j)
+            cxim(j) = -1.0_sp*z0
+          end do
+          return
           return
        else if(n>32) then
-          do i=0, iand(n-1,inot(ZMM_LEN-1), ZMM_LEN*8
+          do i=0, iand(n-1,inot(ZMM_LEN-1)), ZMM_LEN*8
 !$omp simd aligned(xim:64) aligned(cxim:64) linear(ii:1)              
               do ii = 0, ZMM_LEN-1
                   call mm_prefetch(xim(i+0+ii),FOR_K_PREFETCH_T1)
@@ -632,12 +635,13 @@ subroutine cconjv_v512_4x16_ps(xim,cxim,n)
 #if defined(__ICC) || defined(__INTEL_COMPILER)
          !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
 #endif            
-            do j = i,n-1
-               dst(j) = src(j)
-            end do
+          do j = i, n-1
+            z0 =    xim(j)
+            cxim(j) = -1.0_sp*z0
+          end do
           return
        else if(n>32) then
-          do i=0, iand(n-1,inot(ZMM_LEN-1), ZMM_LEN*8
+          do i=0, iand(n-1,inot(ZMM_LEN-1)), ZMM_LEN*8
 !$omp simd aligned(xim:64) aligned(cxim:64) linear(ii:1)              
               do ii = 0, ZMM_LEN-1
                   call mm_prefetch(xim(i+0+ii),FOR_K_PREFETCH_T1)
