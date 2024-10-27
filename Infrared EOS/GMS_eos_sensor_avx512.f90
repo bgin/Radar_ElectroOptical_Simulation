@@ -1419,7 +1419,7 @@ module eos_sensor_avx512
         type(ZMM16r4_t), automatic :: SN
         !dir$ attributes align : 64 :: SN
         SN = compute_SN_zmm16r4(R,phi,gamma)
-        SM = 2.0_sp*SN.v
+        SM.v = 2.0_sp*SN.v
      end function compute_SM_zmm16r4
 
 
@@ -7121,9 +7121,9 @@ module eos_sensor_avx512
         type(ZMM8r8_t) :: rho
         type(ZMM8r8_t), automatic :: t0,t1
         !dir$ attributes align : 64 :: t0,t1
-        t0 = d.v/(l1.v+l2.v)
+        t0.v = d.v/(l1.v+l2.v)
         t1 = defocus_cof_zmm8r8(l2,alpha,O,inf)
-        rho= t0.v*t1.v
+        rho.v= t0.v*t1.v
      end function circle_dispersion_zmm8r8
 
 
@@ -7689,9 +7689,9 @@ module eos_sensor_avx512
         type(ZMM16r4_t) :: ratio
         type(ZMM16r4_t), automatic :: t0,t1
         !dir$ attributes align : 64 :: t0,t1
-        t0    = l1.v+l2.v
+        t0.v    = l1.v+l2.v
         t1    = defocus_cof_zmm16r4(l2,alpha,O,inf)
-        ratio = t1.v/t0.v
+        ratio.v = t1.v/t0.v
      end function circ_dispers_diam_zmm16r4
 
 
@@ -8247,9 +8247,9 @@ module eos_sensor_avx512
         type(ZMM8r8_t) :: ratio
         type(ZMM8r8_t), automatic :: t0,t1
         !dir$ attributes align : 64 :: t0,t1
-        t0    = l1.v+l2.v
+        t0.v    = l1.v+l2.v
         t1    = defocus_cof_zmm8r8(l2,alpha,O,inf)
-        ratio = t1.v/t0.v
+        ratio.v = t1.v/t0.v
      end function circ_dispers_diam_zmm8r8
 
 
@@ -13321,21 +13321,21 @@ module eos_sensor_avx512
            type(ZMM8r8_t), automatic :: t0,t1,u2,u2g,su2,sg,t2,n2,t3,t4,t5
            !dir$ attributes align : 64 :: t0,t1,u2,u2g,su2,sg,t2,n2,t3,t4,t5
            type(Mask8_t), automatic :: m
-           n   = n.v*n.v
-           u2  = u.v*half.v
-           u2g = u2.v-gamma.v
-           t2  = sin(u2g.v)
-           su2 = t2.v*t2.v
+           n.v   = n.v*n.v
+           u2.v  = u.v*half.v
+           u2g   = u2.v-gamma.v
+           t2.v  = sin(u2g.v)
+           su2.v = t2.v*t2.v
            m   = zmm8r8_rgt_zmm8r8(n2,su2)
            if(all(m)) then
-              t3 = (-two.v*delta.v)/n.v
-              t4 = sin(u2.v)
-              t5 = sin(gamma.v)
-              ds = t3.v*t4.v*t5.v
+              t3.v = (-two.v*delta.v)/n.v
+              t4.v = sin(u2.v)
+              t5.v = sin(gamma.v)
+              ds.v = t3.v*t4.v*t5.v
            else
               t0 = ray_intercept_pa_zmm8r8(delta,alpha,gamma,n)
               t1 = ray_intercept_na_zmm8r8(delta,alpha,gamma,n)
-              ds = t0.v-t1.v
+              ds.v = t0.v-t1.v
            end if
       end function ray_diff_zmm8r8
 
@@ -13365,13 +13365,13 @@ module eos_sensor_avx512
             type(ZMM16r4_t),   intent(out) :: dy
             type(ZMM16r4_t), parameter :: two = ZMM16r4_t(2.0_sp)
             type(ZMM16r4_t), automatic ::  ag,ds,t0,t1,t2
-            ag  = alpha.v+gamma.v
+            ag.v  = alpha.v+gamma.v
             ds  = ray_diff_zmm16r4(delta,alfa,gamma,n,u)
-            t0  = sin(ag.v)
-            t1  = two.v*sin(alpha.v)
-            t2  = two.v*cos(alpha.v)
-            dx  = t0.v/t1.v*ds.v
-            dy  = t0.v/t2.v*ds.v
+            t0.v  = sin(ag.v)
+            t1.v  = two.v*sin(alpha.v)
+            t2.v  = two.v*cos(alpha.v)
+            dx.v  = t0.v/t1.v*ds.v
+            dy.v  = t0.v/t2.v*ds.v
       end subroutine compute_dxdy_zmm16r4
 
 
@@ -13390,13 +13390,13 @@ module eos_sensor_avx512
             type(ZMM8r8_t),   intent(out) :: dy
             type(ZMM8r8_t), parameter :: two = ZMM8r8_t(2.0_dp)
             type(ZMM8r8_t), automatic ::  ag,ds,t0,t1,t2
-            ag  = alpha.v+gamma.v
+            ag.v  = alpha.v+gamma.v
             ds  = ray_diff_zmm8r8(delta,alfa,gamma,n,u)
-            t0  = sin(ag.v)
-            t1  = two.v*sin(alpha.v)
-            t2  = two.v*cos(alpha.v)
-            dx  = t0.v/t1.v*ds.v
-            dy  = t0.v/t2.v*ds.v
+            t0.v  = sin(ag.v)
+            t1.v  = two.v*sin(alpha.v)
+            t2.v  = two.v*cos(alpha.v)
+            dx.v  = t0.v/t1.v*ds.v
+            dy.v  = t0.v/t2.v*ds.v
      end subroutine compute_dxdy_zmm8r8
 
     
@@ -13418,14 +13418,14 @@ module eos_sensor_avx512
             type(ZMM16r4_t),   intent(out) :: y
             type(ZMM16r4_t), automatic :: sag,cag,pa,dx,dy,xs,ys
             !dir$ attributes align : 64 :: sag,cag,pa,dx,dy,xs,ys
-            sag  = sin(gamma.v)
-            cag  = cos(gamma.v)
+            sag.v  = sin(gamma.v)
+            cag.v  = cos(gamma.v)
             pa   = ray_intercept_pa_zmm16r4(delta,alpha,gamma,n)
-            xs   = pa.v*sag.v
-            ys   = pa.v*cag.v
+            xs.v   = pa.v*sag.v
+            ys.v   = pa.v*cag.v
             call compute_dxdy_zmm16r4(alpha,beta,delta,gamma,n,u,dx,dy)
-            x    = xs.v+dx.v
-            y    = ys.v+dx.v
+            x.v    = xs.v+dx.v
+            y.v    = ys.v+dx.v
      end subroutine compute_xy_zmm16r4
 
 
@@ -13444,14 +13444,14 @@ module eos_sensor_avx512
             type(ZMM8r8_t),   intent(out) :: y
             type(ZMM8r8_t), automatic :: sag,cag,pa,dx,dy,xs,ys
             !dir$ attributes align : 64 :: sag,cag,pa,dx,dy,xs,ys
-            sag  = sin(gamma.v)
-            cag  = cos(gamma.v)
+            sag.v  = sin(gamma.v)
+            cag.v  = cos(gamma.v)
             pa   = ray_intercept_pa_zmm8r8(delta,alpha,gamma,n)
-            xs   = pa.v*sag.v
-            ys   = pa.v*cag.v
+            xs.v   = pa.v*sag.v
+            ys.v   = pa.v*cag.v
             call compute_dxdy_zmm8r8(alpha,beta,delta,gamma,n,u,dx,dy)
-            x    = xs.v+dx.v
-            y    = ys.v+dx.v
+            x.v    = xs.v+dx.v
+            y.v    = ys.v+dx.v
      end subroutine compute_xy_zmm8r8
 
 
