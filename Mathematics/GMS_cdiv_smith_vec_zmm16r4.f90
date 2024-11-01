@@ -60,7 +60,7 @@ module cdivv_smith_zmm16r4
 
     use mod_kinds,     only : i4,sp
     use mod_vectypes,  only : XMM4r4_t,YMM8r4_t,ZMM16r4_t,Mask4_t,Mask8_t,Mask16_t
-    use mod_fpcompare, only : Is_Greater_Than_Single,xmm4r4_rgt_zmm4r4, ymm8r4_rgt_ymm8r4, zmm16r4_rgt_zmm16r4
+    use mod_fpcompare, only : Is_Greater_Than_Single
     use omp_lib
     
     public
@@ -255,7 +255,7 @@ subroutine cdivv_smith_v512_32x16_ps(xre,xim,yre,yim,zre,zim,n)
             return   
          else if(n>16 && n<=64) then
              do i = 0,iand(n-1,inot(15)),16
-!$omp simd aligned(xim:64,xre,yre,yim) linear(ii:1)
+!$omp simd aligned(xim:64,xre,yre,yim,zre,zim) linear(ii:1)
                do ii = 0, 15
                     zmm0.v(ii)        = xre(i+ii) ! x_re
                     zmm1.v(ii)        = xim(i+ii) ! x_im
@@ -302,7 +302,7 @@ subroutine cdivv_smith_v512_32x16_ps(xre,xim,yre,yim,zre,zim,n)
            return
         else if(n>64 && n<=128) then
             do i = 0,iand(n-1,inot(15)),16
-!$omp simd aligned(xim:64,xre,yre,yim) linear(ii:1)
+!$omp simd aligned(xim:64,xre,yre,yim,zre,zim) linear(ii:1)
                do ii = 0, 15
                     zmm0.v(ii)        = xre(i+ii) ! x_re
                     zmm1.v(ii)        = xim(i+ii) ! x_im
@@ -361,7 +361,7 @@ subroutine cdivv_smith_v512_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                    !dir$ assume_aligned  zre:64
                    !dir$ assume_aligned  zim:64
 #endif                   
-!$omp simd aligned(xim:64,xre,yre,yim)  linear(ii:1)              
+!$omp simd aligned(xim:64,xre,yre,yim,zre,zim)  linear(ii:1)              
                   do ii = 0, ZMM_LEN-1
                        zmm0.v(ii)        = xre(i+0+ii) ! x_re
                        zmm1.v(ii)        = xim(i+0+ii) ! x_im
