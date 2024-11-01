@@ -1008,6 +1008,183 @@ subroutine cexpv_v512_8x16_ps(xre,xim,cexpr,cexpi,n)
 end subroutine cexpv_v512_8x16_ps
 
 
+subroutine cexpv_v512_4x16_ps(xre,xim,cexpr,cexpi,n)
+#if defined(__ICC) || defined(__INTEL_COMPILER)    
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cexpv_v512_4x16_ps
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cexpv_v512_4x16_ps
+#endif     
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: xre
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: cexpr
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: cexpi
+         integer(kind=i4),                         intent(in)  :: n
+
+         type(ZMM16r4_t), automatic :: zmm0
+         type(ZMM16r4_t), automatic :: zmm1
+         type(ZMM16r4_t), automatic :: zmm2
+         type(ZMM16r4_t), automatic :: zmm3
+         type(ZMM16r4_t), automatic :: zmm4
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm1
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm2
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm3
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm4
+         type(XMM4r4_t),  automatic  :: xmm0
+         type(XMM4r4_t),  automatic  :: xmm1
+         type(XMM4r4_t),  automatic  :: xmm2
+         type(XMM4r4_t),  automatic  :: xmm3
+         type(XMM4r4_t),  automatic  :: xmm4
+         type(YMM8r4_t),  automatic  :: ymm0 
+         type(YMM8r4_t),  automatic  :: ymm1
+         type(YMM8r4_t),  automatic  :: ymm2
+         type(YMM8r4_t),  automatic  :: ymm3
+         type(YMM8r4_t),  automatic  :: ymm4
+         real(sp),        automatic  :: re
+         real(sp),        automatic  :: im
+         real(sp),        automatic  :: x
+         real(sp),        automatic  :: y
+         real(sp),        automatic  :: z
+         integer(i4),     automatic  :: i,ii,j
+         integer(i4),     automatic  :: idx1,idx2,idx3
+                  
+         if(n<=0) then
+            return
+         else if(n==1) then
+                 re       = xre(0)
+                 im       = xim(0)
+                 x        = exp(re)
+                 y        = x*sin(im)
+                 cexpr(0) = y
+                 z        = x*cos(im)
+                 cexpi(0) = z
+                 return
+          else if(n>1 && n<=4) then
+!$omp simd linear(i:1)
+                 do i=0, 3
+                    xmm0.v(i) = xre(i) ! re
+                    xmm1.v(i) = xim(i) ! im
+                    xmm2.v(i) = exp(xmm0.v(i)) ! x
+                    xmm3.v(i) = xmm2.v(i)*sin(xmm1.v(i)) ! y
+                    cexpr(i)  = xmm3.v(i)
+                    xmm4.v(i) = xmm2.v(i)*cos(xmm1.v(i)) ! z
+                    cexpi(i)  = xmm4.v(i)
+                 end do
+                 return
+          else if(n>4 && n<=8) then
+!$omp simd linear(i:1)
+                 do i=0, 7
+                    ymm0.v(i) = xre(i) ! re
+                    ymm1.v(i) = xim(i) ! im
+                    ymm2.v(i) = exp(ymm0.v(i)) ! x
+                    ymm3.v(i) = ymm2.v(i)*sin(ymm1.v(i)) ! y
+                    cexpr(i)  = ymm3.v(i)
+                    ymm4.v(i) = ymm2.v(i)*cos(ymm1.v(i)) ! z
+                    cexpi(i)  = ymm4.v(i)
+                 end do
+                 return
+          else if(n>8 && n<=16) then
+!$omp simd linear(i:1)
+                 do i=0, 15
+                    zmm0.v(i) = xre(i) ! re
+                    zmm1.v(i) = xim(i) ! im
+                    zmm2.v(i) = exp(zmm0.v(i)) ! x
+                    zmm3.v(i) = zmm2.v(i)*sin(zmm1.v(i)) ! y
+                    cexpr(i)  = zmm3.v(i)
+                    zmm4.v(i) = zmm2.v(i)*cos(zmm1.v(i)) ! z
+                    cexpi(i)  = zmm4.v(i)
+                 end do
+                 return
+          else if(n>16 && n<=32) then
+                 do i = 0,iand(n-1,inot(15)),16
+!$omp simd aligned(xim:64,xre,cexpr,cexpi) linear(ii:1)
+                     do ii = 0, 15  
+                         zmm0.v(ii) = xre(i+ii) ! re
+                         zmm1.v(ii) = xim(i+ii) ! im
+                         zmm2.v(ii) = exp(zmm0.v(ii)) ! x
+                         zmm3.v(ii) = zmm2.v(ii)*sin(zmm1.v(ii)) ! y
+                         cexpr(i+ii)= zmm3.v(ii)
+                         zmm4.v(ii) = zmm2.v(ii)*cos(zmm1.v(ii)) ! z
+                         cexpi(i+ii)= zmm4.v(ii)
+                     end do
+                 end do  
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
+#endif            
+                do j = i, n-1   
+                    re       = xre(j)
+                    im       = xim(j)
+                    x        = exp(re)
+                    y        = x*sin(im)
+                    cexpr(j) = y
+                    z        = x*cos(im)
+                    cexpi(j) = z
+                end do  
+                return
+          else if(n>32) then
+                do i=0, iand(n-1,inot(ZMM_LEN-1)), ZMM_LEN*4
+                   call mm_prefetch(xre(i+4*ZMM_LEN),FOR_K_PREFETCH_T1)
+                   call mm_prefetch(xim(i+4*ZMM_LEN),FOR_K_PREFETCH_T1)
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+                   !dir$ assume_aligned  xre:64
+                   !dir$ assume_aligned  xim:64
+                   !dir$ assume_aligned  cexpr:64
+                   !dir$ assume_aligned  cexpi:64
+                   
+#endif                   
+!$omp simd aligned(xim:64,xre,yre,yim,zre,zim)  linear(ii:1)              
+                  do ii = 0, ZMM_LEN-1 
+                         zmm0.v(ii) = xre(i+0+ii) ! re
+                         zmm1.v(ii) = xim(i+0+ii) ! im
+                         zmm2.v(ii) = exp(zmm0.v(ii)) ! x
+                         zmm3.v(ii) = zmm2.v(ii)*sin(zmm1.v(ii)) ! y
+                         cexpr(i+0+ii)= zmm3.v(ii)
+                         zmm4.v(ii) = zmm2.v(ii)*cos(zmm1.v(ii)) ! z
+                         cexpi(i+0+ii)= zmm4.v(ii)
+                         idx1       = i+1*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx1) ! re
+                         zmm1.v(ii) = xim(idx1) ! im
+                         zmm2.v(ii) = exp(zmm0.v(ii)) ! x
+                         zmm3.v(ii) = zmm2.v(ii)*sin(zmm1.v(ii)) ! y
+                         cexpr(idx1)= zmm3.v(ii)
+                         zmm4.v(ii) = zmm2.v(ii)*cos(zmm1.v(ii)) ! z
+                         cexpi(idx1)= zmm4.v(ii)
+                         idx2       = i+2*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx2) ! re
+                         zmm1.v(ii) = xim(idx2) ! im
+                         zmm2.v(ii) = exp(zmm0.v(ii)) ! x
+                         zmm3.v(ii) = zmm2.v(ii)*sin(zmm1.v(ii)) ! y
+                         cexpr(idx2)= zmm3.v(ii)
+                         zmm4.v(ii) = zmm2.v(ii)*cos(zmm1.v(ii)) ! z
+                         cexpi(idx2)= zmm4.v(ii)
+                         idx3       = i+3*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx3) ! re
+                         zmm1.v(ii) = xim(idx3) ! im
+                         zmm2.v(ii) = exp(zmm0.v(ii)) ! x
+                         zmm3.v(ii) = zmm2.v(ii)*sin(zmm1.v(ii)) ! y
+                         cexpr(idx3)= zmm3.v(ii)
+                         zmm4.v(ii) = zmm2.v(ii)*cos(zmm1.v(ii)) ! z
+                         cexpi(idx3)= zmm4.v(ii)
+                   end do
+               end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
+#endif            
+                do j = i, n-1   
+                    re       = xre(j)
+                    im       = xim(j)
+                    x        = exp(re)
+                    y        = x*sin(im)
+                    cexpr(j) = y
+                    z        = x*cos(im)
+                    cexpi(j) = z
+                end do  
+                return     
+           end if          
+end subroutine cexpv_v512_4x16_ps
+
+
+
 
 
 
