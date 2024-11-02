@@ -103,8 +103,8 @@ subroutine cdivv_smith_v512_32x16_ps(xre,xim,yre,yim,zre,zim,n)
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
          real(kind=sp), allocatable, dimension(:), intent(in)  :: yre
          real(kind=sp), allocatable, dimension(:), intent(in)  :: yim
-         real(kind=sp), allocatable, dimension(:), intent(in)  :: zre
-         real(kind=sp), allocatable, dimension(:), intent(in)  :: zim
+         real(kind=sp), allocatable, dimension(:), intent(out)  :: zre
+         real(kind=sp), allocatable, dimension(:), intent(out)  :: zim
          integer(kind=i4),                         intent(in)  :: n
 
          type(ZMM16r4_t), automatic :: zmm0
@@ -1041,8 +1041,8 @@ subroutine cdivv_smith_v512_16x16_ps(xre,xim,yre,yim,zre,zim,n)
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
          real(kind=sp), allocatable, dimension(:), intent(in)  :: yre
          real(kind=sp), allocatable, dimension(:), intent(in)  :: yim
-         real(kind=sp), allocatable, dimension(:), intent(in)  :: zre
-         real(kind=sp), allocatable, dimension(:), intent(in)  :: zim
+         real(kind=sp), allocatable, dimension(:), intent(out)  :: zre
+         real(kind=sp), allocatable, dimension(:), intent(out)  :: zim
          integer(kind=i4),                         intent(in)  :: n
 
          type(ZMM16r4_t), automatic :: zmm0
@@ -1608,8 +1608,8 @@ subroutine cdivv_smith_v512_8x16_ps(xre,xim,yre,yim,zre,zim,n)
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
          real(kind=sp), allocatable, dimension(:), intent(in)  :: yre
          real(kind=sp), allocatable, dimension(:), intent(in)  :: yim
-         real(kind=sp), allocatable, dimension(:), intent(in)  :: zre
-         real(kind=sp), allocatable, dimension(:), intent(in)  :: zim
+         real(kind=sp), allocatable, dimension(:), intent(out)  :: zre
+         real(kind=sp), allocatable, dimension(:), intent(out)  :: zim
          integer(kind=i4),                         intent(in)  :: n
 
          type(ZMM16r4_t), automatic :: zmm0
@@ -2013,8 +2013,8 @@ subroutine cdivv_smith_v512_4x16_ps(xre,xim,yre,yim,zre,zim,n)
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
          real(kind=sp), allocatable, dimension(:), intent(in)  :: yre
          real(kind=sp), allocatable, dimension(:), intent(in)  :: yim
-         real(kind=sp), allocatable, dimension(:), intent(in)  :: zre
-         real(kind=sp), allocatable, dimension(:), intent(in)  :: zim
+         real(kind=sp), allocatable, dimension(:), intent(out)  :: zre
+         real(kind=sp), allocatable, dimension(:), intent(out)  :: zim
          integer(kind=i4),                         intent(in)  :: n
 
          type(ZMM16r4_t), automatic :: zmm0
