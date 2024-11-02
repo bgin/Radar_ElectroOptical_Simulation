@@ -93,11 +93,11 @@ module cdivv_smith_zmm16r4
      contains
      
      
-subroutine cdivv_smith_v512_32x16_ps(xre,xim,yre,yim,zre,zim,n)
+subroutine cdivv_smith_kernel_v512_32x16_ps(xre,xim,yre,yim,zre,zim,n)
 #if defined(__ICC) || defined(__INTEL_COMPILER)    
-        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cdivv_smith_v512_32x16_ps
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cdivv_smith_kernel_v512_32x16_ps
         !DIR$ OPTIMIZE : 3
-        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cdivv_smith_v512_32x16_ps
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cdivv_smith_kernel_v512_32x16_ps
 #endif     
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xre
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
@@ -1028,14 +1028,14 @@ subroutine cdivv_smith_v512_32x16_ps(xre,xim,yre,yim,zre,zim,n)
            end do
            return
     end if               
-end subroutine  cdivv_smith_v512_32x16_ps    
+end subroutine  cdivv_smith_kernel_v512_32x16_ps    
 
 
-subroutine cdivv_smith_v512_16x16_ps(xre,xim,yre,yim,zre,zim,n)
+subroutine cdivv_smith_kernel_v512_16x16_ps(xre,xim,yre,yim,zre,zim,n)
 #if defined(__ICC) || defined(__INTEL_COMPILER)    
-        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cdivv_smith_v512_16x16_ps
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cdivv_smith_kernel_v512_16x16_ps
         !DIR$ OPTIMIZE : 3
-        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cdivv_smith_v512_16x16_ps
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cdivv_smith_kernel_v512_16x16_ps
 #endif     
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xre
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
@@ -1595,14 +1595,14 @@ subroutine cdivv_smith_v512_16x16_ps(xre,xim,yre,yim,zre,zim,n)
            end do
            return
     end if               
-end subroutine  cdivv_smith_v512_16x16_ps     
+end subroutine  cdivv_smith_kernel_v512_16x16_ps     
 
 
-subroutine cdivv_smith_v512_8x16_ps(xre,xim,yre,yim,zre,zim,n)
+subroutine cdivv_smith_kernel_v512_8x16_ps(xre,xim,yre,yim,zre,zim,n)
 #if defined(__ICC) || defined(__INTEL_COMPILER)    
-        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cdivv_smith_v512_8x16_ps
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cdivv_smith_kernel_v512_8x16_ps
         !DIR$ OPTIMIZE : 3
-        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cdivv_smith_v512_8x16_ps
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cdivv_smith_kernel_v512_8x16_ps
 #endif     
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xre
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
@@ -2000,14 +2000,14 @@ subroutine cdivv_smith_v512_8x16_ps(xre,xim,yre,yim,zre,zim,n)
            end do
            return
     end if               
-end subroutine  cdivv_smith_v512_8x16_ps   
+end subroutine  cdivv_smith_kernel_v512_8x16_ps   
 
 
-subroutine cdivv_smith_v512_4x16_ps(xre,xim,yre,yim,zre,zim,n)
+subroutine cdivv_smith_kernel_v512_4x16_ps(xre,xim,yre,yim,zre,zim,n)
 #if defined(__ICC) || defined(__INTEL_COMPILER)    
-        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cdivv_smith_v512_4x16_ps
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cdivv_smith_kernel_v512_4x16_ps
         !DIR$ OPTIMIZE : 3
-        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cdivv_smith_v512_4x16_ps
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cdivv_smith_kernel_v512_4x16_ps
 #endif     
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xre
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
@@ -2324,7 +2324,7 @@ subroutine cdivv_smith_v512_4x16_ps(xre,xim,yre,yim,zre,zim,n)
            end do
            return
     end if               
-end subroutine  cdivv_smith_v512_4x16_ps     
+end subroutine  cdivv_smith_kernel_v512_4x16_ps     
           
      
      
