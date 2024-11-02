@@ -438,7 +438,227 @@ end subroutine cabsv_kernel_v512_32x16_ps
      
      
      
-     
+subroutine cabsv_kernel_v512_16x16_ps(xre,xim,cabs,n)
+#if defined(__ICC) || defined(__INTEL_COMPILER)    
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cabsv_kernel_v512_16x16_ps
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cabsv_kernel_v512_16x16_ps
+#endif     
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: xre
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
+         real(kind=sp), allocatable, dimension(:), intent(out) :: cabs    
+         integer(i4),                              intent(in)  :: n
+         
+         type(ZMM16r4_t), automatic :: zmm0
+         type(ZMM16r4_t), automatic :: zmm1
+         type(ZMM16r4_t), automatic :: zmm2
+         type(ZMM16r4_t), automatic :: zmm3
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm1
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm2
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm3
+         type(XMM4r4_t),  automatic  :: xmm0
+         type(XMM4r4_t),  automatic  :: xmm1
+         type(XMM4r4_t),  automatic  :: xmm2
+         type(XMM4r4_t),  automatic  :: xmm3
+         type(YMM8r4_t),  automatic  :: ymm0 
+         type(YMM8r4_t),  automatic  :: ymm1
+         type(YMM8r4_t),  automatic  :: ymm2
+         type(YMM8r4_t),  automatic  :: ymm3
+         real(sp),        automatic  :: xr
+         real(sp),        automatic  :: xi
+         real(sp),        automatic  :: re2
+         real(sp),        automatic  :: im2
+         integer(i4),     automatic  :: i,ii,j
+         integer(i4),     automatic  :: idx1,idx2,idx3,idx4
+         integer(i4),     automatic  :: idx5,idx6,idx7,idx8
+         integer(i4),     automatic  :: idx9,idx10,idx11,idx12 
+         integer(i4),     automatic  :: idx13,idx14,idx15
+         
+         if(n<=0) then
+            return
+         else if(n==1) then
+                xr      = xre(0)
+                re2     = xr*xr
+                xi      = xim(0)
+                im2     = xi*xi
+                cabs(0) = sqrt(re2+im2)
+                return
+         else if(n>1 && n<=4) then
+!$omp simd linear(i:1)
+                 do i=0, 3
+                    xmm0.v(i) = xre(i)
+                    xmm1.v(i) = xmm0.v(i)*xmm0.v(i)
+                    xmm2.v(i) = xim(i)
+                    xmm3.v(i) = xmm2.v(i)*xmm2.v(i)
+                    cabs(i)   = sqrt(xmm1.v(i)+xmm3.v(i))
+                 end do                  
+                 return
+         else if(n>4 && n<=8) then
+!$omp simd linear(i:1)
+                 do i=0, 7
+                    ymm0.v(i) = xre(i)
+                    ymm1.v(i) = ymm0.v(i)*ymm0.v(i)
+                    ymm2.v(i) = xim(i)
+                    ymm3.v(i) = ymm2.v(i)*ymm2.v(i)
+                    cabs(i)   = sqrt(ymm1.v(i)+ymm3.v(i))
+                 end do    
+                 return
+         else if(n>8 && n<=16) then
+!$omp simd linear(i:1)
+                 do i=0, 15
+                    zmm0.v(i) = xre(i)
+                    zmm1.v(i) = zmm0.v(i)*zmm0.v(i)
+                    zmm2.v(i) = xim(i)
+                    zmm3.v(i) = zmm2.v(i)*zmm2.v(i)
+                    cabs(i)   = sqrt(zmm1.v(i)+zmm3.v(i))
+                 end do    
+                 return    
+         else if(n>16 && n<=64) then
+                 do i = 0,iand(n-1,inot(15)),16
+!$omp simd aligned(xim:64,xre,cabs) linear(ii:1)
+                     do ii = 0, 15
+                         zmm0.v(ii) = xre(i+ii)
+                         zmm1.v(ii) = zmm0.v(ii)*zmm0.v(ii)
+                         zmm2.v(ii) = xim(i+ii)
+                         zmm3.v(ii) = zmm2.v(ii)*zmm2.v(ii)
+                         cabs(i+ii)   = sqrt(zmm1.v(ii)+zmm3.v(ii))
+                     end do
+                 end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
+#endif            
+                do j = i, n-1
+                     xr      = xre(j)
+                     re2     = xr*xr
+                     xi      = xim(j)
+                     im2     = xi*xi
+                     cabs(j) = sqrt(re2+im2)
+                end do
+                return
+        else if(n>64) then
+                do i=0, iand(n-1,inot(ZMM_LEN-1)), ZMM_LEN*16
+                   call mm_prefetch(xre(i+16*ZMM_LEN),FOR_K_PREFETCH_T1)
+                   call mm_prefetch(xim(i+16*ZMM_LEN),FOR_K_PREFETCH_T1)
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+                   !dir$ assume_aligned  xre:64
+                   !dir$ assume_aligned  xim:64
+                   !dir$ assume_aligned  cabs:64
+                  
+#endif                   
+!$omp simd aligned(xim:64,xre,cabs)  linear(ii:1)              
+                    do ii = 0, ZMM_LEN-1
+                         zmm0.v(ii) = xre(i+0+ii)
+                         zmm1.v(ii) = zmm0.v(ii)*zmm0.v(ii)
+                         zmm2.v(ii) = xim(i+0+ii)
+                         zmm3.v(ii) = zmm2.v(ii)*zmm2.v(ii)
+                         cabs(i+0+ii)= sqrt(zmm1.v(ii)+zmm3.v(ii))
+                         idx1        = i+1*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx1)
+                         zmm1.v(ii) = zmm0.v(ii)*zmm0.v(ii)
+                         zmm2.v(ii) = xim(idx1)
+                         zmm3.v(ii) = zmm2.v(ii)*zmm2.v(ii)
+                         cabs(idx1)= sqrt(zmm1.v(ii)+zmm3.v(ii))
+                         idx2        = i+2*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx2)
+                         zmm1.v(ii) = zmm0.v(ii)*zmm0.v(ii)
+                         zmm2.v(ii) = xim(idx2)
+                         zmm3.v(ii) = zmm2.v(ii)*zmm2.v(ii)
+                         cabs(idx2)= sqrt(zmm1.v(ii)+zmm3.v(ii))
+                         idx3        = i+3*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx3)
+                         zmm1.v(ii) = zmm0.v(ii)*zmm0.v(ii)
+                         zmm2.v(ii) = xim(idx3)
+                         zmm3.v(ii) = zmm2.v(ii)*zmm2.v(ii)
+                         cabs(idx3)= sqrt(zmm1.v(ii)+zmm3.v(ii))
+                         idx4        = i+4*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx4)
+                         zmm1.v(ii) = zmm0.v(ii)*zmm0.v(ii)
+                         zmm2.v(ii) = xim(idx4)
+                         zmm3.v(ii) = zmm2.v(ii)*zmm2.v(ii)
+                         cabs(idx4)= sqrt(zmm1.v(ii)+zmm3.v(ii))
+                         idx5        = i+5*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx5)
+                         zmm1.v(ii) = zmm0.v(ii)*zmm0.v(ii)
+                         zmm2.v(ii) = xim(idx5)
+                         zmm3.v(ii) = zmm2.v(ii)*zmm2.v(ii)
+                         cabs(idx5)= sqrt(zmm1.v(ii)+zmm3.v(ii))
+                         idx6        = i+6*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx6)
+                         zmm1.v(ii) = zmm0.v(ii)*zmm0.v(ii)
+                         zmm2.v(ii) = xim(idx6)
+                         zmm3.v(ii) = zmm2.v(ii)*zmm2.v(ii)
+                         cabs(idx6)= sqrt(zmm1.v(ii)+zmm3.v(ii))
+                         idx7       = i+7*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx7)
+                         zmm1.v(ii) = zmm0.v(ii)*zmm0.v(ii)
+                         zmm2.v(ii) = xim(idx7)
+                         zmm3.v(ii) = zmm2.v(ii)*zmm2.v(ii)
+                         cabs(idx7)= sqrt(zmm1.v(ii)+zmm3.v(ii))
+                         idx8        = i+8*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx8)
+                         zmm1.v(ii) = zmm0.v(ii)*zmm0.v(ii)
+                         zmm2.v(ii) = xim(idx8)
+                         zmm3.v(ii) = zmm2.v(ii)*zmm2.v(ii)
+                         cabs(idx8)= sqrt(zmm1.v(ii)+zmm3.v(ii))
+                         idx9       = i+9*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx9)
+                         zmm1.v(ii) = zmm0.v(ii)*zmm0.v(ii)
+                         zmm2.v(ii) = xim(idx9)
+                         zmm3.v(ii) = zmm2.v(ii)*zmm2.v(ii)
+                         cabs(idx9)= sqrt(zmm1.v(ii)+zmm3.v(ii))
+                         idx10      = i+10*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx10)
+                         zmm1.v(ii) = zmm0.v(ii)*zmm0.v(ii)
+                         zmm2.v(ii) = xim(idx10)
+                         zmm3.v(ii) = zmm2.v(ii)*zmm2.v(ii)
+                         cabs(idx10)= sqrt(zmm1.v(ii)+zmm3.v(ii))
+                         idx11      = i+11*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx11)
+                         zmm1.v(ii) = zmm0.v(ii)*zmm0.v(ii)
+                         zmm2.v(ii) = xim(idx11)
+                         zmm3.v(ii) = zmm2.v(ii)*zmm2.v(ii)
+                         cabs(idx11)= sqrt(zmm1.v(ii)+zmm3.v(ii))
+                         idx12      = i+12*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx12)
+                         zmm1.v(ii) = zmm0.v(ii)*zmm0.v(ii)
+                         zmm2.v(ii) = xim(idx12)
+                         zmm3.v(ii) = zmm2.v(ii)*zmm2.v(ii)
+                         cabs(idx12)= sqrt(zmm1.v(ii)+zmm3.v(ii))
+                         idx13      = i+13*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx13)
+                         zmm1.v(ii) = zmm0.v(ii)*zmm0.v(ii)
+                         zmm2.v(ii) = xim(idx13)
+                         zmm3.v(ii) = zmm2.v(ii)*zmm2.v(ii)
+                         cabs(idx13)= sqrt(zmm1.v(ii)+zmm3.v(ii))
+                         idx14      = i+14*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx14)
+                         zmm1.v(ii) = zmm0.v(ii)*zmm0.v(ii)
+                         zmm2.v(ii) = xim(idx14)
+                         zmm3.v(ii) = zmm2.v(ii)*zmm2.v(ii)
+                         cabs(idx14)= sqrt(zmm1.v(ii)+zmm3.v(ii))
+                         idx15      = i+15*ZMM_LEN+ii
+                         zmm0.v(ii) = xre(idx15)
+                         zmm1.v(ii) = zmm0.v(ii)*zmm0.v(ii)
+                         zmm2.v(ii) = xim(idx15)
+                         zmm3.v(ii) = zmm2.v(ii)*zmm2.v(ii)
+                         cabs(idx15)= sqrt(zmm1.v(ii)+zmm3.v(ii))
+                    end do
+                end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
+#endif            
+                do j = i, n-1
+                     xr      = xre(j)
+                     re2     = xr*xr
+                     xi      = xim(j)
+                     im2     = xi*xi
+                     cabs(j) = sqrt(re2+im2)
+                end do
+                return
+           end if
+end subroutine cabsv_kernel_v512_16x16_ps     
+          
      
      
      
