@@ -2373,6 +2373,198 @@ subroutine cdivv_kernel_v512_cv_sv_16x16_ps(xre,xim,yre,zre,zim,n)
 end subroutine  cdivv_kernel_v512_cv_sv_16x16_ps  
 
 
+subroutine cdivv_kernel_v512_cv_sv_8x16_ps(xre,xim,yre,zre,zim,n)
+#if defined(__ICC) || defined(__INTEL_COMPILER)    
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cdivv_kernel_v512_cv_sv_8x16_ps
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cdivv_kernel_v512_cv_sv_8x16_ps
+#endif     
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: xre
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: yre
+         real(kind=sp), allocatable, dimension(:), intent(out) :: zre
+         real(kind=sp), allocatable, dimension(:), intent(out) :: zim 
+         integer(i4),                              intent(in)  :: n
+         
+         type(ZMM16r4_t), automatic :: zmm0
+         type(ZMM16r4_t), automatic :: zmm1
+         type(ZMM16r4_t), automatic :: zmm2
+         type(ZMM16r4_t), automatic :: zmm3     
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm1
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm2
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm3
+         type(XMM4r4_t),  automatic  :: xmm0
+         type(XMM4r4_t),  automatic  :: xmm1
+         type(XMM4r4_t),  automatic  :: xmm2
+         type(XMM4r4_t),  automatic  :: xmm3
+         type(YMM8r4_t),  automatic  :: ymm0 
+         type(YMM8r4_t),  automatic  :: ymm1
+         type(YMM8r4_t),  automatic  :: ymm2
+         type(YMM8r4_t),  automatic  :: ymm3
+         real(sp),        automatic  :: xr
+         real(sp),        automatic  :: xi
+         real(sp),        automatic  :: yr
+         real(sp),        automatic  :: den
+         integer(i4),     automatic  :: i,ii,j
+         integer(i4),     automatic  :: idx1,idx2,idx3,idx4
+         integer(i4),     automatic  :: idx5,idx6,idx7
+         
+         if(n<=0) then
+            return
+         else if(n==1) then
+                 xr  = xre(0)
+                 yr  = yre(0)
+                 xi  = xim(0)
+                 den = 1.0_sp/yr
+                 zre(0) = xre*den
+                 zim(0) = xim*den
+                 return
+         else if(n>1 && n<=4) then
+!$omp simd linear(i:1)
+                 do i=0, 3
+                    xmm0.v(i) = xre(i) ! xr
+                    xmm1.v(i) = yre(i) ! yr
+                    xmm2.v(i) = xim(i) ! xi
+                    xmm3.v(i) = 1.0_sp/xmm1.v(i)
+                    zre(i)    = xmm0.v(i)*xmm3.v(i)
+                    zim(i)    = xmm2.v(i)*xmm3.v(i)
+                 end do    
+                 return
+         else if(n>4 && n<=8) then
+!$omp simd linear(i:1)
+                 do i=0, 7
+                    ymm0.v(i) = xre(i) ! xr
+                    ymm1.v(i) = yre(i) ! yr
+                    ymm2.v(i) = xim(i) ! xi
+                    ymm3.v(i) = 1.0_sp/ymm1.v(i)
+                    zre(i)    = ymm0.v(i)*ymm3.v(i)
+                    zim(i)    = ymm2.v(i)*ymm3.v(i)
+                 end do    
+                 return 
+          else if(n>8 && n<=16) then
+!$omp simd linear(i:1)
+                 do i=0, 15
+                    zmm0.v(i) = xre(i) ! xr
+                    zmm1.v(i) = yre(i) ! yr
+                    zmm2.v(i) = xim(i) ! xi
+                    zmm3.v(i) = 1.0_sp/zmm1.v(i)
+                    zre(i)    = zmm0.v(i)*zmm3.v(i)
+                    zim(i)    = zmm2.v(i)*zmm3.v(i)
+                 end do    
+                 return 
+          else if(n>16 && n<=32) then
+                  do i = 0,iand(n-1,inot(15)),16
+!$omp simd aligned(xim:64,xre,yre,yim,zre,zim) linear(ii:1)
+                       do ii = 0, 15  
+                           zmm0.v(ii) = xre(i+ii) ! xr
+                           zmm1.v(ii) = yre(i+ii) ! yr
+                           zmm2.v(ii) = xim(i+ii) ! xi
+                           zmm3.v(ii) = 1.0_sp/zmm1.v(ii)
+                           zre(i+ii)  = zmm0.v(ii)*zmm3.v(ii)
+                           zim(i+ii)  = zmm2.v(ii)*zmm3.v(ii)
+                       end do
+                  end do 
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
+#endif            
+                  do j = i, n-1     
+                      xr  = xre(j)
+                      yr  = yre(j)
+                      xi  = xim(j)
+                      den = 1.0_sp/yr
+                      zre(j) = xre*den
+                      zim(j) = xim*den
+                  end do  
+                  return
+         else if(n>32) then
+               do i=0, iand(n-1,inot(ZMM_LEN-1)), ZMM_LEN*8
+                   call mm_prefetch(xre(i+8*ZMM_LEN),FOR_K_PREFETCH_T1)
+                   call mm_prefetch(xim(i+8*ZMM_LEN),FOR_K_PREFETCH_T1)
+                   call mm_prefetch(yre(i+8*ZMM_LEN),FOR_K_PREFETCH_T1)
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+                   !dir$ assume_aligned  xre:64
+                   !dir$ assume_aligned  xim:64
+                   !dir$ assume_aligned  yre:64
+                   !dir$ assume_aligned  zre:64
+                   !dir$ assume_aligned  zim:64
+#endif                   
+!$omp simd aligned(xim:64,xre,yre,zre,zim)  linear(ii:1)              
+                      do ii = 0, ZMM_LEN-1  
+                            zmm0.v(ii)  = xre(i+0+ii) ! xr
+                            zmm1.v(ii)  = yre(i+0+ii) ! yr
+                            zmm2.v(ii)  = xim(i+0+ii) ! xi
+                            zmm3.v(ii)  = 1.0_sp/zmm1.v(ii)
+                            zre(i+0+ii) = zmm0.v(ii)*zmm3.v(ii)
+                            zim(i+0+ii) = zmm2.v(ii)*zmm3.v(ii)
+                            idx1        = i+1*ZMM_LEN+ii
+                            zmm0.v(ii)  = xre(idx1) ! xr
+                            zmm1.v(ii)  = yre(idx1) ! yr
+                            zmm2.v(ii)  = xim(idx1) ! xi
+                            zmm3.v(ii)  = 1.0_sp/zmm1.v(ii)
+                            zre(idx1) = zmm0.v(ii)*zmm3.v(ii)
+                            zim(idx1) = zmm2.v(ii)*zmm3.v(ii)
+                            idx2      = i+2*ZMM_LEN+ii
+                            zmm0.v(ii)  = xre(idx2) ! xr
+                            zmm1.v(ii)  = yre(idx2) ! yr
+                            zmm2.v(ii)  = xim(idx2) ! xi
+                            zmm3.v(ii)  = 1.0_sp/zmm1.v(ii)
+                            zre(idx2) = zmm0.v(ii)*zmm3.v(ii)
+                            zim(idx2) = zmm2.v(ii)*zmm3.v(ii)
+                            idx3      = i+3*ZMM_LEN+ii
+                            zmm0.v(ii)  = xre(idx3) ! xr
+                            zmm1.v(ii)  = yre(idx3) ! yr
+                            zmm2.v(ii)  = xim(idx3) ! xi
+                            zmm3.v(ii)  = 1.0_sp/zmm1.v(ii)
+                            zre(idx3) = zmm0.v(ii)*zmm3.v(ii)
+                            zim(idx3) = zmm2.v(ii)*zmm3.v(ii)
+                            idx4      = i+4*ZMM_LEN+ii
+                            zmm0.v(ii)  = xre(idx4) ! xr
+                            zmm1.v(ii)  = yre(idx4) ! yr
+                            zmm2.v(ii)  = xim(idx4) ! xi
+                            zmm3.v(ii)  = 1.0_sp/zmm1.v(ii)
+                            zre(idx4) = zmm0.v(ii)*zmm3.v(ii)
+                            zim(idx4) = zmm2.v(ii)*zmm3.v(ii)
+                            idx5      = i+5*ZMM_LEN+ii
+                            zmm0.v(ii)  = xre(idx5) ! xr
+                            zmm1.v(ii)  = yre(idx5) ! yr
+                            zmm2.v(ii)  = xim(idx5) ! xi
+                            zmm3.v(ii)  = 1.0_sp/zmm1.v(ii)
+                            zre(idx5) = zmm0.v(ii)*zmm3.v(ii)
+                            zim(idx5) = zmm2.v(ii)*zmm3.v(ii)
+                            idx6      = i+6*ZMM_LEN+ii
+                            zmm0.v(ii)  = xre(idx6) ! xr
+                            zmm1.v(ii)  = yre(idx6) ! yr
+                            zmm2.v(ii)  = xim(idx6) ! xi
+                            zmm3.v(ii)  = 1.0_sp/zmm1.v(ii)
+                            zre(idx6) = zmm0.v(ii)*zmm3.v(ii)
+                            zim(idx6) = zmm2.v(ii)*zmm3.v(ii)
+                            idx7      = i+7*ZMM_LEN+ii
+                            zmm0.v(ii)  = xre(idx7) ! xr
+                            zmm1.v(ii)  = yre(idx7) ! yr
+                            zmm2.v(ii)  = xim(idx7) ! xi
+                            zmm3.v(ii)  = 1.0_sp/zmm1.v(ii)
+                            zre(idx7) = zmm0.v(ii)*zmm3.v(ii)
+                            zim(idx7) = zmm2.v(ii)*zmm3.v(ii)
+                    end do
+                end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
+#endif            
+                  do j = i, n-1     
+                      xr  = xre(j)
+                      yr  = yre(j)
+                      xi  = xim(j)
+                      den = 1.0_sp/yr
+                      zre(j) = xre*den
+                      zim(j) = xim*den
+                  end do  
+                  return 
+          end if                       
+end subroutine  cdivv_kernel_v512_cv_sv_8x16_ps  
+
+
+
  
      
      
