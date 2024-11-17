@@ -463,6 +463,270 @@ subroutine csinv_kernel_v512_cv_32x16_ps(xre,xim,csre,csim,n)
                    return   
            end if      
 end subroutine csinv_kernel_v512_cv_32x16_ps
+
+
+subroutine csinv_kernel_v512_cv_16x16_ps(xre,xim,csre,csim,n)
+#if defined(__ICC) || defined(__INTEL_COMPILER)    
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csinv_kernel_v512_cv_16x16_ps
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: csinv_kernel_v512_cv_16x16_ps
+#endif     
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: xre
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: csre
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: csim
+         integer(i4),                              intent(in)  :: n
+         
+         type(ZMM16r4_t), automatic :: zmm0
+         type(ZMM16r4_t), automatic :: zmm1
+         type(ZMM16r4_t), automatic :: zmm2
+         type(ZMM16r4_t), automatic :: zmm3     
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm1
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm2
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm3
+         type(XMM4r4_t),  automatic  :: xmm0
+         type(XMM4r4_t),  automatic  :: xmm1
+         type(XMM4r4_t),  automatic  :: xmm2
+         type(XMM4r4_t),  automatic  :: xmm3
+         type(YMM8r4_t),  automatic  :: ymm0 
+         type(YMM8r4_t),  automatic  :: ymm1
+         type(YMM8r4_t),  automatic  :: ymm2
+         type(YMM8r4_t),  automatic  :: ymm3
+         real(sp),        automatic  :: xr
+         real(sp),        automatic  :: xi
+         real(sp),        automatic  :: csr
+         real(sp),        automatic  :: csi
+         integer(i4),     automatic  :: i,ii,j
+         integer(i4),     automatic  :: idx1,idx2,idx3,idx4
+         integer(i4),     automatic  :: idx5,idx6,idx7,idx8
+         integer(i4),     automatic  :: idx9,idx10,idx11,idx12 
+         integer(i4),     automatic  :: idx13,idx14,idx15
+
+         if(n<=0) then 
+            return
+         else if(n==1) then
+              xr      = xre(0) ! z0
+              xi      = xim(0) ! z1
+              csr     = sin(xr)*cosh(xi)
+              csre(0) = csr
+              csi     = cos(xr)*sinh(xi)
+              csim(0) = csi
+              return
+         else if(n>1 && n<=4) then
+                 !$omp simd linear(i:1)
+                 do i=0, 3
+                    xmm0.v(i) = xre(i) ! xr
+                    xmm1.v(i) = xim(i) ! xi
+                    xmm2.v(i) = sin(xmm0.v(i))*cosh(xmm1.v(i))
+                    csre(i)   = xmm2.v(i)
+                    xmm3.v(i) = cos(xmm0.v(i))*sinh(xmm1.v(i))
+                    csim(i)   = xmm3.v(i)
+                 end do
+                 return
+         else if(n>4 && n<=8) then
+                 !$omp simd linear(i:1)
+                 do i=0, 7
+                    ymm0.v(i) = xre(i) ! xr
+                    ymm1.v(i) = xim(i) ! xi
+                    ymm2.v(i) = sin(ymm0.v(i))*cosh(ymm1.v(i))
+                    csre(i)   = ymm2.v(i)
+                    ymm3.v(i) = cos(ymm0.v(i))*sinh(ymm1.v(i))
+                    csim(i)   = ymm3.v(i)
+                 end do
+                 return
+         else if(n>8 && n<=16) then
+                 !$omp simd linear(i:1)
+                 do i=0, 15
+                    zmm0.v(i) = xre(i) ! xr
+                    zmm1.v(i) = xim(i) ! xi
+                    zmm2.v(i) = sin(zmm0.v(i))*cosh(zmm1.v(i))
+                    csre(i)   = zmm2.v(i)
+                    zmm3.v(i) = cos(zmm0.v(i))*sinh(zmm1.v(i))
+                    csim(i)   = zmm3.v(i)
+                 end do
+                 return
+          else if(n>16 && n<=64) then
+                   do i = 0,iand(n-1,inot(15)),16
+                       !$omp simd aligned(xim:64,xre,yre,yim,zre,zim) linear(ii:1)
+                       do ii = 0, 15 
+                           zmm0.v(ii) = xre(i+ii) ! xr
+                           zmm1.v(ii) = xim(i+ii) ! xi
+                           zmm2.v(ii) = sin(zmm0.v(ii))*cosh(zmm1.v(ii))
+                           csre(i+ii)   = zmm2.v(ii)
+                           zmm3.v(ii) = cos(zmm0.v(ii))*sinh(zmm1.v(ii))
+                           csim(i+ii)   = zmm3.v(ii)
+                       end do
+                   end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
+#endif                     
+                   do j = i, n=1
+                       xr      = xre(j) ! z0
+                       xi      = xim(j) ! z1
+                       csr     = sin(xr)*cosh(xi)
+                       csre(j) = csr
+                       csi     = cos(xr)*sinh(xi)
+                       csim(j) = csi
+                   end do
+                   return
+           else if(n>64 && n<=128) then
+                   do i = 0,iand(n-1,inot(15)),16
+                       !$omp simd aligned(xim:64,xre,yre,yim,zre,zim) linear(ii:1)
+                       do ii = 0, 15 
+                           zmm0.v(ii) = xre(i+ii) ! xr
+                           zmm1.v(ii) = xim(i+ii) ! xi
+                           zmm2.v(ii) = sin(zmm0.v(ii))*cosh(zmm1.v(ii))
+                           csre(i+ii)   = zmm2.v(ii)
+                           zmm3.v(ii) = cos(zmm0.v(ii))*sinh(zmm1.v(ii))
+                           csim(i+ii)   = zmm3.v(ii)
+                       end do
+                   end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
+#endif                     
+                   do j = i, n=1
+                       xr      = xre(j) ! z0
+                       xi      = xim(j) ! z1
+                       csr     = sin(xr)*cosh(xi)
+                       csre(j) = csr
+                       csi     = cos(xr)*sinh(xi)
+                       csim(j) = csi
+                   end do                   
+                   return   
+           else if(n>128) then
+                  do i=0, iand(n-1,inot(ZMM_LEN-1)), ZMM_LEN*16
+                        call mm_prefetch(xre(i+16*ZMM_LEN),FOR_K_PREFETCH_T1)
+                        call mm_prefetch(xim(i+16*ZMM_LEN),FOR_K_PREFETCH_T1)
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+                        !dir$ assume_aligned  xre:64
+                        !dir$ assume_aligned  xim:64
+                        !dir$ assume_aligned  csre:64
+                        !dir$ assume_aligned  csim:64
+                  
+#endif                   
+                        !$omp simd aligned(xim:64,xre,csre,csim)  linear(ii:1)              
+                         do ii = 0, ZMM_LEN-1  
+                             zmm0.v(ii)     = xre(i+0+ii) ! xr
+                             zmm1.v(ii)     = xim(i+0+ii) ! xi
+                             zmm2.v(ii)     = sin(zmm0.v(ii))*cosh(zmm1.v(ii))
+                             csre(i+0+ii)   = zmm2.v(ii)
+                             zmm3.v(ii)     = cos(zmm0.v(ii))*sinh(zmm1.v(ii))
+                             csim(i+0+ii)   = zmm3.v(ii)
+                             idx1           = i+1*ZMM_LEN+ii
+                             zmm0.v(ii)     = xre(idx1) ! xr
+                             zmm1.v(ii)     = xim(idx1) ! xi
+                             zmm2.v(ii)     = sin(zmm0.v(ii))*cosh(zmm1.v(ii))
+                             csre(idx1)     = zmm2.v(ii)
+                             zmm3.v(ii)     = cos(zmm0.v(ii))*sinh(zmm1.v(ii))
+                             csim(idx1)     = zmm3.v(ii)
+                             idx2           = i+2*ZMM_LEN+ii
+                             zmm0.v(ii)     = xre(idx2) ! xr
+                             zmm1.v(ii)     = xim(idx2) ! xi
+                             zmm2.v(ii)     = sin(zmm0.v(ii))*cosh(zmm1.v(ii))
+                             csre(idx2)     = zmm2.v(ii)
+                             zmm3.v(ii)     = cos(zmm0.v(ii))*sinh(zmm1.v(ii))
+                             csim(idx2)     = zmm3.v(ii)
+                             idx3           = i+3*ZMM_LEN+ii
+                             zmm0.v(ii)     = xre(idx3) ! xr
+                             zmm1.v(ii)     = xim(idx3) ! xi
+                             zmm2.v(ii)     = sin(zmm0.v(ii))*cosh(zmm1.v(ii))
+                             csre(idx3)     = zmm2.v(ii)
+                             zmm3.v(ii)     = cos(zmm0.v(ii))*sinh(zmm1.v(ii))
+                             csim(idx3)     = zmm3.v(ii)
+                             idx4           = i+4*ZMM_LEN+ii
+                             zmm0.v(ii)     = xre(idx4) ! xr
+                             zmm1.v(ii)     = xim(idx4) ! xi
+                             zmm2.v(ii)     = sin(zmm0.v(ii))*cosh(zmm1.v(ii))
+                             csre(idx4)     = zmm2.v(ii)
+                             zmm3.v(ii)     = cos(zmm0.v(ii))*sinh(zmm1.v(ii))
+                             csim(idx4)     = zmm3.v(ii)
+                             idx5           = i+5*ZMM_LEN+ii
+                             zmm0.v(ii)     = xre(idx5) ! xr
+                             zmm1.v(ii)     = xim(idx5) ! xi
+                             zmm2.v(ii)     = sin(zmm0.v(ii))*cosh(zmm1.v(ii))
+                             csre(idx5)     = zmm2.v(ii)
+                             zmm3.v(ii)     = cos(zmm0.v(ii))*sinh(zmm1.v(ii))
+                             csim(idx5)     = zmm3.v(ii)
+                             idx6           = i+6*ZMM_LEN+ii
+                             zmm0.v(ii)     = xre(idx6) ! xr
+                             zmm1.v(ii)     = xim(idx6) ! xi
+                             zmm2.v(ii)     = sin(zmm0.v(ii))*cosh(zmm1.v(ii))
+                             csre(idx6)     = zmm2.v(ii)
+                             zmm3.v(ii)     = cos(zmm0.v(ii))*sinh(zmm1.v(ii))
+                             csim(idx6)     = zmm3.v(ii)
+                             idx7           = i+7*ZMM_LEN+ii
+                             zmm0.v(ii)     = xre(idx7) ! xr
+                             zmm1.v(ii)     = xim(idx7) ! xi
+                             zmm2.v(ii)     = sin(zmm0.v(ii))*cosh(zmm1.v(ii))
+                             csre(idx7)     = zmm2.v(ii)
+                             zmm3.v(ii)     = cos(zmm0.v(ii))*sinh(zmm1.v(ii))
+                             csim(idx7)     = zmm3.v(ii)
+                             idx8           = i+8*ZMM_LEN+ii
+                             zmm0.v(ii)     = xre(idx8) ! xr
+                             zmm1.v(ii)     = xim(idx8) ! xi
+                             zmm2.v(ii)     = sin(zmm0.v(ii))*cosh(zmm1.v(ii))
+                             csre(idx8)     = zmm2.v(ii)
+                             zmm3.v(ii)     = cos(zmm0.v(ii))*sinh(zmm1.v(ii))
+                             csim(idx8)     = zmm3.v(ii)
+                             idx9           = i+9*ZMM_LEN+ii
+                             zmm0.v(ii)     = xre(idx10) ! xr
+                             zmm1.v(ii)     = xim(idx10) ! xi
+                             zmm2.v(ii)     = sin(zmm0.v(ii))*cosh(zmm1.v(ii))
+                             csre(idx10)    = zmm2.v(ii)
+                             zmm3.v(ii)     = cos(zmm0.v(ii))*sinh(zmm1.v(ii))
+                             csim(idx10)    = zmm3.v(ii)
+                             idx11          = i+11*ZMM_LEN+ii
+                             zmm0.v(ii)     = xre(idx11) ! xr
+                             zmm1.v(ii)     = xim(idx11) ! xi
+                             zmm2.v(ii)     = sin(zmm0.v(ii))*cosh(zmm1.v(ii))
+                             csre(idx11)    = zmm2.v(ii)
+                             zmm3.v(ii)     = cos(zmm0.v(ii))*sinh(zmm1.v(ii))
+                             csim(idx11)    = zmm3.v(ii)
+                             idx12          = i+12*ZMM_LEN+ii
+                             zmm0.v(ii)     = xre(idx12) ! xr
+                             zmm1.v(ii)     = xim(idx12) ! xi
+                             zmm2.v(ii)     = sin(zmm0.v(ii))*cosh(zmm1.v(ii))
+                             csre(idx12)     = zmm2.v(ii)
+                             zmm3.v(ii)     = cos(zmm0.v(ii))*sinh(zmm1.v(ii))
+                             csim(idx12)     = zmm3.v(ii)
+                             idx13           = i+13*ZMM_LEN+ii
+                             zmm0.v(ii)     = xre(idx13) ! xr
+                             zmm1.v(ii)     = xim(idx13) ! xi
+                             zmm2.v(ii)     = sin(zmm0.v(ii))*cosh(zmm1.v(ii))
+                             csre(idx13)     = zmm2.v(ii)
+                             zmm3.v(ii)     = cos(zmm0.v(ii))*sinh(zmm1.v(ii))
+                             csim(idx13)     = zmm3.v(ii)
+                             idx14           = i+14*ZMM_LEN+ii
+                             zmm0.v(ii)     = xre(idx14) ! xr
+                             zmm1.v(ii)     = xim(idx14) ! xi
+                             zmm2.v(ii)     = sin(zmm0.v(ii))*cosh(zmm1.v(ii))
+                             csre(idx14)     = zmm2.v(ii)
+                             zmm3.v(ii)     = cos(zmm0.v(ii))*sinh(zmm1.v(ii))
+                             csim(idx14)     = zmm3.v(ii)
+                             idx15           = i+15*ZMM_LEN+ii
+                             zmm0.v(ii)     = xre(idx15) ! xr
+                             zmm1.v(ii)     = xim(idx15) ! xi
+                             zmm2.v(ii)     = sin(zmm0.v(ii))*cosh(zmm1.v(ii))
+                             csre(idx15)    = zmm2.v(ii)
+                             zmm3.v(ii)     = cos(zmm0.v(ii))*sinh(zmm1.v(ii))
+                             csim(idx15)    = zmm3.v(ii)
+                      end do
+                  end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
+#endif                     
+                   do j = i, n=1
+                       xr      = xre(j) ! z0
+                       xi      = xim(j) ! z1
+                       csr     = sin(xr)*cosh(xi)
+                       csre(j) = csr
+                       csi     = cos(xr)*sinh(xi)
+                       csim(j) = csi
+                   end do                   
+                   return   
+           end if      
+end subroutine csinv_kernel_v512_cv_16x16_ps
  
 
 end module csinv_zmm16r4
