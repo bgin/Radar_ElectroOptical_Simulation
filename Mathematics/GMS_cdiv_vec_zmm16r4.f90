@@ -4251,7 +4251,7 @@ end subroutine  cdivv_kernel_v512_cv_cs_32x16_ps
 
 
 
-subroutine cdivv_kernel_v512_s_cv_32x16_ps(xre,xim,re,zre,zim,n)
+subroutine cdivv_kernel_v512_s_cv_32x16_ps(xre,xim,yre,zre,zim,n)
 #if defined(__ICC) || defined(__INTEL_COMPILER)    
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cdivv_kernel_v512_s_cv_32x16_ps
         !DIR$ OPTIMIZE : 3
@@ -4259,14 +4259,14 @@ subroutine cdivv_kernel_v512_s_cv_32x16_ps(xre,xim,re,zre,zim,n)
 #endif     
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xre
          real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
-         real(kind=sp),                            intent(in)  :: re
+         real(kind=sp),                            intent(in)  :: yre
          real(kind=sp), allocatable, dimension(:), intent(out) :: zre
          real(kind=sp), allocatable, dimension(:), intent(out) :: zim 
          integer(i4),                              intent(in)  :: n
          
-         type(ZMM16r4_t), automatic :: zmm0
-         type
-         zmm0.v
+         real(sp), automatic :: yim
+         yim = 0.0_sp
+         call cdivv_kernel_v512_cv_cs_32x16_ps(xre,xim,yre,yim,zre,zim,n)
 end subroutine cdivv_kernel_v512_s_cv_32x16_ps
 
 
