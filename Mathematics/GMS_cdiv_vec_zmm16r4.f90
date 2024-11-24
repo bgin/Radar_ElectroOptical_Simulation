@@ -5212,8 +5212,44 @@ subroutine cdivv_kernel_v512_s_cv_32x16_ps(xre,xim,yre,zre,zim,n)
 end subroutine cdivv_kernel_v512_s_cv_32x16_ps
 
 
+subroutine cdivv_kernel_v512_s_cv_16x16_ps(xre,xim,yre,zre,zim,n)
+#if defined(__ICC) || defined(__INTEL_COMPILER)    
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cdivv_kernel_v512_s_cv_16x16_ps
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cdivv_kernel_v512_s_cv_16x16_ps
+#endif     
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: xre
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
+         real(kind=sp),                            intent(in)  :: yre
+         real(kind=sp), allocatable, dimension(:), intent(out) :: zre
+         real(kind=sp), allocatable, dimension(:), intent(out) :: zim 
+         integer(i4),                              intent(in)  :: n
+         
+         real(sp), automatic :: yim
+         yim = 0.0_sp
+         call cdivv_kernel_v512_cv_cs_16x16_ps(xre,xim,yre,yim,zre,zim,n)
+
+end subroutine cdivv_kernel_v512_s_cv_16x16_ps
 
 
+subroutine cdivv_kernel_v512_s_cv_8x16_ps(xre,xim,yre,zre,zim,n)
+#if defined(__ICC) || defined(__INTEL_COMPILER)    
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cdivv_kernel_v512_s_cv_8x16_ps
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cdivv_kernel_v512_s_cv_8x16_ps
+#endif     
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: xre
+         real(kind=sp), allocatable, dimension(:), intent(in)  :: xim
+         real(kind=sp),                            intent(in)  :: yre
+         real(kind=sp), allocatable, dimension(:), intent(out) :: zre
+         real(kind=sp), allocatable, dimension(:), intent(out) :: zim 
+         integer(i4),                              intent(in)  :: n
+         
+         real(sp), automatic :: yim
+         yim = 0.0_sp
+         call cdivv_kernel_v512_cv_cs_8x16_ps(xre,xim,yre,yim,zre,zim,n)
+
+end subroutine cdivv_kernel_v512_s_cv_8x16_ps
 
 
 
