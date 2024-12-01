@@ -167,7 +167,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                       zre(i)    = xmm4.v(i)
                       xmm5.v(i) = (xmm2.v(i)*xmm1.v(i))+ &
                                   (xmm0.v(i)*xmm3.v(i))
-                      zim.v(i)  = xmm5.v(i)
+                      zim(i)  = xmm5.v(i)
                  end do
                  return
          else if(n>4 && n<=8) then
@@ -182,7 +182,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                       zre(i)    = ymm4.v(i)
                       ymm5.v(i) = (ymm2.v(i)*ymm1.v(i))+ &
                                   (ymm0.v(i)*ymm3.v(i))
-                      zim.v(i)  = ymm5.v(i)
+                      zim(i)  = ymm5.v(i)
                  end do
                  return
           else if(n>8 && n<=16) then
@@ -197,7 +197,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                       zre(i)    = zmm4.v(i)
                       zmm5.v(i) = (zmm2.v(i)*zmm1.v(i))+ &
                                   (zmm0.v(i)*zmm3.v(i))
-                      zim.v(i)  = zmm5.v(i)
+                      zim(i)  = zmm5.v(i)
                  end do
                  return
           else if(n>16 && n<=64) then
@@ -213,7 +213,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                               zre(i+ii)    = zmm4.v(ii)
                               zmm5.v(ii) = (zmm2.v(ii)*zmm1.v(ii))+ &
                                           (zmm0.v(ii)*zmm3.v(ii))
-                              zim.v(i+ii)  = zmm5.v(ii)
+                              zim(i+ii)  = zmm5.v(ii)
                          end do
                     end do
 #if defined(__ICC) || defined(__INTEL_COMPILER)
@@ -241,7 +241,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                               zre(i+ii)    = zmm4.v(ii)
                               zmm5.v(ii) = (zmm2.v(ii)*zmm1.v(ii))+ &
                                           (zmm0.v(ii)*zmm3.v(ii))
-                              zim.v(i+ii)  = zmm5.v(ii)
+                              zim(i+ii)  = zmm5.v(ii)
                          end do
                     end do
 #if defined(__ICC) || defined(__INTEL_COMPILER)
@@ -281,7 +281,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(i+0+ii)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(i+0+ii) = zmm5.v(ii)
+                            zim(i+0+ii) = zmm5.v(ii)
                             idx1        = i+1*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx1) ! xr
                             zmm1.v(ii) = yre(idx1) ! yr
@@ -292,7 +292,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx1)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx1) = zmm5.v(ii)
+                            zim(idx1) = zmm5.v(ii)
                             idx1        = i+2*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx2) ! xr
                             zmm1.v(ii) = yre(idx2) ! yr
@@ -303,7 +303,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx2)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx2) = zmm5.v(ii)
+                            zim(idx2) = zmm5.v(ii)
                             idx3        = i+3*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx3) ! xr
                             zmm1.v(ii) = yre(idx3) ! yr
@@ -314,7 +314,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx3)  = zmm4.v(ii)
                             zmm5.v(ii) = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx3)= zmm5.v(ii)
+                            zim(idx3)= zmm5.v(ii)
                             idx4        = i+4*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx4) ! xr
                             zmm1.v(ii) = yre(idx4) ! yr
@@ -325,7 +325,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx4)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx4) = zmm5.v(ii)
+                            zim(idx4) = zmm5.v(ii)
                             idx5        = i+5*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx5) ! xr
                             zmm1.v(ii) = yre(idx5) ! yr
@@ -336,7 +336,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx5)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx5) = zmm5.v(ii)
+                            zim(idx5) = zmm5.v(ii)
                             idx6        = i+6*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx6) ! xr
                             zmm1.v(ii) = yre(idx6) ! yr
@@ -347,7 +347,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx6)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx6) = zmm5.v(ii)
+                            zim(idx6) = zmm5.v(ii)
                             idx7        = i+7*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx7) ! xr
                             zmm1.v(ii) = yre(idx7) ! yr
@@ -358,7 +358,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx7)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx7) = zmm5.v(ii)
+                            zim(idx7) = zmm5.v(ii)
                             idx8        = i+8*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx8) ! xr
                             zmm1.v(ii) = yre(idx8) ! yr
@@ -369,7 +369,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx8)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx8) = zmm5.v(ii)
+                            zim(idx8) = zmm5.v(ii)
                             idx9        = i+9*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx9) ! xr
                             zmm1.v(ii) = yre(idx9) ! yr
@@ -380,7 +380,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx9)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx9) = zmm5.v(ii)
+                            zim(idx9) = zmm5.v(ii)
                             idx10        = i+10*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx10) ! xr
                             zmm1.v(ii) = yre(idx10) ! yr
@@ -391,7 +391,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx10)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx10) = zmm5.v(ii)
+                            zim(idx10) = zmm5.v(ii)
                             idx11        = i+11*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx11) ! xr
                             zmm1.v(ii) = yre(idx11) ! yr
@@ -402,7 +402,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx11)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx11) = zmm5.v(ii)
+                            zim(idx11) = zmm5.v(ii)
                             idx12        = i+12*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx12) ! xr
                             zmm1.v(ii) = yre(idx12) ! yr
@@ -413,7 +413,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx12)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx12) = zmm5.v(ii)
+                            zim(idx12) = zmm5.v(ii)
                             idx13        = i+13*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx13) ! xr
                             zmm1.v(ii) = yre(idx13) ! yr
@@ -424,7 +424,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx13)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx13) = zmm5.v(ii)
+                            zim(idx13) = zmm5.v(ii)
                             idx14        = i+14*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx14) ! xr
                             zmm1.v(ii) = yre(idx14) ! yr
@@ -435,7 +435,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx14)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx14) = zmm5.v(ii)
+                            zim(idx14) = zmm5.v(ii)
                             idx15        = i+15*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx15) ! xr
                             zmm1.v(ii) = yre(idx15) ! yr
@@ -446,7 +446,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx15)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx15) = zmm5.v(ii)
+                            zim(idx15) = zmm5.v(ii)
                             idx16        = i+16*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx16) ! xr
                             zmm1.v(ii) = yre(idx16) ! yr
@@ -457,7 +457,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx16)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx16) = zmm5.v(ii)
+                            zim(idx16) = zmm5.v(ii)
                             idx17        = i+17*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx17) ! xr
                             zmm1.v(ii) = yre(idx17) ! yr
@@ -468,7 +468,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx17)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx17) = zmm5.v(ii)
+                            zim(idx17) = zmm5.v(ii)
                             idx18        = i+18*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx18) ! xr
                             zmm1.v(ii) = yre(idx18) ! yr
@@ -479,7 +479,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx18)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx18) = zmm5.v(ii)
+                            zim(idx18) = zmm5.v(ii)
                             idx19        = i+19*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx19) ! xr
                             zmm1.v(ii) = yre(idx19) ! yr
@@ -490,7 +490,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx19)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx19) = zmm5.v(ii)
+                            zim(idx19) = zmm5.v(ii)
                             idx20        = i+20*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx20) ! xr
                             zmm1.v(ii) = yre(idx20) ! yr
@@ -501,7 +501,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx20)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx20) = zmm5.v(ii)
+                            zim(idx20) = zmm5.v(ii)
                             idx21        = i+21*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx21) ! xr
                             zmm1.v(ii) = yre(idx21) ! yr
@@ -512,7 +512,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx21)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx21) = zmm5.v(ii)
+                            zim(idx21) = zmm5.v(ii)
                              idx22        = i+22*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx22) ! xr
                             zmm1.v(ii) = yre(idx22) ! yr
@@ -523,7 +523,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx22)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx22) = zmm5.v(ii)
+                            zim(idx22) = zmm5.v(ii)
                              idx23        = i+23*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx23) ! xr
                             zmm1.v(ii) = yre(idx23) ! yr
@@ -534,7 +534,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx23)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx23) = zmm5.v(ii)
+                            zim(idx23) = zmm5.v(ii)
                              idx24        = i+24*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx24) ! xr
                             zmm1.v(ii) = yre(idx24) ! yr
@@ -545,7 +545,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx24)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx24) = zmm5.v(ii)
+                            zim(idx24) = zmm5.v(ii)
                              idx25        = i+25*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx25) ! xr
                             zmm1.v(ii) = yre(idx25) ! yr
@@ -556,7 +556,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx25)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx25) = zmm5.v(ii)
+                            zim(idx25) = zmm5.v(ii)
                              idx26        = i+26*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx26) ! xr
                             zmm1.v(ii) = yre(idx26) ! yr
@@ -567,7 +567,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx26)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx26) = zmm5.v(ii)
+                            zim(idx26) = zmm5.v(ii)
                              idx27        = i+27*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx27) ! xr
                             zmm1.v(ii) = yre(idx27) ! yr
@@ -578,7 +578,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx27)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx27) = zmm5.v(ii)
+                            zim(idx27) = zmm5.v(ii)
                              idx28        = i+28*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx28) ! xr
                             zmm1.v(ii) = yre(idx28) ! yr
@@ -589,7 +589,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx28)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx28) = zmm5.v(ii)
+                            zim(idx28) = zmm5.v(ii)
                              idx29        = i+29*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx29) ! xr
                             zmm1.v(ii) = yre(idx29) ! yr
@@ -600,7 +600,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx29)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx29) = zmm5.v(ii)
+                            zim(idx29) = zmm5.v(ii)
                              idx30        = i+30*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx30) ! xr
                             zmm1.v(ii) = yre(idx30) ! yr
@@ -611,7 +611,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx30)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx30) = zmm5.v(ii)
+                            zim(idx30) = zmm5.v(ii)
                              idx31        = i+31*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx31) ! xr
                             zmm1.v(ii) = yre(idx31) ! yr
@@ -622,7 +622,7 @@ subroutine cmulv_kernel_v512_cv_cv_32x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx31)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx31) = zmm5.v(ii)
+                            zim(idx31) = zmm5.v(ii)
                         end do
                   end do
 #if defined(__ICC) || defined(__INTEL_COMPILER)
@@ -711,7 +711,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                       zre(i)    = xmm4.v(i)
                       xmm5.v(i) = (xmm2.v(i)*xmm1.v(i))+ &
                                   (xmm0.v(i)*xmm3.v(i))
-                      zim.v(i)  = xmm5.v(i)
+                      zim(i)  = xmm5.v(i)
                  end do
                  return
          else if(n>4 && n<=8) then
@@ -726,7 +726,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                       zre(i)    = ymm4.v(i)
                       ymm5.v(i) = (ymm2.v(i)*ymm1.v(i))+ &
                                   (ymm0.v(i)*ymm3.v(i))
-                      zim.v(i)  = ymm5.v(i)
+                      zim(i)  = ymm5.v(i)
                  end do
                  return
           else if(n>8 && n<=16) then
@@ -741,7 +741,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                       zre(i)    = zmm4.v(i)
                       zmm5.v(i) = (zmm2.v(i)*zmm1.v(i))+ &
                                   (zmm0.v(i)*zmm3.v(i))
-                      zim.v(i)  = zmm5.v(i)
+                      zim(i)  = zmm5.v(i)
                  end do
                  return
           else if(n>16 && n<=64) then
@@ -757,7 +757,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                               zre(i+ii)    = zmm4.v(ii)
                               zmm5.v(ii) = (zmm2.v(ii)*zmm1.v(ii))+ &
                                           (zmm0.v(ii)*zmm3.v(ii))
-                              zim.v(i+ii)  = zmm5.v(ii)
+                              zim(i+ii)  = zmm5.v(ii)
                          end do
                     end do
 #if defined(__ICC) || defined(__INTEL_COMPILER)
@@ -797,7 +797,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(i+0+ii)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(i+0+ii) = zmm5.v(ii)
+                            zim(i+0+ii) = zmm5.v(ii)
                             idx1        = i+1*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx1) ! xr
                             zmm1.v(ii) = yre(idx1) ! yr
@@ -808,7 +808,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx1)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx1) = zmm5.v(ii)
+                            zim(idx1) = zmm5.v(ii)
                             idx1        = i+2*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx2) ! xr
                             zmm1.v(ii) = yre(idx2) ! yr
@@ -819,7 +819,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx2)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx2) = zmm5.v(ii)
+                            zim(idx2) = zmm5.v(ii)
                             idx3        = i+3*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx3) ! xr
                             zmm1.v(ii) = yre(idx3) ! yr
@@ -830,7 +830,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx3)  = zmm4.v(ii)
                             zmm5.v(ii) = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx3)= zmm5.v(ii)
+                            zim(idx3)= zmm5.v(ii)
                             idx4        = i+4*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx4) ! xr
                             zmm1.v(ii) = yre(idx4) ! yr
@@ -841,7 +841,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx4)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx4) = zmm5.v(ii)
+                            zim(idx4) = zmm5.v(ii)
                             idx5        = i+5*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx5) ! xr
                             zmm1.v(ii) = yre(idx5) ! yr
@@ -852,7 +852,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx5)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx5) = zmm5.v(ii)
+                            zim(idx5) = zmm5.v(ii)
                             idx6        = i+6*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx6) ! xr
                             zmm1.v(ii) = yre(idx6) ! yr
@@ -863,7 +863,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx6)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx6) = zmm5.v(ii)
+                            zim(idx6) = zmm5.v(ii)
                             idx7        = i+7*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx7) ! xr
                             zmm1.v(ii) = yre(idx7) ! yr
@@ -874,7 +874,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx7)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx7) = zmm5.v(ii)
+                            zim(idx7) = zmm5.v(ii)
                             idx8        = i+8*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx8) ! xr
                             zmm1.v(ii) = yre(idx8) ! yr
@@ -885,7 +885,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx8)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx8) = zmm5.v(ii)
+                            zim(idx8) = zmm5.v(ii)
                             idx9        = i+9*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx9) ! xr
                             zmm1.v(ii) = yre(idx9) ! yr
@@ -896,7 +896,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx9)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx9) = zmm5.v(ii)
+                            zim(idx9) = zmm5.v(ii)
                             idx10        = i+10*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx10) ! xr
                             zmm1.v(ii) = yre(idx10) ! yr
@@ -907,7 +907,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx10)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx10) = zmm5.v(ii)
+                            zim(idx10) = zmm5.v(ii)
                             idx11        = i+11*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx11) ! xr
                             zmm1.v(ii) = yre(idx11) ! yr
@@ -918,7 +918,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx11)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx11) = zmm5.v(ii)
+                            zim(idx11) = zmm5.v(ii)
                             idx12        = i+12*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx12) ! xr
                             zmm1.v(ii) = yre(idx12) ! yr
@@ -929,7 +929,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx12)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx12) = zmm5.v(ii)
+                            zim(idx12) = zmm5.v(ii)
                             idx13        = i+13*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx13) ! xr
                             zmm1.v(ii) = yre(idx13) ! yr
@@ -940,7 +940,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx13)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx13) = zmm5.v(ii)
+                            zim(idx13) = zmm5.v(ii)
                             idx14        = i+14*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx14) ! xr
                             zmm1.v(ii) = yre(idx14) ! yr
@@ -951,7 +951,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx14)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx14) = zmm5.v(ii)
+                            zim(idx14) = zmm5.v(ii)
                             idx15        = i+15*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx15) ! xr
                             zmm1.v(ii) = yre(idx15) ! yr
@@ -962,7 +962,7 @@ subroutine cmulv_kernel_v512_cv_cv_16x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx15)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx15) = zmm5.v(ii)
+                            zim(idx15) = zmm5.v(ii)
                       end do
                   end do
 #if defined(__ICC) || defined(__INTEL_COMPILER)
@@ -1049,7 +1049,7 @@ subroutine cmulv_kernel_v512_cv_cv_8x16_ps(xre,xim,yre,yim,zre,zim,n)
                       zre(i)    = xmm4.v(i)
                       xmm5.v(i) = (xmm2.v(i)*xmm1.v(i))+ &
                                   (xmm0.v(i)*xmm3.v(i))
-                      zim.v(i)  = xmm5.v(i)
+                      zim(i)  = xmm5.v(i)
                  end do
                  return
          else if(n>4 && n<=8) then
@@ -1064,7 +1064,7 @@ subroutine cmulv_kernel_v512_cv_cv_8x16_ps(xre,xim,yre,yim,zre,zim,n)
                       zre(i)    = ymm4.v(i)
                       ymm5.v(i) = (ymm2.v(i)*ymm1.v(i))+ &
                                   (ymm0.v(i)*ymm3.v(i))
-                      zim.v(i)  = ymm5.v(i)
+                      zim(i)  = ymm5.v(i)
                  end do
                  return
           else if(n>8 && n<=16) then
@@ -1079,7 +1079,7 @@ subroutine cmulv_kernel_v512_cv_cv_8x16_ps(xre,xim,yre,yim,zre,zim,n)
                       zre(i)    = zmm4.v(i)
                       zmm5.v(i) = (zmm2.v(i)*zmm1.v(i))+ &
                                   (zmm0.v(i)*zmm3.v(i))
-                      zim.v(i)  = zmm5.v(i)
+                      zim(i)  = zmm5.v(i)
                  end do
                  return
           else if(n>16 && n<=64) then
@@ -1095,7 +1095,7 @@ subroutine cmulv_kernel_v512_cv_cv_8x16_ps(xre,xim,yre,yim,zre,zim,n)
                               zre(i+ii)    = zmm4.v(ii)
                               zmm5.v(ii) = (zmm2.v(ii)*zmm1.v(ii))+ &
                                           (zmm0.v(ii)*zmm3.v(ii))
-                              zim.v(i+ii)  = zmm5.v(ii)
+                              zim(i+ii)  = zmm5.v(ii)
                          end do
                     end do
 #if defined(__ICC) || defined(__INTEL_COMPILER)
@@ -1135,7 +1135,7 @@ subroutine cmulv_kernel_v512_cv_cv_8x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(i+0+ii)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(i+0+ii) = zmm5.v(ii)
+                            zim(i+0+ii) = zmm5.v(ii)
                             idx1        = i+1*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx1) ! xr
                             zmm1.v(ii) = yre(idx1) ! yr
@@ -1146,7 +1146,7 @@ subroutine cmulv_kernel_v512_cv_cv_8x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx1)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx1) = zmm5.v(ii)
+                            zim(idx1) = zmm5.v(ii)
                             idx1        = i+2*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx2) ! xr
                             zmm1.v(ii) = yre(idx2) ! yr
@@ -1157,7 +1157,7 @@ subroutine cmulv_kernel_v512_cv_cv_8x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx2)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx2) = zmm5.v(ii)
+                            zim(idx2) = zmm5.v(ii)
                             idx3        = i+3*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx3) ! xr
                             zmm1.v(ii) = yre(idx3) ! yr
@@ -1168,7 +1168,7 @@ subroutine cmulv_kernel_v512_cv_cv_8x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx3)  = zmm4.v(ii)
                             zmm5.v(ii) = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx3)= zmm5.v(ii)
+                            zim(idx3)= zmm5.v(ii)
                             idx4        = i+4*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx4) ! xr
                             zmm1.v(ii) = yre(idx4) ! yr
@@ -1179,7 +1179,7 @@ subroutine cmulv_kernel_v512_cv_cv_8x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx4)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx4) = zmm5.v(ii)
+                            zim(idx4) = zmm5.v(ii)
                             idx5        = i+5*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx5) ! xr
                             zmm1.v(ii) = yre(idx5) ! yr
@@ -1190,7 +1190,7 @@ subroutine cmulv_kernel_v512_cv_cv_8x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx5)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx5) = zmm5.v(ii)
+                            zim(idx5) = zmm5.v(ii)
                             idx6        = i+6*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx6) ! xr
                             zmm1.v(ii) = yre(idx6) ! yr
@@ -1201,7 +1201,7 @@ subroutine cmulv_kernel_v512_cv_cv_8x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx6)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx6) = zmm5.v(ii)
+                            zim(idx6) = zmm5.v(ii)
                             idx7        = i+7*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx7) ! xr
                             zmm1.v(ii) = yre(idx7) ! yr
@@ -1212,7 +1212,7 @@ subroutine cmulv_kernel_v512_cv_cv_8x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx7)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx7) = zmm5.v(ii)
+                            zim(idx7) = zmm5.v(ii)
                       end do
                   end do
 #if defined(__ICC) || defined(__INTEL_COMPILER)
@@ -1298,7 +1298,7 @@ subroutine cmulv_kernel_v512_cv_cv_4x16_ps(xre,xim,yre,yim,zre,zim,n)
                       zre(i)    = xmm4.v(i)
                       xmm5.v(i) = (xmm2.v(i)*xmm1.v(i))+ &
                                   (xmm0.v(i)*xmm3.v(i))
-                      zim.v(i)  = xmm5.v(i)
+                      zim(i)  = xmm5.v(i)
                  end do
                  return
          else if(n>4 && n<=8) then
@@ -1313,7 +1313,7 @@ subroutine cmulv_kernel_v512_cv_cv_4x16_ps(xre,xim,yre,yim,zre,zim,n)
                       zre(i)    = ymm4.v(i)
                       ymm5.v(i) = (ymm2.v(i)*ymm1.v(i))+ &
                                   (ymm0.v(i)*ymm3.v(i))
-                      zim.v(i)  = ymm5.v(i)
+                      zim(i)  = ymm5.v(i)
                  end do
                  return
           else if(n>8 && n<=16) then
@@ -1328,7 +1328,7 @@ subroutine cmulv_kernel_v512_cv_cv_4x16_ps(xre,xim,yre,yim,zre,zim,n)
                       zre(i)    = zmm4.v(i)
                       zmm5.v(i) = (zmm2.v(i)*zmm1.v(i))+ &
                                   (zmm0.v(i)*zmm3.v(i))
-                      zim.v(i)  = zmm5.v(i)
+                      zim(i)  = zmm5.v(i)
                  end do
                  return
           else if(n>16 && n<=64) then
@@ -1344,7 +1344,7 @@ subroutine cmulv_kernel_v512_cv_cv_4x16_ps(xre,xim,yre,yim,zre,zim,n)
                               zre(i+ii)    = zmm4.v(ii)
                               zmm5.v(ii) = (zmm2.v(ii)*zmm1.v(ii))+ &
                                           (zmm0.v(ii)*zmm3.v(ii))
-                              zim.v(i+ii)  = zmm5.v(ii)
+                              zim(i+ii)  = zmm5.v(ii)
                          end do
                     end do
 #if defined(__ICC) || defined(__INTEL_COMPILER)
@@ -1384,7 +1384,7 @@ subroutine cmulv_kernel_v512_cv_cv_4x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(i+0+ii)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(i+0+ii) = zmm5.v(ii)
+                            zim(i+0+ii) = zmm5.v(ii)
                             idx1        = i+1*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx1) ! xr
                             zmm1.v(ii) = yre(idx1) ! yr
@@ -1395,7 +1395,7 @@ subroutine cmulv_kernel_v512_cv_cv_4x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx1)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx1) = zmm5.v(ii)
+                            zim(idx1) = zmm5.v(ii)
                             idx1        = i+2*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx2) ! xr
                             zmm1.v(ii) = yre(idx2) ! yr
@@ -1406,7 +1406,7 @@ subroutine cmulv_kernel_v512_cv_cv_4x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx2)  = zmm4.v(ii)
                             zmm5.v(ii)  = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx2) = zmm5.v(ii)
+                            zim(idx2) = zmm5.v(ii)
                             idx3        = i+3*ZMM_LEN+ii
                             zmm0.v(ii) = xre(idx3) ! xr
                             zmm1.v(ii) = yre(idx3) ! yr
@@ -1417,7 +1417,7 @@ subroutine cmulv_kernel_v512_cv_cv_4x16_ps(xre,xim,yre,yim,zre,zim,n)
                             zre(idx3)  = zmm4.v(ii)
                             zmm5.v(ii) = (zmm2.v(ii)*zmm1.v(ii))+ &
                                          (zmm0.v(ii)*zmm3.v(ii))
-                            zim.v(idx3)= zmm5.v(ii)
+                            zim(idx3)= zmm5.v(ii)
                       end do
                   end do
 #if defined(__ICC) || defined(__INTEL_COMPILER)
@@ -1452,27 +1452,15 @@ subroutine cmulv_kernel_v512_cv_sv_32x16_ps(xre,xim,yre,zre,zim,n)
          type(ZMM16r4_t), automatic :: zmm0
          type(ZMM16r4_t), automatic :: zmm1
          type(ZMM16r4_t), automatic :: zmm2
-         type(ZMM16r4_t), automatic :: zmm3   
-         type(ZMM16r4_t), automatic :: zmm4
-         type(ZMM16r4_t), automatic :: zmm5
-         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0
+          !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0
          !DIR$ ATTRIBUTES ALIGN : 64 :: zmm1
          !DIR$ ATTRIBUTES ALIGN : 64 :: zmm2
-         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm3
-         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm4
-         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm5
          type(XMM4r4_t),  automatic  :: xmm0
          type(XMM4r4_t),  automatic  :: xmm1
          type(XMM4r4_t),  automatic  :: xmm2
-         type(XMM4r4_t),  automatic  :: xmm3
-         type(XMM4r4_t),  automatic  :: xmm4
-         type(XMM4r4_t),  automatic  :: xmm5
          type(YMM8r4_t),  automatic  :: ymm0 
          type(YMM8r4_t),  automatic  :: ymm1
          type(YMM8r4_t),  automatic  :: ymm2
-         type(YMM8r4_t),  automatic  :: ymm3
-         type(XMM4r4_t),  automatic  :: ymm4
-         type(XMM4r4_t),  automatic  :: ymm5
          real(sp),        automatic  :: xr
          real(sp),        automatic  :: xi
          real(sp),        automatic  :: yr
@@ -1773,7 +1761,7 @@ subroutine cmulv_kernel_v512_cv_sv_32x16_ps(xre,xim,yre,zre,zim,n)
                             zmm1.v(ii) = yre(idx31) ! yr
                             zmm2.v(ii) = xim(idx31) ! xi
                             zre(idx31)  = zmm0.v(ii)*zmm1.v(ii)
-                            zim.v(idx31) = zmm2.v(ii)*zmm1.v(ii)
+                            zim(idx31) = zmm2.v(ii)*zmm1.v(ii)
                         end do
                   end do
 #if defined(__ICC) || defined(__INTEL_COMPILER)
