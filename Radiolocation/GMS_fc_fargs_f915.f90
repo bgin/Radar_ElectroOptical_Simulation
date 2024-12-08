@@ -99,12 +99,12 @@ module fc_fargs_f915
     
 ! Average symbol error rate of M-PSK signals (9.2.3.2)
 
-    real(kind=sp)     :: Mglr4
+    real(kind=sp)     :: Mr4
     integer(kind=i4)  :: L
-    real(kind=dp)     :: Mglr8
+    real(kind=dp)     :: Mr8
 
 #if (USE_OPENMP) == 1
-!$omp threadprivate(Mglr4,L,Mglr8)
+!$omp threadprivate(Mr4,L,Mr8)
 #endif
 
 
