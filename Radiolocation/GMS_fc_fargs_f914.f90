@@ -68,7 +68,7 @@ module fc_fargs_f914
     ! Tab:10,11 col - Type , function and subroutine code blocks.
 
     use mod_kinds,     only : i4,sp,dp
-    
+
 #if (USE_OPENMP) == 1
     use omp_lib
 #endif
@@ -87,7 +87,7 @@ module fc_fargs_f914
      integer(kind=i4),  parameter :: FC_FARGS_F914_FULLVER =   &
             1000*FC_FARGS_F914_MAJOR+100*FC_FARGS_F914_MINOR+10*FC_FARGS_F914_MICRO
      ! Module creation date
-     character(*),        parameter :: FC_FARGS_F914_CREATE_DATE = "08-12-2024 01:07PM +00200 (SAT 30 NOV 2024 GMT+2)"
+     character(*),        parameter :: FC_FARGS_F914_CREATE_DATE = "08-12-2024 08:27PM +00200 (SUN 08 DEC 2024 GMT+2)"
      ! Module build date
      character(*),        parameter :: FC_FARGS_F914_BUILD_DATE  = __DATE__ " " __TIME__
      ! Module author info
