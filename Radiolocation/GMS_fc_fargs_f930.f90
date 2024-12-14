@@ -87,13 +87,13 @@ module fc_fargs_f930
      integer(kind=i4),  parameter :: FC_FARGS_F930_FULLVER =   &
             1000*FC_FARGS_F930_MAJOR+100*FC_FARGS_F930_MINOR+10*FC_FARGS_F930_MICRO
      ! Module creation date
-     character(*),        parameter :: FC_FARGS_F921_CREATE_DATE = "14-12-2024 08:21PM +00200 (SAT 14 DEC 2024 GMT+2)"
+     character(*),        parameter :: FC_FARGS_F930_CREATE_DATE = "14-12-2024 08:21PM +00200 (SAT 14 DEC 2024 GMT+2)"
      ! Module build date
-     character(*),        parameter :: FC_FARGS_F921_BUILD_DATE  = __DATE__ " " __TIME__
+     character(*),        parameter :: FC_FARGS_F930_BUILD_DATE  = __DATE__ " " __TIME__
      ! Module author info
-     character(*),        parameter :: FC_FARGS_F921_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
+     character(*),        parameter :: FC_FARGS_F930_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
      ! Short description
-     character(*),        parameter :: FC_FARGS_F921_SYNOPSIS  = "Aditional arguments of integrand(s), formula 9.30, p. 276." 
+     character(*),        parameter :: FC_FARGS_F930_SYNOPSIS  = "Aditional arguments of integrand(s), formula 9.30, p. 276." 
 
      !Bounds and asymptotic SER expressions
 
@@ -102,5 +102,9 @@ module fc_fargs_f930
     real(kind=sp)    :: Klr4
     real(kind=dp)    :: gamlr8
     real(kind=dp)    :: Klr8
+
+#if (USE_OPENMP) == 1
+!$omp threadprivate(L,gamlr4,Klr4,gamlr8,Klr8)
+#endif
 
 end module fc_fargs_f930
