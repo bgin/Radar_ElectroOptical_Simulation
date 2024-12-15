@@ -101,8 +101,10 @@ module waveform_analysis_types
      ! Signal Fourier Transform (continous) single precision.
      type, public :: signal_ft_cont_c4_t
            
+           logical(kind=i4), dimension(15)             :: alloc_stat ! arrays allocation status (is_allocated output)      
            character(len=64) :: integrator_name                 ! either direct integration by ?qawf, or by tabulated data integrator
-           character(len=12) :: transform_type                  ! direct or inverse transform         
+           character(len=12) :: transform_type                  ! direct or inverse transform  
+         
            integer(kind=i4)  :: n                               ! number of sample signal values
            real(kind=sp),    dimension(:), allocatable :: a     ! lower limit of integration
            real(kind=sp),    dimension(:), allocatable :: b     ! upper limit of integration
@@ -135,6 +137,7 @@ module waveform_analysis_types
       ! Signal Fourier Transform (continous) double precision.
      type, public :: signal_ft_cont_c8_t
            
+           logical(kind=i4), dimension(15)             :: alloc_stat ! arrays allocation status (is_allocated output)      
            character(len=64) :: integrator_name                 ! either direct integration by ?qawf, or by tabulated data integrator
            character(len=12) :: transform_type                  ! direct or inverse transform     
            integer(kind=i4)  :: n                               ! number of sample signal values
