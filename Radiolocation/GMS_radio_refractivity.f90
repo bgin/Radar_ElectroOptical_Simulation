@@ -181,14 +181,26 @@ module radio_refractivity
       end function water_vapour_pressure_e_r8
 
 
-      pure function refractivity_index_n_r4() result(n)
+      pure function refractivity_index_n_r4(tc,Tk,Pd,P,H,water_or_ice) result(N)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refractivity_index_n_r4
             !dir$ attributes forceinline :: refractivity_index_n_r4
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refractivity_index_n_r4
 #endif
-
+            real(kind=sp),   intent(in) :: tc ! temperature (C)
+            real(kind=sp),   intent(in) :: Tk ! temperatur (K)
+            real(kind=sp),   intent(in) :: Pd ! dry atmospheric pressure  (hPa)
+            real(kind=sp),   intent(in) :: P ! pressure (hPa)
+            real(kind=sp),   intent(in) :: H ! relative humidity (%)
+            integer(kind=i4),intent(in) :: water_or_ice ! 0 for water, 1 for ice
+            real(kind=sp) :: N
+            real(kind=sp), automatic :: PdT, eT, eTT, e 
+            e   = water_vapour_pressure_e_r4(tc,P,H,water_or_ice)
+            PdT = 76.6_sp*PdT/Tk 
+            eT  = 72.0_sp*e/Tk 
+            eTT = 3750000.0_sp*(e/(Tk*Tk)) 
+            N   = PdT+eT+eTT 
       end function refractivity_index_n_r4
        
       
