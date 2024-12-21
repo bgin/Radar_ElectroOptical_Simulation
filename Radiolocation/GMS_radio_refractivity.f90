@@ -139,6 +139,47 @@ module radio_refractivity
             end if 
       end function water_vapour_pressure_e_r4
 
+       pure function water_vapour_pressure_e_r8(t,P,H,water_or_ice) result(e)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: water_vapour_pressure_e_r8
+            !dir$ attributes forceinline :: water_vapour_pressure_e_r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: water_vapour_pressure_e_r8
+#endif
+            real(kind=dp),   intent(in) :: t ! temperature (C)
+            real(kind=dp),   intent(in) :: P ! pressure (hPa)
+            real(kind=dp),   intent(in) :: H ! relative humidity (%)
+            integer(kind=i4),intent(in) :: water_or_ice ! 0 for water, 1 for ice
+            real(kind=dp)  :: e 
+            real(kind=dp), parameter    :: a_wat = 6.1121_dp
+            real(kind=dp), parameter    :: b_wat = 18.678_dp
+            real(kind=dp), parameter    :: c_wat = 257.14_dp
+            real(kind=dp), parameter    :: d_wat = 234.5_dp
+            ! Ice constants
+            real(kind=dp), parameter    :: a_ice = 6.1125_dp
+            real(kind=dp), parameter    :: b_ice = 23.036_dp
+            real(kind=dp), parameter    :: c_ice = 279.82_dp
+            real(kind=dp), parameter    :: d_ice = 333.7_dp
+            real(kind=dp), parameter    :: C1    = 1.0_dp
+            real(kind=dp), parameter    :: C0001 = 0.0001_dp
+            real(kind=dp), automatic    :: ef_wat, ef_ice, num, den
+            real(kind=dp), automatic    :: tt, td, es
+            tt     = t*t 
+            td     = t/d 
+            num    = (b-td)*t
+            den    = t+c 
+            if(water_or_ice == 0) then 
+               ef_wat = C1+C0001*(7.2_dp+P*(0.00320_dp+0.0000059_dp*tt))
+               es      = ef_wat*a*exp(num/den)
+               e      = H*es*0.01_dp
+
+            else if(water_or_ice == 1) then 
+               ef_ice = C1+C0001*(2.2_dp+P*(0.00382_dp+0.0000064_dp*tt))
+               es      = ef_ice*a*exp(num/den)
+               e      = H*es*0.01_dp 
+            end if 
+      end function water_vapour_pressure_e_r8
+
 
       pure function refractivity_index_n_r4() result(n)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
