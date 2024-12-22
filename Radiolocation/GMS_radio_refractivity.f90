@@ -36,7 +36,7 @@ module radio_refractivity_ref
  !
  !
  !          Module  name: 
- !                         RADIO_REFRACTIVITY_REF_ref
+ !                         radio_refractivity_ref
  !          
  !          Purpose:
  !                      ITU-R P.453-11 - radio refractivity index calculation
@@ -123,16 +123,21 @@ module radio_refractivity_ref
             real(kind=sp), parameter    :: C0001 = 0.0001_sp
             real(kind=sp), automatic    :: ef_wat, ef_ice, num, den
             real(kind=sp), automatic    :: tt, td, es
-            tt     = t*t 
-            td     = t/d 
-            num    = (b-td)*t
-            den    = t+c 
+            
             if(water_or_ice == 0) then 
+               tt     = t*t 
+               td     = t/d_wat 
+               num    = (b_wat-td)*t
+               den    = t+c_wat
                ef_wat = C1+C0001*(7.2_sp+P*(0.00320_sp+0.0000059_sp*tt))
                es      = ef_wat*a*exp(num/den)
                e      = H*es*0.01_sp
 
             else if(water_or_ice == 1) then 
+               tt     = t*t 
+               td     = t/d_ice  
+               num    = (b_ice-td)*t
+               den    = t+c_ice 
                ef_ice = C1+C0001*(2.2_sp+P*(0.00382_sp+0.0000064_sp*tt))
                es      = ef_ice*a*exp(num/den)
                e      = H*es*0.01_sp 
@@ -164,16 +169,21 @@ module radio_refractivity_ref
             real(kind=dp), parameter    :: C0001 = 0.0001_dp
             real(kind=dp), automatic    :: ef_wat, ef_ice, num, den
             real(kind=dp), automatic    :: tt, td, es
-            tt     = t*t 
-            td     = t/d 
-            num    = (b-td)*t
-            den    = t+c 
+           
             if(water_or_ice == 0) then 
+               tt     = t*t 
+               td     = t/d_wat 
+               num    = (b_wat-td)*t
+               den    = t+c_wat
                ef_wat = C1+C0001*(7.2_dp+P*(0.00320_dp+0.0000059_dp*tt))
                es      = ef_wat*a*exp(num/den)
                e      = H*es*0.01_dp
 
-            else if(water_or_ice == 1) then 
+            else if(water_or_ice == 1) then
+               tt     = t*t 
+               td     = t/d_ice
+               num    = (b_ice-td)*t
+               den    = t+c_ice 
                ef_ice = C1+C0001*(2.2_dp+P*(0.00382_dp+0.0000064_dp*tt))
                es      = ef_ice*a*exp(num/den)
                e      = H*es*0.01_dp 
