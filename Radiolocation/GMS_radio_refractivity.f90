@@ -181,7 +181,7 @@ module radio_refractivity
       end function water_vapour_pressure_e_r8
 
 
-      pure function refractivity_index_n_r4(tc,Tk,Pd,P,H,water_or_ice) result(N)
+      pure function refractivity_index_n_r4(tc,Tk,Pd,P,H,water_or_ice) result(n)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refractivity_index_n_r4
@@ -194,16 +194,39 @@ module radio_refractivity
             real(kind=sp),   intent(in) :: P ! pressure (hPa)
             real(kind=sp),   intent(in) :: H ! relative humidity (%)
             integer(kind=i4),intent(in) :: water_or_ice ! 0 for water, 1 for ice
-            real(kind=sp) :: N
-            real(kind=sp), automatic :: PdT, eT, eTT, e 
+            real(kind=sp) :: n
+            real(kind=sp), automatic :: PdT, eT, eTT, e, n_tmp
             e   = water_vapour_pressure_e_r4(tc,P,H,water_or_ice)
             PdT = 76.6_sp*PdT/Tk 
             eT  = 72.0_sp*e/Tk 
             eTT = 3750000.0_sp*(e/(Tk*Tk)) 
-            N   = PdT+eT+eTT 
+            n_tmp   = PdT+eT+eTT 
+            n   = 1.0_sp+n_tmp*0.000001_sp
       end function refractivity_index_n_r4
        
-      
+
+       pure function refractivity_index_n_r8(tc,Tk,Pd,P,H,water_or_ice) result(n)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refractivity_index_n_r8
+            !dir$ attributes forceinline :: refractivity_index_n_r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refractivity_index_n_r8
+#endif
+            real(kind=dp),   intent(in) :: tc ! temperature (C)
+            real(kind=dp),   intent(in) :: Tk ! temperatur (K)
+            real(kind=dp),   intent(in) :: Pd ! dry atmospheric pressure  (hPa)
+            real(kind=dp),   intent(in) :: P ! pressure (hPa)
+            real(kind=dp),   intent(in) :: H ! relative humidity (%)
+            integer(kind=i4),intent(in) :: water_or_ice ! 0 for water, 1 for ice
+            real(kind=dp) :: n
+            real(kind=dp), automatic :: PdT, eT, eTT, e, n_tmp 
+            e   = water_vapour_pressure_e_r8(tc,P,H,water_or_ice)
+            PdT = 76.6_dp*PdT/Tk 
+            eT  = 72.0_dp*e/Tk 
+            eTT = 3750000.0_dp*(e/(Tk*Tk)) 
+            n_tmp   = PdT+eT+eTT 
+            n   = 1.0_dp+n_tmp*0.000001_dp
+      end function refractivity_index_n_r8 
      
      
      
