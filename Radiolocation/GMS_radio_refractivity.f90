@@ -228,10 +228,24 @@ module radio_refractivity
             n   = 1.0_dp+n_tmp*0.000001_dp
       end function refractivity_index_n_r8 
      
-     
-     
-     
-     
+      ! Function of height
+      pure function refractivity_index_nh_r4(N0,h,h0) result(nh)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refractivity_index_nh_r4
+            !dir$ attributes forceinline :: refractivity_index_nh_r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refractivity_index_nh_r4
+#endif
+            real(kind=sp),  intent(in) :: N0 
+            real(kind=sp),  intent(in) :: h 
+            real(kind=sp),  intent(in) :: h0 
+            real(kind=sp) :: nh 
+            real(kind=sp), automatic :: earg, eres 
+            nh = 0.0_sp 
+            earg = -h/h0 
+            eres = exp(earg)
+            nh   = 1.0_sp+N0*0.000001_sp*eres 
+      end function refractivity_index_nh_r4
      
      
      
