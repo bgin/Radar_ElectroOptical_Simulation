@@ -21,7 +21,7 @@
 !*/
 
 
-module radio_refractivity
+module radio_refractivity_ref 
 
 
 
@@ -36,7 +36,7 @@ module radio_refractivity
  !
  !
  !          Module  name: 
- !                         radio_refractivity
+ !                         RADIO_REFRACTIVITY_REF_ref
  !          
  !          Purpose:
  !                      ITU-R P.453-11 - radio refractivity index calculation
@@ -76,22 +76,22 @@ module radio_refractivity
     
     
       ! Major version
-     integer(kind=i4),  parameter :: RADIO_REFRACTIVITY_MAJOR = 1
+     integer(kind=i4),  parameter :: RADIO_REFRACTIVITY_REF_MAJOR = 1
      ! Minor version
-     integer(kind=i4),  parameter :: RADIO_REFRACTIVITY_MINOR = 0
+     integer(kind=i4),  parameter :: RADIO_REFRACTIVITY_REF_MINOR = 0
      ! Micro version
-     integer(kind=i4),  parameter :: RADIO_REFRACTIVITY_MICRO = 0
+     integer(kind=i4),  parameter :: RADIO_REFRACTIVITY_REF_MICRO = 0
      ! Full version
-     integer(kind=i4),  parameter :: RADIO_REFRACTIVITY_FULLVER =   &
-            1000*RADIO_REFRACTIVITY_MAJOR+100*RADIO_REFRACTIVITY_MINOR+10*RADIO_REFRACTIVITY_MICRO
+     integer(kind=i4),  parameter :: RADIO_REFRACTIVITY_REF_FULLVER =   &
+            1000*RADIO_REFRACTIVITY_REF_MAJOR+100*RADIO_REFRACTIVITY_REF_MINOR+10*RADIO_REFRACTIVITY_REF_MICRO
      ! Module creation date
-     character(*),        parameter :: RADIO_REFRACTIVITY_CREATE_DATE = "21-12-2024 11:38AM +00200 (SAT 21 DEC 2024 GMT+2)"
+     character(*),        parameter :: RADIO_REFRACTIVITY_REF_CREATE_DATE = "21-12-2024 11:38AM +00200 (SAT 21 DEC 2024 GMT+2)"
      ! Module build date
-     character(*),        parameter :: RADIO_REFRACTIVITY_BUILD_DATE  = __DATE__ " " __TIME__
+     character(*),        parameter :: RADIO_REFRACTIVITY_REF_BUILD_DATE  = __DATE__ " " __TIME__
      ! Module author info
-     character(*),        parameter :: RADIO_REFRACTIVITY_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
+     character(*),        parameter :: RADIO_REFRACTIVITY_REF_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
      ! Short description
-     character(*),        parameter :: RADIO_REFRACTIVITY_SYNOPSIS  = "ITU-R P.453-11 - radio refractivity index calculation" 
+     character(*),        parameter :: RADIO_REFRACTIVITY_REF_SYNOPSIS  = "ITU-R P.453-11 - radio refractivity index calculation" 
      
      
      contains
@@ -278,11 +278,28 @@ module radio_refractivity
             real(kind=sp), intent(in) :: Pd ! dry atmos pressure (hPa)
             real(kind=sp), intent(in) :: T  ! absolute temp (K)
             real(kind=sp) :: Ndry 
-            real(kind=sp), automatioc :: rat 
+            real(kind=sp), automatic :: rat 
             Ndry = 0.0_sp 
             rat  = Pd/T 
             Ndry = 77.6_sp*rat 
         end function refractivity_index_dry_r4
+
+         ! Dry term of refractivity
+        pure function refractivity_index_dry_r8(Pd,T) result(Ndry)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refractivity_index_dry_r8
+            !dir$ attributes forceinline :: refractivity_index_dry_r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refractivity_index_dry_r8
+#endif
+            real(kind=dp), intent(in) :: Pd ! dry atmos pressure (hPa)
+            real(kind=dp), intent(in) :: T  ! absolute temp (K)
+            real(kind=dp) :: Ndry 
+            real(kind=dp), automatic :: rat 
+            Ndry = 0.0_dp 
+            rat  = Pd/T 
+            Ndry = 77.6_dp*rat 
+        end function refractivity_index_dry_r8
      
-end module radio refraxctivity
+end module radio_refractivity_ref
 
