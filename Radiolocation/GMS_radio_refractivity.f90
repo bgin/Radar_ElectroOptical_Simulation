@@ -300,6 +300,29 @@ module radio_refractivity_ref
             rat  = Pd/T 
             Ndry = 77.6_dp*rat 
         end function refractivity_index_dry_r8
+
+         pure function refractivity_index_wet_r4(tc,Tk,Pd,P,H,water_or_ice) result(nwet)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refractivity_index_wet_r4
+            !dir$ attributes forceinline :: refractivity_index_wet_r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refractivity_index_wet_r4
+#endif
+            real(kind=sp),   intent(in) :: tc ! temperature (C)
+            real(kind=sp),   intent(in) :: Tk ! temperatur (K)
+            real(kind=sp),   intent(in) :: Pd ! dry atmospheric pressure  (hPa)
+            real(kind=sp),   intent(in) :: P ! pressure (hPa)
+            real(kind=sp),   intent(in) :: H ! relative humidity (%)
+            integer(kind=i4),intent(in) :: water_or_ice ! 0 for water, 1 for ice
+            real(kind=sp) :: nwet
+            real(kind=sp), automatic :: eT, eTT, e, n_tmp
+            e    = water_vapour_pressure_e_r4(tc,P,H,water_or_ice)
+            nwet = 0.0_sp 
+            eT   = e/Tk 
+            eTT  = e/(Tk*Tk)
+            nwet = 72.0_sp*eT+3.75e+5_sp*eTT 
+      end function refractivity_index_wet_r4
+       
      
 end module radio_refractivity_ref
 
