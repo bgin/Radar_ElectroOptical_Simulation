@@ -94,11 +94,11 @@ module radio_refractivity_xmm4r4
      contains
 
 
-subroutine radio_refractivity_index1D_v128_32x4_ps(tc,Tk,Pd,P,H,nref,n,water_or_ice)
+subroutine radio_refractivity_index_1D_v128_32x4_ps(tc,Tk,Pd,P,H,nref,n,water_or_ice)
 #if defined(__ICC) || defined(__INTEL_COMPILER)    
-        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: radio_refractivity_index_v128_32x4_ps
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: radio_refractivity_index_1D_v128_32x4_ps
         !DIR$ OPTIMIZE : 3
-        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: radio_refractivity_index_v128_32x4_ps
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: radio_refractivity_index_1D_v128_32x4_ps
 #endif  
         real(kind=sp), allocatable, dimension(:), intent(in) :: tc 
         real(kind=sp), allocatable, dimension(:), intent(in) :: Tk 
@@ -1653,14 +1653,14 @@ subroutine radio_refractivity_index1D_v128_32x4_ps(tc,Tk,Pd,P,H,nref,n,water_or_
                       return 
             end if
         end if 
-end subroutine radio_refractivity_index_v128_32x4_ps
+end subroutine radio_refractivity_index_1D_v128_32x4_ps
 
 
-subroutine radio_refractivity_index_v128_16x4_ps(tc,Tk,Pd,P,H,nref,n,water_or_ice)
+subroutine radio_refractivity_index_1D_v128_16x4_ps(tc,Tk,Pd,P,H,nref,n,water_or_ice)
 #if defined(__ICC) || defined(__INTEL_COMPILER)    
-        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: radio_refractivity_index_v128_16x4_ps
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: radio_refractivity_index_1D_v128_16x4_ps
         !DIR$ OPTIMIZE : 3
-        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: radio_refractivity_index_v128_16x4_ps
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: radio_refractivity_index_1D_v128_16x4_ps
 #endif  
         real(kind=sp), allocatable, dimension(:), intent(in) :: tc 
         real(kind=sp), allocatable, dimension(:), intent(in) :: Tk 
@@ -2571,14 +2571,14 @@ subroutine radio_refractivity_index_v128_16x4_ps(tc,Tk,Pd,P,H,nref,n,water_or_ic
                       return 
             end if
         end if 
-end subroutine radio_refractivity_index_v128_16x4_ps
+end subroutine radio_refractivity_index_1D_v128_16x4_ps
 
 
-subroutine radio_refractivity_index_v128_8x4_ps(tc,Tk,Pd,P,H,nref,n,water_or_ice)
+subroutine radio_refractivity_index_1D_v128_8x4_ps(tc,Tk,Pd,P,H,nref,n,water_or_ice)
 #if defined(__ICC) || defined(__INTEL_COMPILER)    
-        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: radio_refractivity_index_v128_8x4_ps
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: radio_refractivity_index_1D_v128_8x4_ps
         !DIR$ OPTIMIZE : 3
-        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: radio_refractivity_index_v128_8x4_ps
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: radio_refractivity_index_1D_v128_8x4_ps
 #endif  
         real(kind=sp), allocatable, dimension(:), intent(in) :: tc 
         real(kind=sp), allocatable, dimension(:), intent(in) :: Tk 
@@ -3167,14 +3167,14 @@ subroutine radio_refractivity_index_v128_8x4_ps(tc,Tk,Pd,P,H,nref,n,water_or_ice
                       return 
             end if
         end if 
-end subroutine radio_refractivity_index_v128_8x4_ps
+end subroutine radio_refractivity_index_1D_v128_8x4_ps
 
 
 subroutine radio_refractivity_index_v128_4x4_ps(tc,Tk,Pd,P,H,nref,n,water_or_ice)
 #if defined(__ICC) || defined(__INTEL_COMPILER)    
-        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: radio_refractivity_index_v128_4x4_ps
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: radio_refractivity_index_1D_v128_4x4_ps
         !DIR$ OPTIMIZE : 3
-        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: radio_refractivity_index_v128_4x4_ps
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: radio_refractivity_index_1D_v128_4x4_ps
 #endif  
         real(kind=sp), allocatable, dimension(:), intent(in) :: tc 
         real(kind=sp), allocatable, dimension(:), intent(in) :: Tk 
@@ -3582,7 +3582,7 @@ subroutine radio_refractivity_index_v128_4x4_ps(tc,Tk,Pd,P,H,nref,n,water_or_ice
                       return 
             end if
         end if 
-end subroutine radio_refractivity_index_v128_4x4_ps
+end subroutine radio_refractivity_index_1D_v128_4x4_ps
 
 
 
