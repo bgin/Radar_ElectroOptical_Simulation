@@ -1,5 +1,5 @@
 
-module idealized_topog_mod
+module idealized_topog
 
 ! <CONTACT EMAIL="Bruce.Wyman@noaa.gov">
 !   Bruce Wyman
@@ -94,6 +94,36 @@ module idealized_topog_mod
 !     if uneven_sin=.true. define how much taller the 2nd mountain is (e.g. uneven_fac = 2. for twice as tall 2nd mountain).
 !    </DATA>
 
+#if !defined (IDEALIZED_TOPOG_VERBOSE)
+#define IDEALIZED_TOPOG_VERBOSE 0
+#endif 
+
+   type, public :: terrain_config_t
+         ! ideal_terrain 0 = none 
+         ! 1 = X m flat plate 
+         ! 2 = 2d witch of agnesi hill in x
+         ! 21 = 2d gaussian hill in x
+         ! 3 = 3d witch of agnesi hill 
+         ! 31 = 3d gaussian hill
+         ! 4 = 2d ridge or isolated cube 
+         ! 5 = 3d cube
+         ! 6 = 2d idealized t-rex valley
+         ! 7 = 3d idealized t-rex valley
+         ! 8 = v shaped valley and ridges
+         ! 81 = sinusoidal valley and ridges RSA
+         ! 9 = Schar idealized advection test
+         ! 10 = read data (1-d ht array)
+         ! 11 = 2d witch of agnesi hill in y
+         ! 13 = DJW OKC read from file
+         ! 14 = RSA Granite Mountain read from file
+         ! 15 = RSA/JB Askervein read from file 
+         integer(kind=i4) :: ideal_terrain ! as above
+         integer(kind=i4) :: spec_bdy_width
+         real(kind=sp)    :: flat_plate_ht ! default height for flat terrain
+         real(kind=sp)    :: dx 
+         real(kind=sp)    :: dy 
+   end type terrain_config_t
+
    integer(kind=i4), parameter :: maxmts = 10 !originally was set to 10
 
    real(kind=sp), dimension(maxmts) :: height = 0.0_sp
@@ -161,11 +191,7 @@ subroutine gaussian_topog_init ( lon, lat, zsurf )
 
 real(kind=sp), intent(in)  :: lon(:), lat(:)
 real(kind=sp), intent(out) :: zsurf(:,:)
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-    !DIR$ ASSUME_ALIGNED lon:64
-    !DIR$ ASSUME_ALIGNED lat:64
-    !DIR$ ASSUME_ALIGNED zsurf:64
-#endif
+
 integer(kind=i4) :: n
 
   !if (.not.module_is_initialized) then
@@ -183,6 +209,11 @@ integer(kind=i4) :: n
 
 ! compute sum of all non-zero mountains
   !zsurf(:,:) = 0._sp
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ASSUME_ALIGNED lon:64
+    !DIR$ ASSUME_ALIGNED lat:64
+    !DIR$ ASSUME_ALIGNED zsurf:64
+#endif
   !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) &
   !$OMP& PRIVATE(n) SHARED(maxmts,zsurf,lon,lat,height,olon,olat,wlon,wlat,rlon,rlat)
   do n = 1, maxmts
@@ -255,16 +286,11 @@ function get_gaussian_topog ( lon, lat, height,                          &
     !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: get_gaussian_topog
 #endif
 real(kind=sp), intent(in)  :: lon(:), lat(:)
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-    !DIR$ ASSUME_ALIGNED lon:64
-    !DIR$ ASSUME_ALIGNED lat:64
-#endif
+
 real(kind=sp), intent(in)  :: height
 real(kind=sp), intent(in), optional :: olond, olatd, wlond, wlatd, rlond, rlatd
 real(kind=sp) :: zsurf(size(lon,1),size(lat,1))
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-    !DIR$ ASSUME_ALIGNED zsurf:64
-#endif
+
 integer(kind=i4) :: i, j
 real(kind=sp)    :: olon, olat, wlon, wlat, rlon, rlat
 real(kind=sp)    :: tpi, dtr, dx, dy, xx, yy
@@ -289,6 +315,13 @@ real(kind=sp)    :: tpi, dtr, dx, dy, xx, yy
   rlat =  0._sp    ;  if (present(rlatd)) rlat=rlatd*dtr
 
 ! compute gaussian-shaped mountain
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ASSUME_ALIGNED lon:64
+    !DIR$ ASSUME_ALIGNED lat:64
+#endif
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ASSUME_ALIGNED zsurf:64
+#endif
 #if defined(__INTEL_COMPILER) || defined(__ICC)
     !DIR$ CODE_ALIGN(32)
     !DIR$ PREFETCH lat:0:4
@@ -347,14 +380,9 @@ subroutine sinusoidal_topog_init ( lon, lat, zsurf )
     !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: sinusoidal_topog_init
 #endif
 real(kind=sp), intent(in)  :: lon(:), lat(:)
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-    !DIR$ ASSUME_ALIGNED lon:64
-    !DIR$ ASSUME_ALIGNED lat:64
-#endif
+
 real(kind=sp), intent(out) :: zsurf(:,:)
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-    !DIR$ ASSUME_ALIGNED zsurf:64
-#endif
+
   
   !if (.not.module_is_initialized) then
   !   call write_version_number( version, tagname )
@@ -444,18 +472,13 @@ function get_sinusoidal_topog ( lon, lat, height_sin, m, Amp2, uneven_sin, uneve
     !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: get_sinusoidal_topog
 #endif
 real(kind=sp), intent(in)  :: lon(:), lat(:)
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-    !DIR$ ASSUME_ALIGNED lon:64
-    !DIR$ ASSUME_ALIGNED lat:64
-#endif
+
 real(kind=sp), intent(in)  :: height_sin
-integer(kind=i4), intent(in) :: m, Amp2
+real(kind=sp), intent(in) :: m, Amp2
 logical, intent(in) :: uneven_sin
 real(kind=sp), intent(in) :: uneven_fac, deltalat !, lat00, lat11
 real(kind=sp) :: zsurf(size(lon,1),size(lat,1))
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-    !DIR$ ASSUME_ALIGNED zsurf:64
-#endif
+
 real(kind=sp), parameter :: pi   = 3.1415926535897932384626_sp
 real(kind=sp), parameter :: tpi4 = 2.356194490192344928847_sp
 real(kind=sp), parameter :: spi4 = 5.4977871437821381673096_sp
@@ -480,6 +503,13 @@ real(kind=sp)    :: tpi, dtr, lat00, lat11
   lat11 = dtr * lat11
   zsurf(:,:) = 0._sp
 ! compute sinusoidal-shaped mountain
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ASSUME_ALIGNED lon:64
+    !DIR$ ASSUME_ALIGNED lat:64
+#endif
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ASSUME_ALIGNED zsurf:64
+#endif
   do j=1,size(lat(:))
       !$OMP SIMD LINEAR(i:1) UNROLL PARTIAL(4)
      do i=1,size(lon(:))
@@ -532,40 +562,1066 @@ end function get_sinusoidal_topog
 
 !#######################################################################
 
-end module idealized_topog_mod
+! Based upon `wrf_ibm` model.
 
-! <INFO>
-!   <NOTE>
-!     NAMELIST FOR GENERATING GAUSSIAN MOUNTAINS
+#if 0
+WRF Model Version 3.8.1 (August 12, 2016)
+http://wrf-model.org/users/users.php
+
+------------------------
+WRF PUBLIC DOMAIN NOTICE
+------------------------
+
+WRF was developed at the National Center for Atmospheric Research
+(NCAR) which is operated by the University Corporation for
+Atmospheric Research (UCAR). NCAR and UCAR make no proprietary
+claims, either statutory or otherwise, to this version and
+release of WRF and consider WRF to be in the public domain for
+use by any person or entity for any purpose without any fee or
+charge. UCAR requests that any WRF user include this notice on
+any partial or full copies of WRF. WRF is provided on an "AS
+IS" basis and any warranties, either express or implied,
+including but not limited to implied warranties of
+non-infringement, originality, merchantability and fitness for a
+particular purpose, are disclaimed. In no event shall
+UCAR be liable for any damages, whatsoever, whether direct,
+indirect, consequential or special, that arise out of or in
+connection with the access, use or performance of WRF, including
+infringement actions.
+#endif 
+
+SUBROUTINE compute_idealized_terrain ( config_flags,                 &
+                                       ibm_ht_u, ibm_ht_v,           &
+                                       ibm_ht_w, ibm_ht_c,           &
+                                       ibm_z0,                       &
+                                       ids, ide, jds, jde, kds, kde, &
+                                       ims, ime, jms, jme, kms, kme, &
+                                       its, ite, jts, jte, kts, kte )
+  IMPLICIT NONE
+  !input data
+  TYPE(terrain_config_t), INTENT(IN   )               :: config_flags
+  REAL(kind=sp), DIMENSION(ims:ime,jms:jme), INTENT(  OUT)     :: ibm_ht_u, &
+                                                         ibm_ht_v, &
+                                                         ibm_ht_w, &
+                                                         ibm_ht_c, &
+                                                         ibm_z0
+  INTEGER(kind=i4), INTENT(IN   ) :: ids, ide, jds, jde, kds, kde, & !d: domain 
+                            ims, ime, jms, jme, kms, kme, & !m:memory 
+                            its, ite, jts, jte, kts, kte    !p:patch t:tile 
+   
+  !local data   
+  INTEGER(kind=i4)                                            :: i, j, k, &
+                                                         icm,jcm   !mountain position in domain
+  REAL(kind=sp)                                                :: hm, xa,  & !mountain height, mountain half width
+                                                         offset,  & !offset to make mountain terrain higher than 2nd grid pt.
+                                                         slope,   & !RSA
+                                                         xa1,     &
+                                                         x_dist, y_dist, &
+                                                         pi,      &
+                                                         ru, rv, rw, rc, du, dv, dw, dc, dmid !DJW added for smoothing to zero near edges
+  INTEGER(kind=i4)                                            :: width, ista, iend, jsta, jend !DJW added for putting ridges on terrain
+  REAL(kind=sp)                                                :: height !DJW added for putting ridges on terrain
+  char(*), parameter :: sub_name = 'compute_idealized_terrain'
+!---------------------------------------------------------------------------------
+! this subroutine calculates the terrain height and is called once from start_em.F
+! The terrain height has twice the resolution of the computational grid
+! the terrain height is assigned on u,v,and w points.  It is also assigned at corners.
+! Corners are located between v points in the x direction and between u points in the 
+! y direction.
+! *************Modified by Bernard Gingold (08:48AM, 28 DEC 2024) to fit the REOS project, contact: beniekg@gmail.com*************
+! the executable begins here
+  
+!---------------------------------------------------------------------------------   
+
+  pi = 2.*asin(1.0)
+
+! ideal_terrain 0 = none 
+! 1 = X m flat plate 
+! 2 = 2d witch of agnesi hill in x
+! 21 = 2d gaussian hill in x
+! 3 = 3d witch of agnesi hill 
+! 31 = 3d gaussian hill
+! 4 = 2d ridge or isolated cube 
+! 5 = 3d cube
+! 6 = 2d idealized t-rex valley
+! 7 = 3d idealized t-rex valley
+! 8 = v shaped valley and ridges
+! 81 = sinusoidal valley and ridges RSA
+! 9 = Schar idealized advection test
+! 10 = read data (1-d ht array)
+! 11 = 2d witch of agnesi hill in y
+! 13 = DJW OKC read from file
+! 14 = RSA Granite Mountain read from file
+! 15 = RSA/JB Askervein read from file
+
+  IF (config_flags%ideal_terrain .EQ. 1) THEN    
+    DO j=jts,jte
+    DO i=its,ite
+        IF (j .NE. jde) ibm_ht_u(i,j) = config_flags%flat_plate_ht
+        IF (i .NE. ide) ibm_ht_v(i,j) = config_flags%flat_plate_ht
+        IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = config_flags%flat_plate_ht
+        ibm_ht_c(i,j) = config_flags%flat_plate_ht
+    ENDDO
+    ENDDO
+
+  ELSEIF (config_flags%ideal_terrain .EQ. 111) THEN
+     !DJW a flat plate with added bumps to trip turbulence
+     DO j=jts,jte
+     DO i=its,ite
+        IF (j .NE. jde) ibm_ht_u(i,j) = 0.0
+        IF (i .NE. ide) ibm_ht_v(i,j) = 0.0
+        IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 0.0
+        ibm_ht_c(i,j) = 0.0
+     ENDDO
+     ENDDO
+     height = 6.0
+     width = 6
+#if (IDEALIZED_TOPOG_VERBOSE) == 1
+     write(*,'(A,I3,A,F5.1)') "REOS[compute_idealized_terrain]: adding a cross to the flat plate with width=",width," and height=",height
+#endif
+     ista = (ide-ids)/2+ids-width
+     iend = (ide-ids)/2+ids+width
+     DO i=its,ite
+        IF ((i .GE. ista) .AND. (i .LE. iend)) THEN
+           DO j=jts,jte
+              IF (j .NE. jde) ibm_ht_u(i,j) = height
+              IF (i .NE. ide) ibm_ht_v(i,j) = height
+              IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = height
+              ibm_ht_c(i,j) = height
+           ENDDO
+        ENDIF
+     ENDDO
+     jsta = (jde-jds)/2+jds-width
+     jend = (jde-jds)/2+jds+width
+     DO j=jts,jte
+        IF ((j .GE. jsta) .AND. (j .LE. jend)) THEN
+           DO i=its,ite
+              IF (j .NE. jde) ibm_ht_u(i,j) = height
+              IF (i .NE. ide) ibm_ht_v(i,j) = height
+              IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = height
+              ibm_ht_c(i,j) = height
+           ENDDO
+        ENDIF
+     ENDDO
+     DO i=its,ite
+        DO j=jts,jte
+           IF ((i .LT. ids+2*config_flags%spec_bdy_width) .OR. &
+               (i .GE. ide-2*config_flags%spec_bdy_width) .OR. &
+               (j .LT. jds+2*config_flags%spec_bdy_width) .OR. &
+               (j .GE. jde-2*config_flags%spec_bdy_width)) THEN
+              IF (i .NE. ide) ibm_ht_u(i,j) = 0.0
+              IF (j .NE. jde) ibm_ht_v(i,j) = 0.0
+              IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 0.0
+              ibm_ht_c(i,j) = 0.0
+           ENDIF
+        ENDDO
+     ENDDO
+
+!#if (IDEALIZED_TOPOG_VERBOSE) == 1
+!   write(*,'(A,I3,A,F5.1)') "REOS[compute_idealized_terrain]: adding bumps to the flat plate with width=",width," and height=",height
+!#endif 
+!     ista = (ide-ids)/2+ids-width
+!     iend = (ide-ids)/2+ids+width
+!     DO i=its,ite
+!        IF ((i .GE. ista) .AND. (i .LE. iend)) THEN
+!           DO j=jts,jte
+!              jsta = width*(j/width)
+!              jend = jsta+width
+!              IF ((j .NE. jde) .AND. (i .NE. ista) .AND. (j .NE. jsta)) THEN
+!                 ibm_ht_u(i,j) = height*(1.0-ABS((ide-ids)/2.0+ids-(i-0.5))/width)*(1.0-ABS(jsta+width/2.0-j)/(width/2.0))
+!              ENDIF
+!              IF ((i .NE. ide) .AND. (i .NE. ista) .AND. (j .NE. jsta)) THEN
+!                 ibm_ht_v(i,j) = height*(1.0-ABS((ide-ids)/2.0+ids-i)/width)*(1.0-ABS(jsta+width/2.0-(j-0.5))/(width/2.0))
+!              ENDIF
+!              IF ((j .NE. jde) .AND. (i .NE. ista)) THEN
+!                 ibm_ht_w(i,j) = height*(1.0-ABS((ide-ids)/2.0+ids-i)/width)*(1.0-ABS(jsta+width/2.0-j)/(width/2.0))
+!              ENDIF
+!              ibm_ht_c(i,j) = height*(1.0-ABS((ide-ids)/2.0+ids-(i-0.5))/width)*(1.0-ABS(jsta+width/2.0-(j-0.5))/(width/2.0))
+!           ENDDO
+!        ENDIF
+!     ENDDO
+!     DO i=its,ite
+!        DO j=jts,jte
+!           IF ((i .LT. ids+config_flags%spec_bdy_width) .OR. &
+!               (i .GE. ide-config_flags%spec_bdy_width) .OR. &
+!               (j .LT. jds+config_flags%spec_bdy_width) .OR. &
+!               (j .GE. jde-config_flags%spec_bdy_width)) THEN
+!              IF (i .NE. ide) ibm_ht_u(i,j) = 0.0
+!              IF (j .NE. jde) ibm_ht_v(i,j) = 0.0
+!              IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 0.0
+!              ibm_ht_c(i,j) = 0.0
+!           ENDIF
+!        ENDDO
+!     ENDDO
+
+  ELSEIF (config_flags%ideal_terrain .EQ. 112) THEN    
+    DO j=jts,jte
+    DO i=its,ite
+       IF (j .NE. jde) ibm_ht_u(i,j) = 0.0
+       IF (i .NE. ide) ibm_ht_v(i,j) = 0.0
+       IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 0.0
+       ibm_ht_c(i,j) = 0.0
+    ENDDO
+    ENDDO
+
+    DO j=jts,jte
+    DO i=its,ite
+       IF ( (MOD(i/10, 2) .EQ. 1) .AND. (MOD(j/10, 2) .EQ. 1) ) THEN
+          IF (j .NE. jde) ibm_ht_u(i,j) = 25.0
+          IF (i .NE. ide) ibm_ht_v(i,j) = 25.0
+          IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 25.0
+          ibm_ht_c(i,j) = 25.0
+       ENDIF
+    ENDDO
+    ENDDO
+
+    DO j=jts,jte
+    DO i=its,ite
+!       IF ( ((i .GE. 10*(30/10)) .AND. (i .LE. ide-10*(30/10))) .AND. &
+!            ((j .GE. 10*(34/10)) .AND. (j .LE. jde-10*(34/10))) ) THEN
+!          IF (j .NE. jde) ibm_ht_u(i,j) = 0.0
+!          IF (i .NE. ide) ibm_ht_v(i,j) = 0.0
+!          IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 0.0
+!          ibm_ht_c(i,j) = 0.0
+!       ENDIF
+       IF ( (i .LE. 5) .OR. (i .GE. 10*ide/10-6 ) .OR. &
+            (j .LE. 5) .OR. (j .GE. 10*jde/10-6 ) ) THEN
+          IF (j .NE. jde) ibm_ht_u(i,j) = 0.0
+          IF (i .NE. ide) ibm_ht_v(i,j) = 0.0
+          IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 0.0
+          ibm_ht_c(i,j) = 0.0
+       ENDIF
+    ENDDO
+    ENDDO    
+
+  ELSEIF (config_flags%ideal_terrain .EQ. 113) THEN    
+    DO j=jts,jte
+    DO i=its,ite
+       IF (j .NE. jde) ibm_ht_u(i,j) = 0.0
+       IF (i .NE. ide) ibm_ht_v(i,j) = 0.0
+       IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 0.0
+       ibm_ht_c(i,j) = 0.0
+    ENDDO
+    ENDDO
+
+    DO j=jts,jte
+    DO i=its,ite
+       IF ( (MOD(i/10, 2) .EQ. 1) .AND. (MOD(j/10, 2) .EQ. 1) ) THEN
+          IF (j .NE. jde) ibm_ht_u(i,j) = 25.0
+          IF (i .NE. ide) ibm_ht_v(i,j) = 25.0
+          IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 25.0
+          ibm_ht_c(i,j) = 25.0
+       ENDIF
+    ENDDO
+    ENDDO
+
+   
+
+    DO j=jts,jte
+    DO i=its,ite
+!       IF ( ((i .GE. 10*(30/10)) .AND. (i .LE. ide-10*(30/10))) .AND. &
+!            ((j .GE. 10*(34/10)) .AND. (j .LE. jde-10*(34/10))) ) THEN
+!          IF (j .NE. jde) ibm_ht_u(i,j) = 0.0
+!          IF (i .NE. ide) ibm_ht_v(i,j) = 0.0
+!          IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 0.0
+!          ibm_ht_c(i,j) = 0.0
+!       ENDIF
+       IF ( (i .LE. 5) .OR. (i .GE. 10*ide/10-6 ) .OR. &
+            (j .LE. 5) .OR. (j .GE. 10*jde/10-6 ) ) THEN
+          IF (j .NE. jde) ibm_ht_u(i,j) = 0.0
+          IF (i .NE. ide) ibm_ht_v(i,j) = 0.0
+          IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 0.0
+          ibm_ht_c(i,j) = 0.0
+       ENDIF
+    ENDDO
+    ENDDO    
+
+  ELSEIF ((config_flags%ideal_terrain .EQ. 2) .OR. &
+          (config_flags%ideal_terrain .EQ. 3) .OR. &
+          (config_flags%ideal_terrain .EQ. 33) .OR. &
+          (config_flags%ideal_terrain .EQ. 11)) THEN
+     !set the dimensions for the gaussian shaped hill 
+
+     ! xa = 3000.0 
+     ! 10 degree slope
+     ! hm = 830.0   
+     ! offset = -32.0
+     ! 30 degree slope
+     ! hm = 2720.0
+     ! offset = -108.0
+     ! 50 degree slope
+     ! hm = 5615.0
+     ! offset = -223.0
+
+     !xa = 200.0
+     !hm = 100.0 ! was 75. for 3d hill cases
+     !offset = 0.0
+
+     ! 10 degree slope
+     ! hm = 218.0
+     ! offset = -14.0
+     ! 20 degree slope
+     ! hm = 451.0
+     ! offset = -30.0
+     ! 30 degree slope
+     !    hm = 716.0
+     !   offset = -25.0
+     ! 40 degree slope
+     ! hm = 1041.0
+     ! offset = -71.0
+     !xa = 1900.0
+     !hm = 2300.0
+     !offset = 0.0
+
+     ! for Zangl 2003/2004 case
+!     hm = 1500.0
+!     xa = 5000.0
+     ! for more severe Zangl type atmosphere at rest case
+!     hm = 4554.0
+!     xa = 5000.0
+
+!     xa = 90.0
+!     hm = 180.0
+!     offset = 0.0
+
+!     xa = 60.0
+!     hm = 30.0
+!     offset = 0.0
+
+     !RSA for Lundquist et al. (2012) case
+!     hm = 350.0
+!     xa = 800.0
+!     offset = 0.0
+
+!     hm = 50.0
+!     xa = 25.0
+!     offset = 0.0
+
+     !DJW for grid resolution study 2019
+     hm = 250.0
+     xa = 800.0
+     offset = 0.0
+
+     icm = ide/2
+     jcm = jde/2
+     IF (config_flags%ideal_terrain .EQ. 2) THEN
+        DO j=jts,jte
+        DO i=its,ite
+
+           !! the height function at u and v levels could be specified by with an 
+           !! equation or by averaging.  These are the equations.
+           !if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+((float(i-icm)-0.5)/xa)**2)
+           !if (i /= ide) ibm_ht_v(i,j) = offset + hm/(1.+(float(i-icm)/xa)**2)   
+           !if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm/(1.+(float(i-icm)/xa)**2)
+           !ibm_ht_c(i,j) = offset + hm/(1.+((float(i-icm)-0.5)/xa)**2)
+
+           ! hill in the y direction
+           ! if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+(float(j-jcm)/xa)**2)
+           ! if (i /= ide) ibm_ht_v(i,j) = offset + hm/(1.+((float(j-jcm)-0.5)/xa)**2)
+           ! ibm_ht_w(i,j) = offset + hm/(1.+(float(j-jcm)/xa)**2)
+           ! ibm_ht_c(i,j) = offset + hm/(1.+((float(j-jcm)-0.5)/xa)**2)
+
+           ! hill in the x direction
+           x_dist = (-ide/2.)*config_flags%dx + i*config_flags%dx
+           if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm/(1.+(x_dist/xa)**2)
+           if (i /= ide) ibm_ht_v(i,j) = offset + hm/(1.+(x_dist/xa)**2)
+           x_dist = (-ide/2.)*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+           if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+(x_dist/xa)**2)
+           ibm_ht_c(i,j) = offset + hm/(1.+(x_dist/xa)**2)
+           ! hill in the y direction
+           ! y_dist = (-jde/2.)*config_flags%dy + j*config_flags%dy
+           ! if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm/(1.+(y_dist/xa)**2)
+           ! if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+(y_dist/xa)**2)
+           ! y_dist = (-jde/2.)*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+           ! if (i /= ide) ibm_ht_v(i,j) = offset + hm/(1.+(y_dist/xa)**2)
+           ! ibm_ht_c(i,j) = offset + hm/(1.+(y_dist/xa)**2)
+
+        ENDDO
+        ENDDO
+     ELSEIF (config_flags%ideal_terrain .EQ. 11) THEN
+        DO j=jts,jte
+        DO i=its,ite
+
+           !! the height function at u and v levels could be specified by with an 
+           !! equation or by averaging.  These are the equations.
+           !if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+((float(i-icm)-0.5)/xa)**2)
+           !if (i /= ide) ibm_ht_v(i,j) = offset + hm/(1.+(float(i-icm)/xa)**2)   
+           !if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm/(1.+(float(i-icm)/xa)**2)
+           !ibm_ht_c(i,j) = offset + hm/(1.+((float(i-icm)-0.5)/xa)**2)
+
+           ! hill in the y direction
+           ! if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+(float(j-jcm)/xa)**2)
+           ! if (i /= ide) ibm_ht_v(i,j) = offset + hm/(1.+((float(j-jcm)-0.5)/xa)**2)
+           ! ibm_ht_w(i,j) = offset + hm/(1.+(float(j-jcm)/xa)**2)
+           ! ibm_ht_c(i,j) = offset + hm/(1.+((float(j-jcm)-0.5)/xa)**2)
+
+           x_dist = (-jde/2.)*config_flags%dy + j*config_flags%dy
+           if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm/(1.+(x_dist/xa)**2)
+           if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+(x_dist/xa)**2)
+           x_dist = (-jde/2.)*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+           if (i /= ide) ibm_ht_v(i,j) = offset + hm/(1.+(x_dist/xa)**2)
+           ibm_ht_c(i,j) = offset + hm/(1.+(x_dist/xa)**2)
+
+        ENDDO
+        ENDDO
+     ELSEIF ((config_flags%ideal_terrain .EQ. 3) .OR. (config_flags%ideal_terrain .EQ. 33)) THEN
+        DO j=jts,jte
+        DO i=its,ite
+           ! use this for gaussian bump
+           !if (j /= jde) ibm_ht_u(i,j) = hm/(1.+((float(i-icm)-0.5)/xa)**2+(float(j-jcm)/xa)**2)
+           !if (i /= ide) ibm_ht_v(i,j) = hm/(1.+(float(i-icm)/xa)**2+((float(j-jcm)-0.5)/xa)**2) 
+           !if ((i /= ide) .AND. (j /= jde)) then
+           !    ibm_ht_w(i,j) = hm/(1.+(float(i-icm)/xa)**2+(float(j-jcm)/xa)**2)
+           !endif 
+           !ibm_ht_c(i,j) = hm/(1.+((float(i-icm)-0.5)/xa)**2+((float(j-jcm)-0.5)/xa)**2)
+
+           x_dist = (-ide/2.0)*config_flags%dx + i*config_flags%dx
+           y_dist = (-jde/2.0)*config_flags%dy + j*config_flags%dy
+           IF ((i .NE. ide) .AND. (j .NE. jde)) THEN
+              ibm_ht_w(i,j) = offset + hm/(1.0+(x_dist/xa)**2+(y_dist/xa)**2)
+           ENDIF
+
+           x_dist = (-ide/2.0)*config_flags%dx + i*config_flags%dx
+           y_dist = (-jde/2.0)*config_flags%dy - config_flags%dy/2.0 + j*config_flags%dy
+           IF (i .NE. ide) THEN
+              ibm_ht_v(i,j) = offset + hm/(1.0+(x_dist/xa)**2+(y_dist/xa)**2)
+           ENDIF
+
+           x_dist = (-ide/2.0)*config_flags%dx - config_flags%dx/2.0 + i*config_flags%dx
+           y_dist = (-jde/2.0)*config_flags%dy + j*config_flags%dy
+           IF (j .NE. jde) THEN
+              ibm_ht_u(i,j) = offset + hm/(1.0+(x_dist/xa)**2+(y_dist/xa)**2)
+           ENDIF
+
+           x_dist = (-ide/2.0)*config_flags%dx - config_flags%dx/2.0 + i*config_flags%dx
+           y_dist = (-jde/2.0)*config_flags%dy - config_flags%dy/2.0 + j*config_flags%dy
+           ibm_ht_c(i,j) = offset + hm/(1.0+(x_dist/xa)**2+(y_dist/xa)**2)
+        ENDDO
+        ENDDO
+
+        IF (config_flags%ideal_terrain .EQ. 33) THEN
+            !DJW smooth the edges so that they linearly approach zero at the boundary-zone and
+            !    are zero within the boundary-zone.
+            dmid = MIN(config_flags%dx*ide, config_flags%dy*jde)/2.0 - config_flags%spec_bdy_width*MAX(config_flags%dx, config_flags%dy)
+            offset = (config_flags%spec_bdy_width * MAX(config_flags%dx, config_flags%dy))
+            DO j=jts,jte
+                DO i=its,ite
+                    dw = ( (config_flags%dy*(j-(jde-jds)/2))**2 + &
+                           (config_flags%dx*(i-(ide-ids)/2))**2 )**(1.0/2.0)
+                    du = ( (config_flags%dy*(j-(jde-jds)/2))**2 + &
+                           (config_flags%dx*(i-0.5-(ide-ids)/2))**2 )**(1.0/2.0)
+                    dv = ( (config_flags%dy*(j-0.5-(jde-jds)/2))**2 + &
+                           (config_flags%dx*(i-(ide-ids)/2))**2 )**(1.0/2.0)
+                    dc = ( (config_flags%dy*(j-0.5-(jde-jds)/2))**2 + &
+                           (config_flags%dx*(i-0.5-(ide-ids)/2))**2 )**(1.0/2.0)
+                    rc = MIN(1.0, MAX((dmid-dc)/offset, 0.0))
+                    rw = MIN(1.0, MAX((dmid-dw)/offset, 0.0))
+                    ru = MIN(1.0, MAX((dmid-du)/offset, 0.0))
+                    rv = MIN(1.0, MAX((dmid-dv)/offset, 0.0))
+                    ibm_ht_c(i,j) = ibm_ht_c(i,j)*rc
+                    IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = ibm_ht_w(i,j)*rw
+                    IF (i .NE. ide) ibm_ht_v(i,j) = ibm_ht_v(i,j)*rv
+                    IF (j .NE. jde) ibm_ht_u(i,j) = ibm_ht_u(i,j)*ru
+                ENDDO
+            ENDDO
+#if (IDEALIZED_TOPOG_VERBOSE) == 1
+            write(*,'(4(A,I3),A)') "DJW[module_ibm/ibm_terrain]: ibm_ht_w(",its,":",ite,", ",jts,":",jte,") is below,"
+            write(*,'(A)',ADVANCE='NO') "      "
+
+            DO i=its,ite-1
+
+               write(*,'(I5,A)',ADVANCE='NO') i," "
+            ENDDO
+            write(*,'(I5)') ite
+            DO j=jte,jts,-1
+               write(*,'(I3,A)',ADVANCE='NO') j,"   "
+               DO i=its,ite-1
+                  write(*,'(F5.1,A)',ADVANCE='NO') ibm_ht_w(i,j)," "
+               ENDDO
+               write(*,'(F5.1)') ibm_ht_w(ite,j)
+            ENDDO
+        ENDIF
+#endif 
+     ENDIF !end of ideal_terrain == 2 or 3
+  ELSEIF (config_flags%ideal_terrain .EQ. 21) THEN
+     !RSA 2d gaussian hill to roughly match Askervein transect A
+     xa = 150.0
+     hm = 100.0
+     offset = 0.0
+     DO j=jts,jte
+     DO i=its,ite
+        x_dist = (-ide/2.)*config_flags%dx + i*config_flags%dx
+        if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm*exp(-0.5*(x_dist/xa)**2)
+        if (i /= ide) ibm_ht_v(i,j) = offset + hm*exp(-0.5*(x_dist/xa)**2)
+        x_dist = (-ide/2.)*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+        if (j /= jde) ibm_ht_u(i,j) = offset + hm*exp(-0.5*(x_dist/xa)**2)
+        ibm_ht_c(i,j) = offset + hm*exp(-0.5*(x_dist/xa)**2)
+     ENDDO
+     ENDDO
+  ELSEIF (config_flags%ideal_terrain .EQ. 31) THEN
+     !RSA 3d gaussian hill roughly the scale of Askervein
+     xa = 150.0
+     hm = 100.0
+     offset = 0.0
+
+     DO j=jts,jte
+     DO i=its,ite
+        x_dist = (-ide/2.0)*config_flags%dx + i*config_flags%dx
+        y_dist = (-jde/2.0)*config_flags%dy + j*config_flags%dy
+        IF ((i .NE. ide) .AND. (j .NE. jde)) THEN
+           ibm_ht_w(i,j) = offset + hm*exp(-0.5*((x_dist/xa)**2+(y_dist/xa)**2))
+        ENDIF
+
+        x_dist = (-ide/2.0)*config_flags%dx + i*config_flags%dx
+        y_dist = (-jde/2.0)*config_flags%dy - config_flags%dy/2.0 + j*config_flags%dy
+        IF (i .NE. ide) THEN
+           ibm_ht_v(i,j) = offset + hm*exp(-0.5*((x_dist/xa)**2+(y_dist/xa)**2))
+        ENDIF
+
+        x_dist = (-ide/2.0)*config_flags%dx - config_flags%dx/2.0 + i*config_flags%dx
+        y_dist = (-jde/2.0)*config_flags%dy + j*config_flags%dy
+        IF (j .NE. jde) THEN
+           ibm_ht_u(i,j) = offset + hm*exp(-0.5*((x_dist/xa)**2+(y_dist/xa)**2))
+        ENDIF
+
+        x_dist = (-ide/2.0)*config_flags%dx - config_flags%dx/2.0 + i*config_flags%dx
+        y_dist = (-jde/2.0)*config_flags%dy - config_flags%dy/2.0 + j*config_flags%dy
+        ibm_ht_c(i,j) = offset + hm*exp(-0.5*((x_dist/xa)**2+(y_dist/xa)**2))
+     ENDDO
+     ENDDO
+  ELSEIF (config_flags%ideal_terrain .EQ. 4) THEN
+     ! This is for the 2d isolated cube (ridge) case
+
+     ! parameters used for the bolund case
+     !xa = 20.0
+     !hm = 10.0
+     !offset = 0.75
+
+     ! parameters used for the 3d hill case
+     xa = 150.0
+     hm = 50.0
+     offset = 0.0
+    
+     DO j=jts,jte
+     DO i=its,ite
+        if (j /= jde) ibm_ht_u(i,j)=offset
+        if (i /= ide) ibm_ht_v(i,j)=offset
+        if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j)=offset
+        ibm_ht_c(i,j)=offset
+        icm = jde/4
+        x_dist = -icm*config_flags%dy + j*config_flags%dy
+        if (ABS(x_dist)<=xa) then
+           if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+           if (i /= ide) ibm_ht_v(i,j) = offset + hm
+        endif  
+        x_dist = -icm*config_flags%dy - config_flags%dy/2.0 + j*config_flags%dy
+        if (ABS(x_dist)<=xa) then
+           if (j /= jde) ibm_ht_u(i,j) = offset + hm
+           ibm_ht_c(i,j) = offset + hm
+        endif  
+     ENDDO
+     ENDDO
+
+  ELSEIF (config_flags%ideal_terrain .EQ. 5) THEN   
+
+     ! This is for the 3d isolated cube case
+     xa = 48.0
+     hm = 60.0
+     !hm = 74.6385
+     offset = 50.0
+     icm = ide/2
+     jcm = jde/2
+     DO j=jts,jte
+     DO i=its,ite    
+        x_dist = -icm*config_flags%dx + i*config_flags%dx
+        y_dist = -jcm*config_flags%dy + j*config_flags%dy
+        IF ((ABS(x_dist) .LE. xa) .AND. (ABS(y_dist) .LE. xa)) THEN
+           IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = offset + hm
+        ELSE
+           IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = offset
+        ENDIF
+        y_dist = -jcm*config_flags%dy - config_flags%dy/2.0 + j*config_flags%dy
+        IF ((ABS(x_dist) .LE. xa) .AND. (ABS(y_dist) .LE. xa)) THEN
+           IF (i .NE. ide) ibm_ht_v(i,j) = offset + hm
+        ELSE
+           IF (i .NE. ide) ibm_ht_v(i,j) = offset
+        ENDIF     
+        x_dist = -icm*config_flags%dx - config_flags%dx/2.0 + i*config_flags%dx
+        y_dist = -jcm*config_flags%dy + j*config_flags%dy
+        IF ((ABS(x_dist) .LE. xa) .AND. (ABS(y_dist) .LE. xa)) THEN
+           IF (j .NE. jde) ibm_ht_u(i,j) = offset + hm
+        ELSE
+           IF (j .NE. jde) ibm_ht_u(i,j) = offset
+        ENDIF     
+        y_dist = -jcm*config_flags%dy - config_flags%dy/2.0 + j*config_flags%dy
+        IF ((ABS(x_dist) .LE. xa) .AND. (ABS(y_dist) .LE. xa)) THEN
+           ibm_ht_c(i,j) = offset + hm
+        ELSE
+           ibm_ht_c(i,j) = offset
+        ENDIF
+     ENDDO      
+     ENDDO 
+
+!  ! This is for the 3d array of cubes case
+!  xa = 30.
+!  hm = 150.
+!  offset = 25.
+!  DO j=jts,jte
+!  DO i=its,ite  
+!     ! set the base terrain
+!     if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset
+!     if (i /= ide) ibm_ht_v(i,j) = offset
+!     if (j /= jde) ibm_ht_u(i,j) = offset
+!     ibm_ht_c(i,j) = offset	 
 !
-!  * multiple mountains can be generated
-!  * the final mountains are the sum of all
+!     icm = ide/4.
+!     jcm = jde/4.  
+!     x_dist = -icm*config_flags%dx + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+!     endif
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+!     endif	 
+!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+!     endif	 
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  ibm_ht_c(i,j) = offset + hm
+!     endif
 !
-!       height = height in meters
-!       olon, olat = longitude,latitude origin              (degrees)
-!       rlon, rlat = longitude,latitude half-width of ridge (degrees)
-!       wlon, wlat = longitude,latitude half-width of tail  (degrees)
+!     icm = ide/4.
+!     jcm = jde/2.  
+!     x_dist = -icm*config_flags%dx + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+!     endif
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+!     endif	 
+!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+!     endif	 
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  ibm_ht_c(i,j) = offset + hm
+!     endif	 
 !
-!       Note: For the standard gaussian mountain
-!             set rlon = rlat = 0 .
+!     icm = ide/4.
+!     jcm = 3*jde/4.  
+!     x_dist = -icm*config_flags%dx + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+!     endif
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+!     endif	 
+!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+!     endif	 
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  ibm_ht_c(i,j) = offset + hm
+!     endif   
 !
-! <PRE>
+!     icm = ide/2.
+!     jcm = jde/4.  
+!     x_dist = -icm*config_flags%dx + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+!     endif
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+!     endif	 
+!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+!     endif	 
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  ibm_ht_c(i,j) = offset + hm
+!     endif
 !
-!       height -->   ___________________________
-!                   /                           \
-!                  /              |              \
-!    gaussian     /               |               \
-!      sides --> /                |                \
-!               /               olon                \
-!         _____/                olat                 \______
+!     icm = ide/2.
+!     jcm = jde/2.  
+!     x_dist = -icm*config_flags%dx + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+!     endif
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+!     endif	 
+!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+!     endif	 
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  ibm_ht_c(i,j) = offset + hm
+!     endif	 
 !
-!              |    |             |
-!              |<-->|<----------->|
-!              |wlon|    rlon     |
-!               wlat     rlat
+!     icm = ide/2.
+!     jcm = 3*jde/4.  
+!     x_dist = -icm*config_flags%dx + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+!     endif
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+!     endif	 
+!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+!     endif	 
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  ibm_ht_c(i,j) = offset + hm
+!     endif   
 !
-! </PRE>
+!     icm = 3*ide/4.
+!     jcm = jde/4.  
+!     x_dist = -icm*config_flags%dx + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+!     endif
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+!     endif	 
+!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+!     endif	 
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  ibm_ht_c(i,j) = offset + hm
+!     endif
 !
-!See the <LINK SRC="topography.html#TEST PROGRAM">topography </LINK>module documentation for a test program.
-!   </NOTE>
-! </INFO>
+!     icm = 3*ide/4.
+!     jcm = jde/2.  
+!     x_dist = -icm*config_flags%dx + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+!     endif
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+!     endif	 
+!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+!     endif	 
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  ibm_ht_c(i,j) = offset + hm
+!     endif	 
+!
+!     icm = 3*ide/4.
+!     jcm = 3*jde/4.  
+!     x_dist = -icm*config_flags%dx + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+!     endif
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+!     endif	 
+!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+!     endif	 
+!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+!	  ibm_ht_c(i,j) = offset + hm
+!     endif		   
+!
+!   ENDDO      
+!   ENDDO	  
+  ELSEIF (config_flags%ideal_terrain .EQ. 6) THEN
+     hm = 1500.0
+     DO j=jts,jte
+     DO i=its,ite 
+        !calculate x with x=0 as the middle of the domain
+        x_dist = (-ide/2.0)*config_flags%dx + i*config_flags%dx
+        IF (ABS(x_dist) .LE. 500.0) THEN
+           IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 0.0
+           IF (i .NE. ide) ibm_ht_v(i,j) = 0.0
+        ELSEIF ((ABS(x_dist) .GT. 500.0) .AND. (ABS(x_dist) .LT. 9500.0)) THEN
+           IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = hm*(0.5 - 0.5*COS((pi*(ABS(x_dist)-500.0))/9000.0))
+           IF (i .NE. ide) ibm_ht_v(i,j) = hm*(0.5 - 0.5*COS((pi*(ABS(x_dist)-500.0))/9000.0))
+        ELSEIF ((ABS(x_dist) .GE. 9500.0) .AND. (ABS(x_dist) .LE. 10500.0)) THEN
+           IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = hm
+           IF (i .NE. ide) ibm_ht_v(i,j) = hm
+        ELSEIF ((ABS(x_dist) .GT. 10500.0) .AND. (ABS(x_dist) .LT. 19500.0)) THEN
+           IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = hm*(0.5 + 0.5*COS((pi*(ABS(x_dist)-10500.0))/9000.0))
+           IF (i .NE. ide) ibm_ht_v(i,j) = hm*(0.5 + 0.5*COS((pi*(ABS(x_dist)-10500.0))/9000.0))
+        ELSEIF (ABS(x_dist).GE. 19500.0) then
+           IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 0.0
+           IF (i .NE. ide) ibm_ht_v(i,j) = 0.0
+        ENDIF
+     ENDDO
+     ENDDO
+     DO j=jts,jte
+     DO i=its,ite 
+        !calculate x with x=0 as the middle of the domain
+        x_dist = (-ide/2.0)*config_flags%dx - config_flags%dx/2.0 + i*config_flags%dx
+        IF (ABS(x_dist) .LE. 500.0) THEN
+           IF (j .NE. jde) ibm_ht_u(i,j) = 0.0
+           ibm_ht_c(i,j) = 0.0
+        ELSEIF ((ABS(x_dist) .GT. 500.0) .AND. (ABS(x_dist) .LT. 9500.0)) THEN
+           IF (j .NE. jde) ibm_ht_u(i,j) = hm*(0.5 - 0.5*COS((pi*(ABS(x_dist)-500.0))/9000.0))
+           ibm_ht_c(i,j) = hm*(0.5 - 0.5*COS((pi*(ABS(x_dist)-500.0))/9000.0))
+        ELSEIF ((ABS(x_dist) .GE. 9500.0) .AND. (ABS(x_dist) .LE. 10500.0)) THEN
+           IF (j .NE. jde) ibm_ht_u(i,j) = hm
+           ibm_ht_c(i,j) = hm
+        ELSEIF ((ABS(x_dist) .GT. 10500.0) .AND. (ABS(x_dist) .LT. 19500.0)) THEN
+           IF (j .NE. jde) ibm_ht_u(i,j) = hm*(0.5 + 0.5*COS((pi*(ABS(x_dist)-10500.0))/9000.0))
+           ibm_ht_c(i,j) = hm*(0.5 + 0.5*COS((pi*(ABS(x_dist)-10500.0))/9000.0))
+        ELSEIF (ABS(x_dist) .GE. 19500.0) THEN
+           IF (j .NE. jde) ibm_ht_u(i,j) = 0.0
+           ibm_ht_c(i,j) = 0.0
+        ENDIF
+     ENDDO
+     ENDDO
+  ELSEIF (config_flags%ideal_terrain .EQ. 7) THEN
+  ELSEIF (config_flags%ideal_terrain .EQ. 8) THEN
+     !RSA v-shaped valley case
+     offset = 0.0
+     slope = 0.2126 !RSA 12 degrees
+     xa = 1000.0 !side ridges
+#if (IDEALIZED_TOPOG_VERBOSE) == 1
+     write(*,*) "ide=",ide,"ide/2=",ide/2
+     write(*,*) "dx=",config_flags%dx
+#endif 
+     DO j=jts,jte
+     DO i=its,ite 
+        ! v and w points
+        ! calculate x with x=0 as the middle of the domain
+        x_dist = (-ide/2)*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+        IF (ABS(x_dist) .LT. (ide/2)*config_flags%dx - xa) THEN
+           if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + slope*ABS(x_dist)
+           if (i /= ide) ibm_ht_v(i,j) = offset + slope*ABS(x_dist)
+        ELSE
+           if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + slope*((ide/2)*config_flags%dx - xa)
+           if (i /= ide) ibm_ht_v(i,j) = offset + slope*((ide/2)*config_flags%dx - xa)
+        ENDIF
+        if (j .eq. jts) write(*,*) "i=",i,"xdist=",x_dist,"ht_w=",ibm_ht_w(i,j)
+        ! u and c points
+        ! calculate x with x=0 as the middle of the domain
+        x_dist = (-ide/2)*config_flags%dx + (i-1)*config_flags%dx
+        IF (ABS(x_dist) .LT. (ide/2)*config_flags%dx - xa) THEN
+           if (j /= jde) ibm_ht_u(i,j) = offset + slope*ABS(x_dist)
+           ibm_ht_c(i,j) = offset + slope*ABS(x_dist)
+        ELSE
+           if (j /= jde) ibm_ht_u(i,j) = offset + slope*((ide/2)*config_flags%dx - xa)
+           ibm_ht_c(i,j) = offset + slope*((ide/2)*config_flags%dx - xa)
+        ENDIF
+        if (j .eq. jts) write(*,*) "i=",i,"xdist=",x_dist,"ht_u=",ibm_ht_u(i,j)
+     ENDDO
+     ENDDO 
+     ! offset = 100.
+     ! DO j=jts,jte
+     ! DO i=its,ite 
+     !    ! 0.0875 for 5 degree slope comparing with WRF 0.5774 for a 30 degree slope
+     !    ! calculate x with x=0 as the middle of the domain
+     !    x_dist = (-ide/2.)*config_flags%dx + i*config_flags%dx
+     !    if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + 0.0875*ABS(x_dist)
+     !    if (i /= ide) ibm_ht_v(i,j) = offset + 0.0875*ABS(x_dist)
+     !    ! calculate x with x=0 as the middle of the domain
+     !    x_dist = (-ide/2.)*config_flags%dx - config_flags%dx/2 + i*config_flags%dx
+     !    if (j /= jde) ibm_ht_u(i,j) = offset + 0.0875*ABS(x_dist)
+     !    ibm_ht_c(i,j) = offset + 0.0875*ABS(x_dist)
+     ! ENDDO
+     ! ENDDO 
+     ! !KAL flatten the terrain at the east/west boundary- for using periodic boundary conditions and comparing to IBM
+     ! DO j=jts,jte 
+     !    if (j /= jde) ibm_ht_w(1,j) = ibm_ht_w(2,j)
+     !    if (j /= jde) ibm_ht_w(ite-1,j) = ibm_ht_w(ite-2,j) 
+     !    ibm_ht_v(1,j) = ibm_ht_v(2,j)
+     !    ibm_ht_v(ite-1,j) = ibm_ht_v(ite-2,j) 
+     !    if (j /= jde) ibm_ht_u(1,j) = ibm_ht_w(2,j)
+     !    if (j /= jde) ibm_ht_u(2,j) = ibm_ht_w(2,j)
+     !    if (j /= jde) ibm_ht_u(ite,j) = ibm_ht_w(ite-2,j) 
+     !    if (j /= jde) ibm_ht_u(ite-1,j) = ibm_ht_w(ite-2,j)      
+     !    ibm_ht_c(1,j) = ibm_ht_w(2,j)
+     !    ibm_ht_c(2,j) = ibm_ht_w(2,j)
+     !    ibm_ht_c(ite,j) = ibm_ht_w(ite-2,j) 
+     !    ibm_ht_c(ite-1,j) = ibm_ht_w(ite-2,j)     
+     ! ENDDO 
+  ELSEIF (config_flags%ideal_terrain .EQ. 81) THEN
+     !RSA sinusoidal valley case
+     offset = 550.0
+     xa = 1000.0 !side ridges
+#if (IDEALIZED_TOPOG_VERBOSE) == 1
+     write(*,*) "ide=",ide,"ide/2=",ide/2
+     write(*,*) "dx=",config_flags%dx
+#endif 
+     DO j=jts,jte
+     DO i=its,ite 
+        ! v and w points
+        ! calculate x with x=0 as the middle of the domain
+        x_dist = (-ide/2)*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+        IF (ABS(x_dist) .LT. (ide/2)*config_flags%dx - xa) THEN
+           if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset/2 - offset/2*COS(2*pi*ABS(x_dist)/((ide-1)*config_flags%dx-2*xa))
+           if (i /= ide) ibm_ht_v(i,j) = offset/2 - offset/2*COS(2*pi*ABS(x_dist)/((ide-1)*config_flags%dx-2*xa))
+        ELSE
+           if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset
+           if (i /= ide) ibm_ht_v(i,j) = offset
+        ENDIF
+        if (j .eq. jts) write(*,*) "i=",i,"xdist=",x_dist,"ht_w=",ibm_ht_w(i,j)
+        ! u and c points
+        ! calculate x with x=0 as the middle of the domain
+        x_dist = (-ide/2)*config_flags%dx + (i-1)*config_flags%dx
+        IF (ABS(x_dist) .LT. (ide/2)*config_flags%dx - xa) THEN
+           if (j /= jde) ibm_ht_u(i,j) = offset/2 - offset/2*COS(2*pi*ABS(x_dist)/((ide-1)*config_flags%dx-2*xa))
+           ibm_ht_c(i,j) = offset/2 - offset/2*COS(2*pi*ABS(x_dist)/((ide-1)*config_flags%dx-2*xa))
+        ELSE
+           if (j /= jde) ibm_ht_u(i,j) = offset
+           ibm_ht_c(i,j) = offset
+        ENDIF
+        if (j .eq. jts) write(*,*) "i=",i,"xdist=",x_dist,"ht_u=",ibm_ht_u(i,j)
+     ENDDO
+     ENDDO 
+  ELSEIF (config_flags%ideal_terrain .EQ. 9) THEN
+     hm = 3000.
+     xa = 25000.
+     xa1  = 8000.
+     DO j=jts,jte
+     DO i=its,ite
+        ! calculate x with x=0 as the middle of the domain
+        x_dist = (-ide/2.)*config_flags%dx + i*config_flags%dx
+        if (ABS(x_dist) <= xa) then
+           if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = hm*COS((pi*x_dist)/(2*xa))*COS((pi*x_dist)/(2*xa))*COS((pi*x_dist)/(xa1))*COS((pi*x_dist)/(xa1))
+           if (i /= ide) ibm_ht_v(i,j) = hm*COS((pi*x_dist)/(2*xa))*COS((pi*x_dist)/(2*xa))*COS((pi*x_dist)/(xa1))*COS((pi*x_dist)/(xa1))
+        elseif (ABS(x_dist) > xa) then
+           if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = 0.
+           if (i /= ide) ibm_ht_v(i,j) = 0.
+        endif        
+     ENDDO
+     ENDDO   
+     DO j=jts,jte
+     DO i=its,ite
+        ! calculate x with x=0 as the middle of the domain
+        x_dist = (-ide/2.)*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+        if (ABS(x_dist) <= xa) then
+           if (j /= jde) ibm_ht_u(i,j) = hm*COS((pi*x_dist)/(2*xa))*COS((pi*x_dist)/(2*xa))*COS((pi*x_dist)/(xa1))*COS((pi*x_dist)/(xa1))
+           ibm_ht_c(i,j) = hm*COS((pi*x_dist)/(2*xa))*COS((pi*x_dist)/(2*xa))*COS((pi*x_dist)/(xa1))*COS((pi*x_dist)/(xa1))
+        elseif (ABS(x_dist) > xa) then
+           if (j /= jde) ibm_ht_u(i,j) = 0.
+           ibm_ht_c(i,j) = 0.
+        endif        
+     ENDDO
+     ENDDO         
+  ELSEIF (config_flags%ideal_terrain .EQ. 10) then
+     !CALL read_terrain_data( ibm_ht_u, ibm_ht_v,           &
+     !                        ibm_ht_w, ibm_ht_c,           &
+     !                        ibm_z0,                       &
+     !                        ids, ide, jds, jde, kds, kde, &
+     !                        ims, ime, jms, jme, kms, kme, &
+     !                        its, ite, jts, jte, kts, kte )
+
+     offset = 0.0    
+     DO j=jts,jte
+     DO i=its,ite
+        if (j /= jde) ibm_ht_u(i,j)= offset + ibm_ht_u(i,j)
+        if (i /= ide) ibm_ht_v(i,j)= offset + ibm_ht_v(i,j)
+        if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j)=offset + ibm_ht_w(i,j)
+        ibm_ht_c(i,j) = offset + ibm_ht_c(i,j)
+     ENDDO
+     ENDDO     		   			   
+
+  ELSEIF (config_flags%ideal_terrain .EQ. 12) THEN
+     !This is for the 2d isolated ridge case
+!     xa = 48.0
+     xa = 51.0
+     hm = 60.0
+     !hm = 74.6385
+     offset = 50.0
+     icm = ide/2
+     DO j=jts,jte
+     DO i=its,ite    
+        x_dist = -icm*config_flags%dx + i*config_flags%dx
+        IF (ABS(x_dist) .LE. xa) THEN
+           IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = offset + hm
+           IF (i .NE. ide) ibm_ht_v(i,j) = offset + hm
+        ELSE
+           IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = offset
+           IF (i .NE. ide) ibm_ht_v(i,j) = offset
+        ENDIF
+        x_dist = -icm*config_flags%dx - config_flags%dx/2.0 + i*config_flags%dx
+        IF (ABS(x_dist) .LE. xa) THEN
+           IF (j .NE. jde) ibm_ht_u(i,j) = offset + hm
+           ibm_ht_c(i,j) = offset + hm
+        ELSE
+           IF (j .NE. jde) ibm_ht_u(i,j) = offset
+           ibm_ht_c(i,j) = offset
+        ENDIF
+     ENDDO      
+     ENDDO 
+
+  ELSEIF (config_flags%ideal_terrain .EQ. 13) THEN
+    
+     write(*,'(A,I1)') "REOS[compute_idealized_terrain]: ***Exit*** -- reached invalid parameter: grid%id=",config_flags%ideal_terrain
+     !CALL read_terrain_data_okc( ibm_ht_u, ibm_ht_v, &
+     !                            ibm_ht_w, ibm_ht_c, &
+     !                            ids, ide, jds, jde, kds, kde, &
+     !                            ims, ime, jms, jme, kms, kme, &
+     !                            its, ite, jts, jte, kts, kte )
+     return 
+
+  ELSEIF (config_flags%ideal_terrain .EQ. 14) THEN
+     
+     write(*,'(A,I1)') "REOS[compute_idealized_terrain]: ***Exit*** -- reached invalid parameter: grid%id=",config_flags%ideal_terrain
+     !CALL read_terrain_data_gm( ibm_ht_u, ibm_ht_v, &
+     !                            ibm_ht_w, ibm_ht_c, &
+     !                            ids, ide, jds, jde, kds, kde, &
+     !                            ims, ime, jms, jme, kms, kme, &
+     !                            its, ite, jts, jte, kts, kte )
+     return 
+
+  ELSEIF (config_flags%ideal_terrain .EQ. 15) THEN
+    
+      write(*,'(A,I1)') "REOS[compute_idealized_terrain]: ***Exit*** -- reached invalid parameter: grid%id=",config_flags%ideal_terrain
+     !CALL read_terrain_data_askervein( ibm_ht_u, ibm_ht_v, &
+     !                                  ibm_ht_w, ibm_ht_c, &
+     !                                  ids, ide, jds, jde, kds, kde, &
+     !                                  ims, ime, jms, jme, kms, kme, &
+     !                                  its, ite, jts, jte, kts, kte )
+     return 
+
+  ENDIF ! end of ideal_terrain option			   
+  
+
+   
+ END SUBROUTINE compute_idealized_terrain
+
+end module idealized_topog
+
