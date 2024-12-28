@@ -50,7 +50,7 @@ module idealized_topog
    private
 
    public :: gaussian_topog_init, get_gaussian_topog, sinusoidal_topog_init, get_sinusoidal_topog
-
+   public :: compute_idealized_terrain, modify_idealized_terrain
 !-----------------------------------------------------------------------
 ! <NAMELIST NAME="idealized_topog_nml"><USED FOR GAUSSIAN MOUNTAIN>
 !   <DATA NAME="height" UNITS="meter" TYPE="real(kind=sp)" DIM="(mxmtns)" DEFAULT="0.">
@@ -1590,32 +1590,17 @@ SUBROUTINE compute_idealized_terrain ( config_flags,                 &
   ELSEIF (config_flags%ideal_terrain .EQ. 13) THEN
     
      write(*,'(A,I1)') "REOS[compute_idealized_terrain]: ***Exit*** -- reached invalid parameter: grid%id=",config_flags%ideal_terrain
-     !CALL read_terrain_data_okc( ibm_ht_u, ibm_ht_v, &
-     !                            ibm_ht_w, ibm_ht_c, &
-     !                            ids, ide, jds, jde, kds, kde, &
-     !                            ims, ime, jms, jme, kms, kme, &
-     !                            its, ite, jts, jte, kts, kte )
-     return 
+         return 
 
   ELSEIF (config_flags%ideal_terrain .EQ. 14) THEN
      
      write(*,'(A,I1)') "REOS[compute_idealized_terrain]: ***Exit*** -- reached invalid parameter: grid%id=",config_flags%ideal_terrain
-     !CALL read_terrain_data_gm( ibm_ht_u, ibm_ht_v, &
-     !                            ibm_ht_w, ibm_ht_c, &
-     !                            ids, ide, jds, jde, kds, kde, &
-     !                            ims, ime, jms, jme, kms, kme, &
-     !                            its, ite, jts, jte, kts, kte )
-     return 
+         return 
 
   ELSEIF (config_flags%ideal_terrain .EQ. 15) THEN
     
       write(*,'(A,I1)') "REOS[compute_idealized_terrain]: ***Exit*** -- reached invalid parameter: grid%id=",config_flags%ideal_terrain
-     !CALL read_terrain_data_askervein( ibm_ht_u, ibm_ht_v, &
-     !                                  ibm_ht_w, ibm_ht_c, &
-     !                                  ids, ide, jds, jde, kds, kde, &
-     !                                  ims, ime, jms, jme, kms, kme, &
-     !                                  its, ite, jts, jte, kts, kte )
-     return 
+         return 
 
   ENDIF ! end of ideal_terrain option			   
   
@@ -1625,52 +1610,24 @@ SUBROUTINE compute_idealized_terrain ( config_flags,                 &
 
  ! Caller of compute_idealized_terrain 
 
- #if 0
-SUBROUTINE init_idealized_terrain ( config_flags,                           &
+
+SUBROUTINE modify_idealized_terrain ( config_flags,                           &
                              ibm_ht_u, ibm_ht_v,                     &
                              ibm_ht_w, ibm_ht_c,                     &
                              ibm_z0,                                 &
                              phb, ph,                                &
-                             ht_s, ht_u, ht_v, ht_w,                 &
-                             top_s, top_u, top_v, top_w,             &
-                             prox_s, prox_u, prox_v, prox_w,         &
-                             inside_s, inside_u, inside_v, inside_w, &
-                             inside_all_s,                           &
-                             inside_all_u,                           &
-                             inside_all_v,                           &
-                             inside_all_w,                           &
                              ids, ide, jds, jde, kds, kde,           &
                              ims, ime, jms, jme, kms, kme,           &
                              its, ite, jts, jte, kts, kte )
  IMPLICIT NONE
  !input data
- TYPE(grid_config_rec_type), INTENT(IN   )               :: config_flags
+ TYPE(terrain_config_t), INTENT(IN   )                   :: config_flags
  REAL, DIMENSION(ims:ime,jms:jme), INTENT(  OUT)         :: ibm_ht_u,       & !ibm terrain height at velocity points
                                                             ibm_ht_v,       & !terrain height has twice the resolution of
                                                             ibm_ht_w,       & !the computational grid							    
                                                             ibm_ht_c,       & !ibm terrain height at corners
                                                             ibm_z0            !ibm z0 at cell center
  REAL, DIMENSION(ims:ime,kms:kme,jms:jme), INTENT(IN   ) :: phb, ph
- REAL, DIMENSION(ims:ime,kms:kme,jms:jme), INTENT(  OUT) :: ht_s,           & !this is the total geopotential
-                                                            ht_u,           & !at center, u, v, and w points
-                                                            ht_v,           & 
-                                                            ht_w
- INTEGER, DIMENSION(ims:ime,jms:jme), INTENT(  OUT)      :: top_s,          & !'top boundary' ghost points
-                                                            top_u,          &  
-                                                            top_v,          & 
-                                                            top_w,          &
-                                                            prox_s,         & !one if the pt is outside of the terrain
-                                                            prox_u,         & !meaning that the location has been changed due to proximity
-                                                            prox_v,         &
-                                                            prox_w
- INTEGER, DIMENSION(ims:ime,kms:kme,jms:jme), INTENT(OUT):: inside_s,       & !one if the pt is inside boundary, zero if it is outside
-                                                            inside_u,       &
-                                                            inside_v,       &
-                                                            inside_w
- INTEGER, DIMENSION(ims:ime,kms:kme,jms:jme), INTENT(OUT):: inside_all_s,   & !RSA inside includes recon pts, inside_all does not
-                                                            inside_all_u,   &
-                                                            inside_all_v,   &
-                                                            inside_all_w
  INTEGER, INTENT(IN   )                                  :: ids, ide, jds, jde, kds, kde, & !d: domain 
                                                             ims, ime, jms, jme, kms, kme, & !m: memory
                                                             its, ite, jts, jte, kts, kte    !p: patch t: tile
@@ -1679,14 +1636,7 @@ SUBROUTINE init_idealized_terrain ( config_flags,                           &
  
  REAL :: bldx, bldy, bldz, gapx, gapy, theta, xoff, yoff, bx, by, xmid, ymid
  LOGICAL :: keepgoing
-
-!---------------------------------------------------------------------------------
-! this subroutine is called from start_em.F.  
-! the executable begins here
-! CALL wrf_debug(100,'dyn_em/module_ibm.F/subroutine start_ibm_init')
-!--------------------------------------------------------------------------------- 
-
- 
+ char(*), parameter :: sub_name = 'modify_idealized_terrain'
 
  CALL compute_idealized_terrain ( config_flags,                 &
                     ibm_ht_u, ibm_ht_v,           &
@@ -1708,7 +1658,7 @@ SUBROUTINE init_idealized_terrain ( config_flags,                           &
                                   phb(i,   1, j-1) + phb(i,   1, j  )) / (4.0*9.81)
              ENDDO
          ENDDO
-        
+#if (IDEALIZED_TOPOG_VERBOSE) == 1        
          DO i=its,ite-1
              write(*,'(I5,A)',ADVANCE='NO') i," "
          ENDDO
@@ -1720,6 +1670,7 @@ SUBROUTINE init_idealized_terrain ( config_flags,                           &
              ENDDO
              write(*,'(F5.1)') ibm_ht_w(ite,j)
          ENDDO
+#endif 
      ELSEIF (config_flags%ideal_terrain .EQ. 114) THEN
          DO i=its,ite
              DO j=jts,jte
@@ -1833,9 +1784,8 @@ SUBROUTINE init_idealized_terrain ( config_flags,                           &
          ENDDO !y-loop
      ENDIF !ideal_terrain
  
-
- END SUBROUTINE 
- #endif 
+ END SUBROUTINE init_idealized_terrain
+ 
 
 end module idealized_topog
 
