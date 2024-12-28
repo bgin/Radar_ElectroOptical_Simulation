@@ -1623,5 +1623,219 @@ SUBROUTINE compute_idealized_terrain ( config_flags,                 &
    
  END SUBROUTINE compute_idealized_terrain
 
+ ! Caller of compute_idealized_terrain 
+
+ #if 0
+SUBROUTINE init_idealized_terrain ( config_flags,                           &
+                             ibm_ht_u, ibm_ht_v,                     &
+                             ibm_ht_w, ibm_ht_c,                     &
+                             ibm_z0,                                 &
+                             phb, ph,                                &
+                             ht_s, ht_u, ht_v, ht_w,                 &
+                             top_s, top_u, top_v, top_w,             &
+                             prox_s, prox_u, prox_v, prox_w,         &
+                             inside_s, inside_u, inside_v, inside_w, &
+                             inside_all_s,                           &
+                             inside_all_u,                           &
+                             inside_all_v,                           &
+                             inside_all_w,                           &
+                             ids, ide, jds, jde, kds, kde,           &
+                             ims, ime, jms, jme, kms, kme,           &
+                             its, ite, jts, jte, kts, kte )
+ IMPLICIT NONE
+ !input data
+ TYPE(grid_config_rec_type), INTENT(IN   )               :: config_flags
+ REAL, DIMENSION(ims:ime,jms:jme), INTENT(  OUT)         :: ibm_ht_u,       & !ibm terrain height at velocity points
+                                                            ibm_ht_v,       & !terrain height has twice the resolution of
+                                                            ibm_ht_w,       & !the computational grid							    
+                                                            ibm_ht_c,       & !ibm terrain height at corners
+                                                            ibm_z0            !ibm z0 at cell center
+ REAL, DIMENSION(ims:ime,kms:kme,jms:jme), INTENT(IN   ) :: phb, ph
+ REAL, DIMENSION(ims:ime,kms:kme,jms:jme), INTENT(  OUT) :: ht_s,           & !this is the total geopotential
+                                                            ht_u,           & !at center, u, v, and w points
+                                                            ht_v,           & 
+                                                            ht_w
+ INTEGER, DIMENSION(ims:ime,jms:jme), INTENT(  OUT)      :: top_s,          & !'top boundary' ghost points
+                                                            top_u,          &  
+                                                            top_v,          & 
+                                                            top_w,          &
+                                                            prox_s,         & !one if the pt is outside of the terrain
+                                                            prox_u,         & !meaning that the location has been changed due to proximity
+                                                            prox_v,         &
+                                                            prox_w
+ INTEGER, DIMENSION(ims:ime,kms:kme,jms:jme), INTENT(OUT):: inside_s,       & !one if the pt is inside boundary, zero if it is outside
+                                                            inside_u,       &
+                                                            inside_v,       &
+                                                            inside_w
+ INTEGER, DIMENSION(ims:ime,kms:kme,jms:jme), INTENT(OUT):: inside_all_s,   & !RSA inside includes recon pts, inside_all does not
+                                                            inside_all_u,   &
+                                                            inside_all_v,   &
+                                                            inside_all_w
+ INTEGER, INTENT(IN   )                                  :: ids, ide, jds, jde, kds, kde, & !d: domain 
+                                                            ims, ime, jms, jme, kms, kme, & !m: memory
+                                                            its, ite, jts, jte, kts, kte    !p: patch t: tile
+ !local data
+ INTEGER                                                 :: i, j, k
+ 
+ REAL :: bldx, bldy, bldz, gapx, gapy, theta, xoff, yoff, bx, by, xmid, ymid
+ LOGICAL :: keepgoing
+
+!---------------------------------------------------------------------------------
+! this subroutine is called from start_em.F.  
+! the executable begins here
+! CALL wrf_debug(100,'dyn_em/module_ibm.F/subroutine start_ibm_init')
+!--------------------------------------------------------------------------------- 
+
+ 
+
+ CALL compute_idealized_terrain ( config_flags,                 &
+                    ibm_ht_u, ibm_ht_v,           &
+                    ibm_ht_w, ibm_ht_c,           &
+                    ibm_z0,                       &
+                    ids, ide, jds, jde, kds, kde, &
+                    ims, ime, jms, jme, kms, kme, &
+                    its, ite, jts, jte, kts, kte ) 
+
+ 
+     IF (config_flags%ideal_terrain .EQ. 0) THEN
+        
+         DO i=its,ite
+             DO j=jts,jte
+                 ibm_ht_w(i,j) =  phb(i,   1, j  ) / 9.81
+                 ibm_ht_u(i,j) = (phb(i-1, 1, j  ) + phb(i,   1, j  )) / (2.0*9.81)
+                 ibm_ht_v(i,j) = (phb(i,   1, j-1) + phb(i,   1, j  )) / (2.0*9.81)
+                 ibm_ht_c(i,j) = (phb(i-1, 1, j-1) + phb(i-1, 1, j  ) + &
+                                  phb(i,   1, j-1) + phb(i,   1, j  )) / (4.0*9.81)
+             ENDDO
+         ENDDO
+        
+         DO i=its,ite-1
+             write(*,'(I5,A)',ADVANCE='NO') i," "
+         ENDDO
+         write(*,'(I5)') ite
+         DO j=jts,jte
+             write(*,'(I3,A)',ADVANCE='NO') j," "
+             DO i=its,ite-1
+                 write(*,'(F5.1,A)',ADVANCE='NO') ibm_ht_w(i,j)," "
+             ENDDO
+             write(*,'(F5.1)') ibm_ht_w(ite,j)
+         ENDDO
+     ELSEIF (config_flags%ideal_terrain .EQ. 114) THEN
+         DO i=its,ite
+             DO j=jts,jte
+                 ibm_ht_w(i,j) =  phb(i,   1, j  ) / 9.81
+                 ibm_ht_u(i,j) = (phb(i-1, 1, j  ) + phb(i,   1, j  )) / (2.0*9.81)
+                 ibm_ht_v(i,j) = (phb(i,   1, j-1) + phb(i,   1, j  )) / (2.0*9.81)
+                 ibm_ht_c(i,j) = (phb(i-1, 1, j-1) + phb(i-1, 1, j  ) + &
+                                  phb(i,   1, j-1) + phb(i,   1, j  )) / (4.0*9.81)
+             ENDDO
+         ENDDO
+         IF (((its .GE. (ide-ids)/2+ids-5) .OR. (ite .LE. (ide-ids)/2+ids+5)) .AND. &
+             ((jts .GE. (jde-jds)/2+jds-5) .OR. (jte .LE. (jde-jds)/2+jds+5))) THEN
+             DO i=MAX(its,(ide-ids)/2+ids-5),MIN(ite,(ide-ids)/2+ids+5)
+                 DO j=MAX(jts,(jde-jds)/2+jds-5),MIN(jte,(jde-jds)/2+jds+5)
+                     ibm_ht_w(i,j) = 400.0
+                     ibm_ht_u(i,j) = 400.0
+                     ibm_ht_v(i,j) = 400.0
+                     ibm_ht_c(i,j) = 400.0
+                 ENDDO
+             ENDDO
+         ENDIF
+     ELSEIF (config_flags%ideal_terrain .EQ. 115) THEN
+         !This will add an angled set of buildings to the existing IBM height
+         DO i=its,ite
+             DO j=jts,jte
+                 ibm_ht_w(i,j) =  phb(i,   1, j  ) / 9.81
+                 ibm_ht_u(i,j) = (phb(i-1, 1, j  ) + phb(i,   1, j  )) / (2.0*9.81)
+                 ibm_ht_v(i,j) = (phb(i,   1, j-1) + phb(i,   1, j  )) / (2.0*9.81)
+                 ibm_ht_c(i,j) = (phb(i-1, 1, j-1) + phb(i-1, 1, j  ) + &
+                                  phb(i,   1, j-1) + phb(i,   1, j  )) / (4.0*9.81)
+             ENDDO
+         ENDDO
+         bldx = 75.0 !east-west width of building
+         bldy = 75.0 !north-south width of building
+         bldz = 10.0 !height of building
+         gapx = 150.0 !east-west gap between buildings
+         gapy = 150.0 !north-south gap between buildings
+         theta = 10.0*2.0*4.0*ATAN(1.0_8)/360.0 !angle of buildings (deviation clockwise from north)
+         DO i=(its-1)*2,(ite-1)*2
+             DO j=(jts-1)*2,(jte-1)*2
+                 xoff = j*config_flags%dy/2.0*TAN(theta)
+                 bx = MOD(i*config_flags%dx/2.0+xoff, gapx+bldx)
+                 IF ((bx .GE. (gapx+bldx)/2.0-bldx/2.0) .AND. (bx .LE. (gapx+bldx)/2.0+bldx/2.0)) THEN
+                     yoff = i*config_flags%dx/2.0*TAN(-theta)
+                     by = MOD(j*config_flags%dy/2.0+yoff, gapy+bldy)
+                     IF ((by .GE. (gapy+bldy)/2.0-bldy/2.0) .AND. (by .LE. (gapy+bldy)/2.0+bldy/2.0)) THEN
+                         IF ((FLOOR(i/2.0) .EQ. i/2.0) .AND. (FLOOR(j/2.0) .EQ. j/2.0)) THEN
+                             ibm_ht_c(FLOOR(i/2.0)+1,FLOOR(j/2.0)+1) = ibm_ht_c(FLOOR(i/2.0)+1,FLOOR(j/2.0)+1)+bldz
+                         ELSEIF (FLOOR(i/2.0) .EQ. i/2.0) THEN
+                             ibm_ht_u(FLOOR(i/2.0)+1,FLOOR(j/2.0)+1) = ibm_ht_u(FLOOR(i/2.0)+1,FLOOR(j/2.0)+1)+bldz
+                         ELSEIF (FLOOR(j/2.0) .EQ. j/2.0) THEN
+                             ibm_ht_v(FLOOR(i/2.0)+1,FLOOR(j/2.0)+1) = ibm_ht_v(FLOOR(i/2.0)+1,FLOOR(j/2.0)+1)+bldz
+                         ELSE
+                             ibm_ht_w(FLOOR(i/2.0)+1,FLOOR(j/2.0)+1) = ibm_ht_w(FLOOR(i/2.0)+1,FLOOR(j/2.0)+1)+bldz
+                         ENDIF
+                     ENDIF
+                 ENDIF
+             ENDDO !j-loop
+         ENDDO !i-loop
+     ELSEIF (config_flags%ideal_terrain .EQ. 116) THEN
+         !This will add a set of buildings offset at an angle to the existing IBM height
+         !The result is different than 115 since the buildings in 116 are still
+         !oriented north-south instead of rotating to match the offset angle.
+         DO i=its,ite
+             DO j=jts,jte
+                 ibm_ht_w(i,j) =  phb(i,   1, j  ) / 9.81
+                 ibm_ht_u(i,j) = (phb(i-1, 1, j  ) + phb(i,   1, j  )) / (2.0*9.81)
+                 ibm_ht_v(i,j) = (phb(i,   1, j-1) + phb(i,   1, j  )) / (2.0*9.81)
+                 ibm_ht_c(i,j) = (phb(i-1, 1, j-1) + phb(i-1, 1, j  ) + &
+                                  phb(i,   1, j-1) + phb(i,   1, j  )) / (4.0*9.81)
+             ENDDO
+         ENDDO
+         bldx = 80.0 !east-west width of buildings
+         bldy = 80.0 !north-south width of buildings
+         bldz = 10.0 !height AGL of buildings
+         gapx = 240.0 !east-west gap between buildings
+         gapy = 240.0 !north-south gap between buildings
+         theta = 30.0 !angle (degrees) of buildings (clockwise from north)
+         DO j=(jts-1)*2,(jte-1)*2+1
+             by = j*config_flags%dy/2.0-(FLOOR(j*config_flags%dy/2.0/(gapy+bldy))+0.5)*(gapy+bldy)
+             keepgoing = .TRUE.
+             ymid = (FLOOR(j*config_flags%dy/2.0/(gapy+bldy))+0.5)*(gapy+bldy)
+             IF ((ymid-bldy/2.0 .LE. (config_flags%spec_bdy_width-0.5)*config_flags%dy) .OR. &
+                 (ymid+bldy/2.0 .GE. (jde-config_flags%spec_bdy_width-0.5)*config_flags%dy)) THEN
+                 keepgoing = .FALSE.
+             ENDIF
+             IF ((by .GE. -bldy/2.0) .AND. (by .LE. bldy/2.0) .AND. keepgoing) THEN
+                 yoff = FLOOR(j*config_flags%dy/2.0/(gapy+bldy))*(gapy+bldy)
+                 xoff = yoff*TAN(-theta*2.0*4.0*ATAN(1.0_8)/360.0)
+                 DO i=(its-1)*2,(ite-1)*2+1
+                     bx = (i*config_flags%dx/2.0+xoff)-(FLOOR((i*config_flags%dx/2.0+xoff)/(gapx+bldx))+0.5)*(gapx+bldx)
+                     keepgoing = .TRUE.
+                     xmid = i*config_flags%dx/2.0-bx
+                     IF ((xmid-bldx/2.0 .LE. (config_flags%spec_bdy_width-0.5)*config_flags%dx) .OR. &
+                         (xmid+bldx/2.0 .GE. (ide-config_flags%spec_bdy_width-0.5)*config_flags%dx)) THEN
+                         keepgoing = .FALSE.
+                     ENDIF
+                     IF ((bx .GE. -bldx/2.0) .AND. (bx .LE. bldx/2.0) .AND. keepgoing) THEN
+                         IF ((FLOOR(i/2.0) .EQ. i/2.0) .AND. (FLOOR(j/2.0) .EQ. j/2.0)) THEN
+                             ibm_ht_c(FLOOR(i/2.0)+1,FLOOR(j/2.0)+1) = ibm_ht_c(FLOOR(i/2.0)+1,FLOOR(j/2.0)+1)+bldz
+                         ELSEIF (FLOOR(i/2.0) .EQ. i/2.0) THEN
+                             ibm_ht_u(FLOOR(i/2.0)+1,FLOOR(j/2.0)+1) = ibm_ht_u(FLOOR(i/2.0)+1,FLOOR(j/2.0)+1)+bldz
+                         ELSEIF (FLOOR(j/2.0) .EQ. j/2.0) THEN
+                             ibm_ht_v(FLOOR(i/2.0)+1,FLOOR(j/2.0)+1) = ibm_ht_v(FLOOR(i/2.0)+1,FLOOR(j/2.0)+1)+bldz
+                         ELSE
+                             ibm_ht_w(FLOOR(i/2.0)+1,FLOOR(j/2.0)+1) = ibm_ht_w(FLOOR(i/2.0)+1,FLOOR(j/2.0)+1)+bldz
+                         ENDIF
+                     ENDIF !within x-extents of building
+                 ENDDO !x-loop
+             ENDIF !within y-extents of building
+         ENDDO !y-loop
+     ENDIF !ideal_terrain
+ 
+
+ END SUBROUTINE 
+ #endif 
+
 end module idealized_topog
 
