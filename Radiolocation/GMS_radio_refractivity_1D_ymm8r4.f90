@@ -89,7 +89,7 @@ module radio_refractivity_1D_ymm8r4
      ! Short description
      character(*),        parameter :: RADIO_REFRACTIVITY_1D_YMM8R4_SYNOPSIS  = "ITU-R P.453-11 - radio refractivity index calculation (vectorized version) 1D." 
      
-     integer(kind=i4), parameter, private :: YMM_LEN = 4
+     integer(kind=i4), parameter, private :: YMM_LEN = 8
 
      contains
 
