@@ -104,6 +104,11 @@ module emw_refraction
          module procedure  k_relative_f254_r8 
      end interface k_relative_f254
 
+     interface rho_to_a_f267
+         module procedure rho_to_a_f267_r4
+         module procedure rho_to_a_f267_r8
+     end interface rho_to_a_f267
+
      ! Constants:
 
      real(kind=sp), parameter, private :: L    = 6.02214076e+23_sp ! (mol-1), avogadro constant
