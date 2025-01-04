@@ -84,6 +84,21 @@ module emw_refraction
      ! Short description
      character(*),        parameter :: EMW_REFRACTION_SYNOPSIS    = "Calculation of EM Wave atmospheric refraction."
 
+     interface n_refract_tht_f243
+         module procedure n_refract_tht_f243_r4
+         module procedure n_refract_tht_f243_r8
+     end interface n_refract_tht_f243
+
+     interface n_refract_phi_f243
+         module procedure n_refract_phi_f243_r4
+         module procedure n_refract_phi_f243_r8
+     end interface n_refract_phi_f243
+
+     interface rad_ray_curvature_f251
+         module procedure rad_ray_curvature_f251_r4 
+         module procedure rad_ray_curvature_f251_r8 
+     end interface rad_ray_curvature_f251
+
      ! Constants:
 
      real(kind=sp), parameter, private :: L    = 6.02214076e+23_sp ! (mol-1), avogadro constant
@@ -273,6 +288,23 @@ module emw_refraction
             rho  = t0*dndr 
      end function rad_ray_curvature_f251_r4
 
+     pure function rad_ray_curvature_f251_r8(n,z,dndr) result(rho)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: rad_ray_curvature_f251_r8
+            !dir$ attributes forceinline :: rad_ray_curvature_f251_r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rad_ray_curvature_f251_r8
+#endif
+            real(kind=dp),  intent(in) :: n ! refractive index
+            real(kind=dp),  intent(in) :: z ! angle
+            real(kind=dp),  intent(in) :: dndr ! derivative of refractive index at r
+            real(kind=dp) :: rho 
+            ! Locals
+            real(kind=dp), automatic :: t0,sinz 
+            sinz = sin(z)
+            t0   = -n/sinz 
+            rho  = t0*dndr 
+     end function rad_ray_curvature_f251_r8
 
 
 
