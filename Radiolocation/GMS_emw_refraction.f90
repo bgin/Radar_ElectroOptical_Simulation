@@ -214,7 +214,64 @@ module emw_refraction
             n_over_phi = rat_d-rat_s 
      end function n_refract_phi_f243_r4
 
+     pure function n_refract_phi_f243_r8(n,n0,z,z0,r,R0,phi,phi0) result(n_over_phi)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: n_refract_phi_f243_r8
+            !dir$ attributes forceinline :: n_refract_phi_f243_r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: n_refract_phi_f243_r8
+#endif
+            real(kind=dp),     intent(in) :: n    ! refractive index at dest (observation point)
+            real(kind=dp),     intent(in) :: n0   ! refractive index at source
+            real(kind=dp),     intent(in) :: z    ! 'z' angle at dest
+            real(kind=dp),     intent(in) :: z0   ! 'z' angle at source
+            real(kind=dp),     intent(in) :: r    ! upper limit of integration (radius)
+            real(kind=dp),     intent(in) :: R0   ! lower limit of integration (radius)
+            real(kind=dp),     intent(in) :: phi  ! 'phi' angle at dest
+            real(kind=dp),     intent(in) :: phi0 
+            real(kind=dp) :: n_over_phi 
+            ! Locals
+            real(kind=dp), automatic :: tgz, tgz0, tgphi, tgphi0 
+            real(kind=dp), automatic :: num_d, num_s, den_d, den_s 
+            real(kind=dp), automatic :: rat_s, rat_d 
+            real(kind=dp), automatic :: stgz, stgphi, stgz0, stgphi0
+            tgz        = tan(z)
+            stgz       = tgz*tgz
+            tgz0       = tan(z0)
+            stgz0      = tgz0*tgz0
+            tgphi      = tan(phi)
+            stgphi     = tgphi*tgphi 
+            tgphi0     = tan(phi0)
+            stgphi0    = tgphi0*tgphi0
+            num_d      = n*r*tgphi 
+            num_s      = n0*R0*tgphi0 
+            den_d      = sqrt(1.0_dp+stgz+stgphi) 
+            den_s      = sqrt(1.0_dp+stgz0+stgphi0)
+            rat_s      = num_s/den_s 
+            rat_d      = num_d/den_d 
+            n_over_phi = rat_d-rat_s 
+     end function n_refract_phi_f243_r8
 
+
+     !Радиус кривизны траектории луча, formula 2.51, page: 47
+     
+     pure function rad_ray_curvature_f251_r4(n,z,dndr) result(rho)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: rad_ray_curvature_f251_r4
+            !dir$ attributes forceinline :: rad_ray_curvature_f251_r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rad_ray_curvature_f251_r4
+#endif
+            real(kind=sp),  intent(in) :: n ! refractive index
+            real(kind=sp),  intent(in) :: z ! angle
+            real(kind=sp),  intent(in) :: dndr ! derivative of refractive index at r
+            real(kind=sp) :: rho 
+            ! Locals
+            real(kind=sp), automatic :: t0,sinz 
+            sinz = sin(z)
+            t0   = -n/sinz 
+            rho  = t0*dndr 
+     end function rad_ray_curvature_f251_r4
 
 
 
