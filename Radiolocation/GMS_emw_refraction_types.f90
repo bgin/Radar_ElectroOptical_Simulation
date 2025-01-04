@@ -148,7 +148,23 @@ module emw_refraction_types
             !dir$ attributes align : 64 :: n_avg
      end type n_avg_f145_t
 
-     
+     ! среда неоднородна, то скорость 
+     !распространения электромагнитных волн, formula 2.33, page 43
+     type, public :: emw_prop_speed_1D_f233_t
+           
+           integer(kind=i4) :: n_r     ! number of functional values
+           integer(kind=i4) :: n_tht1  ! number of theta upper limits of integration
+           real(kind=sp)    :: ck      ! specific constant of integration related to the initial conditions.
+           real(kind=sp), dimension(:), allocatable :: T_r  ! Functional describing the em-wave time of flight (i.e. a propagation)
+           real(kind=sp), dimension(:), allocatable :: vr   ! a speed of em-wave at point 'r'
+           real(kind=sp), dimension(:), allocatable :: nref ! a refractive index at 'r'
+     end type emw_prop_speed_1D_f233_t
+
+     !уравнения 
+     !траектории волны в трехмерно-неоднородной среде
+     type, public :: emw_prop_speed_3D_f238_t 
+
+     end type
 
     
 
