@@ -364,6 +364,20 @@ module emw_refraction
             real(kind=sp), parameter :: inv_erad = -0.00015678896205707118218877391_sp 
             R = inv_erad*dndh 
      end function rho_to_a_f267_r4
+
+       pure function rho_to_a_f267_r8(dndh) result(R)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: rho_to_a_f267_r8
+            !dir$ attributes forceinline :: rho_to_a_f267_r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rho_to_a_f267_r8
+#endif  
+            real(kind=dp),   intent(in) :: dndh ! derivative of refractive index
+            real(kind=dp) :: R 
+            real(kind=dp), parameter :: inv_erad = -0.00015678896205707118218877391_dp 
+            R = inv_erad*dndh 
+     end function rho_to_a_f267_r8 
+
  
 
 
