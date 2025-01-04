@@ -99,6 +99,11 @@ module emw_refraction
          module procedure rad_ray_curvature_f251_r8 
      end interface rad_ray_curvature_f251
 
+     interface k_relative_f254
+         module procedure  k_relative_f254_r4
+         module procedure  k_relative_f254_r8 
+     end interface k_relative_f254
+
      ! Constants:
 
      real(kind=sp), parameter, private :: L    = 6.02214076e+23_sp ! (mol-1), avogadro constant
@@ -307,7 +312,7 @@ module emw_refraction
      end function rad_ray_curvature_f251_r8
 
      !относителыную кривизну по-1
-     !верхности Земли и траектории волны
+     !верхности Земли и траектории волны, formula: 2.54, page: 48
      
      pure function k_relative_f254_r4(n,z,dndr) result(k_rel)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
@@ -327,7 +332,39 @@ module emw_refraction
             k_rel   = inv_erad*inv_rho
      end function k_relative_f254_r4
  
+     pure function k_relative_f254_r8(n,z,dndr) result(k_rel)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: k_relative_f254_r8
+            !dir$ attributes forceinline :: k_relative_f254_r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: k_relative_f254_r8
+#endif   
+            real(kind=dp),  intent(in) :: n ! refractive index
+            real(kind=dp),  intent(in) :: z ! angle
+            real(kind=dp),  intent(in) :: dndr ! derivative of refractive index at r
+            real(kind=dp) :: k_rel 
+            real(kind=dp), parameter :: inv_erad = 0.00015678896205707118218877391_dp
+            ! Locals
+            real(kind=dp), automatic :: inv_rho
+            inv_rho = 1.0_dp/rad_ray_curvature_f251_r8(n,z,dndr)
+            k_rel   = inv_erad*inv_rho
+     end function k_relative_f254_r8
 
+     ! отношения радиуса кривизны траекторий
+     ! луча к радиусу Земли:, formula 2.67, page: 52 
+     pure function rho_to_a_f267_r4(dndh) result(R)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: rho_to_a_f267_r4
+            !dir$ attributes forceinline :: rho_to_a_f267_r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rho_to_a_f267_r4
+#endif  
+            real(kind=sp),   intent(in) :: dndh ! derivative of refractive index
+            real(kind=sp) :: R 
+            real(kind=sp), parameter :: inv_erad = -0.00015678896205707118218877391_sp 
+            R = inv_erad*dndh 
+     end function rho_to_a_f267_r4
+ 
 
 
 
