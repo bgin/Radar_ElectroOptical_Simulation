@@ -306,9 +306,27 @@ module emw_refraction
             rho  = t0*dndr 
      end function rad_ray_curvature_f251_r8
 
-
-
-
+     !относителыную кривизну по-1
+     !верхности Земли и траектории волны
+     
+     pure function k_relative_f254_r4(n,z,dndr) result(k_rel)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: k_relative_f254_r4
+            !dir$ attributes forceinline :: k_relative_f254_r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: k_relative_f254_r4
+#endif   
+            real(kind=sp),  intent(in) :: n ! refractive index
+            real(kind=sp),  intent(in) :: z ! angle
+            real(kind=sp),  intent(in) :: dndr ! derivative of refractive index at r
+            real(kind=sp) :: k_rel 
+            real(kind=sp), parameter :: inv_erad = 0.00015678896205707118218877391_sp
+            ! Locals
+            real(kind=sp), automatic :: inv_rho
+            inv_rho = 1.0_sp/rad_ray_curvature_f251_r4(n,z,dndr)
+            k_rel   = inv_erad*inv_rho
+     end function k_relative_f254_r4
+ 
 
 
 
