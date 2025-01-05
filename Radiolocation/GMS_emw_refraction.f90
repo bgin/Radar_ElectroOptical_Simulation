@@ -84,31 +84,7 @@ module emw_refraction
      ! Short description
      character(*),        parameter :: EMW_REFRACTION_SYNOPSIS    = "Calculation of EM Wave atmospheric refraction."
 
-     interface n_refract_tht_f243
-         module procedure n_refract_tht_f243_r4
-         module procedure n_refract_tht_f243_r8
-     end interface n_refract_tht_f243
-
-     interface n_refract_phi_f243
-         module procedure n_refract_phi_f243_r4
-         module procedure n_refract_phi_f243_r8
-     end interface n_refract_phi_f243
-
-     interface rad_ray_curvature_f251
-         module procedure rad_ray_curvature_f251_r4 
-         module procedure rad_ray_curvature_f251_r8 
-     end interface rad_ray_curvature_f251
-
-     interface k_relative_f254
-         module procedure  k_relative_f254_r4
-         module procedure  k_relative_f254_r8 
-     end interface k_relative_f254
-
-     interface rho_to_a_f267
-         module procedure rho_to_a_f267_r4
-         module procedure rho_to_a_f267_r8
-     end interface rho_to_a_f267
-
+   
      ! Constants:
 
      real(kind=sp), parameter, private :: L    = 6.02214076e+23_sp ! (mol-1), avogadro constant
@@ -435,6 +411,8 @@ module emw_refraction
             earg = 5577.0_sp*dn0 
             beta = t0*exp(earg)  
        end function approx_beta_coeff_f146_r4
+
+
 
 
 
