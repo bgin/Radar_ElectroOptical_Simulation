@@ -441,6 +441,19 @@ module emw_refraction
              res = 0.5_sp*(1.0_sp+erf(x*C0707106781186547524400844362105))
        end function prob_integral_r4
 
+       pure function prob_integral_r8(x) result(res)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: prob_integral_r8
+            !dir$ attributes forceinline :: prob_integral_r8
+#endif
+             real(kind=dp), intent(in) :: x 
+             real(kind=dp) :: res 
+             real(kind=dp), parameter :: C0707106781186547524400844362105 = 0.707106781186547524400844362105_dp
+             res = 0.0_dp 
+             res = 0.5_dp*(1.0_dp+erf(x*C0707106781186547524400844362105))
+       end function prob_integral_r8
+
        !формулу (3.35) для расчета регулярной
        !рефракции оптических волн в земной атмосфере.
        pure function component_L1_f337_r4(beta,dn0,z0,H) result(L1)
