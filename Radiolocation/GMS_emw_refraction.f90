@@ -400,11 +400,11 @@ module emw_refraction
        pure function approx_beta_coeff_f146_r4(dn0) result(beta)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: n_avg_h_f145_r8
-            !dir$ attributes forceinline :: n_avg_h_f145_r8
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: n_avg_h_f145_r8
+            !dir$ attributes code_align : 32 :: approx_beta_coeff_f146_r4
+            !dir$ attributes forceinline :: approx_beta_coeff_f146_r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: approx_beta_coeff_f146_r4
 #endif  
-            real(kind=dp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
+            real(kind=sp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
             real(kind=sp) :: beta 
             real(kind=sp), automatic :: t0, earg 
             t0   = 0.00000732_sp/dn0 
@@ -412,6 +412,58 @@ module emw_refraction
             beta = t0*exp(earg)  
        end function approx_beta_coeff_f146_r4
 
+    !связь между величинами dn0 , beta, formula 1.46, page: 29
+       pure function approx_beta_coeff_f146_r8(dn0) result(beta)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: approx_beta_coeff_f146_r8
+            !dir$ attributes forceinline :: approx_beta_coeff_f146_r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: approx_beta_coeff_f146_r8
+#endif  
+            real(kind=dp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
+            real(kind=dp) :: beta 
+            real(kind=dp), automatic :: t0, earg 
+            t0   = 0.00000732_dp/dn0 
+            earg = 5577.0_dp*dn0 
+            beta = t0*exp(earg)  
+       end function approx_beta_coeff_f146_r8
+
+       !формулу (3.35) для расчета регулярной
+       !рефракции оптических волн в земной атмосфере.
+       pure function component_L1_f337_r4(beta,dn0,z0,H) result(L1)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: component_L1_f337_r4
+            !dir$ attributes forceinline :: component_L1_f337_r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: component_L1_f337_r4
+#endif  
+            real(kind=sp),  intent(in) :: beta 
+            real(kind=sp),  intent(in) :: dn0 
+            real(kind=sp),  intent(in) :: z0 
+            real(kind=sp),  intent(in) :: H 
+            real(kind=sp) :: L1 
+            real(kind=sp), parameter :: a = 6378.0_sp
+            real(kind=sp), automatic :: cosz0,tgz0,ctgz0,ea1
+            real(kind=sp), automatic :: ea2,exp1,exp2,num2
+            real(kind=sp), automatic :: den2,num1,den1,sdn0
+            real(kind=sp), automatic :: stgz0,rat1,rat2 
+            ea1  = -2.0_sp*beta*H 
+            ea2  = -beta*H 
+            tgz0 = tan(z0)
+            ctgz0= 1.0_sp/tgz0 
+            sdn0 = dn0*dn0 
+            exp1 = exp(ea1)
+            num1 = beta*a*sdn0*ctgz0
+            cosz0= cos(z0)
+            den1 = cosz0*cosz0 
+            exp2 = exp(ea2)
+            rat1 = num1/den1 
+            stgz0= 2.0_sp*(tgz0*tgz0) 
+            den2 = sqrt(1.0_sp+stgz0*(H/a))
+            num2 = exp1-exp2 
+            rat2 = num2/den2 
+            L1   = rat1*rat2 
+       end function component_L1_f337_r4
 
 
 
