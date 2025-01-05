@@ -382,9 +382,26 @@ module emw_refraction
             real(kind=dp), parameter :: inv_erad = -0.00015678896205707118218877391_dp 
             R = inv_erad*dndh 
      end function rho_to_a_f267_r8 
+   
+!Усредненная зависимость показателя преломления от 
+!высоты, formula: 1.45, page 29
 
- 
-
+       pure function n_avg_h_f145_r4(dn0,beta,h) result(nah)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: n_avg_h_f145_r4
+            !dir$ attributes forceinline :: n_avg_h_f145_r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: n_avg_h_f145_r4
+#endif  
+            real(kind=sp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface
+            real(kind=sp),  intent(in) :: beta ! coefficient describing the diminishing of 'n' as function of height
+            real(kind=sp),  intent(in) :: h    
+            real(kind=sp) :: nah 
+            real(kind=sp), automatic :: earg,t0 
+            t0   = 1.0_sp+dn0 
+            earg = -beta*h 
+            nah  = t0*exp(earg) 
+       end function n_avg_h_f145_r4
 
 
 
