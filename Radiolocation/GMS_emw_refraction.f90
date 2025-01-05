@@ -456,12 +456,12 @@ module emw_refraction
 
        !формулу (3.35) для расчета регулярной
        !рефракции оптических волн в земной атмосфере.
+       ! formula 3.37, page: 68
        pure function component_L1_f337_r4(beta,dn0,z0,H) result(L1)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: component_L1_f337_r4
             !dir$ attributes forceinline :: component_L1_f337_r4
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: component_L1_f337_r4
 #endif  
             real(kind=sp),  intent(in) :: beta 
             real(kind=sp),  intent(in) :: dn0 
@@ -469,26 +469,25 @@ module emw_refraction
             real(kind=sp),  intent(in) :: H 
             real(kind=sp) :: L1 
             real(kind=sp), parameter :: a = 6378.0_sp
-            real(kind=sp), automatic :: cosz0,tgz0,ctgz0,ea1
+            real(kind=sp), automatic :: cosz0,ctgz0,ea1
             real(kind=sp), automatic :: ea2,exp1,exp2,num2
             real(kind=sp), automatic :: den2,num1,den1,sdn0
             real(kind=sp), automatic :: stgz0,rat1,rat2 
-            ea1  = -2.0_sp*beta*H 
-            ea2  = -beta*H 
-            tgz0 = tan(z0)
-            ctgz0= 1.0_sp/tgz0 
-            sdn0 = dn0*dn0 
-            exp1 = exp(ea1)
-            num1 = beta*a*sdn0*ctgz0
-            cosz0= cos(z0)
-            den1 = cosz0*cosz0 
-            exp2 = exp(ea2)
-            rat1 = num1/den1 
-            stgz0= 2.0_sp*(tgz0*tgz0) 
-            den2 = sqrt(1.0_sp+stgz0*(H/a))
-            num2 = exp1-exp2 
-            rat2 = num2/den2 
-            L1   = rat1*rat2 
+            ea1   = -2.0_sp*beta*H 
+            ea2   = -beta*H 
+            ctgz0 = 1.0_sp/tan(z0)
+            sdn0  = dn0*dn0 
+            exp1  = exp(ea1)
+            num1  = beta*a*sdn0*ctgz0
+            cosz0 = cos(z0)
+            den1  = cosz0*cosz0 
+            exp2  = exp(ea2)
+            rat1  = num1/den1 
+            stgz0 = 2.0_sp*(tgz0*tgz0) 
+            den2  = sqrt(1.0_sp+stgz0*(H/a))
+            num2  = exp1-exp2 
+            rat2  = num2/den2 
+            L1    = rat1*rat2 
        end function component_L1_f337_r4
 
        pure function component_L1_f337_r8(beta,dn0,z0,H) result(L1)
@@ -496,7 +495,6 @@ module emw_refraction
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: component_L1_f337_r8
             !dir$ attributes forceinline :: component_L1_f337_r8
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: component_L1_f337_r8
 #endif  
             real(kind=dp),  intent(in) :: beta 
             real(kind=dp),  intent(in) :: dn0 
@@ -504,14 +502,13 @@ module emw_refraction
             real(kind=dp),  intent(in) :: H 
             real(kind=dp) :: L1 
             real(kind=dp), parameter :: a = 6378.0_dp
-            real(kind=dp), automatic :: cosz0,tgz0,ctgz0,ea1
+            real(kind=dp), automatic :: cosz0,ctgz0,ea1
             real(kind=dp), automatic :: ea2,exp1,exp2,num2
             real(kind=dp), automatic :: den2,num1,den1,sdn0
             real(kind=dp), automatic :: stgz0,rat1,rat2 
-            ea1  = -2.0_dp*beta*H 
-            ea2  = -beta*H 
-            tgz0 = tan(z0)
-            ctgz0= 1.0_dp/tgz0 
+            ea1   = -2.0_dp*beta*H 
+            ea2   = -beta*H 
+            ctgz0 = 1.0_dp/tan(z0)
             sdn0 = dn0*dn0 
             exp1 = exp(ea1)
             num1 = beta*a*sdn0*ctgz0
@@ -526,8 +523,37 @@ module emw_refraction
             L1   = rat1*rat2 
        end function component_L1_f337_r8
 
-      
-
-
+       !формулa (3.35) для расчета регулярной
+       !рефракции оптических волн в земной атмосфере.
+       ! formula 3.41, page: 68
+       pure function component_L2_f341_r4(dn0,beta,z0,H) result(L2)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: component_L2_f341_r4
+            !dir$ attributes forceinline :: component_L2_f341_r4
+#endif  
+            real(kind=sp),  intent(in) :: dn0 
+            real(kind=sp),  intent(in) :: beta 
+            real(kind=sp),  intent(in) :: z0 
+            real(kind=sp),  intent(in) :: H 
+            real(kind=sp) :: L2 
+            real(kind=sp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_sp
+            real(kind=dp), parameter :: a = 6378.0_sp
+            real(kind=sp), automatic :: sba, ctgz0, ba 
+            real(kind=sp), automatic :: sctgz0, tbh, phi1, phi2 
+            real(kind=sp), automatic :: exp1, bactgz0, t0, t1  
+            sba    = sqrt(beta*a)
+            ctgz0  = 1.0_sp/tan(z0)
+            sctgz0 = ctgz0*ctgz0 
+            bactgz0= beta*a*sctgz0 
+            tbH    = 2.0_sp*beta*H 
+            t0     = dn0*sqrt(beta*a*ctgz0)
+            exp1   = exp(sctgz0*0.5_sp)* &
+                     C1253314137315500251207882642406
+            phi1   = prob_integral_r4(sqrt(bactgz0*tbH))
+            phi2   = prob_integral_r4(sqrt(bactgz0))
+            t1     = phi1-phi2 
+            L2     = t0*exp1*t1 
+       end function component_L2_f341_r4
 
 end module emw_refraction
