@@ -465,7 +465,40 @@ module emw_refraction
             L1   = rat1*rat2 
        end function component_L1_f337_r4
 
-
+       pure function component_L1_f337_r8(beta,dn0,z0,H) result(L1)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: component_L1_f337_r8
+            !dir$ attributes forceinline :: component_L1_f337_r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: component_L1_f337_r8
+#endif  
+            real(kind=dp),  intent(in) :: beta 
+            real(kind=dp),  intent(in) :: dn0 
+            real(kind=dp),  intent(in) :: z0 
+            real(kind=dp),  intent(in) :: H 
+            real(kind=dp) :: L1 
+            real(kind=dp), parameter :: a = 6378.0_dp
+            real(kind=dp), automatic :: cosz0,tgz0,ctgz0,ea1
+            real(kind=dp), automatic :: ea2,exp1,exp2,num2
+            real(kind=dp), automatic :: den2,num1,den1,sdn0
+            real(kind=dp), automatic :: stgz0,rat1,rat2 
+            ea1  = -2.0_dp*beta*H 
+            ea2  = -beta*H 
+            tgz0 = tan(z0)
+            ctgz0= 1.0_dp/tgz0 
+            sdn0 = dn0*dn0 
+            exp1 = exp(ea1)
+            num1 = beta*a*sdn0*ctgz0
+            cosz0= cos(z0)
+            den1 = cosz0*cosz0 
+            exp2 = exp(ea2)
+            rat1 = num1/den1 
+            stgz0= 2.0_dp*(tgz0*tgz0) 
+            den2 = sqrt(1.0_dp+stgz0*(H/a))
+            num2 = exp1-exp2 
+            rat2 = num2/den2 
+            L1   = rat1*rat2 
+       end function component_L1_f337_r8
 
 
 
