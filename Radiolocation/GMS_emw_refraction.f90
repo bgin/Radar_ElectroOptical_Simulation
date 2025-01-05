@@ -393,8 +393,8 @@ module emw_refraction
             !dir$ attributes forceinline :: n_avg_h_f145_r4
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: n_avg_h_f145_r4
 #endif  
-            real(kind=sp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface
-            real(kind=sp),  intent(in) :: beta ! coefficient describing the diminishing of 'n' as function of height
+            real(kind=sp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
+            real(kind=sp),  intent(in) :: beta ! coefficient describing the diminishing of 'n' as function of height, i.e. 0.10->0.14 1/km
             real(kind=sp),  intent(in) :: h    
             real(kind=sp) :: nah 
             real(kind=sp), automatic :: earg,t0 
@@ -402,6 +402,40 @@ module emw_refraction
             earg = -beta*h 
             nah  = t0*exp(earg) 
        end function n_avg_h_f145_r4
+
+       pure function n_avg_h_f145_r8(dn0,beta,h) result(nah)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: n_avg_h_f145_r8
+            !dir$ attributes forceinline :: n_avg_h_f145_r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: n_avg_h_f145_r8
+#endif  
+            real(kind=dp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
+            real(kind=dp),  intent(in) :: beta ! coefficient describing the diminishing of 'n' as function of height, i.e. 0.10->0.14 1/km
+            real(kind=dp),  intent(in) :: h    
+            real(kind=dp) :: nah 
+            real(kind=dp), automatic :: earg,t0 
+            t0   = 1.0_dp+dn0 
+            earg = -beta*h 
+            nah  = t0*exp(earg) 
+       end function n_avg_h_f145_r8
+
+       !связь между величинами dn0 , beta, formula 1.46, page: 29
+       pure function approx_beta_coeff_f146_r4(dn0) result(beta)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: n_avg_h_f145_r8
+            !dir$ attributes forceinline :: n_avg_h_f145_r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: n_avg_h_f145_r8
+#endif  
+            real(kind=dp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
+            real(kind=sp) :: beta 
+            real(kind=sp), automatic :: t0, earg 
+            t0   = 0.00000732_sp/dn0 
+            earg = 5577.0_sp*dn0 
+            beta = t0*exp(earg)  
+       end function approx_beta_coeff_f146_r4
+
 
 
 
