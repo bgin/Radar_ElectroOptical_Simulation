@@ -85,17 +85,7 @@ module emw_refraction
      character(*),        parameter :: EMW_REFRACTION_SYNOPSIS    = "Calculation of EM Wave atmospheric refraction."
 
    
-     ! Constants:
-
-     real(kind=sp), parameter, private :: L    = 6.02214076e+23_sp ! (mol-1), avogadro constant
-     real(kind=sp), parameter, private :: K1h  = 0.77607_sp+0.0013_sp ! K/Pa
-     real(kind=sp), parameter, private :: K1l  = 0.77607_sp-0.0013_sp ! K/Pa
-     real(kind=sp), parameter, private :: K2h  = 0.716_sp+0.085_sp    ! K/Pa
-     real(kind=sp), parameter, private :: K2l  = 0.716_sp-0.085_sp    ! K/Pa
-     real(kind=sp), parameter, private :: K3h  = 3747.0_sp+31.0_sp    ! K^2/Pa
-     real(kind=sp), parameter, private :: K3l  = 3747.0_sp-31.0_sp    ! K^2/Pa
-     real(kind=sp), parameter, private :: K4h  = 1.2934_sp+0.0002_sp  ! K/Pa
-     real(kind=sp), parameter, private :: K4l  = 1.2934_sp-0.0002_sp  ! K/Pa
+    
      
      contains
 
@@ -105,7 +95,7 @@ module emw_refraction
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_refract_tht_f243_r4
             !dir$ attributes forceinline :: n_refract_tht_f243_r4
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: n_refract_tht_f243_r4
+           
 #endif
             real(kind=sp),     intent(in) :: n    ! refractive index at dest (observation point)
             real(kind=sp),     intent(in) :: n0   ! refractive index at source
@@ -144,7 +134,7 @@ module emw_refraction
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_refract_tht_f243_r8
             !dir$ attributes forceinline :: n_refract_tht_f243_r8
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: n_refract_tht_f243_r8
+            
 #endif
             real(kind=dp),     intent(in) :: n    ! refractive index at dest (observation point)
             real(kind=dp),     intent(in) :: n0   ! refractive index at source
@@ -182,7 +172,7 @@ module emw_refraction
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_refract_phi_f243_r4
             !dir$ attributes forceinline :: n_refract_phi_f243_r4
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: n_refract_phi_f243_r4
+          
 #endif
             real(kind=sp),     intent(in) :: n    ! refractive index at dest (observation point)
             real(kind=sp),     intent(in) :: n0   ! refractive index at source
@@ -220,7 +210,7 @@ module emw_refraction
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_refract_phi_f243_r8
             !dir$ attributes forceinline :: n_refract_phi_f243_r8
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: n_refract_phi_f243_r8
+           
 #endif
             real(kind=dp),     intent(in) :: n    ! refractive index at dest (observation point)
             real(kind=dp),     intent(in) :: n0   ! refractive index at source
@@ -261,7 +251,7 @@ module emw_refraction
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: rad_ray_curvature_f251_r4
             !dir$ attributes forceinline :: rad_ray_curvature_f251_r4
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rad_ray_curvature_f251_r4
+            
 #endif
             real(kind=sp),  intent(in) :: n ! refractive index
             real(kind=sp),  intent(in) :: z ! angle
@@ -279,7 +269,7 @@ module emw_refraction
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: rad_ray_curvature_f251_r8
             !dir$ attributes forceinline :: rad_ray_curvature_f251_r8
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rad_ray_curvature_f251_r8
+           
 #endif
             real(kind=dp),  intent(in) :: n ! refractive index
             real(kind=dp),  intent(in) :: z ! angle
@@ -300,7 +290,7 @@ module emw_refraction
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: k_relative_f254_r4
             !dir$ attributes forceinline :: k_relative_f254_r4
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: k_relative_f254_r4
+          
 #endif   
             real(kind=sp),  intent(in) :: n ! refractive index
             real(kind=sp),  intent(in) :: z ! angle
@@ -318,7 +308,7 @@ module emw_refraction
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: k_relative_f254_r8
             !dir$ attributes forceinline :: k_relative_f254_r8
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: k_relative_f254_r8
+            
 #endif   
             real(kind=dp),  intent(in) :: n ! refractive index
             real(kind=dp),  intent(in) :: z ! angle
@@ -338,7 +328,7 @@ module emw_refraction
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: rho_to_a_f267_r4
             !dir$ attributes forceinline :: rho_to_a_f267_r4
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rho_to_a_f267_r4
+           
 #endif  
             real(kind=sp),   intent(in) :: dndh ! derivative of refractive index
             real(kind=sp) :: R 
@@ -351,7 +341,7 @@ module emw_refraction
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: rho_to_a_f267_r8
             !dir$ attributes forceinline :: rho_to_a_f267_r8
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rho_to_a_f267_r8
+          
 #endif  
             real(kind=dp),   intent(in) :: dndh ! derivative of refractive index
             real(kind=dp) :: R 
@@ -367,7 +357,7 @@ module emw_refraction
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_avg_h_f145_r4
             !dir$ attributes forceinline :: n_avg_h_f145_r4
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: n_avg_h_f145_r4
+           
 #endif  
             real(kind=sp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
             real(kind=sp),  intent(in) :: beta ! coefficient describing the diminishing of 'n' as function of height, i.e. 0.10->0.14 1/km
@@ -384,7 +374,7 @@ module emw_refraction
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_avg_h_f145_r8
             !dir$ attributes forceinline :: n_avg_h_f145_r8
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: n_avg_h_f145_r8
+            
 #endif  
             real(kind=dp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
             real(kind=dp),  intent(in) :: beta ! coefficient describing the diminishing of 'n' as function of height, i.e. 0.10->0.14 1/km
@@ -402,7 +392,7 @@ module emw_refraction
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: approx_beta_coeff_f146_r4
             !dir$ attributes forceinline :: approx_beta_coeff_f146_r4
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: approx_beta_coeff_f146_r4
+            
 #endif  
             real(kind=sp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
             real(kind=sp) :: beta 
@@ -418,7 +408,7 @@ module emw_refraction
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: approx_beta_coeff_f146_r8
             !dir$ attributes forceinline :: approx_beta_coeff_f146_r8
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: approx_beta_coeff_f146_r8
+           
 #endif  
             real(kind=dp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
             real(kind=dp) :: beta 
@@ -538,7 +528,7 @@ module emw_refraction
             real(kind=sp),  intent(in) :: H 
             real(kind=sp) :: L2 
             real(kind=sp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_sp
-            real(kind=dp), parameter :: a = 6378.0_sp
+            real(kind=sp), parameter :: a = 6378.0_sp
             real(kind=sp), automatic :: sba, ctgz0, ba 
             real(kind=sp), automatic :: sctgz0, tbh, phi1, phi2 
             real(kind=sp), automatic :: exp1, bactgz0, t0, t1  
@@ -555,5 +545,35 @@ module emw_refraction
             t1     = phi1-phi2 
             L2     = t0*exp1*t1 
        end function component_L2_f341_r4
+
+       pure function component_L2_f341_r8(dn0,beta,z0,H) result(L2)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: component_L2_f341_r8
+            !dir$ attributes forceinline :: component_L2_f341_r8
+#endif  
+            real(kind=dp),  intent(in) :: dn0 
+            real(kind=dp),  intent(in) :: beta 
+            real(kind=dp),  intent(in) :: z0 
+            real(kind=dp),  intent(in) :: H 
+            real(kind=dp) :: L2 
+            real(kind=dp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_dp
+            real(kind=dp), parameter :: a = 6378.0_dp
+            real(kind=dp), automatic :: sba, ctgz0, ba 
+            real(kind=dp), automatic :: sctgz0, tbh, phi1, phi2 
+            real(kind=dp), automatic :: exp1, bactgz0, t0, t1  
+            sba    = sqrt(beta*a)
+            ctgz0  = 1.0_dp/tan(z0)
+            sctgz0 = ctgz0*ctgz0 
+            bactgz0= beta*a*sctgz0 
+            tbH    = 2.0_dp*beta*H 
+            t0     = dn0*sqrt(beta*a*ctgz0)
+            exp1   = exp(sctgz0*0.5_dp)* &
+                     C1253314137315500251207882642406
+            phi1   = prob_integral_r8(sqrt(bactgz0*tbH))
+            phi2   = prob_integral_r8(sqrt(bactgz0))
+            t1     = phi1-phi2 
+            L2     = t0*exp1*t1 
+       end function component_L2_f341_r8
 
 end module emw_refraction
