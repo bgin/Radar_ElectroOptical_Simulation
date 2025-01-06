@@ -576,4 +576,39 @@ module emw_refraction
             L2     = t0*exp1*t1 
        end function component_L2_f341_r8
 
+        !формулa (3.35) для расчета регулярной
+       !рефракции оптических волн в земной атмосфере.
+       ! formula 3.42, page: 68
+       pure function component_L2_f342_r4(dn0,beta,z0,H) result(L2)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: component_L2_f342_r4
+            !dir$ attributes forceinline :: component_L2_f342_r4
+#endif  
+            real(kind=sp),  intent(in) :: dn0   ! refractive index near to earth surface
+            real(kind=sp),  intent(in) :: beta  ! beta coefficient
+            real(kind=sp),  intent(in) :: z0    ! angle of ray incoming to receiver
+            real(kind=sp),  intent(in) :: H     ! height of raditaing source over the earth surface
+            real(kind=sp) :: L2 
+            real(kind=sp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_sp
+            real(kind=sp), parameter :: a = 6378.0_sp
+            real(kind=sp), automatic :: sba, ctgz0, ba 
+            real(kind=sp), automatic :: sctgz0, tbh, phi1, phi2 
+            real(kind=sp), automatic :: exp1, bactgz0, t0, t1  
+            sba    = sqrt(2.0_sp*beta*a)
+            ctgz0  = 1.0_sp/tan(z0)
+            sctgz0 = ctgz0*ctgz0 
+            bactgz0= 2.0_sp*beta*a*sctgz0 
+            tbH    = 4.0_sp*beta*H 
+            t0     = dn0*sqrt(beta*a*ctgz0)
+            exp1   = exp(sctgz0)* &
+                     C1253314137315500251207882642406
+            phi1   = prob_integral_r4(sqrt(bactgz0+tbH))
+            phi2   = prob_integral_r4(sqrt(bactgz0))
+            t1     = phi1-phi2 
+            L2     = t0*exp1*t1 
+       end function component_L2_f342_r4
+
+     
+
 end module emw_refraction
