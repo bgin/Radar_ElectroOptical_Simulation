@@ -447,11 +447,11 @@ module emw_refraction
        !формулу (3.35) для расчета регулярной
        !рефракции оптических волн в земной атмосфере.
        ! formula 3.37, page: 68
-       pure function component_L1_f337_r4(beta,dn0,z0,H) result(L1)
+       pure function analytic_sol_L1_f337_r4(beta,dn0,z0,H) result(L1)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: component_L1_f337_r4
-            !dir$ attributes forceinline :: component_L1_f337_r4
+            !dir$ attributes code_align : 32 :: analytic_sol_L1_f337_r4
+            !dir$ attributes forceinline :: analytic_sol_L1_f337_r4
 #endif  
             real(kind=sp),  intent(in) :: beta 
             real(kind=sp),  intent(in) :: dn0 
@@ -478,13 +478,13 @@ module emw_refraction
             num2  = exp1-exp2 
             rat2  = num2/den2 
             L1    = rat1*rat2 
-       end function component_L1_f337_r4
+       end function analytic_sol_L1_f337_r4
 
-       pure function component_L1_f337_r8(beta,dn0,z0,H) result(L1)
+       pure function analytic_sol_L1_f337_r8(beta,dn0,z0,H) result(L1)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: component_L1_f337_r8
-            !dir$ attributes forceinline :: component_L1_f337_r8
+            !dir$ attributes code_align : 32 :: analytic_sol_L1_f337_r8
+            !dir$ attributes forceinline :: analytic_sol_L1_f337_r8
 #endif  
             real(kind=dp),  intent(in) :: beta 
             real(kind=dp),  intent(in) :: dn0 
@@ -511,16 +511,16 @@ module emw_refraction
             num2 = exp1-exp2 
             rat2 = num2/den2 
             L1   = rat1*rat2 
-       end function component_L1_f337_r8
+       end function analytic_sol_L1_f337_r8
 
        !формулa (3.35) для расчета регулярной
        !рефракции оптических волн в земной атмосфере.
        ! formula 3.41, page: 68
-       pure function component_L2_f341_r4(dn0,beta,z0,H) result(L2)
+       pure function analytic_sol_L2_f341_r4(dn0,beta,z0,H) result(L2)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: component_L2_f341_r4
-            !dir$ attributes forceinline :: component_L2_f341_r4
+            !dir$ attributes code_align : 32 :: analytic_sol_L2_f341_r4
+            !dir$ attributes forceinline :: analytic_sol_L2_f341_r4
 #endif  
             real(kind=sp),  intent(in) :: dn0 
             real(kind=sp),  intent(in) :: beta 
@@ -544,13 +544,13 @@ module emw_refraction
             phi2   = prob_integral_r4(sqrt(bactgz0))
             t1     = phi1-phi2 
             L2     = t0*exp1*t1 
-       end function component_L2_f341_r4
+       end function analytic_sol_L2_f341_r4
 
-       pure function component_L2_f341_r8(dn0,beta,z0,H) result(L2)
+       pure function analytic_sol_L2_f341_r8(dn0,beta,z0,H) result(L2)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: component_L2_f341_r8
-            !dir$ attributes forceinline :: component_L2_f341_r8
+            !dir$ attributes code_align : 32 :: analytic_sol_L2_f341_r8
+            !dir$ attributes forceinline :: analytic_sol_L2_f341_r8
 #endif  
             real(kind=dp),  intent(in) :: dn0 
             real(kind=dp),  intent(in) :: beta 
@@ -574,16 +574,16 @@ module emw_refraction
             phi2   = prob_integral_r8(sqrt(bactgz0))
             t1     = phi1-phi2 
             L2     = t0*exp1*t1 
-       end function component_L2_f341_r8
+       end function analytic_sol_L2_f341_r8
 
         !формулa (3.35) для расчета регулярной
        !рефракции оптических волн в земной атмосфере.
        ! formula 3.42, page: 68
-       pure function component_L2_f342_r4(dn0,beta,z0,H) result(L2)
+       pure function analytic_sol_L3_f342_r4(dn0,beta,z0,H) result(L2)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: component_L2_f342_r4
-            !dir$ attributes forceinline :: component_L2_f342_r4
+            !dir$ attributes code_align : 32 :: analytic_sol_L3_f342_r4
+            !dir$ attributes forceinline :: analytic_sol_L3_f342_r4
 #endif  
             real(kind=sp),  intent(in) :: dn0   ! refractive index near to earth surface
             real(kind=sp),  intent(in) :: beta  ! beta coefficient
@@ -607,7 +607,79 @@ module emw_refraction
             phi2   = prob_integral_r4(sqrt(bactgz0))
             t1     = phi1-phi2 
             L2     = t0*exp1*t1 
-       end function component_L2_f342_r4
+       end function analytic_sol_L3_f342_r4
+
+         !формулa (3.35) для расчета регулярной
+       !рефракции оптических волн в земной атмосфере.
+       ! formula 3.42, page: 68
+       pure function analytic_sol_L3_f342_r8(dn0,beta,z0,H) result(L2)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L3_f342_r8
+            !dir$ attributes forceinline :: analytic_sol_L3_f342_r8
+#endif  
+            real(kind=dp),  intent(in) :: dn0   ! refractive index near to earth surface
+            real(kind=dp),  intent(in) :: beta  ! beta coefficient
+            real(kind=dp),  intent(in) :: z0    ! angle of ray incoming to receiver
+            real(kind=dp),  intent(in) :: H     ! height of raditaing source over the earth surface
+            real(kind=dp) :: L2 
+            real(kind=dp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_dp
+            real(kind=dp), parameter :: a = 6378.0_dp
+            real(kind=dp), automatic :: sba, ctgz0, ba 
+            real(kind=dp), automatic :: sctgz0, tbh, phi1, phi2 
+            real(kind=dp), automatic :: exp1, bactgz0, t0, t1  
+            sba    = sqrt(2.0_dp*beta*a)
+            ctgz0  = 1.0_dp/tan(z0)
+            sctgz0 = ctgz0*ctgz0 
+            bactgz0= 2.0_dp*beta*a*sctgz0 
+            tbH    = 4.0_dp*beta*H 
+            t0     = dn0*sqrt(beta*a*ctgz0)
+            exp1   = exp(sctgz0)* &
+                     C1253314137315500251207882642406
+            phi1   = prob_integral_r8(sqrt(bactgz0+tbH))
+            phi2   = prob_integral_r8(sqrt(bactgz0))
+            t1     = phi1-phi2 
+            L2     = t0*exp1*t1 
+       end function analytic_sol_L3_f342_r8
+
+       !Формула' (3.35) справедлива во всем диапазоне 
+       !изменения зенитных углов (0 < z0 <90°) при любых 
+       !зависимостях n(h).
+       ! The angle of refraction.
+       pure function refraction_angle_f345_r4(n0,nh,z0,dn0,beta,H) result(alpha)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_f345_r4
+            !dir$ attributes forceinline :: refraction_angle_f345_r4
+#endif  
+            real(kind=sp),  intent(in) :: n0 
+            real(kind=sp),  intent(in) :: nh 
+            real(kind=sp),  intent(in) :: z0 
+            real(kind=sp),  intent(in) :: dn0 
+            real(kind=sp),  intent(in) :: beta 
+            real(kind=sp),  intent(in) :: H 
+            real(kind=sp) :: alpha 
+            real(kind=sp), parameter :: a = 6378.0_dp
+            real(kind=sp), automatic :: ctgz0, ln0nh, ssecz0,badn0, ctgzsec0
+            real(kind=sp), automatic :: t0, t1, t2 
+            real(kind=sp), automatic :: L1, L2, L3 
+            badn0    = beta*a*dn0 
+            L1       = 0.0_sp 
+            ctgz0    = 1.0_sp/tan(z0)
+            L2       = 0.0_sp 
+            ln0nh    = log(n0/nh) 
+            L3       = 0.0_sp 
+            t0       = 1.0_sp/sin(z0)
+            ssecz0   = t0*t0 
+            L1       = analytic_sol_L1_f337_r4(dn0,beta,z0,H) 
+            t0       = -ctgz0*ln0nh+L1 
+            ctgzsec0 = ctgz0*ssecz0
+            L2       = analytic_sol_L2_f341_r4(dn0,beta,z0,H)
+            t1       = ctgzsec0*L2 
+            L3       = analytic_sol_L3_f342_r4(dn0,beta,z0,H)
+            t2       = badn0*ctgzsec0*(L3-L2)
+            alpha    = t0+t1+t2 
+       end function refraction_angle_f345_r4
 
      
 
