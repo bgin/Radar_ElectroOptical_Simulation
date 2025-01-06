@@ -659,7 +659,7 @@ module emw_refraction
             real(kind=sp),  intent(in) :: beta 
             real(kind=sp),  intent(in) :: H 
             real(kind=sp) :: alpha 
-            real(kind=sp), parameter :: a = 6378.0_dp
+            real(kind=sp), parameter :: a = 6378.0_sp
             real(kind=sp), automatic :: ctgz0, ln0nh, ssecz0,badn0, ctgzsec0
             real(kind=sp), automatic :: t0, t1, t2 
             real(kind=sp), automatic :: L1, L2, L3 
@@ -680,6 +680,55 @@ module emw_refraction
             t2       = badn0*ctgzsec0*(L3-L2)
             alpha    = t0+t1+t2 
        end function refraction_angle_f345_r4
+
+         pure function refraction_angle_f345_r8(n0,nh,z0,dn0,beta,H) result(alpha)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_f345_r8
+            !dir$ attributes forceinline :: refraction_angle_f345_r8
+#endif  
+            real(kind=dp),  intent(in) :: n0 
+            real(kind=dp),  intent(in) :: nh 
+            real(kind=dp),  intent(in) :: z0 
+            real(kind=dp),  intent(in) :: dn0 
+            real(kind=dp),  intent(in) :: beta 
+            real(kind=dp),  intent(in) :: H 
+            real(kind=dp) :: alpha 
+            real(kind=dp), parameter :: a = 6378.0_dp
+            real(kind=dp), automatic :: ctgz0, ln0nh, ssecz0,badn0, ctgzsec0
+            real(kind=dp), automatic :: t0, t1, t2 
+            real(kind=dp), automatic :: L1, L2, L3 
+            badn0    = beta*a*dn0 
+            L1       = 0.0_dp 
+            ctgz0    = 1.0_dp/tan(z0)
+            L2       = 0.0_dp 
+            ln0nh    = log(n0/nh) 
+            L3       = 0.0_dp 
+            t0       = 1.0_dp/sin(z0)
+            ssecz0   = t0*t0 
+            L1       = analytic_sol_L1_f337_r8(dn0,beta,z0,H) 
+            t0       = -ctgz0*ln0nh+L1 
+            ctgzsec0 = ctgz0*ssecz0
+            L2       = analytic_sol_L2_f341_r8(dn0,beta,z0,H)
+            t1       = ctgzsec0*L2 
+            L3       = analytic_sol_L3_f342_r8(dn0,beta,z0,H)
+            t2       = badn0*ctgzsec0*(L3-L2)
+            alpha    = t0+t1+t2 
+       end function refraction_angle_f345_r8
+
+
+
+       ! z0 близко к 90°.
+       ! The angle of arrival close to horizon.
+       ! formula 3.51, page: 70
+       ! analytic solution L2 for angle near 90 (deg)
+       pure function analytic_sol_nh_L2_f351_r4(dn0,beta,z0) result(L2)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_nh_L2_f351_r4
+            !dir$ attributes forceinline :: analytic_sol_nh_L2_f351_r4
+#endif  
+       end function analytic_sol_nh_L2_f351_r4
 
      
 
