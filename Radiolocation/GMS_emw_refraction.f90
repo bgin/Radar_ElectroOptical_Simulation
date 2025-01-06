@@ -749,6 +749,62 @@ module emw_refraction
             L2   = t0*t1 
        end function analytic_sol_n90_L2_f351_r4
 
-     
+       pure function analytic_sol_n90_L2_f351_r8(dn0,beta,z0) result(L2)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_n90_L2_f351_r8
+            !dir$ attributes forceinline :: analytic_sol_n90_L2_f351_r8
+#endif  
+            real(kind=dp), intent(in) :: dn0 
+            real(kind=dp), intent(in) :: beta 
+            real(kind=dp), intent(in) :: z0 
+            real(kind=dp) :: L2 
+            real(kind=dp), parameter :: a = 6378.0_dp
+            real(kind=dp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_dp 
+            real(kind=dp), parameter :: C0318309886183790671537767526745 = 0.318309886183790671537767526745_dp
+            real(kind=dp), automatic :: sba, tgz0, stgz0, ctgz0 
+            real(kind=dp), automatic :: earg, exp1, t0, t1, strm 
+            sba  = sqrt(beta*a)
+            tgz0 = tan(z0)
+            ctgz0= 1.0_dp/tan(z0)
+            earg = beta*a/(2.0_dp*tgz0*tgz0)
+            exp1 = exp(earg)
+            t0   = dn0*(sba/tgz0)*exp1 
+            strm = sqrt(2.0_dp*beta*a*C0318309886183790671537767526745)
+            t1   = C1253314137315500251207882642406* &
+                   (1.0_dp-strm*ctgz0)
+            L2   = t0*t1 
+       end function analytic_sol_n90_L2_f351_r8
+
+        ! z0 близко к 90°.
+       ! The angle of arrival close to horizon.
+       ! formula 3.51, page: 70
+       ! analytic solution L2 for angle near 90 (deg)
+       pure function analytic_sol_n90_L3_f351_r4(dn0,beta,z0) result(L3)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_n90_L3_f351_r4
+            !dir$ attributes forceinline :: analytic_sol_n90_L3_f351_r4
+#endif  
+            real(kind=sp), intent(in) :: dn0 
+            real(kind=sp), intent(in) :: beta 
+            real(kind=sp), intent(in) :: z0 
+            real(kind=sp) :: L3 
+            real(kind=sp), parameter :: a = 6378.0_sp
+            real(kind=sp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_sp 
+            real(kind=sp), parameter :: C0318309886183790671537767526745 = 0.318309886183790671537767526745_sp
+            real(kind=sp), automatic :: sba, tgz0, stgz0, ctgz0 
+            real(kind=sp), automatic :: earg, exp1, t0, t1, strm 
+            sba  = sqrt(2.0_sp*beta*a)
+            tgz0 = tan(z0)
+            ctgz0= 1.0_sp/tan(z0)
+            earg = beta*a/(tgz0*tgz0)
+            exp1 = exp(earg)
+            t0   = dn0*(sba/tgz0)*exp1 
+            strm = sqrt(4.0_sp*beta*a*C0318309886183790671537767526745)
+            t1   = C1253314137315500251207882642406* &
+                   (1.0_sp-strm*ctgz0)
+            L3   = t0*t1 
+       end function analytic_sol_n90_L3_f351_r4
 
 end module emw_refraction
