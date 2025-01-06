@@ -890,4 +890,42 @@ module emw_refraction
             alpha = t0*t1 
        end function refraction_angle_n90_f351_r8
 
+       !z0 = 90° формула (3.51) упрощается.
+       ! formula: 3.52, page: 71
+       pure function refraction_angle_at90_f352_r4(dn0,beta) result(alpha)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_at90_f352_r4
+            !dir$ attributes forceinline :: refraction_angle_at90_f352_r4
+#endif
+            real(kind=sp), intent(in) :: dn0 
+            real(kind=sp), intent(in) :: beta 
+            real(kind=sp) :: alpha  
+            real(kind=sp), parameter :: a = 6378.0_sp
+            real(kind=sp), parameter :: C041421356237309504880168872421 = 0.41421356237309504880168872421_sp 
+            real(kind=sp), parameter :: C314159265358979323846264338328 = 3.14159265358979323846264338328_sp
+            real(kind=sp), automatic :: t0, t1, t2 
+            t0 = dn0*sqrt((C314159265358979323846264338328*beta*a)*0.5_sp)
+            t1 = 1.0_sp+C041421356237309504880168872421*beta*a*dn0 
+            alpha = t0*t1 
+       end function refraction_angle_at90_f352_r4
+
+       pure function refraction_angle_at90_f352_r8(dn0,beta) result(alpha)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_at90_f352_r8
+            !dir$ attributes forceinline :: refraction_angle_at90_f352_r8
+#endif
+            real(kind=dp), intent(in) :: dn0 
+            real(kind=dp), intent(in) :: beta 
+            real(kind=dp) :: alpha  
+            real(kind=dp), parameter :: a = 6378.0_dp
+            real(kind=dp), parameter :: C041421356237309504880168872421 = 0.41421356237309504880168872421_dp 
+            real(kind=dp), parameter :: C314159265358979323846264338328 = 3.14159265358979323846264338328_dp
+            real(kind=dp), automatic :: t0, t1, t2 
+            t0 = dn0*sqrt((C314159265358979323846264338328*beta*a)*0.5_dp)
+            t1 = 1.0_dp+C041421356237309504880168872421*beta*a*dn0 
+            alpha = t0*t1 
+       end function refraction_angle_at90_f352_r8
+
 end module emw_refraction
