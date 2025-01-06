@@ -864,4 +864,30 @@ module emw_refraction
             alpha = t0*t1 
        end function refraction_angle_n90_f351_r4
 
+       pure function refraction_angle_n90_f351_r8(dn0,beta,z0) result(alpha)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_n90_f351_r8
+            !dir$ attributes forceinline :: refraction_angle_n90_f351_r8
+#endif  
+            real(kind=dp), intent(in) :: dn0 
+            real(kind=dp), intent(in) :: beta 
+            real(kind=dp), intent(in) :: z0 
+            real(kind=dp) :: alpha  
+            real(kind=dp), parameter :: a = 6378.0_dp
+            real(kind=dp), automatic :: ctgz0, badn0, cosz0, scosz0
+            real(kind=dp), automatic :: L2, L3, t0, t1, rat 
+            
+            cosz0 = cos(z0)
+            badn0 = beta*dn0*a 
+            ctgz0 = 1.0_dp/tan(z0)
+            scosz0= cosz0*cosz0 
+            L2    = analytic_sol_n90_L2_f351_r8(dn0,beta,z0)
+            rat   = ctgz0/scosz0 
+            t0    = -dn0*ctgz0+(1.0_dp-badn0) 
+            L3    = analytic_sol_n90_L3_f351_r8(dn0,beta,z0)
+            t1    = rat*L2+badn0*rat*L3 
+            alpha = t0*t1 
+       end function refraction_angle_n90_f351_r8
+
 end module emw_refraction
