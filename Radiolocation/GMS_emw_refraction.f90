@@ -996,8 +996,8 @@ module emw_refraction
        pure function analytic_sol_L2_gl5cm_f43_r4(dn0,beta,z0,H) result(L2)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_gl5cm_f43_r4
-            !dir$ attributes forceinline :: analytic_sol_L1_gl5cm_f43_r4
+            !dir$ attributes code_align : 32 :: analytic_sol_L2_gl5cm_f43_r4
+            !dir$ attributes forceinline :: analytic_sol_L2_gl5cm_f43_r4
 #endif  
             real(kind=sp), intent(in) :: dn0 
             real(kind=sp), intent(in) :: beta 
@@ -1019,6 +1019,60 @@ module emw_refraction
             trm2   = trm1*exp1 
             L2     = trm2*trm3 
        end function analytic_sol_L2_gl5cm_f43_r4
+
+       pure function analytic_sol_L2_gl5cm_f43_r8(dn0,beta,z0,H) result(L2)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L2_gl5cm_f43_r8
+            !dir$ attributes forceinline :: analytic_sol_L2_gl5cm_f43_r8
+#endif  
+            real(kind=dp), intent(in) :: dn0 
+            real(kind=dp), intent(in) :: beta 
+            real(kind=dp), intent(in) :: z0 
+            real(kind=dp), intent(in) :: H 
+            real(kind=dp) :: L2 
+            real(kind=dp), parameter :: a = 6378.0_dp
+            real(kind=dp), parameter :: C314159265358979323846264338328 = 3.14159265358979323846264338328_dp
+            real(kind=dp), automatic :: piba2, ctgz0, bactgz0, exp1 
+            real(kind=dp), automatic :: t0, t1, trm1, trm2, trm3 
+            piba2  = sqrt((C314159265358979323846264338328*beta*a)/2)
+            ctgz0  = 1.0_dp/tan(z0)
+            bactgz0= beta*a*ctgz0*ctgz0 
+            exp1   = exp(bactgz0*0.5_dp)
+            trm1   = dn0*sqrt(piba2)*ctgz0 
+            t0     = prob_integral_r8(sqrt(bactgz0+2.0_dp*beta*H))
+            t1     = prob_integral_r8(sqrt(bactgz0))
+            trm3   = t0-t1 
+            trm2   = trm1*exp1 
+            L2     = trm2*trm3 
+       end function analytic_sol_L2_gl5cm_f43_r8
+
+       pure function analytic_sol_L3_gl5cm_f43_r4(dn0,beta,z0,H) result(L3)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L3_gl5cm_f43_r4
+            !dir$ attributes forceinline :: analytic_sol_L3_gl5cm_f43_r4
+#endif  
+            real(kind=sp), intent(in) :: dn0 
+            real(kind=sp), intent(in) :: beta 
+            real(kind=sp), intent(in) :: z0 
+            real(kind=sp), intent(in) :: H 
+            real(kind=sp) :: L2 
+            real(kind=sp), parameter :: a = 6378.0_sp
+            real(kind=sp), parameter :: C314159265358979323846264338328 = 3.14159265358979323846264338328_sp
+            real(kind=sp), automatic :: piba, ctgz0, bactgz0, exp1 
+            real(kind=sp), automatic :: t0, t1, trm1, trm2, trm3 
+            piba  = sqrt(C314159265358979323846264338328*beta*a)
+            ctgz0  = 1.0_sp/tan(z0)
+            bactgz0= beta*a*ctgz0*ctgz0 
+            exp1   = exp(bactgz0)
+            trm1   = dn0*sqrt(piba)*ctgz0 
+            t0     = prob_integral_r4(sqrt(2.0_sp*bactgz0+4.0_sp*beta*H))
+            t1     = prob_integral_r4(sqrt(2.0_sp*bactgz0))
+            trm3   = t0-t1 
+            trm2   = trm1*exp1 
+            L2     = trm2*trm3 
+       end function analytic_sol_L3_gl5cm_f43_r4
 
 
 end module emw_refraction
