@@ -84,7 +84,23 @@ module emw_refraction
      ! Short description
      character(*),        parameter :: EMW_REFRACTION_SYNOPSIS    = "Calculation of EM Wave atmospheric refraction."
 
-   
+     
+     ! IRI model output arrays
+     type, public :: ionosphere_state_t
+           
+           integer(kind=i4)                         :: n_values
+           real(kind=sp), allocatable, dimension(:) :: elec_dens    ! electron density in m-3
+           real(kind=sp), allocatable, dimension(:) :: neut_tmp     ! neutral temperature in K
+           real(kind=sp), allocatable, dimension(:) :: ion_tmp      ! ion temperature in K
+           real(kind=sp), allocatable, dimension(:) :: elec_tmp     ! electron temperature in K
+           real(kind=sp), allocatable, dimension(:) :: O_ion_d      ! O+ ion density in % or in m-3 
+           real(kind=sp), allocatable, dimension(:) :: H_ion_d      ! H+ ion density in % or in m-3 
+           real(kind=sp), allocatable, dimension(:) :: He_ion_d     ! He+ ion density in % or in m-3
+           real(kind=sp), allocatable, dimension(:) :: O2_ion_d     ! O2+ ion density in % or in m-3 
+           real(kind=sp), allocatable, dimension(:) :: NO_ion_d     ! NO+ ion density in % or in m-3
+           real(kind=sp), allocatable, dimension(:) :: ion_dens     ! Cluster ion density in % or in m-3
+           real(kind=sp), allocatable, dimension(:) :: N_ion_d      ! N+ ion density in % or in m-3 
+     end type ionosphere_state_t
     
      
      contains
@@ -1164,6 +1180,16 @@ module emw_refraction
              trm3   = badn0*t1*(L3-L2)
              alpha  = trm1+trm2+trm3 
        end function refraction_angle_for_gl5cm_f41_r8
+
+       !показатель преломления ионосферы в среднем
+       pure function refractive_idx_lo_ionosphere_f412_r4(h,d,f,Nmf) result(n)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_f412_r4
+            !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_f412_r4
+#endif  
+            
+       end function refractive_idx_lo_ionosphere_f412_r4
 
 
 
