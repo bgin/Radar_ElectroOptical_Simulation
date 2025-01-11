@@ -928,4 +928,38 @@ module emw_refraction
             alpha = t0*t1 
        end function refraction_angle_at90_f352_r8
 
+       !угол радиорефракции I типа в 
+       !земной атмосфере для длин волн, меньших 5 см
+       ! formula: 4.2, page 73.
+       pure function analytic_sol_L1_gl5cm_f42_r4(dn0,beta,z0,H) result(L1)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L1_gl5cm_f42_r4
+            !dir$ attributes forceinline :: analytic_sol_L1_gl5cm_f42_r4
+#endif  
+            real(kind=sp), intent(in) :: dn0 
+            real(kind=sp), intent(in) :: beta 
+            real(kind=sp), intent(in) :: z0 
+            real(kind=sp), intent(in) :: H 
+            real(kind=sp) :: L1 
+            real(kind=sp), parameter :: a = 6378.0_sp
+            real(kind=sp), automatic :: ctgz0, secz0, tgz0, betaH 
+            real(kind=sp), automatic :: t0, t1, earg, exp1, exp2 
+            real(kind=sp), automatic :: sdn0ba, trm1, trm2, trm3 
+            betaH  = beta*H 
+            ctgz0  = 1.0_sp/tan(z0)
+            sdn0ba = -dn0*dn0*beta*a 
+            t0     = tan(z0) 
+            tgz0   = t0*t0 
+            t1     = 1.0_sp/cos(z0) 
+            secz0  = t1*t1 
+            exp1   = exp(-betaH)
+            ctgz0  = 1.0_sp/t0 
+            exp2   = exp(-2.0_sp*betaH)
+            trm1   = sdn0ba*ctgz0*secz0 
+            trm2   = exp1-exp2 
+            trm3   = sqrt(1.0_sp+2.0_sp*tgz0*(H/a))
+            L1     = trm1*trm2*trm3 
+       end function analytic_sol_L1_gl5cm_f42_r4
+
 end module emw_refraction
