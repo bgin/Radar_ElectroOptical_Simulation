@@ -1133,5 +1133,38 @@ module emw_refraction
              alpha  = trm1+trm2+trm3 
        end function refraction_angle_for_gl5cm_f41_r4
 
+       pure function refraction_angle_for_gl5cm_f41_r8(n0,nh,z0,beta,dn0,H) result(alpha)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_for_gl5cm_f41_r8
+            !dir$ attributes forceinline :: refraction_angle_for_gl5cm_f41_r8
+#endif  
+             real(kind=dp),  intent(in) :: n0 
+             real(kind=dp),  intent(in) :: nh 
+             real(kind=dp),  intent(in) :: z0 
+             real(kind=dp),  intent(in) :: beta 
+             real(kind=dp),  intent(in) :: dn0 
+             real(kind=dp),  intent(in) :: H 
+             real(kind=dp) :: alpha 
+             real(kind=dp), parameter :: a = 6378.0_dp
+             real(kind=dp), automatic :: L1, L2, L3 
+             real(kind=dp), automatic :: ctgz0, lnn0nh, ssecz, badn0 
+             real(kind=dp), automatic :: t0, t1, trm1, trm2, trm3 
+             badn0  = beta*a*dn0 
+             ctgz0  = 1.0_dp/tan(z0)
+             lnn0nh = log(n0/nh)
+             L1     = analytic_sol_L1_gl5cm_f42_r8(dn0,beta,z0,H)
+             t0     = 1.0_dp/cos(z0)
+             ssecz  = t0*t0 
+             t1     = ctgz0*ssecz 
+             L2     = analytic_sol_L2_gl5cm_f43_r8(dn0,beta,z0,H)
+             trm1   = -ctgz0*lnn0nh+L1 
+             L3     = analytic_sol_L3_gl5cm_f43_r8(dn0,beta,z0,H)
+             trm2   = t1*L2 
+             trm3   = badn0*t1*(L3-L2)
+             alpha  = trm1+trm2+trm3 
+       end function refraction_angle_for_gl5cm_f41_r8
+
+
 
 end module emw_refraction
