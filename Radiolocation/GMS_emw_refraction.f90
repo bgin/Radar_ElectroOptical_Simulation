@@ -1321,4 +1321,64 @@ module emw_refraction
             dnM = fcr*fcr/sfc  
        end function compute_delnM_f414_r4
 
+       elemental function compute_delnM_f414_r8(fc,Nmf) result(dnM)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: compute_delnM_f414_r8
+            !dir$ attributes forceinline :: compute_delnM_f414_r8
+#endif 
+!$omp declare simd(compute_delnM_f414_r8)
+            real(kind=dp), intent(in) :: fc 
+            real(kind=dp), intent(in) :: Nmf 
+            real(kind=dp) :: dnM 
+            real(kind=dp), automatic :: fcr, sfc 
+            sfc = 2.0_dp*fc*fc 
+            fcr = sqrt(80.8_dp*Nmf)
+            dnM = fcr*fcr/sfc  
+       end function compute_delnM_f414_r8
+
+      ! An analytic solution of `L1` component integral 
+      elemental function analytic_sol_L1_lo_ionosphere_f418_r4(fc,Nmf,z0,d,R0) result(L1)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L1_lo_ionosphere_f418_r4
+            !dir$ attributes forceinline :: analytic_sol_L1_lo_ionosphere_f418_r4
+#endif 
+!$omp declare simd(analytic_sol_L1_lo_ionosphere_f418_r4)
+            real(kind=sp),  intent(in) :: fc 
+            real(kind=sp),  intent(in) :: Nmf 
+            real(kind=sp),  intent(in) :: z0 
+            real(kind=sp),  intent(in) :: d 
+            real(kind=sp),  intent(in) :: R0 
+            real(kind=sp) :: L1 
+            real(kind=sp),   parameter :: C10 = 10.0_sp 
+            real(kind=sp),   parameter :: C19 = 19.0_sp
+            real(kind=sp),   parameter :: C1  = 1.0_sp
+            real(kind=sp), automatic :: delnM, m, c2mm, c12m 
+            real(kind=sp), automatic :: ctgz0, cos2z0, c3m, tgz0 
+            real(kind=sp), automatic :: c5mm, sqr, t0, t1, t2, t3 
+            real(kind=sp), automatic :: trm1, trm2, trm3, trm4 
+            delnM = compute_delnM_f414_r4(fc,Nmf)
+            tgz0  = tan(z0)
+            ctgz0 = C1/tgz0 
+            m     = (tgz0*tgz0*d)/R0
+            sqr   = sqrt(C1+2.0_sp*m)
+            t0    = cos(z0)
+            cos2z0= t0*t0 
+            t1    = ctgz0/cos2z0
+            t2    = (-2.0_sp*delNm)/m
+            trm1  = t2*t1 
+            c3m   = 3.0_sp*m
+            trm2  = (C1-sqr)+(C1/c3m)*m-C1*sqr+C1
+            t2    = 2.0_sp*delnM*delnM 
+            t3    = tgz0/cos2z0 
+            trm3  = t2*t3 
+            c2mm  = 2.0_sp/(m*m)
+            c12m  = 12.0_sp/m 
+            t1    = c2mm+c12m+C19+6.0_sp*m 
+            t2    = c2mm+(C10/m)+C10 
+            trm4  = (C1/sqr)*t1-t2
+            L1    = trm1*trm2+trm3*trm4 
+      end function analytic_sol_L1_lo_ionosphere_f418_r4
+
 end module emw_refraction
