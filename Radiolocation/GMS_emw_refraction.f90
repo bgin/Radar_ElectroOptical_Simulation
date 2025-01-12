@@ -1304,6 +1304,21 @@ module emw_refraction
             n   = 1.0_dp-dnm*exp1 
        end function refractive_idx_hi_ionosphere_f413_r8
 
-
+       ! Compute `delta-nM` value, formula 4.14, page: 77
+       elemental function compute_delnM_f414_r4(fc,Nmf) result(dnM)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: compute_delnM_f414_r4
+            !dir$ attributes forceinline :: compute_delnM_f414_r4
+#endif 
+!$omp declare simd(compute_delnM_f414_r4)
+            real(kind=sp), intent(in) :: fc 
+            real(kind=sp), intent(in) :: Nmf 
+            real(kind=sp) :: dnM 
+            real(kind=sp), automatic :: fcr, sfc 
+            sfc = 2.0_sp*fc*fc 
+            fcr = sqrt(80.8_sp*Nmf)
+            dnM = fcr*fcr/sfc  
+       end function compute_delnM_f414_r4
 
 end module emw_refraction
