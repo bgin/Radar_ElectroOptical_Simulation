@@ -1356,6 +1356,25 @@ module emw_refraction
             dnE  = dnM*exp1 
        end function compute_delnEps_f421_r4
 
+       elemental function compute_delnEps_f421_r8(fc,Nmf,beta,d) result(dnE)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: compute_delnEps_f421_r8
+            !dir$ attributes forceinline :: compute_delnEps_f421_r8
+#endif 
+!$omp declare simd(compute_delnEps_f421_r8)
+            real(kind=dp), intent(in) :: fc 
+            real(kind=dp), intent(in) :: Nmf 
+            real(kind=dp), intent(in) :: beta 
+            real(kind=dp), intent(in) :: d 
+            real(kind=dp) :: dnE 
+            real(kind=dp), automatic :: dnM, earg, exp1 
+            earg = beta*d 
+            dnM  = compute_delnM_f414_r8(fc,Nmf)
+            exp1 = exp(earg)
+            dnE  = dnM*exp1 
+       end function compute_delnEps_f421_r8
+
       ! An analytic solution of `L1` component integral 
       elemental function analytic_sol_L1_lo_ionosphere_f418_r4(fc,Nmf,z0,d,R0) result(L1)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
@@ -1445,6 +1464,43 @@ module emw_refraction
             L1    = trm1*trm2+trm3*trm4 
       end function analytic_sol_L1_lo_ionosphere_f418_r8
 
-
+      elemental function analytic_sol_L01_hi_ionosphere_f422_r4(fc,Nmf,beta,d,R0,z0,D1) result(L01)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L01_hi_ionosphere_f422_r4
+            !dir$ attributes forceinline :: analytic_sol_L01_hi_ionosphere_f422_r4
+#endif 
+!$omp declare simd(analytic_sol_L01_hi_ionosphere_f422_r4)
+            real(kind=sp),  intent(in) :: fc 
+            real(kind=sp),  intent(in) :: Nmf 
+            real(kind=sp),  intent(in) :: beta 
+            real(kind=sp),  intent(in) :: d 
+            real(kind=sp),  intent(in) :: R0 
+            real(kind=sp),  intent(in) :: z0 
+            real(kind=sp),  intent(in) :: D1 
+            real(kind=sp)  :: L01 
+            real(kind=sp), automatic :: sdnE, ctgz0, sec2z0, bd
+            real(kind=sp), automatic :: bD1,  strm,  exp1,  exp2 
+            real(kind=sp), automatic :: exp3, exp4, trm1, trm2 
+            real(kind=sp), automatic :: t0, t1, tg2z0, trm3  
+            t0    = compute_delnEps_f421_r4(fc,Nmf,beta,d)
+            bd    = beta*d 
+            bD1   = beta*D1 
+            ctgz0 = 1.0_sp/tan(z0)
+            sdnE  = t0*t0 
+            t1    = 1.0_sp/cos(z0)
+            sec2z0= t1*t1 
+            t0    = tan(z0)
+            tg2z0 = t0*t0 
+            strm  = sqrt((1.0_sp+2.0_sp*tg2z0*d)/R0)
+            trm1  = sdnE*beta*R0*ctgz0*sec2z0
+            exp1  = exp(-bd)
+            exp2  = exp(-2.0_sp*bd)
+            exp3  = exp(-bD1)
+            exp4  = exp(-2.0_sp*bD1)
+            trm2  = (exp1-exp2)*strm
+            trm3  = (exp3-exp4)*strm
+            L01   = trm1*(trm2-trm3)
+      end function analytic_sol_L01_hi_ionosphere_f422_r4
 
 end module emw_refraction
