@@ -106,13 +106,14 @@ module emw_refraction
      contains
 
      ! Formula 2.43, page 46
-     pure function n_refract_tht_f243_r4(n,n0,z,z0,r,R0,phi,phi0) result(n_over_tht)
+     elemental function n_refract_tht_f243_r4(n,n0,z,z0,r,R0,phi,phi0) result(n_over_tht)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_refract_tht_f243_r4
             !dir$ attributes forceinline :: n_refract_tht_f243_r4
            
 #endif
+!$omp declare simd(n_refract_tht_f243_r4)
             real(kind=sp),     intent(in) :: n    ! refractive index at dest (observation point)
             real(kind=sp),     intent(in) :: n0   ! refractive index at source
             real(kind=sp),     intent(in) :: z    ! 'z' angle at dest
@@ -145,13 +146,14 @@ module emw_refraction
      end function n_refract_tht_f243_r4
     
      
-     pure function n_refract_tht_f243_r8(n,n0,z,z0,r,R0,phi,phi0) result(n_over_tht)
+     elemental function n_refract_tht_f243_r8(n,n0,z,z0,r,R0,phi,phi0) result(n_over_tht)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_refract_tht_f243_r8
             !dir$ attributes forceinline :: n_refract_tht_f243_r8
             
 #endif
+!$omp declare simd(n_refract_tht_f243_r8)
             real(kind=dp),     intent(in) :: n    ! refractive index at dest (observation point)
             real(kind=dp),     intent(in) :: n0   ! refractive index at source
             real(kind=dp),     intent(in) :: z    ! 'z' angle at dest
@@ -183,13 +185,14 @@ module emw_refraction
             n_over_tht = rat_d-rat_s 
      end function n_refract_tht_f243_r8
 
-     pure function n_refract_phi_f243_r4(n,n0,z,z0,r,R0,phi,phi0) result(n_over_phi)
+     elemental function n_refract_phi_f243_r4(n,n0,z,z0,r,R0,phi,phi0) result(n_over_phi)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_refract_phi_f243_r4
             !dir$ attributes forceinline :: n_refract_phi_f243_r4
           
 #endif
+!$omp declare simd(n_refract_phi_f243_r4)
             real(kind=sp),     intent(in) :: n    ! refractive index at dest (observation point)
             real(kind=sp),     intent(in) :: n0   ! refractive index at source
             real(kind=sp),     intent(in) :: z    ! 'z' angle at dest
@@ -221,13 +224,14 @@ module emw_refraction
             n_over_phi = rat_d-rat_s 
      end function n_refract_phi_f243_r4
 
-     pure function n_refract_phi_f243_r8(n,n0,z,z0,r,R0,phi,phi0) result(n_over_phi)
+     elemental function n_refract_phi_f243_r8(n,n0,z,z0,r,R0,phi,phi0) result(n_over_phi)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_refract_phi_f243_r8
             !dir$ attributes forceinline :: n_refract_phi_f243_r8
            
 #endif
+!$omp declare simd(n_refract_phi_f243_r8)
             real(kind=dp),     intent(in) :: n    ! refractive index at dest (observation point)
             real(kind=dp),     intent(in) :: n0   ! refractive index at source
             real(kind=dp),     intent(in) :: z    ! 'z' angle at dest
@@ -262,13 +266,14 @@ module emw_refraction
 
      !Радиус кривизны траектории луча, formula 2.51, page: 47
      
-     pure function rad_ray_curvature_f251_r4(n,z,dndr) result(rho)
+     elemental function rad_ray_curvature_f251_r4(n,z,dndr) result(rho)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: rad_ray_curvature_f251_r4
             !dir$ attributes forceinline :: rad_ray_curvature_f251_r4
             
 #endif
+!$omp declare simd(rad_ray_curvature_f251_r4)
             real(kind=sp),  intent(in) :: n ! refractive index
             real(kind=sp),  intent(in) :: z ! angle
             real(kind=sp),  intent(in) :: dndr ! derivative of refractive index at r
@@ -280,13 +285,14 @@ module emw_refraction
             rho  = t0*dndr 
      end function rad_ray_curvature_f251_r4
 
-     pure function rad_ray_curvature_f251_r8(n,z,dndr) result(rho)
+     elemental function rad_ray_curvature_f251_r8(n,z,dndr) result(rho)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: rad_ray_curvature_f251_r8
             !dir$ attributes forceinline :: rad_ray_curvature_f251_r8
            
 #endif
+!$omp declare simd(rad_ray_curvature_f251_r8)
             real(kind=dp),  intent(in) :: n ! refractive index
             real(kind=dp),  intent(in) :: z ! angle
             real(kind=dp),  intent(in) :: dndr ! derivative of refractive index at r
@@ -301,13 +307,14 @@ module emw_refraction
      !относителыную кривизну по-1
      !верхности Земли и траектории волны, formula: 2.54, page: 48
      
-     pure function k_relative_f254_r4(n,z,dndr) result(k_rel)
+     elemental function k_relative_f254_r4(n,z,dndr) result(k_rel)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: k_relative_f254_r4
             !dir$ attributes forceinline :: k_relative_f254_r4
           
 #endif   
+!$omp declare simd(k_relative_f254_r4)
             real(kind=sp),  intent(in) :: n ! refractive index
             real(kind=sp),  intent(in) :: z ! angle
             real(kind=sp),  intent(in) :: dndr ! derivative of refractive index at r
@@ -319,13 +326,14 @@ module emw_refraction
             k_rel   = inv_erad*inv_rho
      end function k_relative_f254_r4
  
-     pure function k_relative_f254_r8(n,z,dndr) result(k_rel)
+     elemental function k_relative_f254_r8(n,z,dndr) result(k_rel)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: k_relative_f254_r8
             !dir$ attributes forceinline :: k_relative_f254_r8
             
 #endif   
+!$omp declare simd(k_relative_f254_r8)
             real(kind=dp),  intent(in) :: n ! refractive index
             real(kind=dp),  intent(in) :: z ! angle
             real(kind=dp),  intent(in) :: dndr ! derivative of refractive index at r
@@ -339,26 +347,28 @@ module emw_refraction
 
      ! отношения радиуса кривизны траекторий
      ! луча к радиусу Земли:, formula 2.67, page: 52 
-     pure function rho_to_a_f267_r4(dndh) result(R)
+     elemental function rho_to_a_f267_r4(dndh) result(R)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: rho_to_a_f267_r4
             !dir$ attributes forceinline :: rho_to_a_f267_r4
            
 #endif  
+!$omp declare simd(rho_to_a_f267_r4)
             real(kind=sp),   intent(in) :: dndh ! derivative of refractive index
             real(kind=sp) :: R 
             real(kind=sp), parameter :: inv_erad = -0.00015678896205707118218877391_sp 
             R = inv_erad*dndh 
      end function rho_to_a_f267_r4
 
-       pure function rho_to_a_f267_r8(dndh) result(R)
+       elemental function rho_to_a_f267_r8(dndh) result(R)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: rho_to_a_f267_r8
             !dir$ attributes forceinline :: rho_to_a_f267_r8
           
 #endif  
+!$omp declare simd(rho_to_a_f267_r8)
             real(kind=dp),   intent(in) :: dndh ! derivative of refractive index
             real(kind=dp) :: R 
             real(kind=dp), parameter :: inv_erad = -0.00015678896205707118218877391_dp 
@@ -368,13 +378,14 @@ module emw_refraction
 !Усредненная зависимость показателя преломления от 
 !высоты, formula: 1.45, page 29
 
-       pure function n_avg_h_f145_r4(dn0,beta,h) result(nah)
+       elemental function n_avg_h_f145_r4(dn0,beta,h) result(nah)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_avg_h_f145_r4
             !dir$ attributes forceinline :: n_avg_h_f145_r4
            
 #endif  
+!$omp declare simd(n_avg_h_f145_r4)
             real(kind=sp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
             real(kind=sp),  intent(in) :: beta ! coefficient describing the diminishing of 'n' as function of height, i.e. 0.10->0.14 1/km
             real(kind=sp),  intent(in) :: h    
@@ -385,13 +396,14 @@ module emw_refraction
             nah  = t0*exp(earg) 
        end function n_avg_h_f145_r4
 
-       pure function n_avg_h_f145_r8(dn0,beta,h) result(nah)
+       elemental function n_avg_h_f145_r8(dn0,beta,h) result(nah)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_avg_h_f145_r8
             !dir$ attributes forceinline :: n_avg_h_f145_r8
             
-#endif  
+#endif 
+!$omp declare simd(n_avg_h_f145_r8)
             real(kind=dp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
             real(kind=dp),  intent(in) :: beta ! coefficient describing the diminishing of 'n' as function of height, i.e. 0.10->0.14 1/km
             real(kind=dp),  intent(in) :: h    
@@ -403,13 +415,14 @@ module emw_refraction
        end function n_avg_h_f145_r8
 
        !связь между величинами dn0 , beta, formula 1.46, page: 29
-       pure function approx_beta_coeff_f146_r4(dn0) result(beta)
+       elemental function approx_beta_coeff_f146_r4(dn0) result(beta)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: approx_beta_coeff_f146_r4
             !dir$ attributes forceinline :: approx_beta_coeff_f146_r4
             
-#endif  
+#endif 
+!$omp declare simd(approx_beta_coeff_f146_r4) 
             real(kind=sp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
             real(kind=sp) :: beta 
             real(kind=sp), automatic :: t0, earg 
@@ -419,13 +432,14 @@ module emw_refraction
        end function approx_beta_coeff_f146_r4
 
     !связь между величинами dn0 , beta, formula 1.46, page: 29
-       pure function approx_beta_coeff_f146_r8(dn0) result(beta)
+       elemental function approx_beta_coeff_f146_r8(dn0) result(beta)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: approx_beta_coeff_f146_r8
             !dir$ attributes forceinline :: approx_beta_coeff_f146_r8
            
-#endif  
+#endif 
+!$omp declare simd(approx_beta_coeff_f146_r8)  
             real(kind=dp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
             real(kind=dp) :: beta 
             real(kind=dp), automatic :: t0, earg 
@@ -434,12 +448,13 @@ module emw_refraction
             beta = t0*exp(earg)  
        end function approx_beta_coeff_f146_r8
 
-        pure function prob_integral_r4(x) result(res)
+        elemental function prob_integral_r4(x) result(res)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: prob_integral_r4
             !dir$ attributes forceinline :: prob_integral_r4
 #endif
+!$omp declare simd(prob_integral_r4)
              real(kind=sp), intent(in) :: x 
              real(kind=sp) :: res 
              real(kind=sp), parameter :: C0707106781186547524400844362105 = 0.707106781186547524400844362105_sp
@@ -447,12 +462,13 @@ module emw_refraction
              res = 0.5_sp*(1.0_sp+erf(x*C0707106781186547524400844362105))
        end function prob_integral_r4
 
-       pure function prob_integral_r8(x) result(res)
+       elemental function prob_integral_r8(x) result(res)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: prob_integral_r8
             !dir$ attributes forceinline :: prob_integral_r8
 #endif
+!$omp declare simd(prob_integral_r8)
              real(kind=dp), intent(in) :: x 
              real(kind=dp) :: res 
              real(kind=dp), parameter :: C0707106781186547524400844362105 = 0.707106781186547524400844362105_dp
@@ -463,12 +479,13 @@ module emw_refraction
        !формулу (3.35) для расчета регулярной
        !рефракции оптических волн в земной атмосфере.
        ! formula 3.37, page: 68
-       pure function analytic_sol_L1_f337_r4(beta,dn0,z0,H) result(L1)
+       elemental function analytic_sol_L1_f337_r4(beta,dn0,z0,H) result(L1)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L1_f337_r4
             !dir$ attributes forceinline :: analytic_sol_L1_f337_r4
-#endif  
+#endif 
+!$omp declare simd(analytic_sol_L1_f337_r4) 
             real(kind=sp),  intent(in) :: beta 
             real(kind=sp),  intent(in) :: dn0 
             real(kind=sp),  intent(in) :: z0 
@@ -496,12 +513,13 @@ module emw_refraction
             L1    = rat1*rat2 
        end function analytic_sol_L1_f337_r4
 
-       pure function analytic_sol_L1_f337_r8(beta,dn0,z0,H) result(L1)
+       elemental function analytic_sol_L1_f337_r8(beta,dn0,z0,H) result(L1)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L1_f337_r8
             !dir$ attributes forceinline :: analytic_sol_L1_f337_r8
 #endif  
+!$omp declare simd(analytic_sol_L1_f337_r8) 
             real(kind=dp),  intent(in) :: beta 
             real(kind=dp),  intent(in) :: dn0 
             real(kind=dp),  intent(in) :: z0 
@@ -532,12 +550,13 @@ module emw_refraction
        !формулa (3.35) для расчета регулярной
        !рефракции оптических волн в земной атмосфере.
        ! formula 3.41, page: 68
-       pure function analytic_sol_L2_f341_r4(dn0,beta,z0,H) result(L2)
+       elemental function analytic_sol_L2_f341_r4(dn0,beta,z0,H) result(L2)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L2_f341_r4
             !dir$ attributes forceinline :: analytic_sol_L2_f341_r4
 #endif  
+!$omp declare simd(analytic_sol_L2_f341_r4)
             real(kind=sp),  intent(in) :: dn0 
             real(kind=sp),  intent(in) :: beta 
             real(kind=sp),  intent(in) :: z0 
@@ -562,12 +581,13 @@ module emw_refraction
             L2     = t0*exp1*t1 
        end function analytic_sol_L2_f341_r4
 
-       pure function analytic_sol_L2_f341_r8(dn0,beta,z0,H) result(L2)
+       elemental function analytic_sol_L2_f341_r8(dn0,beta,z0,H) result(L2)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L2_f341_r8
             !dir$ attributes forceinline :: analytic_sol_L2_f341_r8
 #endif  
+!$omp declare simd(analytic_sol_L2_f341_r8)
             real(kind=dp),  intent(in) :: dn0 
             real(kind=dp),  intent(in) :: beta 
             real(kind=dp),  intent(in) :: z0 
@@ -595,12 +615,13 @@ module emw_refraction
         !формулa (3.35) для расчета регулярной
        !рефракции оптических волн в земной атмосфере.
        ! formula 3.42, page: 68
-       pure function analytic_sol_L3_f342_r4(dn0,beta,z0,H) result(L2)
+       elemental function analytic_sol_L3_f342_r4(dn0,beta,z0,H) result(L2)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L3_f342_r4
             !dir$ attributes forceinline :: analytic_sol_L3_f342_r4
 #endif  
+!$omp declare simd(analytic_sol_L3_f342_r4)
             real(kind=sp),  intent(in) :: dn0   ! refractive index near to earth surface
             real(kind=sp),  intent(in) :: beta  ! beta coefficient
             real(kind=sp),  intent(in) :: z0    ! angle of ray incoming to receiver
@@ -628,12 +649,13 @@ module emw_refraction
          !формулa (3.35) для расчета регулярной
        !рефракции оптических волн в земной атмосфере.
        ! formula 3.42, page: 68
-       pure function analytic_sol_L3_f342_r8(dn0,beta,z0,H) result(L2)
+       elemental function analytic_sol_L3_f342_r8(dn0,beta,z0,H) result(L2)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L3_f342_r8
             !dir$ attributes forceinline :: analytic_sol_L3_f342_r8
-#endif  
+#endif 
+!$omp declare simd(analytic_sol_L3_f342_r8) 
             real(kind=dp),  intent(in) :: dn0   ! refractive index near to earth surface
             real(kind=dp),  intent(in) :: beta  ! beta coefficient
             real(kind=dp),  intent(in) :: z0    ! angle of ray incoming to receiver
@@ -662,12 +684,13 @@ module emw_refraction
        !изменения зенитных углов (0 < z0 <90°) при любых 
        !зависимостях n(h).
        ! The angle of refraction.
-       pure function refraction_angle_f345_r4(n0,nh,z0,dn0,beta,H) result(alpha)
+       elemental function refraction_angle_f345_r4(n0,nh,z0,dn0,beta,H) result(alpha)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_f345_r4
             !dir$ attributes forceinline :: refraction_angle_f345_r4
 #endif  
+!$omp declare simd(refraction_angle_f345_r4)
             real(kind=sp),  intent(in) :: n0 
             real(kind=sp),  intent(in) :: nh 
             real(kind=sp),  intent(in) :: z0 
@@ -697,12 +720,13 @@ module emw_refraction
             alpha    = t0+t1+t2 
        end function refraction_angle_f345_r4
 
-         pure function refraction_angle_f345_r8(n0,nh,z0,dn0,beta,H) result(alpha)
+         elemental function refraction_angle_f345_r8(n0,nh,z0,dn0,beta,H) result(alpha)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_f345_r8
             !dir$ attributes forceinline :: refraction_angle_f345_r8
 #endif  
+!$omp declare simd(refraction_angle_f345_r8)
             real(kind=dp),  intent(in) :: n0 
             real(kind=dp),  intent(in) :: nh 
             real(kind=dp),  intent(in) :: z0 
@@ -738,12 +762,13 @@ module emw_refraction
        ! The angle of arrival close to horizon.
        ! formula 3.51, page: 70
        ! analytic solution L2 for angle near 90 (deg)
-       pure function analytic_sol_n90_L2_f351_r4(dn0,beta,z0) result(L2)
+       elemental function analytic_sol_n90_L2_f351_r4(dn0,beta,z0) result(L2)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_n90_L2_f351_r4
             !dir$ attributes forceinline :: analytic_sol_n90_L2_f351_r4
 #endif  
+!$omp declare simd(analytic_sol_n90_L2_f351_r4)
             real(kind=sp), intent(in) :: dn0 
             real(kind=sp), intent(in) :: beta 
             real(kind=sp), intent(in) :: z0 
@@ -765,12 +790,13 @@ module emw_refraction
             L2   = t0*t1 
        end function analytic_sol_n90_L2_f351_r4
 
-       pure function analytic_sol_n90_L2_f351_r8(dn0,beta,z0) result(L2)
+       elemental function analytic_sol_n90_L2_f351_r8(dn0,beta,z0) result(L2)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_n90_L2_f351_r8
             !dir$ attributes forceinline :: analytic_sol_n90_L2_f351_r8
 #endif  
+!$omp declare simd(analytic_sol_n90_L2_f351_r8)
             real(kind=dp), intent(in) :: dn0 
             real(kind=dp), intent(in) :: beta 
             real(kind=dp), intent(in) :: z0 
@@ -796,12 +822,13 @@ module emw_refraction
        ! The angle of arrival close to horizon.
        ! formula 3.51, page: 70
        ! analytic solution L3 for angle near 90 (deg)
-       pure function analytic_sol_n90_L3_f351_r4(dn0,beta,z0) result(L3)
+       elemental function analytic_sol_n90_L3_f351_r4(dn0,beta,z0) result(L3)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_n90_L3_f351_r4
             !dir$ attributes forceinline :: analytic_sol_n90_L3_f351_r4
 #endif  
+!$omp declare simd(analytic_sol_n90_L3_f351_r4)
             real(kind=sp), intent(in) :: dn0 
             real(kind=sp), intent(in) :: beta 
             real(kind=sp), intent(in) :: z0 
@@ -823,12 +850,13 @@ module emw_refraction
             L3   = t0*t1 
        end function analytic_sol_n90_L3_f351_r4
 
-       pure function analytic_sol_n90_L3_f351_r8(dn0,beta,z0) result(L3)
+       elemental function analytic_sol_n90_L3_f351_r8(dn0,beta,z0) result(L3)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_n90_L3_f351_r8
             !dir$ attributes forceinline :: analytic_sol_n90_L3_f351_r8
 #endif  
+!$omp declare simd(analytic_sol_n90_L3_f351_r8)
             real(kind=dp), intent(in) :: dn0 
             real(kind=dp), intent(in) :: beta 
             real(kind=dp), intent(in) :: z0 
@@ -854,12 +882,13 @@ module emw_refraction
        ! The angle of arrival close to horizon.
        ! formula 3.51, page: 70
        ! The whole solution for angle alpha near 90 (deg)
-       pure function refraction_angle_n90_f351_r4(dn0,beta,z0) result(alpha)
+       elemental function refraction_angle_n90_f351_r4(dn0,beta,z0) result(alpha)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_n90_f351_r4
             !dir$ attributes forceinline :: refraction_angle_n90_f351_r4
-#endif  
+#endif
+!$omp declare simd(refraction_angle_n90_f351_r4)  
             real(kind=sp), intent(in) :: dn0 
             real(kind=sp), intent(in) :: beta 
             real(kind=sp), intent(in) :: z0 
@@ -880,12 +909,13 @@ module emw_refraction
             alpha = t0*t1 
        end function refraction_angle_n90_f351_r4
 
-       pure function refraction_angle_n90_f351_r8(dn0,beta,z0) result(alpha)
+       elemental function refraction_angle_n90_f351_r8(dn0,beta,z0) result(alpha)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_n90_f351_r8
             !dir$ attributes forceinline :: refraction_angle_n90_f351_r8
 #endif  
+!$omp declare simd(refraction_angle_n90_f351_r8) 
             real(kind=dp), intent(in) :: dn0 
             real(kind=dp), intent(in) :: beta 
             real(kind=dp), intent(in) :: z0 
@@ -908,12 +938,13 @@ module emw_refraction
 
        !z0 = 90° формула (3.51) упрощается.
        ! formula: 3.52, page: 71
-       pure function refraction_angle_at90_f352_r4(dn0,beta) result(alpha)
+       elemental function refraction_angle_at90_f352_r4(dn0,beta) result(alpha)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_at90_f352_r4
             !dir$ attributes forceinline :: refraction_angle_at90_f352_r4
 #endif
+!$omp declare simd(refraction_angle_at90_f352_r4)
             real(kind=sp), intent(in) :: dn0 
             real(kind=sp), intent(in) :: beta 
             real(kind=sp) :: alpha  
@@ -926,12 +957,13 @@ module emw_refraction
             alpha = t0*t1 
        end function refraction_angle_at90_f352_r4
 
-       pure function refraction_angle_at90_f352_r8(dn0,beta) result(alpha)
+       elemental function refraction_angle_at90_f352_r8(dn0,beta) result(alpha)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_at90_f352_r8
             !dir$ attributes forceinline :: refraction_angle_at90_f352_r8
 #endif
+!$omp declare simd(refraction_angle_at90_f352_r8)
             real(kind=dp), intent(in) :: dn0 
             real(kind=dp), intent(in) :: beta 
             real(kind=dp) :: alpha  
@@ -947,12 +979,13 @@ module emw_refraction
        !угол радиорефракции I типа в 
        !земной атмосфере для длин волн, меньших 5 см
        ! formula: 4.2, page 73.
-       pure function analytic_sol_L1_gl5cm_f42_r4(dn0,beta,z0,H) result(L1)
+       elemental function analytic_sol_L1_gl5cm_f42_r4(dn0,beta,z0,H) result(L1)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L1_gl5cm_f42_r4
             !dir$ attributes forceinline :: analytic_sol_L1_gl5cm_f42_r4
 #endif  
+!$omp declare simd(analytic_sol_L1_gl5cm_f42_r4)
             real(kind=sp), intent(in) :: dn0 
             real(kind=sp), intent(in) :: beta 
             real(kind=sp), intent(in) :: z0 
@@ -978,12 +1011,13 @@ module emw_refraction
             L1     = trm1*trm2*trm3 
        end function analytic_sol_L1_gl5cm_f42_r4
 
-       pure function analytic_sol_L1_gl5cm_f42_r8(dn0,beta,z0,H) result(L1)
+       elemental function analytic_sol_L1_gl5cm_f42_r8(dn0,beta,z0,H) result(L1)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L1_gl5cm_f42_r8
             !dir$ attributes forceinline :: analytic_sol_L1_gl5cm_f42_r8
 #endif  
+!$omp declare simd(analytic_sol_L1_gl5cm_f42_r8)
             real(kind=dp), intent(in) :: dn0 
             real(kind=dp), intent(in) :: beta 
             real(kind=dp), intent(in) :: z0 
@@ -1009,12 +1043,13 @@ module emw_refraction
             L1     = trm1*trm2*trm3 
        end function analytic_sol_L1_gl5cm_f42_r8
 
-       pure function analytic_sol_L2_gl5cm_f43_r4(dn0,beta,z0,H) result(L2)
+       elemental function analytic_sol_L2_gl5cm_f43_r4(dn0,beta,z0,H) result(L2)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L2_gl5cm_f43_r4
             !dir$ attributes forceinline :: analytic_sol_L2_gl5cm_f43_r4
 #endif  
+!$omp declare simd(analytic_sol_L2_gl5cm_f43_r4)
             real(kind=sp), intent(in) :: dn0 
             real(kind=sp), intent(in) :: beta 
             real(kind=sp), intent(in) :: z0 
@@ -1036,12 +1071,13 @@ module emw_refraction
             L2     = trm2*trm3 
        end function analytic_sol_L2_gl5cm_f43_r4
 
-       pure function analytic_sol_L2_gl5cm_f43_r8(dn0,beta,z0,H) result(L2)
+       elemental function analytic_sol_L2_gl5cm_f43_r8(dn0,beta,z0,H) result(L2)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L2_gl5cm_f43_r8
             !dir$ attributes forceinline :: analytic_sol_L2_gl5cm_f43_r8
 #endif  
+!$omp declare simd(analytic_sol_L2_gl5cm_f43_r8)
             real(kind=dp), intent(in) :: dn0 
             real(kind=dp), intent(in) :: beta 
             real(kind=dp), intent(in) :: z0 
@@ -1063,12 +1099,13 @@ module emw_refraction
             L2     = trm2*trm3 
        end function analytic_sol_L2_gl5cm_f43_r8
 
-       pure function analytic_sol_L3_gl5cm_f43_r4(dn0,beta,z0,H) result(L3)
+       elemental function analytic_sol_L3_gl5cm_f43_r4(dn0,beta,z0,H) result(L3)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L3_gl5cm_f43_r4
             !dir$ attributes forceinline :: analytic_sol_L3_gl5cm_f43_r4
 #endif  
+!$omp declare simd(analytic_sol_L3_gl5cm_f43_r4)
             real(kind=sp), intent(in) :: dn0 
             real(kind=sp), intent(in) :: beta 
             real(kind=sp), intent(in) :: z0 
@@ -1090,12 +1127,13 @@ module emw_refraction
             L2     = trm2*trm3 
        end function analytic_sol_L3_gl5cm_f43_r4
 
-         pure function analytic_sol_L3_gl5cm_f43_r8(dn0,beta,z0,H) result(L3)
+         elemental function analytic_sol_L3_gl5cm_f43_r8(dn0,beta,z0,H) result(L3)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L3_gl5cm_f43_r8
             !dir$ attributes forceinline :: analytic_sol_L3_gl5cm_f43_r8
 #endif  
+!$omp declare simd(analytic_sol_L3_gl5cm_f43_r8)
             real(kind=dp), intent(in) :: dn0 
             real(kind=dp), intent(in) :: beta 
             real(kind=dp), intent(in) :: z0 
@@ -1117,12 +1155,13 @@ module emw_refraction
             L2     = trm2*trm3 
        end function analytic_sol_L3_gl5cm_f43_r8
 
-       pure function refraction_angle_for_gl5cm_f41_r4(n0,nh,z0,beta,dn0,H) result(alpha)
+       elemental function refraction_angle_for_gl5cm_f41_r4(n0,nh,z0,beta,dn0,H) result(alpha)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_for_gl5cm_f41_r4
             !dir$ attributes forceinline :: refraction_angle_for_gl5cm_f41_r4
 #endif  
+!$omp declare simd(refraction_angle_for_gl5cm_f41_r4)
              real(kind=sp),  intent(in) :: n0 
              real(kind=sp),  intent(in) :: nh 
              real(kind=sp),  intent(in) :: z0 
@@ -1149,12 +1188,13 @@ module emw_refraction
              alpha  = trm1+trm2+trm3 
        end function refraction_angle_for_gl5cm_f41_r4
 
-       pure function refraction_angle_for_gl5cm_f41_r8(n0,nh,z0,beta,dn0,H) result(alpha)
+       elemental function refraction_angle_for_gl5cm_f41_r8(n0,nh,z0,beta,dn0,H) result(alpha)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_for_gl5cm_f41_r8
             !dir$ attributes forceinline :: refraction_angle_for_gl5cm_f41_r8
 #endif  
+!$omp declare simd(refraction_angle_for_gl5cm_f41_r8)
              real(kind=dp),  intent(in) :: n0 
              real(kind=dp),  intent(in) :: nh 
              real(kind=dp),  intent(in) :: z0 
@@ -1182,12 +1222,13 @@ module emw_refraction
        end function refraction_angle_for_gl5cm_f41_r8
 
        !показатель преломления ионосферы в среднем
-       pure function refractive_idx_lo_ionosphere_f412_r4(h,d,f,Nmf) result(n)
+       elemental function refractive_idx_lo_ionosphere_f412_r4(h,d,f,Nmf) result(n)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_f412_r4
             !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_f412_r4
-#endif  
+#endif 
+!$omp declare simd(refractive_idx_lo_ionosphere_f412_r4) 
             real(kind=sp), intent(in) :: h     ! height 
             real(kind=sp), intent(in) :: d     ! height a maximum of layer F2
             real(kind=sp), intent(in) :: f     ! center signal frequency
@@ -1201,12 +1242,13 @@ module emw_refraction
             n   = 1.0_sp-dnm*(2.0_sp*hd-hhdd)
        end function refractive_idx_lo_ionosphere_f412_r4
 
-        pure function refractive_idx_lo_ionosphere_f412_r8(h,d,f,Nmf) result(n)
+        elemental function refractive_idx_lo_ionosphere_f412_r8(h,d,f,Nmf) result(n)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_f412_r8
             !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_f412_r8
 #endif  
+!$omp declare simd(refractive_idx_lo_ionosphere_f412_r8) 
             real(kind=dp), intent(in) :: h     ! height 
             real(kind=dp), intent(in) :: d     ! height a maximum of layer F2
             real(kind=dp), intent(in) :: f     ! center signal frequency
@@ -1220,12 +1262,13 @@ module emw_refraction
             n   = 1.0_dp-dnm*(2.0_dp*hd-hhdd)
        end function refractive_idx_lo_ionosphere_f412_r8
 
-       pure function refractive_idx_hi_ionosphere_f413_r4(h,d,f,Nmf,beta) result(n)
+       elemental function refractive_idx_hi_ionosphere_f413_r4(h,d,f,Nmf,beta) result(n)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refractive_idx_hi_ionosphere_f413_r4
             !dir$ attributes forceinline :: refractive_idx_hi_ionosphere_f413_r4
-#endif  
+#endif 
+!$omp declare simd(refractive_idx_hi_ionosphere_f413_r4) 
             real(kind=sp), intent(in) :: h     ! height 
             real(kind=sp), intent(in) :: d     ! height a maximum of layer F2
             real(kind=sp), intent(in) :: f     ! center signal frequency
@@ -1239,6 +1282,27 @@ module emw_refraction
             exp1= exp(earg)
             n   = 1.0_sp-dnm*exp1 
        end function refractive_idx_hi_ionosphere_f413_r4
+
+       elemental function refractive_idx_hi_ionosphere_f413_r8(h,d,f,Nmf,beta) result(n)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refractive_idx_hi_ionosphere_f413_r8
+            !dir$ attributes forceinline :: refractive_idx_hi_ionosphere_f413_r8
+#endif 
+!$omp declare simd(refractive_idx_hi_ionosphere_f413_r8)  
+            real(kind=dp), intent(in) :: h     ! height 
+            real(kind=dp), intent(in) :: d     ! height a maximum of layer F2
+            real(kind=dp), intent(in) :: f     ! center signal frequency
+            real(kind=dp), intent(in) :: Nmf   ! electron density in layer F2
+            real(kind=dp), intent(in) :: beta  ! diminishing speed of electron concentration in layer F2
+            real(kind=dp) :: n 
+            real(kind=dp), automatic :: dnm, fcr, earg, exp1 
+            fcr = sqrt(80.8_dp*Nmf)
+            dnm = fcr*fcr/(2.0_dp*f*f)
+            earg= -beta*(h-d)
+            exp1= exp(earg)
+            n   = 1.0_dp-dnm*exp1 
+       end function refractive_idx_hi_ionosphere_f413_r8
 
 
 
