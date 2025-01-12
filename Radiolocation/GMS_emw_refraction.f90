@@ -1337,6 +1337,25 @@ module emw_refraction
             dnM = fcr*fcr/sfc  
        end function compute_delnM_f414_r8
 
+       elemental function compute_delnEps_f421_r4(fc,Nmf,beta,d) result(dnE)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: compute_delnEps_f421_r4
+            !dir$ attributes forceinline :: compute_delnEps_f421_r4
+#endif 
+!$omp declare simd(compute_delnEps_f421_r4)
+            real(kind=sp), intent(in) :: fc 
+            real(kind=sp), intent(in) :: Nmf 
+            real(kind=sp), intent(in) :: beta 
+            real(kind=sp), intent(in) :: d 
+            real(kind=sp) :: dnE 
+            real(kind=sp), automatic :: dnM, earg, exp1 
+            earg = beta*d 
+            dnM  = compute_delnM_f414_r4(fc,Nmf)
+            exp1 = exp(earg)
+            dnE  = dnM*exp1 
+       end function compute_delnEps_f421_r4
+
       ! An analytic solution of `L1` component integral 
       elemental function analytic_sol_L1_lo_ionosphere_f418_r4(fc,Nmf,z0,d,R0) result(L1)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
@@ -1425,5 +1444,7 @@ module emw_refraction
             trm4  = (C1/sqr)*t1-t2
             L1    = trm1*trm2+trm3*trm4 
       end function analytic_sol_L1_lo_ionosphere_f418_r8
+
+
 
 end module emw_refraction
