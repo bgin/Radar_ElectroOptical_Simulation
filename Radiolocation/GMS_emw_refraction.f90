@@ -1220,4 +1220,26 @@ module emw_refraction
             n   = 1.0_dp-dnm*(2.0_dp*hd-hhdd)
        end function refractive_idx_lo_ionosphere_f412_r8
 
+       pure function refractive_idx_hi_ionosphere_f413_r4(h,d,f,Nmf,beta) result(n)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refractive_idx_hi_ionosphere_f413_r4
+            !dir$ attributes forceinline :: refractive_idx_hi_ionosphere_f413_r4
+#endif  
+            real(kind=sp), intent(in) :: h     ! height 
+            real(kind=sp), intent(in) :: d     ! height a maximum of layer F2
+            real(kind=sp), intent(in) :: f     ! center signal frequency
+            real(kind=sp), intent(in) :: Nmf   ! electron density in layer F2
+            real(kind=sp), intent(in) :: beta  ! diminishing speed of electron concentration in layer F2
+            real(kind=sp) :: n 
+            real(kind=sp), automatic :: dnm, fcr, earg, exp1 
+            fcr = sqrt(80.8_sp*Nmf)
+            dnm = fcr*fcr/(2.0_sp*f*f)
+            earg= -beta*(h-d)
+            exp1= exp(earg)
+            n   = 1.0_sp-dnm*exp1 
+       end function refractive_idx_hi_ionosphere_f413_r4
+
+
+
 end module emw_refraction
