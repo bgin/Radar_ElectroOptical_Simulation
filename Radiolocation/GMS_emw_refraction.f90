@@ -1188,7 +1188,17 @@ module emw_refraction
             !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_f412_r4
             !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_f412_r4
 #endif  
-            
+            real(kind=sp), intent(in) :: h     ! height 
+            real(kind=sp), intent(in) :: d     ! height a maximum of layer F2
+            real(kind=sp), intent(in) :: f     ! center signal frequency
+            real(kind=sp), intent(in) :: Nmf   ! electron density in layer F2
+            real(kind=sp) :: n 
+            real(kind=sp), automatic :: dnm, hd, hhdd, fcr 
+            fcr = sqrt(80.0_sp*Nmf)
+            hd  = h/d 
+            dnm = fcr*fcr/(2.0_sp*f*f)
+            hhdd= hd*hd 
+            n   = 1.0_sp-dnm*(2.0_sp*hd-hhdd)
        end function refractive_idx_lo_ionosphere_f412_r4
 
 
