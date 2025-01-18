@@ -1749,4 +1749,29 @@ module emw_refraction
             L2     = trm1+trm2+trm3 
       end function analytic_sol_L2_hi_ionosphere_f420_r8
 
+      ! угол рефракции в ионосфере
+      ! L1 — величина угла рефракции в нижней 
+      ! ионосфере; L2 — величина угла рефракции в верхней ионосфере;
+      ! formula: 4.15, page: 77
+      elemental function refraction_angle_in_ionosphere_f415_r4(fc,Nmf,beta,d,R0,z0,D1) result(L)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_in_ionosphere_f415_r4
+            !dir$ attributes forceinline :: refraction_angle_in_ionosphere_f415_r4
+#endif 
+!$omp declare simd(refraction_angle_in_ionosphere_f415_r4)
+            real(kind=sp),  intent(in) :: fc 
+            real(kind=sp),  intent(in) :: Nmf 
+            real(kind=sp),  intent(in) :: beta 
+            real(kind=sp),  intent(in) :: d 
+            real(kind=sp),  intent(in) :: R0 
+            real(kind=sp),  intent(in) :: z0 
+            real(kind=sp),  intent(in) :: D1 
+            real(kind=sp) :: L
+            real(kind=sp), automatic :: L1, L2 
+            L1 = analytic_sol_L1_lo_ionosphere_f418_r4(fc,Nmf,z0,d,R0)
+            L2 = analytic_sol_L2_hi_ionosphere_f420_r4(fc,Nmf,beta,d,R0,z0,D1)
+            L  = L1+L2 
+      end function refraction_angle_in_ionosphere_f415_r4
+
 end module emw_refraction
