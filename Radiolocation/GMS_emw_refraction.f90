@@ -1464,6 +1464,8 @@ module emw_refraction
             L1    = trm1*trm2+trm3*trm4 
       end function analytic_sol_L1_lo_ionosphere_f418_r8
 
+      ! formula: 4.22, page: 78
+
       elemental function analytic_sol_L01_hi_ionosphere_f422_r4(fc,Nmf,beta,d,R0,z0,D1) result(L01)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
@@ -1502,5 +1504,78 @@ module emw_refraction
             trm3  = (exp3-exp4)*strm
             L01   = trm1*(trm2-trm3)
       end function analytic_sol_L01_hi_ionosphere_f422_r4
+
+      elemental function analytic_sol_L01_hi_ionosphere_f422_r8(fc,Nmf,beta,d,R0,z0,D1) result(L01)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L01_hi_ionosphere_f422_r8
+            !dir$ attributes forceinline :: analytic_sol_L01_hi_ionosphere_f422_r8
+#endif 
+!$omp declare simd(analytic_sol_L01_hi_ionosphere_f422_r8)
+            real(kind=dp),  intent(in) :: fc 
+            real(kind=dp),  intent(in) :: Nmf 
+            real(kind=dp),  intent(in) :: beta 
+            real(kind=dp),  intent(in) :: d 
+            real(kind=dp),  intent(in) :: R0 
+            real(kind=dp),  intent(in) :: z0 
+            real(kind=dp),  intent(in) :: D1 
+            real(kind=dp)  :: L01 
+            real(kind=dp), automatic :: sdnE, ctgz0, sec2z0, bd
+            real(kind=dp), automatic :: bD1,  strm,  exp1,  exp2 
+            real(kind=dp), automatic :: exp3, exp4, trm1, trm2 
+            real(kind=dp), automatic :: t0, t1, tg2z0, trm3  
+            t0    = compute_delnEps_f421_r8(fc,Nmf,beta,d)
+            bd    = beta*d 
+            bD1   = beta*D1 
+            ctgz0 = 1.0_dp/tan(z0)
+            sdnE  = t0*t0 
+            t1    = 1.0_dp/cos(z0)
+            sec2z0= t1*t1 
+            t0    = tan(z0)
+            tg2z0 = t0*t0 
+            strm  = sqrt((1.0_dp+2.0_dp*tg2z0*d)/R0)
+            trm1  = sdnE*beta*R0*ctgz0*sec2z0
+            exp1  = exp(-bd)
+            exp2  = exp(-2.0_dp*bd)
+            exp3  = exp(-bD1)
+            exp4  = exp(-2.0_dp*bD1)
+            trm2  = (exp1-exp2)*strm
+            trm3  = (exp3-exp4)*strm
+            L01   = trm1*(trm2-trm3)
+      end function analytic_sol_L01_hi_ionosphere_f422_r8
+
+      elemental function analytic_sol_L02_hi_ionosphere_f423_r4(fc,Nmf,beta,d,R0,z0,D1) result(L02)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L02_hi_ionosphere_f423_r4
+            !dir$ attributes forceinline :: analytic_sol_L02_hi_ionosphere_f423_r4
+#endif 
+!$omp declare simd(analytic_sol_L02_hi_ionosphere_f423_r4)
+            real(kind=sp),  intent(in) :: fc 
+            real(kind=sp),  intent(in) :: Nmf 
+            real(kind=sp),  intent(in) :: beta 
+            real(kind=sp),  intent(in) :: d 
+            real(kind=sp),  intent(in) :: R0 
+            real(kind=sp),  intent(in) :: z0 
+            real(kind=sp),  intent(in) :: D1 
+            real(kind=sp) :: L02
+            real(kind=sp), parameter :: C314159265358979323846264338328 = 3.14159265358979323846264338328_sp
+            real(kind=sp), automatic :: dnEps, ctgz0, sctgz0, sqr
+            real(kind=sp), automatic :: bRctgz0, sqr1, sqr2, exp1 
+            real(kind=sp), automatic :: prob1, prob2, trm1, trm2 
+            sqr     = sqrt(C314159265358979323846264338328*beta*R0*0.5_sp)
+            ctgz0   = 1.0_sp/tan(z0)
+            dnEps   = compute_delnEps_f421_r4(fc,Nmf,beta,d)
+            sctgz0  = ctgz0*ctgz0 
+            bRctgz0 = beta*R0*sctgz0
+            exp1    = exp(bRctgz0*0.5_sp) 
+            sqr1    = sqrt(bRctgz0+2.0_sp*beta*D1)
+            sqr2    = sqrt(bRctgz0+2.0_sp*beta*d)
+            trm1    = dnEps*sqr*ctgz0*exp1 
+            prob1   = prob_integral_r4(sqr1)
+            prob2   = prob_integral_r4(sqr2)
+            trm2    = prob1-prob2 
+            L02     = trm1*trm2 
+      end function analytic_sol_L02_hi_ionosphere_f423_r4
 
 end module emw_refraction
