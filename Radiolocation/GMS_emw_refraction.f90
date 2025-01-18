@@ -1774,4 +1774,25 @@ module emw_refraction
             L  = L1+L2 
       end function refraction_angle_in_ionosphere_f415_r4
 
+      elemental function refraction_angle_in_ionosphere_f415_r8(fc,Nmf,beta,d,R0,z0,D1) result(L)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_in_ionosphere_f415_r8
+            !dir$ attributes forceinline :: refraction_angle_in_ionosphere_f415_r8
+#endif 
+!$omp declare simd(refraction_angle_in_ionosphere_f415_r8)
+            real(kind=dp),  intent(in) :: fc 
+            real(kind=dp),  intent(in) :: Nmf 
+            real(kind=dp),  intent(in) :: beta 
+            real(kind=dp),  intent(in) :: d 
+            real(kind=dp),  intent(in) :: R0 
+            real(kind=dp),  intent(in) :: z0 
+            real(kind=dp),  intent(in) :: D1 
+            real(kind=dp) :: L
+            real(kind=dp), automatic :: L1, L2 
+            L1 = analytic_sol_L1_lo_ionosphere_f418_r8(fc,Nmf,z0,d,R0)
+            L2 = analytic_sol_L2_hi_ionosphere_f420_r8(fc,Nmf,beta,d,R0,z0,D1)
+            L  = L1+L2 
+      end function refraction_angle_in_ionosphere_f415_r8
+
 end module emw_refraction
