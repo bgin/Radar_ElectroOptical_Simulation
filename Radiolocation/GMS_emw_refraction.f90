@@ -1716,4 +1716,37 @@ module emw_refraction
             L2     = trm1+trm2+trm3 
       end function analytic_sol_L2_hi_ionosphere_f420_r4
 
+      elemental function analytic_sol_L2_hi_ionosphere_f420_r8(fc,Nmf,beta,d,R0,z0,D1) result(L2)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L2_hi_ionosphere_f420_r8
+            !dir$ attributes forceinline :: analytic_sol_L2_hi_ionosphere_f420_r8
+#endif 
+!$omp declare simd(analytic_sol_L2_hi_ionosphere_f420_r8)
+            real(kind=dp),  intent(in) :: fc 
+            real(kind=dp),  intent(in) :: Nmf 
+            real(kind=dp),  intent(in) :: beta 
+            real(kind=dp),  intent(in) :: d 
+            real(kind=dp),  intent(in) :: R0 
+            real(kind=dp),  intent(in) :: z0 
+            real(kind=dp),  intent(in) :: D1 
+            real(kind=dp) :: L2 
+            real(kind=dp), automatic :: L01, L02, L03 
+            real(kind=dp), automatic :: dnEps, ctgz0, i2cosz0, ssecz0 
+            real(kind=dp), automatic :: trm1, trm2, trm3, t0, t1  
+            ctgz0  = 1.0_sp/tan(z0) 
+            dnEps  = compute_delnEps_f421_r8(fc,Nmf,beta,d)
+            t0     = cos(z0)
+            t1     = 1.0_dp/t0 
+            ssecz0 = t1*t1 
+            i2cosz0= 1.0_dp/(t0*t0) 
+            L01    = analytic_sol_L01_hi_ionosphere_f422_r8(fc,Nmf,beta,d,R0,z0,D1)
+            trm1   = L01+(1.0_dp-beta*R0*dnEps)
+            L02    = analytic_sol_L02_hi_ionosphere_f423_r8(fc,Nmf,beta,d,R0,z0,D1)
+            trm2   = ctgz0*ssecz0*L02 
+            L03    = analytic_sol_L03_hi_ionosphere_f424_r8(fc,Nmf,beta,d,R0,z0,D1)
+            trm3   = dnEps*beta*R0*ctgz0*i2cosz0*L03 
+            L2     = trm1+trm2+trm3 
+      end function analytic_sol_L2_hi_ionosphere_f420_r8
+
 end module emw_refraction
