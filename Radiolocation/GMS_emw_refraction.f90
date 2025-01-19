@@ -1880,4 +1880,99 @@ module emw_refraction
              angle  = trm1+trm2 
       end function refraction_angle_ionosphere_z0eq90_f428_r4
 
+       elemental function refraction_angle_ionosphere_z0eq90_f428_r8(fc,Nmf,d,R0,z0) result(alpha)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_ionosphere_z0eq90_f428_r8
+            !dir$ attributes forceinline :: refraction_angle_ionosphere_z0eq90_f428_r8
+#endif 
+!$omp declare simd(refraction_angle_ionosphere_z0eq90_f428_r8)
+             real(kind=dp),  intent(in) :: fc 
+             real(kind=dp),  intent(in) :: Nmf 
+             real(kind=dp),  intent(in) :: d 
+             real(kind=dp),  intent(in) :: R0 
+             real(kind=dp),  intent(in) :: z0 
+             real(kind=dp) :: alpha 
+             real(kind=dp), parameter :: C1666666666666666666666666666667 = 1.666666666666666666666666666667_dp
+             real(kind=dp), parameter :: C48                              = 4.8_dp 
+             real(kind=dp), automatic :: delnM, R02d, sqr, sqrp3
+             real(kind=dp), automatic :: t0, trm1, trm2 
+             R02d   = R0/(d+d)
+             delnM  = compute_delnM_f414_r8(fc,Nmf)
+             sqr    = sqrt(R02d)
+             trm1   = C1666666666666666666666666666667*delnM*sqr 
+             sqrp3  = sqr*sqr*sqr 
+             trm2   = C48*delnM*delnM*sqrp3 
+             angle  = trm1+trm2 
+      end function refraction_angle_ionosphere_z0eq90_f428_r8
+     
+      ! усредненный
+      ! показатель преломления атмосферы меняется.
+      ! 0<=h<=H1
+      ! formula: 4.29, page: 80
+      elemental function n_avg_0_h_H1_f429_r4(deln0,beta,h) result(n)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: n_avg_0_h_H1_f429_r4
+            !dir$ attributes forceinline :: n_avg_0_h_H1_f429_r4
+#endif 
+!$omp declare simd(n_avg_0_h_H1_f429_r4)
+            real(kind=sp), intent(in) :: deln0 
+            real(kind=sp), intent(in) :: beta 
+            real(kind=sp), intent(in) :: h 
+            real(kind=sp) :: n 
+            real(kind=sp), automatic :: bh, exp1 
+            bh  = -beta*h 
+            exp1= exp(bh)
+            n   = 1.0_sp+deln0*exp1 
+      end function n_avg_0_h_H1_f429_r4
+
+      elemental function n_avg_0_h_H1_f429_r8(deln0,beta,h) result(n)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: n_avg_0_h_H1_f429_r8
+            !dir$ attributes forceinline :: n_avg_0_h_H1_f429_r8
+#endif 
+!$omp declare simd(n_avg_0_h_H1_f429_r8)
+            real(kind=dp), intent(in) :: deln0 
+            real(kind=dp), intent(in) :: beta 
+            real(kind=dp), intent(in) :: h 
+            real(kind=dp) :: n 
+            real(kind=dp), automatic :: bh, exp1 
+            bh  = -beta*h 
+            exp1= exp(bh)
+            n   = 1.0_dp+deln0*exp1 
+      end function n_avg_0_h_H1_f429_r8
+
+      ! усредненный
+      ! показатель преломления атмосферы меняется.
+      ! H1<=h<=H2
+      ! formula: 4.30, page: 80
+       elemental function n_avg_H1_h_H2_f430_r4(fc,Nmf,h,H1,H2) result(n)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: n_avg_H1_h_H2_f430_r4
+            !dir$ attributes forceinline :: n_avg_H1_h_H2_f430_r4
+#endif 
+!$omp declare simd(n_avg_H1_h_H2_f430_r4)
+            real(kind=sp),  intent(in) :: fc 
+            real(kind=sp),  intent(in) :: Nmf 
+            real(kind=sp),  intent(in) :: h 
+            real(kind=sp),  intent(in) :: H1 
+            real(kind=sp),  intent(in) :: H2 
+            real(kind=sp),  :: n 
+            real(kind=sp), automatic :: delNm, rat1, sqr1, sqr2
+            real(kind=sp), automatic :: rat2, trm1, trm2, t0, t1  
+            t0   = h-H1 
+            t1   = H2-H1 
+            rat1 = t0/t1 
+            delNm= compute_delnM_f414_r4(fc,Nmf)
+            rat2 = (t0*t0)/(t1*t1)
+            trm1 = 1.0_sp-delNm 
+            trm2 = 2.0_sp*rat1-rat2 
+            n    = trm1*trm2  
+       end function n_avg_H1_h_H2_f430_r4
+
+
+
 end module emw_refraction
