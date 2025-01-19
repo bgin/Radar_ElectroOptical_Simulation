@@ -1825,4 +1825,59 @@ module emw_refraction
              alpha  = (trm1+t0)*trm2
       end function refraction_angle_ionosphere_z0le60_f425_r4
 
+       elemental function refraction_angle_ionosphere_z0le60_f425_r8(fc,Nmf,d,R0,z0) result(alpha)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_ionosphere_z0le60_f425_r8
+            !dir$ attributes forceinline :: refraction_angle_ionosphere_z0le60_f425_r8
+#endif 
+!$omp declare simd(refraction_angle_ionosphere_z0le60_f425_r8)
+             real(kind=dp),  intent(in) :: fc 
+             real(kind=dp),  intent(in) :: Nmf 
+             real(kind=dp),  intent(in) :: d 
+             real(kind=dp),  intent(in) :: R0 
+             real(kind=dp),  intent(in) :: z0 
+             real(kind=dp) :: alpha 
+             real(kind=dp), parameter :: C0666666666666666666666666666667 = 0.666666666666666666666666666667_dp
+             real(kind=dp), automatic :: delnM, dR0, tgz0, scosz0
+             real(kind=dp), automatic :: trm1, trm2, t0 
+             dR0    = d/R0 
+             tgz0   = tan(z0) 
+             t0     = cos(z0)
+             scosz0 = t0*t0 
+             delnM  = compute_delnM_f414_r8(fc,Nmf)
+             trm2   = tgz0/scosz0
+             t0     = delNm*0.5_dp 
+             trm1   = C0666666666666666666666666666667*delnM*dR0 
+             alpha  = (trm1+t0)*trm2
+      end function refraction_angle_ionosphere_z0le60_f425_r8
+
+      ! m > 1 и z0=90°.
+      ! formula: 4.28, page: 79
+      elemental function refraction_angle_ionosphere_z0eq90_f428_r4(fc,Nmf,d,R0,z0) result(alpha)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_ionosphere_z0eq90_f428_r4
+            !dir$ attributes forceinline :: refraction_angle_ionosphere_z0eq90_f428_r4
+#endif 
+!$omp declare simd(refraction_angle_ionosphere_z0eq90_f428_r4)
+             real(kind=sp),  intent(in) :: fc 
+             real(kind=sp),  intent(in) :: Nmf 
+             real(kind=sp),  intent(in) :: d 
+             real(kind=sp),  intent(in) :: R0 
+             real(kind=sp),  intent(in) :: z0 
+             real(kind=sp) :: alpha 
+             real(kind=sp), parameter :: C1666666666666666666666666666667 = 1.666666666666666666666666666667_sp
+             real(kind=sp), parameter :: C48                              = 4.8_sp 
+             real(kind=sp), automatic :: delnM, R02d, sqr, sqrp3
+             real(kind=sp), automatic :: t0, trm1, trm2 
+             R02d   = R0/(d+d)
+             delnM  = compute_delnM_f414_r4(fc,Nmf)
+             sqr    = sqrt(R02d)
+             trm1   = C1666666666666666666666666666667*delnM*sqr 
+             sqrp3  = sqr*sqr*sqr 
+             trm2   = C48*delnM*delnM*sqrp3 
+             angle  = trm1+trm2 
+      end function refraction_angle_ionosphere_z0eq90_f428_r4
+
 end module emw_refraction
