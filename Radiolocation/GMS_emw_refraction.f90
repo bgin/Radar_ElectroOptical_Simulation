@@ -1795,4 +1795,34 @@ module emw_refraction
             L  = L1+L2 
       end function refraction_angle_in_ionosphere_f415_r8
 
+      ! частные случаи общей формулы (4.10).
+      ! 1. m<t 1 и z0 <60°.
+      ! formula: 4.25, page: 79
+      elemental function refraction_angle_ionosphere_z0le60_f425_r4(fc,Nmf,d,R0,z0) result(alpha)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_ionosphere_z0le60_f425_r4
+            !dir$ attributes forceinline :: refraction_angle_ionosphere_z0le60_f425_r4
+#endif 
+!$omp declare simd(refraction_angle_ionosphere_z0le60_f425_r4)
+             real(kind=sp),  intent(in) :: fc 
+             real(kind=sp),  intent(in) :: Nmf 
+             real(kind=sp),  intent(in) :: d 
+             real(kind=sp),  intent(in) :: R0 
+             real(kind=sp),  intent(in) :: z0 
+             real(kind=sp) :: alpha 
+             real(kind=sp), parameter :: C0666666666666666666666666666667 = 0.666666666666666666666666666667_sp
+             real(kind=sp), automatic :: delnM, dR0, tgz0, scosz0
+             real(kind=sp), automatic :: trm1, trm2, t0 
+             dR0    = d/R0 
+             tgz0   = tan(z0) 
+             t0     = cos(z0)
+             scosz0 = t0*t0 
+             delnM  = compute_delnM_f414_r4(fc,Nmf)
+             trm2   = tgz0/scosz0
+             t0     = delNm*0.5_sp 
+             trm1   = C0666666666666666666666666666667*delnM*dR0 
+             alpha  = (trm1+t0)*trm2
+      end function refraction_angle_ionosphere_z0le60_f425_r4
+
 end module emw_refraction
