@@ -2081,5 +2081,38 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L11    = trm1*trm2
       end function analytic_sol_L11_lo_ionosphere_f439_r4
 
+      elemental function analytic_sol_L11_lo_ionosphere_f439_r8(deln0,beta,a,z0,H1) result(L11)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L11_lo_ionosphere_f439_r8
+            !dir$ attributes forceinline :: analytic_sol_L11_lo_ionosphere_f439_r8
+#endif 
+!$omp declare simd(analytic_sol_L11_lo_ionosphere_f439_r8)
+            real(kind=dp),  intent(in) :: deln0 
+            real(kind=dp),  intent(in) :: beta 
+            real(kind=dp),  intent(in) :: a 
+            real(kind=dp),  intent(in) :: z0 
+            real(kind=dp),  intent(in) :: H1 
+            real(kind=dp) :: L11 
+            real(kind=dp), automatic :: ctgz0, ssecz0, stgz0, delba
+            real(kind=dp), automatic :: bH1, sqr, sqrtrm, t0, t1 
+            real(kind=dp), automatic :: exp1, exp2, trm1, trm2 
+            bH1    = beta*H1 
+            exp1   = exp(-bH1)
+            t0     = 1.0_dp/cos(z0)
+            ssecz0 = t0*t0 
+            delba  = deln0*deln0*beta*a 
+            t0     = tan(z0)
+            stgz0  = t0*t0 
+            t1     = 1.0_dp/t0 
+            ctgz0  = t1*t1 
+            trm1   = delba*ctgz0*ssecz0 
+            exp2   = exp1(-2.0_dp*bH1)
+            sqrtrm = 1.0_dp+(2.0_dp*stgz0*H1)/a 
+            sqr    = sqrt(sqrtrm)
+            trm2   = (exp1-exp2)*sqr 
+            L11    = trm1*trm2
+      end function analytic_sol_L11_lo_ionosphere_f439_r4
+
 
 end module emw_refraction
