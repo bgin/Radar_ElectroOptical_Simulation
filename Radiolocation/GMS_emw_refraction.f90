@@ -1973,6 +1973,54 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             n    = trm1*trm2  
        end function n_avg_H1_h_H2_f430_r4
 
+       elemental function n_avg_H1_h_H2_f430_r8(fc,Nmf,h,H1,H2) result(n)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: n_avg_H1_h_H2_f430_r8
+            !dir$ attributes forceinline :: n_avg_H1_h_H2_f430_r8
+#endif 
+!$omp declare simd(n_avg_H1_h_H2_f430_r8)
+            real(kind=dp),  intent(in) :: fc 
+            real(kind=dp),  intent(in) :: Nmf 
+            real(kind=dp),  intent(in) :: h 
+            real(kind=dp),  intent(in) :: H1 
+            real(kind=dp),  intent(in) :: H2 
+            real(kind=dp),  :: n 
+            real(kind=dp), automatic :: delNm, rat1, sqr1, sqr2
+            real(kind=dp), automatic :: rat2, trm1, trm2, t0, t1  
+            t0   = h-H1 
+            t1   = H2-H1 
+            rat1 = t0/t1 
+            delNm= compute_delnM_f414_r8(fc,Nmf)
+            rat2 = (t0*t0)/(t1*t1)
+            trm1 = 1.0_dp-delNm 
+            trm2 = 2.0_dp*rat1-rat2 
+            n    = trm1*trm2  
+       end function n_avg_H1_h_H2_f430_r8
+
+      ! усредненный
+      ! показатель преломления атмосферы меняется.
+      ! H2<=h<=H3
+      ! formula: 4.31, page: 80
+      elemental function n_avg_H2_h_H3_f431_r4(fc,Nmf,h,H2) result(n)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: n_avg_H2_h_H3_f431_r4
+            !dir$ attributes forceinline :: n_avg_H2_h_H3_f431_r4
+#endif 
+!$omp declare simd(n_avg_H2_h_H3_f431_r4)
+            real(kind=sp),  intent(in) :: fc 
+            real(kind=sp),  intent(in) :: Nmf 
+            real(kind=sp),  intent(in) :: h 
+            real(kind=sp),  intent(in) :: H2 
+            real(kind=sp),  :: n 
+            real(kind=sp), automatic :: hH2, earg, exp1, delnM
+            hH2  =  h-H2 
+            earg = -beta*hH2
+            delnM=  compute_delnM_f414_r4(fc,Nmf)
+            exp1 =  exp(earg)
+            n    - 1.0_sp-delnM*exp1
+      end function n_avg_H2_h_H3_f431_r4
 
 
 end module emw_refraction
