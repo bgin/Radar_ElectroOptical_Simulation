@@ -2112,7 +2112,37 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             sqr    = sqrt(sqrtrm)
             trm2   = (exp1-exp2)*sqr 
             L11    = trm1*trm2
-      end function analytic_sol_L11_lo_ionosphere_f439_r4
+      end function analytic_sol_L11_lo_ionosphere_f439_r8
 
+      elemental function analytic_sol_L12_lo_ionosphere_f440_r4(deln0,beta,a,z0,H1) result(L12)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L12_lo_ionosphere_f440_r4
+            !dir$ attributes forceinline :: analytic_sol_L12_lo_ionosphere_f440_r4
+#endif 
+!$omp declare simd(analytic_sol_L12_lo_ionosphere_f440_r4)
+            real(kind=sp),  intent(in) :: deln0 
+            real(kind=sp),  intent(in) :: beta 
+            real(kind=sp),  intent(in) :: a 
+            real(kind=sp),  intent(in) :: z0 
+            real(kind=sp),  intent(in) :: H1 
+            real(kind=sp)              :: L12 
+            real(kind=sp),  parameter  :: C314159265358979323846264338328 = 3.14159265358979323846264338328_sp
+            real(kind=sp),  automatic  :: deln0, ctgz0, piba, bactgz0, sctgz0  
+            real(kind=sp),  automatic  :: prob1, prob2, sqr1, sqr2 
+            real(kind=sp),  automatic  :: trm1, trm2, exp1, earg, t0, t1 
+            piba    = C314159265358979323846264338328*beta*a*0.5_sp 
+            ctgz0   = 1.0_sp/tan(z0)
+            sctgz0  = ctgz0*ctgz0 
+            bactgz0 = beta*a*sctgz0
+            exp1    = exp(bactgz0*0.5_sp)
+            trm1    = deln0*sqrt(piba)*ctgz0*exp1 
+            t0      = sqrt(bactgz0+2.0_sp*beta*H1)
+            t1      = sqrt(bactgz0)
+            prob1   = prob_integral_r4(t0)
+            prob2   = prob_integral_r4(t1)
+            trm2    = prob1-prob2 
+            L12     = trm1*trm2 
+      end function analytic_sol_L12_lo_ionosphere_f440_r4
 
 end module emw_refraction
