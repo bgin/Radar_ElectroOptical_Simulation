@@ -2022,5 +2022,64 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             n    - 1.0_sp-delnM*exp1
       end function n_avg_H2_h_H3_f431_r4
 
+      elemental function n_avg_H2_h_H3_f431_r8(fc,Nmf,h,H2) result(n)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: n_avg_H2_h_H3_f431_r8
+            !dir$ attributes forceinline :: n_avg_H2_h_H3_f431_r8
+#endif 
+!$omp declare simd(n_avg_H2_h_H3_f431_r8)
+            real(kind=dp),  intent(in) :: fc 
+            real(kind=dp),  intent(in) :: Nmf 
+            real(kind=dp),  intent(in) :: h 
+            real(kind=dp),  intent(in) :: H2 
+            real(kind=dp),  :: n 
+            real(kind=dp), automatic :: hH2, earg, exp1, delnM
+            hH2  =  h-H2 
+            earg = -beta*hH2
+            delnM=  compute_delnM_f414_r8(fc,Nmf)
+            exp1 =  exp(earg)
+            n    - 1.0_dp-delnM*exp1
+      end function n_avg_H2_h_H3_f431_r8
+
+      !Так к-ак усредненная зависимость показателя 
+      !преломления атмосферы определяется тремя 
+      !соотношениями (4.29), (4.30) и (4.31), то (4.33) целесообразно 
+      !разбить на три слагаемых
+      !L=L1+L2+L3
+
+      elemental function analytic_sol_L11_lo_ionosphere_f439_r4(deln0,beta,a,z0,H1) result(L11)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L11_lo_ionosphere_f439_r4
+            !dir$ attributes forceinline :: analytic_sol_L11_lo_ionosphere_f439_r4
+#endif 
+!$omp declare simd(analytic_sol_L11_lo_ionosphere_f439_r4)
+            real(kind=sp),  intent(in) :: deln0 
+            real(kind=sp),  intent(in) :: beta 
+            real(kind=sp),  intent(in) :: a 
+            real(kind=sp),  intent(in) :: z0 
+            real(kind=sp),  intent(in) :: H1 
+            real(kind=sp) :: L11 
+            real(kind=sp), automatic :: ctgz0, ssecz0, stgz0, delba
+            real(kind=sp), automatic :: bH1, sqr, sqrtrm, t0, t1 
+            real(kind=sp), automatic :: exp1, exp2, trm1, trm2 
+            bH1    = beta*H1 
+            exp1   = exp(-bH1)
+            t0     = 1.0_sp/cos(z0)
+            ssecz0 = t0*t0 
+            delba  = deln0*deln0*beta*a 
+            t0     = tan(z0)
+            stgz0  = t0*t0 
+            t1     = 1.0_sp/t0 
+            ctgz0  = t1*t1 
+            trm1   = delba*ctgz0*ssecz0 
+            exp2   = exp1(-2.0_sp*bH1)
+            sqrtrm = 1.0_sp+(2.0_sp*stgz0*H1)/a 
+            sqr    = sqrt(sqrtrm)
+            trm2   = (exp1-exp2)*sqr 
+            L11    = trm1*trm2
+      end function analytic_sol_L11_lo_ionosphere_f439_r4
+
 
 end module emw_refraction
