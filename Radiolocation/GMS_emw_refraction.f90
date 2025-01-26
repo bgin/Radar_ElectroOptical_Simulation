@@ -2428,4 +2428,58 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L22     = trm1*trm2 
       end function analytic_sol_L22_med_ionosphere_f444_r4
 
+      elemental function analytic_sol_L22_med_ionosphere_f444_r8(deln0,fc,Nmf,H1,H2,a,z0) result(L22)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L22_med_ionosphere_f444_r8
+            !dir$ attributes forceinline :: analytic_sol_L22_med_ionosphere_f444_r8
+#endif 
+
+            real(kind=dp),   intent(in) :: deln0
+            real(kind=dp),   intent(in) :: fc 
+            real(kind=dp),   intent(in) :: Nmf 
+            real(kind=dp),   intent(in) :: H1 
+            real(kind=dp),   intent(in) :: H2 
+            real(kind=dp),   intent(in) :: a 
+            real(kind=dp),   intent(in) :: z0 
+            real(kind=dp) :: L22 
+            real(kind=dp),   automatic :: stgz0, delnM, scosz0, b4, tgz0  
+            real(kind=dp),   automatic :: b2, b3, H1s, H2s 
+            real(kind=dp),   automatic :: p, q, g, b, H2H1p4 
+            real(kind=dp),   automatic :: trm1, trm2, lrat, rrat 
+            real(kind=dp),   automatic :: t0, t1, t2, t3, cosz  
+            tgz0    = tan(z0)
+            stgz0   = tgz0*tgz0 
+            delnM   = compute_delnM_f414_r8(fc,Nmf)
+            b       = (2.0_dp*stgz0)/a
+            H2s     = H2*H2 
+            b4      = b*b*b*b 
+            H1s     = H1*H1 
+            t1      = (H2-H1)*(H2-H1)
+            H2H1p4  = t1*t1 
+            g       = H2s-t1*(1.0_dp+deln0/delnM)
+            b2      = b*b 
+            b3      = b2*b 
+            t0      = 8.0_dp+24.0_dp*b*H2
+            t1      = 19.0_dp*b2*H2s 
+            t2      = 3.0_dp*b3*H2s*H2 
+            cosz    = cos(z0) 
+            t3      = 5.0_dp*b2*g 
+            t4      = 1.0_dp+b*H2 
+            p       = t0+t1+t2+t3+t4 
+            t0      = 8.0_dp+4.0_dp*b*H1-b2*H2s  
+            t1      = b3*(H2s*H2)*0.5_dp+20._sp*b*H2
+            t2      = 10.0_dp*b2*H2s+10.0_dp*b2*H1*H2 
+            t3      = 5.0_dp*b3*H1s*H2*0.5_dp+5.0_dp*b3*H1*H2s 
+            t4      = 5.0_dp*b2*g+5.0_dp*b3*g*(H1+H2)*0.5_dp 
+            q       = t0+t1+t2-t3+t4 
+            lrat    = p/sqrt(1.0_dp+b*H2)
+            rrat    = q/sqrt(1.0_dp+b*H1)
+            trm2    = lrat-rrat 
+            t0      = 8.0_dp*tgz0*delnM*delnM 
+            t1      = 5.0_dp*cosz*cosz*b4*H2H1p4 
+            trm1    = t0/t1 
+            L22     = trm1*trm2 
+      end function analytic_sol_L22_med_ionosphere_f444_r8
+
 end module emw_refraction
