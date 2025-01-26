@@ -2504,6 +2504,28 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L22  = analytic_sol_L22_med_ionosphere_f444_r4(deln0,fc,Nmf,H1,H2,a,z0)
             L2   = L21+L22 
       end function refraction_angle_atmos_L2_med_f442_r4
+
+      elemental function refraction_angle_atmos_L2_med_f442_r8(deln0,fc,Nmf,H1,H2,a,z0) result(L2)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_L2_med_f442_r8
+            !dir$ attributes forceinline :: refraction_angle_atmos_L2_med_f442_r8
+#endif 
+
+            real(kind=dp),   intent(in) :: deln0
+            real(kind=dp),   intent(in) :: fc 
+            real(kind=dp),   intent(in) :: Nmf 
+            real(kind=dp),   intent(in) :: H1 
+            real(kind=dp),   intent(in) :: H2 
+            real(kind=dp),   intent(in) :: a 
+            real(kind=dp),   intent(in) :: z0 
+            real(kind=dp) :: L2
+            real(kind=dp),   automatic :: L21, L22 
+            L21  = analytic_sol_L21_med_ionosphere_f443_r8(fc,Nmf,H1,H2,a,z0)
+            L22  = analytic_sol_L22_med_ionosphere_f444_r8(deln0,fc,Nmf,H1,H2,a,z0)
+            L2   = L21+L22 
+      end function refraction_angle_atmos_L2_med_f442_r8
+     
      
 
 end module emw_refraction
