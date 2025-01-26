@@ -2269,4 +2269,33 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L1     = L11*L12+L13 
       end function refraction_angle_atmos_L1_lo_f438_r4
 
+      elemental function refraction_angle_atmos_L1_lo_f438_r8(deln0,beta,a,z0,H1) resilt(L1)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_L1_lo_f438_r8
+            !dir$ attributes forceinline :: refraction_angle_atmos_L1_lo_f438_r8
+#endif 
+!$omp declare simd(refraction_angle_atmos_L1_lo_f438_r8)
+            real(kind=dp),  intent(in) :: deln0 
+            real(kind=dp),  intent(in) :: beta 
+            real(kind=dp),  intent(in) :: a 
+            real(kind=dp),  intent(in) :: z0 
+            real(kind=dp),  intent(in) :: H1 
+            real(kind=dp) :: L1 
+            real(kind=dp),  automatic :: L11, L12, L13 
+            real(kind=dp),  automatic :: badln0, ctgz0, ssecz0 
+            real(kind=dp),  automatic :: trm1, trm2, trm3, t0  
+            badln0 = beta*a*deln0 
+            ctgz0  = 1.0_dp/tan(z0)
+            t0     = 1.0_dp/cos(z0)
+            ssecz0 = t0*t0 
+            L11    = analytic_sol_L11_lo_ionosphere_f439_r8(deln0,beta,a,z0,H1)
+            trm1   = L11+(1.0_dp-badln0)
+            L12    = analytic_sol_L12_lo_ionosphere_f440_r8(deln0,beta,a,z0,H1)
+            trm2   = ctgz0*ssecz0*L12 
+            L13    = analytic_sol_L13_lo_ionosphere_f441_r8(deln0,beta,a,z0,H1)
+            trm3   = badln0*ctgz0*ssecz0*L13 
+            L1     = L11*L12+L13 
+      end function refraction_angle_atmos_L1_lo_f438_r8
+
 end module emw_refraction
