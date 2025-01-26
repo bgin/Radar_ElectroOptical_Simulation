@@ -2298,4 +2298,42 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L1     = L11*L12+L13 
       end function refraction_angle_atmos_L1_lo_f438_r8
 
+      ! formula: 4.43, page: 82
+      elemental function analytic_sol_L21_med_ionosphere_f443_r4(fc,Nmf,H1,H2,a,z0) result(L21)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L21_med_ionosphere_f443_r4
+            !dir$ attributes forceinline :: analytic_sol_L21_med_ionosphere_f443_r4
+#endif 
+!$omp declare simd(analytic_sol_L21_med_ionosphere_f443_r4)
+            real(kind=sp),   intent(in) :: fc 
+            real(kind=sp),   intent(in) :: Nmf 
+            real(kind=sp),   intent(in) :: H1 
+            real(kind=sp),   intent(in) :: H2 
+            real(kind=sp),   intent(in) :: a 
+            real(kind=sp),   intent(in) :: z0 
+            real(kind=sp) :: L21 
+            real(kind=sp),   automatic :: delnM, ctgz0, stgz0, issinz0 
+            real(kind=sp),   automatic :: sqrtrm1, sqrtrm2, t0, t1, athrd 
+            real(kind=sp),   automatic :: trm1, trm2, trm3, trm4, trm5, stgz0 
+            ctgz0  = 1.0_sp/tan(z0)
+            t0     = sin(z0)
+            issinz0= 1.0_sp/(t0*t0)
+            athrd  = a*0.3333333333333333333333333333333333333333_sp
+            t1     = tan(z0)
+            stgz0  = t1*t1 
+            delnM  = compute_delnM_f414_r4(fc,Nmf)
+            t0     = 1.0_sp/((H2-H1)*(H2-H1))
+            trm1   = 2.0_sp*delnM*a*t0*ctgz0*issinz0
+            sqrtrm1= stgz0*(H1)/a
+            sqrtrm2= stgz0*(H2)/a 
+            t0     = sqrt(1.0_sp+2.0_sp*sqrtrm2)
+            t1     = sqrt(1.0_sp+2.0_sp*sqrtrm1)
+            trm2   = H2*(t0-t1)
+            trm4   = 1.0_sp-sqrtrm1*t1 
+            trm3   = 1.0_sp-sqrtrm2*t0 
+            trm5   = ctgz0*ctgz0*(trm3-trm4)*athrd 
+            L12    = trm1*trm2+trm5
+      end function analytic_sol_L21_med_ionosphere_f443_r4
+
 end module emw_refraction
