@@ -2555,7 +2555,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             t1     = 1.0_sp/t0 
             ssecz0 = t1*t1 
             exp1   = exp(earg)
-            trm1   = -delNm*beta*ctgz0*ssecz0 
+            trm1   = -delNm*delNm*beta*ctgz0*ssecz0 
             sqrtrm1= 1.0_sp+2.0_sp*stgz0*(H2/a)
             sqrtrm2= 1.0_sp+2.0_sp*stgz0*(H3/a)
             t0     = sqrt(sqrtrm1)
@@ -2591,7 +2591,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             t1     = 1.0_dp/t0 
             ssecz0 = t1*t1 
             exp1   = exp(earg)
-            trm1   = -delNm*beta*ctgz0*ssecz0 
+            trm1   = -delNm*delNm*beta*ctgz0*ssecz0 
             sqrtrm1= 1.0_dp+2.0_dp*stgz0*(H2/a)
             sqrtrm2= 1.0_dp+2.0_dp*stgz0*(H3/a)
             t0     = sqrt(sqrtrm1)
@@ -2600,6 +2600,8 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L31    = trm1*trm2 
         end function analytic_sol_L31_up_ionosphere_f446_r8
 
+        ! Formula: 4.47, page: 83
+        
 
 
 end module emw_refraction
