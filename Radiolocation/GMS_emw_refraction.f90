@@ -2762,7 +2762,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             real(kind=sp),   intent(in) :: beta
             real(kind=sp),   intent(in) :: a 
             real(kind=sp),   intent(in) :: z0 
-            real(kind=sp)  :: L31 
+            real(kind=sp)  :: L34 
             real(kind=sp), automatic :: delNm, stgz0, ctgz0, earg 
             real(kind=sp), automatic :: trm1, trm2, exp1, ssecz0 
             real(kind=sp), automatic :: sqrtrm1, sqrtrm2, t0, t1 
@@ -2783,6 +2783,43 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             trm2   = t0-exp1*t1 
             L31    = trm1*trm2 
         end function analytic_sol_L34_up_ionosphere_f449_r4
+
+         elemental function analytic_sol_L34_up_ionosphere_f449_r8(deln0,fc,Nmf,H2,H3,beta,a,z0) result(L34)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L34_up_ionosphere_f449_r8
+            !dir$ attributes forceinline :: analytic_sol_L34_up_ionosphere_f449_r8
+#endif 
+!$omp declare simd(analytic_sol_L34_up_ionosphere_f449_r8)
+            real(kind=dp),   intent(in) :: deln0 
+            real(kind=dp),   intent(in) :: fc 
+            real(kind=dp),   intent(in) :: Nmf 
+            real(kind=dp),   intent(in) :: H2 
+            real(kind=dp),   intent(in) :: H3 
+            real(kind=dp),   intent(in) :: beta
+            real(kind=dp),   intent(in) :: a 
+            real(kind=dp),   intent(in) :: z0 
+            real(kind=dp)  :: L34
+            real(kind=dp), automatic :: delNm, stgz0, ctgz0, earg 
+            real(kind=dp), automatic :: trm1, trm2, exp1, ssecz0 
+            real(kind=dp), automatic :: sqrtrm1, sqrtrm2, t0, t1 
+            earg   = beta*(H3-H2)
+            delnNm = compute_delnM_f414_r8(fc,Nmf)
+            t0     = tan(z0)
+            stgz0  = t0*t0 
+            ctgz0  = 1.0_dp/t0 
+            t0     = cos(z0)
+            t1     = 1.0_dp/t0 
+            ssecz0 = t1*t1 
+            exp1   = exp(earg)
+            trm1   = -deln0*delNm*beta*ctgz0*ssecz0 
+            sqrtrm1= 1.0_dp+2.0_dp*stgz0*(H2/a)
+            sqrtrm2= 1.0_dp+2.0_dp*stgz0*(H3/a)
+            t0     = sqrt(sqrtrm1)
+            t1     = sqrt(sqrtrm2)
+            trm2   = t0-exp1*t1 
+            L31    = trm1*trm2 
+        end function analytic_sol_L34_up_ionosphere_f449_r8
 
 
 end module emw_refraction
