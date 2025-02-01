@@ -2534,7 +2534,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             !dir$ attributes code_align : 32 :: analytic_sol_L31_up_ionosphere_f446_r4
             !dir$ attributes forceinline :: analytic_sol_L31_up_ionosphere_f446_r4
 #endif 
-!$omp declare simd(analytic_sol_L21_med_ionosphere_f443_r4)
+!$omp declare simd(analytic_sol_L31_up_ionosphere_f446_r4)
             real(kind=sp),   intent(in) :: fc 
             real(kind=sp),   intent(in) :: Nmf 
             real(kind=sp),   intent(in) :: H2 
@@ -2570,7 +2570,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             !dir$ attributes code_align : 32 :: analytic_sol_L31_up_ionosphere_f446_r8
             !dir$ attributes forceinline :: analytic_sol_L31_up_ionosphere_f446_r8
 #endif 
-!$omp declare simd(analytic_sol_L21_med_ionosphere_f443_r8)
+!$omp declare simd(analytic_sol_L31_up_ionosphere_f446_r8)
             real(kind=dp),   intent(in) :: fc 
             real(kind=dp),   intent(in) :: Nmf 
             real(kind=dp),   intent(in) :: H2 
@@ -2601,7 +2601,77 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function analytic_sol_L31_up_ionosphere_f446_r8
 
         ! Formula: 4.47, page: 83
-        
+        elemental function analytic_sol_L32_up_ionosphere_f447_r4(fc,Nmf,H2,H3,beta,a,z0) result(L32)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L32_up_ionosphere_f447_r4
+            !dir$ attributes forceinline :: analytic_sol_L32_up_ionosphere_f447_r4
+#endif 
+!$omp declare simd(analytic_sol_L32_up_ionosphere_f447_r4)
+            real(kind=sp),   intent(in) :: fc 
+            real(kind=sp),   intent(in) :: Nmf 
+            real(kind=sp),   intent(in) :: H2 
+            real(kind=sp),   intent(in) :: H3 
+            real(kind=sp),   intent(in) :: beta
+            real(kind=sp),   intent(in) :: a 
+            real(kind=sp),   intent(in) :: z0 
+            real(kind=sp) :: L32 
+            real(kind=sp),  parameter  :: C314159265358979323846264338328 = 3.14159265358979323846264338328_sp
+            real(kind=sp),   automatic :: delNm, piba, earg, bactgz 
+            real(kind=sp),   automatic :: prob1, prob2, trm1, trm2 
+            real(kind=sp),   automatic :: ctgz0, sctgz0, exp1, t0, t1
+            piba  = C314159265358979323846264338328*beta*(a*0.5_sp)
+            t0    = tan(z0)
+            ctgz0 = 1.0_sp/t0 
+            sctgz0= ctgz0*ctgz0 
+            delNm = compute_delnM_f414_r4(fc,Nmf)
+            bactgz0 = beta*a*sctgz0
+            trm1    = -delnM*sqrt(piba)*ctgz0 
+            earg    = beta*(H2+a*(sctgz0*0.5_sp))
+            exp1    = exp(earg)
+            t0      = sqrt(bactgz0+2.0_sp*beta*H3)
+            t1      = sqrt(bactgz0+2.0_sp*beta*H2)
+            prob1   = prob_integral_r4(t0)
+            prob2   = prob_integral_r4(t1)
+            trm2    = exp1*(prob1-prob2)
+            L32     = trm1*trm2 
+       end function analytic_sol_L32_up_ionosphere_f447_r4
+
+       elemental function analytic_sol_L32_up_ionosphere_f447_r8(fc,Nmf,H2,H3,beta,a,z0) result(L32)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L32_up_ionosphere_f447_r8
+            !dir$ attributes forceinline :: analytic_sol_L32_up_ionosphere_f447_r8
+#endif 
+!$omp declare simd(analytic_sol_L32_up_ionosphere_f447_r8)
+            real(kind=dp),   intent(in) :: fc 
+            real(kind=dp),   intent(in) :: Nmf 
+            real(kind=dp),   intent(in) :: H2 
+            real(kind=dp),   intent(in) :: H3 
+            real(kind=dp),   intent(in) :: beta
+            real(kind=dp),   intent(in) :: a 
+            real(kind=dp),   intent(in) :: z0 
+            real(kind=dp) :: L32 
+            real(kind=dp),  parameter  :: C314159265358979323846264338328 = 3.14159265358979323846264338328_dp
+            real(kind=dp),   automatic :: delNm, piba, earg, bactgz 
+            real(kind=dp),   automatic :: prob1, prob2, trm1, trm2 
+            real(kind=dp),   automatic :: ctgz0, sctgz0, exp1, t0, t1
+            piba  = C314159265358979323846264338328*beta*(a*0.5_sp)
+            t0    = tan(z0)
+            ctgz0 = 1.0_dp/t0 
+            sctgz0= ctgz0*ctgz0 
+            delNm = compute_delnM_f414_r8(fc,Nmf)
+            bactgz0 = beta*a*sctgz0
+            trm1    = -delnM*sqrt(piba)*ctgz0 
+            earg    = beta*(H2+a*(sctgz0*0.5_dp))
+            exp1    = exp(earg)
+            t0      = sqrt(bactgz0+2.0_dp*beta*H3)
+            t1      = sqrt(bactgz0+2.0_dp*beta*H2)
+            prob1   = prob_integral_r8(t0)
+            prob2   = prob_integral_r8(t1)
+            trm2    = exp1*(prob1-prob2)
+            L32     = trm1*trm2 
+       end function analytic_sol_L32_up_ionosphere_f447_r8
 
 
 end module emw_refraction
