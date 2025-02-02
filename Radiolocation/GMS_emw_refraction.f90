@@ -2821,5 +2821,42 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L31    = trm1*trm2 
         end function analytic_sol_L34_up_ionosphere_f449_r8
 
+       ! refraction angle whole atmosphere (upper part).
+       ! formula: 4.49, page: 83
+      elemental function refraction_angle_atmos_L3_upper_f445_r4(deln0,fc,Nmf,H2,H3,beta,a,z0) result(L3)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_L3_upper_f445_r4
+            !dir$ attributes forceinline :: refraction_angle_atmos_L3_upper_f445_r4
+#endif 
+
+            real(kind=sp),   intent(in) :: deln0
+            real(kind=sp),   intent(in) :: fc 
+            real(kind=sp),   intent(in) :: Nmf 
+            real(kind=sp),   intent(in) :: H2 
+            real(kind=sp),   intent(in) :: H3 
+            real(kind=sp),   intent(in) :: beta 
+            real(kind=sp),   intent(in) :: a 
+            real(kind=sp),   intent(in) :: z0 
+            real(kind=sp)  :: L3 
+            real(kind=sp),   automatic :: L31, L32, L33, L34 
+            real(kind=sp),   automatic :: delNm, ctgz0, ssecz0, exp1 
+            real(kind=sp),   automatic :: t0, t1, trm1, trm2, trm3   
+            L32   = analytic_sol_L32_up_ionosphere_f447_r4(fc,Nmf,H2,H3,beta,a,z0) 
+            exp1  =  exp(beta*H2)
+            t0    =  tan(z0)
+            ctgz0 = 1.0_sp/t0 
+            t1    = 1.0_sp/cos(z0)
+            ssecz0= t1*t1 
+            delNm = compute_delnM_f414_r4(fc,Nmf)
+            trm2  = delNm*beta*a*exp1 
+            L31   = analytic_sol_L31_up_ionosphere_f446_r4(fc,Nmf,H2,H3,beta,a,z0) 
+            trm1  = L31+(1.0_sp-deln0*beta*a)*ctgz0*ssecz0*L32 
+            L33   = analytic_sol_L33_up_ionosphere_f448_r4(fc,Nmf,H2,H3,beta,a,z0) 
+            L34   = analytic_sol_L34_up_ionosphere_f449_r4(deln0,fc,Nmf,H2,H3,beta,a,z0)
+            trm3  = ctgz0*ssecz0*L33+L34 
+            L3    = trm1-trm2*trm3 
+       end function refraction_angle_atmos_L3_upper_f445_r4
+
 
 end module emw_refraction
