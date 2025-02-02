@@ -2858,5 +2858,87 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L3    = trm1-trm2*trm3 
        end function refraction_angle_atmos_L3_upper_f445_r4
 
+       elemental function refraction_angle_atmos_L3_upper_f445_r8(deln0,fc,Nmf,H2,H3,beta,a,z0) result(L3)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_L3_upper_f445_r8
+            !dir$ attributes forceinline :: refraction_angle_atmos_L3_upper_f445_r8
+#endif 
+
+            real(kind=dp),   intent(in) :: deln0
+            real(kind=dp),   intent(in) :: fc 
+            real(kind=dp),   intent(in) :: Nmf 
+            real(kind=dp),   intent(in) :: H2 
+            real(kind=dp),   intent(in) :: H3 
+            real(kind=dp),   intent(in) :: beta 
+            real(kind=dp),   intent(in) :: a 
+            real(kind=dp),   intent(in) :: z0 
+            real(kind=dp)  :: L3 
+            real(kind=dp),   automatic :: L31, L32, L33, L34 
+            real(kind=dp),   automatic :: delNm, ctgz0, ssecz0, exp1 
+            real(kind=dp),   automatic :: t0, t1, trm1, trm2, trm3   
+            L32   = analytic_sol_L32_up_ionosphere_f447_r8(fc,Nmf,H2,H3,beta,a,z0) 
+            exp1  =  exp(beta*H2)
+            t0    =  tan(z0)
+            ctgz0 = 1.0_dp/t0 
+            t1    = 1.0_dp/cos(z0)
+            ssecz0= t1*t1 
+            delNm = compute_delnM_f414_r8(fc,Nmf)
+            trm2  = delNm*beta*a*exp1 
+            L31   = analytic_sol_L31_up_ionosphere_f446_r8(fc,Nmf,H2,H3,beta,a,z0) 
+            trm1  = L31+(1.0_dp-deln0*beta*a)*ctgz0*ssecz0*L32 
+            L33   = analytic_sol_L33_up_ionosphere_f448_r8(fc,Nmf,H2,H3,beta,a,z0) 
+            L34   = analytic_sol_L34_up_ionosphere_f449_r8(deln0,fc,Nmf,H2,H3,beta,a,z0)
+            trm3  = ctgz0*ssecz0*L33+L34 
+            L3    = trm1-trm2*trm3 
+       end function refraction_angle_atmos_L3_upper_f445_r8
+
+       !характеризующего величину угла 
+       !радиорефракции в земной атмосфере.
+       ! 2*tg^2(z0)*H2/a«1, z0<60°.
+       ! Formula: 4.50, page: 84
+       elemental function refraction_angle_z0le60_med_atmos_f450_r4(fc,Nmf,z0,deln0,g,H1,H2) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_z0le60_med_atmos_f450_r4
+            !dir$ attributes forceinline :: refraction_angle_z0le60_med_atmos_f450_r4
+#endif 
+!$omp declare simd(refraction_angle_z0le60_med_atmos_f450_r4)
+            real(kind=sp),  intent(in) :: fc 
+            real(kind=sp),  intent(in) :: Nmf 
+            real(kind=sp),  intent(in) :: z0 
+            real(kind=sp),  intent(in) :: deln0 
+            real(kind=sp),  intent(in) :: g 
+            real(kind=sp),  intent(in) :: H1 
+            real(kind=sp),  intent(in) :: H2 
+            real(kind=sp)  :: alpha 
+            real(kind=sp), parameter  :: inva = 0.000156985871271585557299843014_sp
+            real(kind=sp),  automatic :: delnNm, tgz0, scosz0, rat1
+            real(kind=sp),  automatic :: H1s, H2s, rat2, rat3 
+            real(kind=sp),  automatic :: ghlf, trm1, trm2, trm3 
+            real(kind=sp),  automatic :: t0, t1, t2, t3 
+            H1s    = H1*H1 
+            H2s    = H2*H2 
+            tgz0   = tan(z0)
+            ghlf   = g*0.5_sp 
+            t0     = cos(z0)
+            scosz0 = t0*t0 
+            delnNm = compute_delnM_f414_r4(fc,Nmf)
+            rat1   = tgz0/scosz0
+            trm1   = deln0*tgz0+delnNm*rat1*inva 
+            t1     = 2.0_sp*H2s+2.0_sp*H2*H1-H2s 
+            t0     = 3.0_sp*(H2-H1)
+            rat2   = H2-(t1/t0)
+            t2     = (H2-H1)
+            t3     = t2*t2*t2*t2 
+            trm1   = trm1*rat2 
+            t0     = 2.0_sp*(delnNm*delNm)
+            trm2   = t0/t3*rat1 
+            t1     = (H2s*H2s)*0.25_sp-ghlf*H2s 
+            t2     = (H2s*H2s)*0.25_sp-H2*H1s*H1+H2s*H1s
+            t3     = ghlf*H1s-g*H2*H1 
+            trm3   = t1-t2+t3 
+            alpha  = trm1+trm2*trm3
+       end function refraction_angle_z0le60_med_atmos_f450_r4
 
 end module emw_refraction
