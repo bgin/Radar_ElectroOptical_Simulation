@@ -3039,4 +3039,90 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha= trm1+trm2 
        end function refraction_angle_z0eq90_med_atmos_f451_r4
 
+        elemental function refraction_angle_z0eq90_med_atmos_f451_r8(fc,Nmf,z0,deln0,g,H1,H2) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_z0eq90_med_atmos_f451_r8
+            !dir$ attributes forceinline :: refraction_angle_z0eq90_med_atmos_f451_r8
+#endif 
+!$omp declare simd(refraction_angle_z0eq90_med_atmos_f451_r8)
+            real(kind=dp),  intent(in) :: fc 
+            real(kind=dp),  intent(in) :: Nmf 
+            real(kind=dp),  intent(in) :: z0 
+            real(kind=dp),  intent(in) :: deln0 
+            real(kind=dp),  intent(in) :: g 
+            real(kind=dp),  intent(in) :: H1 
+            real(kind=dp),  intent(in) :: H2 
+            real(kind=dp)  :: alpha 
+            real(kind=dp), parameter :: a = 6370.0_dp 
+            real(kind=dp), parameter :: C314159265358979323846264338328       = 3.14159265358979323846264338328_dp
+            real(kind=dp), parameter :: C141421356237309504880168872421       = 1.41421356237309504880168872421_dp
+            real(kind=dp), parameter :: C112871608476179695133132585224253    = &
+                                                                          112.871608476179695133132585224253_dp
+            real(kind=dp), parameter :: C508404222051705624896764260500215822 = &
+                                                                          508404.222051705624896764260500215822_dp
+            real(kind=dp), automatic :: H2s, H1s, piba, sH2H1
+            real(kind=dp), automatic :: sqrH1, sqrH2, t0, t1
+            real(kind=dp), automatic :: t2, t3, trm1, trm2 
+            
+            H1s  = H1*H1 
+            piba = sqrt((C314159265358979323846264338328*beta*a)*0.5_dp)
+            H2s  = H2*H2 
+            sqrH1= sqrt(H1)
+            delNm= compute_delnM_f414_r8(fc,Nmf)
+            sqrH2= sqrt(H2)
+            trm1 = deln0*piba*(1.0_dp*(C141421356237309504880168872421-1.0_dp)*deln0*beta*a)
+            sH2H1= (H2-H1)*(H2-H1)
+            t0   = 2.0_sp*delNm*C112871608476179695133132585224253/ &
+                   sH2H1
+            t1   = H2*(sqrH2-sqrH1)-0.3333333333333333333333_dp* &
+                   (H2*sqrH2-H1*sqrH1)
+            trm1 = t0*t1 
+            t2   = C141421356237309504880168872421*delnNm*delNm* &
+                   C508404222051705624896764260500215822/(sH2H1*sH2H1)
+            t3   = 1.0_dp/sqrH2*(1.2_dp*H2s*H2+2.0_dp*g*H2)
+            t0   = 1.0_dp/sqrH1*((H1s*H1)*0.2_dp-H2*H1s+ &
+                   2.0_dp*H2s*H1+g*H1+g*H2)
+            t1   = delNm*sqrt(a/(2.0_dp*H2)
+            trm2 = t2*t3-t1 
+            alpha= trm1+trm2 
+       end function refraction_angle_z0eq90_med_atmos_f451_r8
+
+       !Рефракция электромагнитных волн (gamma (wavelength) < 5 см)
+       !в земной атмосфере при различных высотах
+       !излучателя и приемника.
+       ! Formula: 5.4, page: 93
+     
+       elemental function analytic_sol_L1_troposph_wvle5cm_f54_r4(beta,R0,delnA,z0,Hc0) result(L1)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L1_troposph_wvle5cm_f54_r4
+            !dir$ attributes forceinline :: analytic_sol_L1_troposph_wvle5cm_f54_r4
+#endif 
+!$omp declare simd(analytic_sol_L1_troposph_wvle5cm_f54_r4)
+             real(kind=sp),    intent(in) :: beta 
+             real(kind=sp),    intent(in) :: R0 
+             real(kind=sp),    intent(in) :: delnA 
+             real(kind=sp),    intent(in) :: z0 
+             real(kind=sp),    intent(in) :: Hc0 
+             real(kind=sp)   :: L1 
+             real(kind=sp),    parameter :: a = 6370.0_sp 
+             real(kind=sp),    automatic :: stgz0, ctgz0, btHc0, scosz0 
+             real(kind=sp),    automatic :: rat1, rat2, exp1, exp2 
+             real(kind=sp),    automatic :: t0, t1
+             t0     = tan(z0)
+             t1     = cos(z0)
+             ctgz0  = 1.0_sp/t0 
+             scosz0 = t1*t1 
+             stgz0  = t0*t0 
+             btHc0  = beta*Hc0 
+             exp1   = exp(-2.0_sp*btHc0) 
+             rat1   = (beta*R0*delnA*delnA*ctgz0)/scosz0
+             exp2   = exp(-btHc0)
+             t0     = (1.0_sp+2.0_sp*stgz0*Hc0)/R0
+             t1     = sqrt(t0)
+             rat2   = (exp1-exp2)/t1 
+             L1     = rat1*rat2 
+        end function analytic_sol_L1_troposph_wvle5cm_f54_r4
+
 end module emw_refraction
