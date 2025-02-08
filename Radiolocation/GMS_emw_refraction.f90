@@ -3160,10 +3160,10 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         elemental function analytic_sol_L2_troposph_wvle5cm_f55_r4(beta,R0,delnA,z0,Hc0) result(L2)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_troposph_wvle5cm_f54_r4
-            !dir$ attributes forceinline :: analytic_sol_L1_troposph_wvle5cm_f54_r4
+            !dir$ attributes code_align : 32 :: analytic_sol_L1_troposph_wvle5cm_f55_r4
+            !dir$ attributes forceinline :: analytic_sol_L1_troposph_wvle5cm_f55_r4
 #endif 
-!$omp declare simd(analytic_sol_L1_troposph_wvle5cm_f54_r4)
+!$omp declare simd(analytic_sol_L1_troposph_wvle5cm_f55_r4)
              real(kind=sp),    intent(in) :: beta 
              real(kind=sp),    intent(in) :: R0 
              real(kind=sp),    intent(in) :: delnA 
@@ -3190,5 +3190,107 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
              trm2   = prob1-prob2 
              L2     = trm1*trm2 
         end function analytic_sol_L2_troposph_wvle5cm_f55_r4
+
+        elemental function analytic_sol_L2_troposph_wvle5cm_f55_r8(beta,R0,delnA,z0,Hc0) result(L2)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L1_troposph_wvle5cm_f55_r8
+            !dir$ attributes forceinline :: analytic_sol_L1_troposph_wvle5cm_f55_r8
+#endif 
+!$omp declare simd(analytic_sol_L1_troposph_wvle5cm_f55_r8)
+             real(kind=dp),    intent(in) :: beta 
+             real(kind=dp),    intent(in) :: R0 
+             real(kind=dp),    intent(in) :: delnA 
+             real(kind=dp),    intent(in) :: z0 
+             real(kind=dp),    intent(in) :: Hc0 
+             real(kind=dp)   :: L1 
+             real(kind=dp),    parameter :: C157079632679489661923132169164 = 1.57079632679489661923132169164_dp
+             real(kind=dp),    automatic :: tgz0, stgz0, sctgz0, btR0 
+             real(kind=dp),    automatic :: prob1, prob2, exp1, bRctgz0 
+             real(kind=dp),    automatic :: t0, t1, trm1, trm2 
+             btR0   = beta*R0 
+             tgz0   = tan(z0)
+             stgz0  = tgz0*tgz0 
+             t0     = 1.0_dp/tgz0 
+             sctgz0 = t0*t0 
+             exp1   = (btR0/(2._dp*stgz0))
+             t1     = delnA*sqrt(btR0/tgz0)   
+             bRctgz0= btR0*sctgz0  
+             trm1   = t1*exp1*C157079632679489661923132169164
+             t0     = sqrt(bRctgz0+2.0_dp*beta*Hc0)
+             t1     = sqrt(bRctgz0)
+             prob1  = prob_integral_r8(t0)
+             prob2  = prob_integral_r8(t1)
+             trm2   = prob1-prob2 
+             L2     = trm1*trm2 
+        end function analytic_sol_L2_troposph_wvle5cm_f55_r8
+
+        elemental function analytic_sol_L2_troposph_wvle5cm_f56_r4(beta,R0,delnA,z0,Hc0) result(L2)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L1_troposph_wvle5cm_f56_r4
+            !dir$ attributes forceinline :: analytic_sol_L1_troposph_wvle5cm_f56_r4
+#endif 
+!$omp declare simd(analytic_sol_L1_troposph_wvle5cm_f56_r4)
+             real(kind=sp),    intent(in) :: beta 
+             real(kind=sp),    intent(in) :: R0 
+             real(kind=sp),    intent(in) :: delnA 
+             real(kind=sp),    intent(in) :: z0 
+             real(kind=sp),    intent(in) :: Hc0 
+             real(kind=sp)   :: L1 
+             real(kind=sp),    parameter :: C157079632679489661923132169164 = 1.57079632679489661923132169164_sp
+             real(kind=sp),    automatic :: tgz0, stgz0, sctgz0, btR0 
+             real(kind=sp),    automatic :: prob1, prob2, exp1, bRctgz0 
+             real(kind=sp),    automatic :: t0, t1, trm1, trm2 
+             btR0   = beta*R0 
+             tgz0   = tan(z0)
+             stgz0  = tgz0*tgz0 
+             t0     = 1.0_sp/tgz0 
+             sctgz0 = t0*t0 
+             exp1   = (btR0/stgz0)
+             t1     = delnA*sqrt((2.0_sp*btR0)/tgz0)   
+             bRctgz0= btR0*sctgz0  
+             trm1   = t1*exp1*C157079632679489661923132169164
+             t0     = sqrt(2.0_sp*bRctgz0+4.0_sp*beta*Hc0)
+             t1     = sqrt(2.0_sp*bRctgz0)
+             prob1  = prob_integral_r4(t0)
+             prob2  = prob_integral_r4(t1)
+             trm2   = prob1-prob2 
+             L2     = trm1*trm2 
+        end function analytic_sol_L2_troposph_wvle5cm_f56_r4
+
+        elemental function analytic_sol_L2_troposph_wvle5cm_f56_r8(beta,R0,delnA,z0,Hc0) result(L2)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L1_troposph_wvle5cm_f56_r8
+            !dir$ attributes forceinline :: analytic_sol_L1_troposph_wvle5cm_f56_r8
+#endif 
+!$omp declare simd(analytic_sol_L1_troposph_wvle5cm_f56_r8)
+             real(kind=dp),    intent(in) :: beta 
+             real(kind=dp),    intent(in) :: R0 
+             real(kind=dp),    intent(in) :: delnA 
+             real(kind=dp),    intent(in) :: z0 
+             real(kind=dp),    intent(in) :: Hc0 
+             real(kind=dp)   :: L1 
+             real(kind=dp),    parameter :: C157079632679489661923132169164 = 1.57079632679489661923132169164_dp
+             real(kind=dp),    automatic :: tgz0, stgz0, sctgz0, btR0 
+             real(kind=dp),    automatic :: prob1, prob2, exp1, bRctgz0 
+             real(kind=dp),    automatic :: t0, t1, trm1, trm2 
+             btR0   = beta*R0 
+             tgz0   = tan(z0)
+             stgz0  = tgz0*tgz0 
+             t0     = 1.0_dp/tgz0 
+             sctgz0 = t0*t0 
+             exp1   = (btR0/stgz0)
+             t1     = delnA*sqrt((2.0_dp*btR0)/tgz0)   
+             bRctgz0= btR0*sctgz0  
+             trm1   = t1*exp1*C157079632679489661923132169164
+             t0     = sqrt(2.0_dp*bRctgz0+4.0_dp*beta*Hc0)
+             t1     = sqrt(2.0_dp*bRctgz0)
+             prob1  = prob_integral_r8(t0)
+             prob2  = prob_integral_r8(t1)
+             trm2   = prob1-prob2 
+             L2     = trm1*trm2 
+        end function analytic_sol_L2_troposph_wvle5cm_f56_r8
 
 end module emw_refraction
