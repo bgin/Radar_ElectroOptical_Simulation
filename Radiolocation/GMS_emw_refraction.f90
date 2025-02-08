@@ -3125,4 +3125,70 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
              L1     = rat1*rat2 
         end function analytic_sol_L1_troposph_wvle5cm_f54_r4
 
+         elemental function analytic_sol_L1_troposph_wvle5cm_f54_r8(beta,R0,delnA,z0,Hc0) result(L1)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L1_troposph_wvle5cm_f54_r8
+            !dir$ attributes forceinline :: analytic_sol_L1_troposph_wvle5cm_f54_r8
+#endif 
+!$omp declare simd(analytic_sol_L1_troposph_wvle5cm_f54_r8)
+             real(kind=dp),    intent(in) :: beta 
+             real(kind=dp),    intent(in) :: R0 
+             real(kind=dp),    intent(in) :: delnA 
+             real(kind=dp),    intent(in) :: z0 
+             real(kind=dp),    intent(in) :: Hc0 
+             real(kind=dp)   :: L1 
+             real(kind=dp),    parameter :: a = 6370.0_dp 
+             real(kind=dp),    automatic :: stgz0, ctgz0, btHc0, scosz0 
+             real(kind=dp),    automatic :: rat1, rat2, exp1, exp2 
+             real(kind=dp),    automatic :: t0, t1
+             t0     = tan(z0)
+             t1     = cos(z0)
+             ctgz0  = 1.0_dp/t0 
+             scosz0 = t1*t1 
+             stgz0  = t0*t0 
+             btHc0  = beta*Hc0 
+             exp1   = exp(-2.0_dp*btHc0) 
+             rat1   = (beta*R0*delnA*delnA*ctgz0)/scosz0
+             exp2   = exp(-btHc0)
+             t0     = (1.0_dp+2.0_dp*stgz0*Hc0)/R0
+             t1     = sqrt(t0)
+             rat2   = (exp1-exp2)/t1 
+             L1     = rat1*rat2 
+        end function analytic_sol_L1_troposph_wvle5cm_f54_r8
+
+        elemental function analytic_sol_L2_troposph_wvle5cm_f55_r4(beta,R0,delnA,z0,Hc0) result(L2)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L1_troposph_wvle5cm_f54_r4
+            !dir$ attributes forceinline :: analytic_sol_L1_troposph_wvle5cm_f54_r4
+#endif 
+!$omp declare simd(analytic_sol_L1_troposph_wvle5cm_f54_r4)
+             real(kind=sp),    intent(in) :: beta 
+             real(kind=sp),    intent(in) :: R0 
+             real(kind=sp),    intent(in) :: delnA 
+             real(kind=sp),    intent(in) :: z0 
+             real(kind=sp),    intent(in) :: Hc0 
+             real(kind=sp)   :: L1 
+             real(kind=sp),    parameter :: C157079632679489661923132169164 = 1.57079632679489661923132169164_sp
+             real(kind=sp),    automatic :: tgz0, stgz0, sctgz0, btR0 
+             real(kind=sp),    automatic :: prob1, prob2, exp1, bRctgz0 
+             real(kind=sp),    automatic :: t0, t1, trm1, trm2 
+             btR0   = beta*R0 
+             tgz0   = tan(z0)
+             stgz0  = tgz0*tgz0 
+             t0     = 1.0_sp/tgz0 
+             sctgz0 = t0*t0 
+             exp1   = (btR0/(2._sp*stgz0))
+             t1     = delnA*sqrt(btR0/tgz0)   
+             bRctgz0= btR0*sctgz0  
+             trm1   = t1*exp1*C157079632679489661923132169164
+             t0     = sqrt(bRctgz0+2.0_sp*beta*Hc0)
+             t1     = sqrt(bRctgz0)
+             prob1  = prob_integral_r4(t0)
+             prob2  = prob_integral_r4(t1)
+             trm2   = prob1-prob2 
+             L2     = trm1*trm2 
+        end function analytic_sol_L2_troposph_wvle5cm_f55_r4
+
 end module emw_refraction
