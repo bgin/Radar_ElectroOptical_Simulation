@@ -3293,4 +3293,26 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
              L2     = trm1*trm2 
         end function analytic_sol_L2_troposph_wvle5cm_f56_r8
 
+        ! Formula 5.3, page: 93
+        ! An angle of atmospheric (troposheric) refraction for wavelength <= 5cm (different TX,RX height)
+        elemental function refraction_angle_tropo_wvle5cm_f53_r4(na,nc,beta,R0,delnA,z0,Hc0) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_tropo_wvle5cm_f53_r4
+            !dir$ attributes forceinline :: refraction_angle_tropo_wvle5cm_f53_r4
+#endif 
+!$omp declare simd(refraction_angle_tropo_wvle5cm_f53_r4)
+             real(kind=sp),    intent(in) :: na 
+             real(kind=sp),    intent(in) :: nc 
+             real(kind=sp),    intent(in) :: beta 
+             real(kind=sp),    intent(in) :: R0 
+             real(kind=sp),    intent(in) :: delnA 
+             real(kind=sp),    intent(in) :: z0 
+             real(kind=sp),    intent(in) :: Hc0 
+             real(kind=sp)   :: alpha 
+             real(kind=sp),    automatic  :: lnanc, ctgz0, L1, ctgz0 
+             real(kind=sp),    automatic  :: scosz0, btRdna, rat1, L2 
+             real(kind=sp),    automatic  :: L3 
+        end function refraction_angle_tropo_wvle5cm_f53_r4
+
 end module emw_refraction
