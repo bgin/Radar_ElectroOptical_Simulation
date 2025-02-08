@@ -2941,4 +2941,102 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha  = trm1+trm2*trm3
        end function refraction_angle_z0le60_med_atmos_f450_r4
 
+       elemental function refraction_angle_z0le60_med_atmos_f450_r8(fc,Nmf,z0,deln0,g,H1,H2) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_z0le60_med_atmos_f450_r8
+            !dir$ attributes forceinline :: refraction_angle_z0le60_med_atmos_f450_r8
+#endif 
+!$omp declare simd(refraction_angle_z0le60_med_atmos_f450_r8)
+            real(kind=dp),  intent(in) :: fc 
+            real(kind=dp),  intent(in) :: Nmf 
+            real(kind=dp),  intent(in) :: z0 
+            real(kind=dp),  intent(in) :: deln0 
+            real(kind=dp),  intent(in) :: g 
+            real(kind=dp),  intent(in) :: H1 
+            real(kind=dp),  intent(in) :: H2 
+            real(kind=dp)  :: alpha 
+            real(kind=dp), parameter  :: inva = 0.000156985871271585557299843014_dp
+            real(kind=dp),  automatic :: delnNm, tgz0, scosz0, rat1
+            real(kind=dp),  automatic :: H1s, H2s, rat2, rat3 
+            real(kind=dp),  automatic :: ghlf, trm1, trm2, trm3 
+            real(kind=dp),  automatic :: t0, t1, t2, t3 
+            H1s    = H1*H1 
+            H2s    = H2*H2 
+            tgz0   = tan(z0)
+            ghlf   = g*0.5_dp 
+            t0     = cos(z0)
+            scosz0 = t0*t0 
+            delnNm = compute_delnM_f414_r8(fc,Nmf)
+            rat1   = tgz0/scosz0
+            trm1   = deln0*tgz0+delnNm*rat1*inva 
+            t1     = 2.0_dp*H2s+2.0_dp*H2*H1-H2s 
+            t0     = 3.0_dp*(H2-H1)
+            rat2   = H2-(t1/t0)
+            t2     = (H2-H1)
+            t3     = t2*t2*t2*t2 
+            trm1   = trm1*rat2 
+            t0     = 2.0_dp*(delnNm*delNm)
+            trm2   = t0/t3*rat1 
+            t1     = (H2s*H2s)*0.25_dp-ghlf*H2s 
+            t2     = (H2s*H2s)*0.25_dp-H2*H1s*H1+H2s*H1s
+            t3     = ghlf*H1s-g*H2*H1 
+            trm3   = t1-t2+t3 
+            alpha  = trm1+trm2*trm3
+       end function refraction_angle_z0le60_med_atmos_f450_r8
+
+        !характеризующего величину угла 
+       !радиорефракции в земной атмосфере.
+       ! 2*tgz^2(z0)*H2/a >> 1, z0~90°.
+       ! 
+       ! Formula: 4.51, page: 84
+       elemental function refraction_angle_z0eq90_med_atmos_f451_r4(fc,Nmf,z0,deln0,g,H1,H2) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_z0eq90_med_atmos_f451_r4
+            !dir$ attributes forceinline :: refraction_angle_z0eq90_med_atmos_f451_r4
+#endif 
+!$omp declare simd(refraction_angle_z0eq90_med_atmos_f451_r4)
+            real(kind=sp),  intent(in) :: fc 
+            real(kind=sp),  intent(in) :: Nmf 
+            real(kind=sp),  intent(in) :: z0 
+            real(kind=sp),  intent(in) :: deln0 
+            real(kind=sp),  intent(in) :: g 
+            real(kind=sp),  intent(in) :: H1 
+            real(kind=sp),  intent(in) :: H2 
+            real(kind=sp)  :: alpha 
+            real(kind=sp), parameter :: a = 6370.0_sp 
+            real(kind=sp), parameter :: C314159265358979323846264338328       = 3.14159265358979323846264338328_sp
+            real(kind=sp), parameter :: C141421356237309504880168872421       = 1.41421356237309504880168872421_sp
+            real(kind=sp), parameter :: C112871608476179695133132585224253    = &
+                                                                          112.871608476179695133132585224253_sp
+            real(kind=sp), parameter :: C508404222051705624896764260500215822 = &
+                                                                          508404.222051705624896764260500215822_sp
+            real(kind=sp), automatic :: H2s, H1s, piba, sH2H1
+            real(kind=sp), automatic :: sqrH1, sqrH2, t0, t1
+            real(kind=sp), automatic :: t2, t3, trm1, trm2 
+            
+            H1s  = H1*H1 
+            piba = sqrt((C314159265358979323846264338328*beta*a)*0.5_sp)
+            H2s  = H2*H2 
+            sqrH1= sqrt(H1)
+            delNm= compute_delnM_f414_r4(fc,Nmf)
+            sqrH2= sqrt(H2)
+            trm1 = deln0*piba*(1.0_sp*(C141421356237309504880168872421-1)*deln0*beta*a)
+            sH2H1= (H2-H1)*(H2-H1)
+            t0   = 2.0_sp*delNm*C112871608476179695133132585224253/ &
+                   sH2H1
+            t1   = H2*(sqrH2-sqrH1)-0.3333333333333333333333_sp* &
+                   (H2*sqrH2-H1*sqrH1)
+            trm1 = t0*t1 
+            t2   = C141421356237309504880168872421*delnNm*delNm* &
+                   C508404222051705624896764260500215822/(sH2H1*sH2H1)
+            t3   = 1.0_sp/sqrH2*(1.2_sp*H2s*H2+2.0_sp*g*H2)
+            t0   = 1.0_sp/sqrH1*((H1s*H1)*0.2_sp-H2*H1s+ &
+                   2.0_sp*H2s*H1+g*H1+g*H2)
+            t1   = delNm*sqrt(a/(2.0_sp*H2)
+            trm2 = t2*t3-t1 
+            alpha= trm1+trm2 
+       end function refraction_angle_z0eq90_med_atmos_f451_r4
+
 end module emw_refraction
