@@ -3160,10 +3160,10 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         elemental function analytic_sol_L2_troposph_wvle5cm_f55_r4(beta,R0,delnA,z0,Hc0) result(L2)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_troposph_wvle5cm_f55_r4
-            !dir$ attributes forceinline :: analytic_sol_L1_troposph_wvle5cm_f55_r4
+            !dir$ attributes code_align : 32 :: analytic_sol_L2_troposph_wvle5cm_f55_r4
+            !dir$ attributes forceinline :: analytic_sol_L2_troposph_wvle5cm_f55_r4
 #endif 
-!$omp declare simd(analytic_sol_L1_troposph_wvle5cm_f55_r4)
+!$omp declare simd(analytic_sol_L2_troposph_wvle5cm_f55_r4)
              real(kind=sp),    intent(in) :: beta 
              real(kind=sp),    intent(in) :: R0 
              real(kind=sp),    intent(in) :: delnA 
@@ -3194,10 +3194,10 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         elemental function analytic_sol_L2_troposph_wvle5cm_f55_r8(beta,R0,delnA,z0,Hc0) result(L2)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_troposph_wvle5cm_f55_r8
-            !dir$ attributes forceinline :: analytic_sol_L1_troposph_wvle5cm_f55_r8
+            !dir$ attributes code_align : 32 :: analytic_sol_L2_troposph_wvle5cm_f55_r8
+            !dir$ attributes forceinline :: analytic_sol_L2_troposph_wvle5cm_f55_r8
 #endif 
-!$omp declare simd(analytic_sol_L1_troposph_wvle5cm_f55_r8)
+!$omp declare simd(analytic_sol_L2_troposph_wvle5cm_f55_r8)
              real(kind=dp),    intent(in) :: beta 
              real(kind=dp),    intent(in) :: R0 
              real(kind=dp),    intent(in) :: delnA 
@@ -3225,13 +3225,13 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
              L2     = trm1*trm2 
         end function analytic_sol_L2_troposph_wvle5cm_f55_r8
 
-        elemental function analytic_sol_L2_troposph_wvle5cm_f56_r4(beta,R0,delnA,z0,Hc0) result(L2)
+        elemental function analytic_sol_L3_troposph_wvle5cm_f56_r4(beta,R0,delnA,z0,Hc0) result(L3)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_troposph_wvle5cm_f56_r4
-            !dir$ attributes forceinline :: analytic_sol_L1_troposph_wvle5cm_f56_r4
+            !dir$ attributes code_align : 32 :: analytic_sol_L3_troposph_wvle5cm_f56_r4
+            !dir$ attributes forceinline :: analytic_sol_L3_troposph_wvle5cm_f56_r4
 #endif 
-!$omp declare simd(analytic_sol_L1_troposph_wvle5cm_f56_r4)
+!$omp declare simd(analytic_sol_L3_troposph_wvle5cm_f56_r4)
              real(kind=sp),    intent(in) :: beta 
              real(kind=sp),    intent(in) :: R0 
              real(kind=sp),    intent(in) :: delnA 
@@ -3257,15 +3257,15 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
              prob2  = prob_integral_r4(t1)
              trm2   = prob1-prob2 
              L2     = trm1*trm2 
-        end function analytic_sol_L2_troposph_wvle5cm_f56_r4
+        end function analytic_sol_L3_troposph_wvle5cm_f56_r4
 
-        elemental function analytic_sol_L2_troposph_wvle5cm_f56_r8(beta,R0,delnA,z0,Hc0) result(L2)
+        elemental function analytic_sol_L3_troposph_wvle5cm_f56_r8(beta,R0,delnA,z0,Hc0) result(L2)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_troposph_wvle5cm_f56_r8
-            !dir$ attributes forceinline :: analytic_sol_L1_troposph_wvle5cm_f56_r8
+            !dir$ attributes code_align : 32 :: analytic_sol_L3_troposph_wvle5cm_f56_r8
+            !dir$ attributes forceinline :: analytic_sol_L3_troposph_wvle5cm_f56_r8
 #endif 
-!$omp declare simd(analytic_sol_L1_troposph_wvle5cm_f56_r8)
+!$omp declare simd(analytic_sol_L3_troposph_wvle5cm_f56_r8)
              real(kind=dp),    intent(in) :: beta 
              real(kind=dp),    intent(in) :: R0 
              real(kind=dp),    intent(in) :: delnA 
@@ -3291,7 +3291,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
              prob2  = prob_integral_r8(t1)
              trm2   = prob1-prob2 
              L2     = trm1*trm2 
-        end function analytic_sol_L2_troposph_wvle5cm_f56_r8
+        end function analytic_sol_L3_troposph_wvle5cm_f56_r8
 
         ! Formula 5.3, page: 93
         ! An angle of atmospheric (troposheric) refraction for wavelength <= 5cm (different TX,RX height)
@@ -3312,7 +3312,82 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
              real(kind=sp)   :: alpha 
              real(kind=sp),    automatic  :: lnanc, ctgz0, L1, ctgz0 
              real(kind=sp),    automatic  :: scosz0, btRdna, rat1, L2 
-             real(kind=sp),    automatic  :: L3 
+             real(kind=sp),    automatic  :: t0, t1, L3, trm1, trm2  
+             t0     = cos(z0)
+             scosz0 = t0*t0 
+             btRdna = beta*R0*delnA 
+             L1     = analytic_sol_L1_troposph_wvle5cm_f54_r4(beta,R0,delnA,z0,Hc0)
+             t1     = tan(z0)
+             ctgz0  = 1.0_sp/t1 
+             lnanc  = -log(na/nc)
+             L2     = analytic_sol_L2_troposph_wvle5cm_f56_r4(beta,R0,delnA,z0,Hc0)
+             rat1   = ctgz0/scosz0
+             trm1   = lnanc*ctgz0+L1+rat1 
+             L3     = analytic_sol_L3_troposph_wvle5cm_f56_r4(beta,R0,delnA,z0,Hc0)
+             trm2   = btRdna*rat1*(L3-L2)
+             alpha  = trm1+trm2 
         end function refraction_angle_tropo_wvle5cm_f53_r4
+
+        elemental function refraction_angle_tropo_wvle5cm_f53_r8(na,nc,beta,R0,delnA,z0,Hc0) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_tropo_wvle5cm_f53_r8
+            !dir$ attributes forceinline :: refraction_angle_tropo_wvle5cm_f53_r8
+#endif 
+!$omp declare simd(refraction_angle_tropo_wvle5cm_f53_r8)
+             real(kind=dp),    intent(in) :: na 
+             real(kind=dp),    intent(in) :: nc 
+             real(kind=dp),    intent(in) :: beta 
+             real(kind=dp),    intent(in) :: R0 
+             real(kind=dp),    intent(in) :: delnA 
+             real(kind=dp),    intent(in) :: z0 
+             real(kind=dp),    intent(in) :: Hc0 
+             real(kind=dp)   :: alpha 
+             real(kind=dp),    automatic  :: lnanc, ctgz0, L1, ctgz0 
+             real(kind=dp),    automatic  :: scosz0, btRdna, rat1, L2 
+             real(kind=dp),    automatic  :: t0, t1, L3, trm1, trm2  
+             t0     = cos(z0)
+             scosz0 = t0*t0 
+             btRdna = beta*R0*delnA 
+             L1     = analytic_sol_L1_troposph_wvle5cm_f54_r8(beta,R0,delnA,z0,Hc0)
+             t1     = tan(z0)
+             ctgz0  = 1.0_dp/t1 
+             lnanc  = -log(na/nc)
+             L2     = analytic_sol_L2_troposph_wvle5cm_f56_r8(beta,R0,delnA,z0,Hc0)
+             rat1   = ctgz0/scosz0
+             trm1   = lnanc*ctgz0+L1+rat1 
+             L3     = analytic_sol_L3_troposph_wvle5cm_f56_r8(beta,R0,delnA,z0,Hc0)
+             trm2   = btRdna*rat1*(L3-L2)
+             alpha  = trm1+trm2 
+        end function refraction_angle_tropo_wvle5cm_f53_r4
+
+        !Представим (5.15) в виде двух слагаемых, учитывая,
+        !что: 1/n~1, z=z0-theta+alpha=z-gamma, (gamm<<1)
+        !i.e. formula: 5.16, page: 95
+        !рассчитать угол истинной атмосферной рёф-;
+        !ракции б в диапазоне видимых зенитных угловч 0° <•
+        !<г0<88° при условии, что показатель преломлений
+        !атмосферы меняется с высотой по закону (1.45)
+
+        ! formula: 5.22, page: 96
+        elemental function analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r4(delnA,z0,beta,Hc0) result(del1)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r4
+            !dir$ attributes forceinline :: analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r4
+#endif 
+!$omp declare simd(analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r4)
+            real(kind=sp),    intent(in) :: delnA 
+            real(kind=sp),    intent(in) :: z0 
+            real(kind=sp),    intent(in) :: beta 
+            real(kind=sp),    intent(in) :: Hc0 
+            real(kind=sp)  :: del1 
+            real(kind=sp),    automatic  :: tgz0, btHc0, exp1, rat 
+            btHc0  = beta*Hc0 
+            tgz0   = tan(z0)
+            exp1   = exp(-btHc0)
+            rat    = (1.0_sp-exp1)/btHc0
+            del1   = delnA*tgz0*(1.0_sp-rat)
+        end function analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r4
 
 end module emw_refraction
