@@ -3582,5 +3582,79 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             del231  = trm1-trm2*trm3 
         end function analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r4
 
+         elemental function analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r8(delnA,z0,beta,Hc0,R0) result(del231)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r8
+            !dir$ attributes forceinline :: analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r8
+#endif 
+
+            real(kind=dp),    intent(in) :: delnA 
+            real(kind=dp),    intent(in) :: z0 
+            real(kind=dp),    intent(in) :: beta 
+            real(kind=dp),    intent(in) :: Hc0 
+            real(kind=dp),    intent(in) :: R0 
+            real(kind=dp)                :: del231 
+            real(kind=dp),    parameter  :: C1253314137315500251207882642406 = & 
+                                                   1.253314137315500251207882642406_dp
+            real(kind=dp),    automatic  :: stgz0, btHc0, exp1, sqr2q 
+            real(kind=dp),    automatic  :: prob1, prob2, trm1, trm2 
+            real(kind=dp),    automatic  :: t0, t1, ps2, q, exp2, trm3    
+            btHc0   = beta*Hc0 
+            t0      = tan(z0)
+            stgz0   = t0*t0 
+            ps      = 1.0_dp+2.0_dp*stgz0*(Hc0/R0)
+            q       = (beta*R0*0.5_dp)*stgz0 
+            exp1    = exp(q-q*ps)
+            t0      = 1.0_dp+(q/btHc0)
+            trm1    = t0*(1.0_dp-exp1/p) 
+            sqr2q   = sqrt(q+q)
+            prob1   = prob_integral_r8(p*sqr2q)
+            prob2   = prob_integral_r8(sqr2q)
+            exp2    = exp(q)
+            t0      = 2.0_dp*q+q/btHc0+(2.0_dp*q*q)/btHc0
+            t1      = exp2/sqr2q*C1253314137315500251207882642406
+            trm2    = t0*t1 
+            trm3    = prob1-prob2 
+            del231  = trm1-trm2*trm3 
+        end function analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r8
+
+        ! formula: 5.28, page: 97
+        elemental function analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r4(delnA,z0,beta,Hc0,R0) result(del232)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r4
+            !dir$ attributes forceinline :: analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r4
+#endif 
+
+            real(kind=sp),    intent(in) :: delnA 
+            real(kind=sp),    intent(in) :: z0 
+            real(kind=sp),    intent(in) :: beta 
+            real(kind=sp),    intent(in) :: Hc0 
+            real(kind=sp),    intent(in) :: R0 
+            real(kind=sp)                :: del231 
+            real(kind=sp),    parameter  :: C1253314137315500251207882642406 = & 
+                                                   1.253314137315500251207882642406_sp
+            real(kind=sp),    automatic  :: stgz0, btHc0, exp1, sqr2q 
+            real(kind=sp),    automatic  :: prob1, prob2, trm1, trm2 
+            real(kind=sp),    automatic  :: t0, t1, ps2, q, exp2, trm3    
+            btHc0   = beta*Hc0 
+            t0      = tan(z0)
+            stgz0   = t0*t0 
+            ps      = 1.0_sp+2.0_sp*stgz0*(Hc0/R0)
+            q       = (beta*R0*0.5_sp)*stgz0 
+            exp1    = exp(2.0_sp*q-2.0_sp*q*ps)
+            t0      = 1.0_sp+(q/btHc0)
+            trm1    = t0*(1.0_sp-exp1/p) 
+            sqr2q   = sqrt(4.0_sp*q)
+            prob1   = prob_integral_r4(p*sqr2q)
+            prob2   = prob_integral_r4(sqr2q)
+            exp2    = exp(q)
+            t0      = 4.0_sp*q+q/btHc0+(4.0_sp*q*q)/btHc0
+            t1      = exp2/sqr2q*C1253314137315500251207882642406
+            trm2    = t0*t1 
+            trm3    = prob1-prob2 
+            del231  = trm1-trm2*trm3 
+        end function analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r4
 
 end module emw_refraction
