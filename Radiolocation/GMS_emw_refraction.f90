@@ -3664,17 +3664,17 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             !dir$ attributes forceinline :: analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r8
 #endif 
 
-            real(kind=sp),    intent(in) :: delnA 
-            real(kind=sp),    intent(in) :: z0 
-            real(kind=sp),    intent(in) :: beta 
-            real(kind=sp),    intent(in) :: Hc0 
-            real(kind=sp),    intent(in) :: R0 
-            real(kind=sp)                :: del231 
-            real(kind=sp),    parameter  :: C1253314137315500251207882642406 = & 
+            real(kind=dp),    intent(in) :: delnA 
+            real(kind=dp),    intent(in) :: z0 
+            real(kind=dp),    intent(in) :: beta 
+            real(kind=dp),    intent(in) :: Hc0 
+            real(kind=dp),    intent(in) :: R0 
+            real(kind=dp)                :: del231 
+            real(kind=dp),    parameter  :: C1253314137315500251207882642406 = & 
                                                    1.253314137315500251207882642406_dp
-            real(kind=sp),    automatic  :: stgz0, btHc0, exp1, sqr2q 
-            real(kind=sp),    automatic  :: prob1, prob2, trm1, trm2 
-            real(kind=sp),    automatic  :: t0, t1, ps2, q, exp2, trm3    
+            real(kind=dp),    automatic  :: stgz0, btHc0, exp1, sqr2q 
+            real(kind=dp),    automatic  :: prob1, prob2, trm1, trm2 
+            real(kind=dp),    automatic  :: t0, t1, ps2, q, exp2, trm3    
             btHc0   = beta*Hc0 
             t0      = tan(z0)
             stgz0   = t0*t0 
@@ -3693,5 +3693,34 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             trm3    = prob1-prob2 
             del231  = trm1-trm2*trm3 
         end function analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r8
+
+        ! formula: 5.256, page: 97
+        elemental function analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r4(delnA,z0,beta,Hc0,R0) result(del23)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r4
+            !dir$ attributes forceinline :: analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r4
+#endif 
+
+            real(kind=sp),    intent(in) :: delnA 
+            real(kind=sp),    intent(in) :: z0 
+            real(kind=sp),    intent(in) :: beta 
+            real(kind=sp),    intent(in) :: Hc0 
+            real(kind=sp),    intent(in) :: R0 
+            real(kind=sp)                :: del23 
+            real(kind=sp),    automatic  :: ctgz0, scosz0, del231, del232 
+            real(kind=sp),    automatic  :: sdelnA, t0, btR0, rat  
+            btR0    = beta*R0 
+            sdelnA  = delnA*delnA 
+            t0      = tan(z0)
+            ctgz0   = 1.0_sp/t0 
+            del231  = analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r4(delnA,z0,beta,Hc0,R0)
+            t0      = cos(z0)
+            scosz0  = t0*t0 
+            del232  = analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r4(delnA,z0,beta,Hc0,R0)
+            rat     = ctgz0/scosz0 
+            t0      = del231-del232 
+            del23   = sdelnA*btR0*rat*t0 
+       end function analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r4
 
 end module emw_refraction
