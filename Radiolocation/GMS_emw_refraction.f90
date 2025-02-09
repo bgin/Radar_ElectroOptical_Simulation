@@ -3772,4 +3772,24 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             del2    = del21+del22+del23 
         end function analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r4
 
+        elemental function analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r48delnA,z0,beta,Hc0,R0) result(del2)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r8
+            !dir$ attributes forceinline :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r8
+#endif 
+
+            real(kind=dp),    intent(in) :: delnA 
+            real(kind=dp),    intent(in) :: z0 
+            real(kind=dp),    intent(in) :: beta 
+            real(kind=dp),    intent(in) :: Hc0 
+            real(kind=dp),    intent(in) :: R0 
+            real(kind=dp)                :: del2
+            real(kind=dp),    automatic  :: del21, del22, del23 
+            del21   =  analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r8(delnA,z0,beta,Hc0) 
+            del22   =  analytic_sol_tropo_del22_wvle5cm_deg0_80_f525_r8(delnA,z0,beta,Hc0,R0)
+            del23   =  analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r8(delnA,z0,beta,Hc0,R0) 
+            del2    = del21+del22+del23 
+        end function analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r8
+
 end module emw_refraction
