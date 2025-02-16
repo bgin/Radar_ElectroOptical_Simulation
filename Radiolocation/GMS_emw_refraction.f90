@@ -3813,4 +3813,59 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha = del1+del2 
         end function refraction_angle_tropo_wvle5cm_f517_r4
 
+        elemental function refraction_angle_tropo_wvle5cm_f517_r8(delnA,z0,beta,Hc0,R0) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_tropo_wvle5cm_f517_r8
+            !dir$ attributes forceinline :: refraction_angle_tropo_wvle5cm_f517_r8
+#endif 
+
+            real(kind=dp),    intent(in) :: delnA 
+            real(kind=dp),    intent(in) :: z0 
+            real(kind=dp),    intent(in) :: beta 
+            real(kind=dp),    intent(in) :: Hc0 
+            real(kind=dp),    intent(in) :: R0 
+            real(kind=dp)   :: alpha
+            real(kind=dp),    automatic  :: del1, del2 
+            del1  =  analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r8(delnA,z0,beta,Hc0)
+            del2  =  analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r8(delnA,z0,beta,Hc0,R0)
+            alpha = del1+del2 
+        end function refraction_angle_tropo_wvle5cm_f517_r8
+
+        ! For: z0<=80(deg), p*sqrt(2*q) >= 1, sqrt(2*q) >= 1, ***can be used instead of 5.23***
+        ! Formula: 5.29, page: 95
+         elemental function analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r4(delnA,z0,beta,Hc0,R0) result(del2)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r4
+            !dir$ attributes forceinline :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r4
+#endif 
+
+            real(kind=sp),    intent(in) :: delnA 
+            real(kind=sp),    intent(in) :: z0 
+            real(kind=sp),    intent(in) :: beta 
+            real(kind=sp),    intent(in) :: Hc0 
+            real(kind=sp),    intent(in) :: R0 
+            real(kind=sp)                :: del2
+            real(kind=sp),    automatic  :: tgz0, scosz0, btHc0, ebtHc0
+            real(kind=sp),    automatic  :: rat1, rat2, rat3, rat4 
+            real(kind=sp),    automatic  :: t0, t1, t2 
+            real(kind=sp),    automatic  :: trm1, trm2, trm3  
+            btHc0  = beta*Hc0 
+            tgz0   = tan(z0)
+            t0     = cos(z0)
+            ebtHc0 = exp(-btHc0)
+            scosz0 = t0*t0 
+            trm1   = delnA*(tgz0/scosz0)
+            t0     = (Hc0/R0)*ebtHc0
+            t1     = 1.0_sp-ebtHc0/(2.0_sp*beta*beta*Hc0*R0)
+            t2     = 1.0_sp+ebtHc0/(beta*R0)
+            trm2   = t0+t1-t2 
+            t0     = 0.5_sp+1.0_sp-ebtHc0/(2.0_sp*btHc0)
+            t2     = 8.0_sp*btHc0
+            t1     = 1.0_sp-exp(-2.0_sp*btHc0)/t2 
+            trm3   = delnA*(t0-t1)
+            del2   = trm1*(trm2+trm3)
+         end function analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r4
+
 end module emw_refraction
