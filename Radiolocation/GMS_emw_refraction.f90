@@ -3551,7 +3551,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r4
             !dir$ attributes forceinline :: analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r4
 #endif 
-
+!$omp declare simd(analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r4)
             real(kind=sp),    intent(in) :: delnA 
             real(kind=sp),    intent(in) :: z0 
             real(kind=sp),    intent(in) :: beta 
@@ -3588,7 +3588,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r8
             !dir$ attributes forceinline :: analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r8
 #endif 
-
+!$omp declare simd(analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r8)
             real(kind=dp),    intent(in) :: delnA 
             real(kind=dp),    intent(in) :: z0 
             real(kind=dp),    intent(in) :: beta 
@@ -3626,7 +3626,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r4
             !dir$ attributes forceinline :: analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r4
 #endif 
-
+!$omp declare simd(analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r4)
             real(kind=sp),    intent(in) :: delnA 
             real(kind=sp),    intent(in) :: z0 
             real(kind=sp),    intent(in) :: beta 
@@ -3663,7 +3663,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r8
             !dir$ attributes forceinline :: analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r8
 #endif 
-
+!$omp declare simd(analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r8)
             real(kind=dp),    intent(in) :: delnA 
             real(kind=dp),    intent(in) :: z0 
             real(kind=dp),    intent(in) :: beta 
@@ -3840,7 +3840,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r4
             !dir$ attributes forceinline :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r4
 #endif 
-
+!$omp declare simd(analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r4)
             real(kind=sp),    intent(in) :: delnA 
             real(kind=sp),    intent(in) :: z0 
             real(kind=sp),    intent(in) :: beta 
@@ -3867,5 +3867,39 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             trm3   = delnA*(t0-t1)
             del2   = trm1*(trm2+trm3)
          end function analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r4
+
+         elemental function analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r8(delnA,z0,beta,Hc0,R0) result(del2)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r8
+            !dir$ attributes forceinline :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r8
+#endif 
+!$omp declare simd(analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r8)
+            real(kind=dp),    intent(in) :: delnA 
+            real(kind=dp),    intent(in) :: z0 
+            real(kind=dp),    intent(in) :: beta 
+            real(kind=dp),    intent(in) :: Hc0 
+            real(kind=dp),    intent(in) :: R0 
+            real(kind=dp)                :: del2
+            real(kind=dp),    automatic  :: tgz0, scosz0, btHc0, ebtHc0
+            real(kind=dp),    automatic  :: rat1, rat2, rat3, rat4 
+            real(kind=dp),    automatic  :: t0, t1, t2 
+            real(kind=dp),    automatic  :: trm1, trm2, trm3  
+            btHc0  = beta*Hc0 
+            tgz0   = tan(z0)
+            t0     = cos(z0)
+            ebtHc0 = exp(-btHc0)
+            scosz0 = t0*t0 
+            trm1   = delnA*(tgz0/scosz0)
+            t0     = (Hc0/R0)*ebtHc0
+            t1     = 1.0_dp-ebtHc0/(2.0_dp*beta*beta*Hc0*R0)
+            t2     = 1.0_dp+ebtHc0/(beta*R0)
+            trm2   = t0+t1-t2 
+            t0     = 0.5_dp+1.0_dp-ebtHc0/(2.0_dp*btHc0)
+            t2     = 8.0_dp*btHc0
+            t1     = 1.0_dp-exp(-2.0_dp*btHc0)/t2 
+            trm3   = delnA*(t0-t1)
+            del2   = trm1*(trm2+trm3)
+         end function analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r8
 
 end module emw_refraction
