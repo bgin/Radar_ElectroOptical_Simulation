@@ -3902,4 +3902,28 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             del2   = trm1*(trm2+trm3)
          end function analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r8
 
+         ! Рефракция электромагнитных волн (Х<5 см)
+         ! в земной атмосфере при близких или равных
+         ! высотах излучателя и приемника.
+
+         ! Уравнение траектории луча в сферически 
+         ! неоднородной атмосфере.
+         ! позволяет установить связь между
+         ! радиусом-вектором 'r' и геоцентрическим углом 'theta'. С 
+         ! учетом малости угла 'theta' эта зависимость имеет вид
+         elemental function ray_traj_inhomogenous_atmos_f531_r4(na,R0,z0,tht) result(r)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: ray_traj_inhomogenous_atmos_f531_r4
+            !dir$ attributes forceinline :: ray_traj_inhomogenous_atmos_f531_r4
+#endif 
+!$omp declare simd(ray_traj_inhomogenous_atmos_f531_r4)
+            real(kind=sp),   intent(in) :: na 
+            real(kind=sp),   intent(in) :: R0 ! a+H0
+            real(kind=sp),   intent(in) :: z0 
+            real(kind=sp),   intent(in) :: tht 
+            real(kind=sp)    :: r 
+            real(kind=sp),   automatic  :: 
+         end function ray_traj_inhomogenous_atmos_f531_r4
+
 end module emw_refraction
