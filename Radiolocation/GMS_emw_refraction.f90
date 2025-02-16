@@ -3772,7 +3772,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             del2    = del21+del22+del23 
         end function analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r4
 
-        elemental function analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r48delnA,z0,beta,Hc0,R0) result(del2)
+        elemental function analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r48(delnA,z0,beta,Hc0,R0) result(del2)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r8
@@ -3791,5 +3791,26 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             del23   =  analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r8(delnA,z0,beta,Hc0,R0) 
             del2    = del21+del22+del23 
         end function analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r8
+
+        ! Final calculation of refractive angle.
+        ! Formula 5.17, page: 95
+        elemental function refraction_angle_tropo_wvle5cm_f517_r4(delnA,z0,beta,Hc0,R0) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_tropo_wvle5cm_f517_r4
+            !dir$ attributes forceinline :: refraction_angle_tropo_wvle5cm_f517_r4
+#endif 
+
+            real(kind=sp),    intent(in) :: delnA 
+            real(kind=sp),    intent(in) :: z0 
+            real(kind=sp),    intent(in) :: beta 
+            real(kind=sp),    intent(in) :: Hc0 
+            real(kind=sp),    intent(in) :: R0 
+            real(kind=sp)   :: alpha
+            real(kind=sp),    automatic  :: del1, del2 
+            del1  =  analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r4(delnA,z0,beta,Hc0)
+            del2  =  analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r4(delnA,z0,beta,Hc0,R0)
+            alpha = del1+del2 
+        end function refraction_angle_tropo_wvle5cm_f517_r4
 
 end module emw_refraction
