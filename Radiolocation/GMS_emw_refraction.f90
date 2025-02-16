@@ -3961,4 +3961,44 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             r      = trm1*trm2 
          end function ray_traj_inhomogenous_atmos_f531_r8
 
+         ! Рефракция электромагнитных волн (Х<5 см)
+         ! в земной атмосфере при близких или равных
+         ! высотах излучателя и приемника.
+         ! Formula: 5.34, page: 100
+         elemental function analytic_sol_L_atmos_wvle5cm_f534_r4(z0,beta,R0,thtc) result(L)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L_atmos_wvle5cm_f534_r4
+            !dir$ attributes forceinline :: analytic_sol_L_atmos_wvle5cm_f534_r4
+#endif 
+!$omp declare simd(analytic_sol_L_atmos_wvle5cm_f534_r4)
+            real(kind=sp),   intent(in) :: z0 
+            real(kind=sp),   intent(in) :: beta 
+            real(kind=sp),   intent(in) :: R0 
+            real(kind=sp),   intent(in) :: thtc 
+            real(kind=sp)               :: L 
+            real(kind=sp), automatic    :: ctgz0, sctgz0, btR0
+            real(kind=sp), automatic    :: p1, q1, sp1
+            real(kind=sp), automatic    :: t0, t1
+            real(kind=sp), automatic    :: exp1, exp2 
+            real(kind=sp), automatic    :: rat1, rat2 
+            real(kind=sp), automatic    :: tbtR0, trm1, trm2  
+            btR0    = beta*R0 
+            tbtR0   = btR0+btR0 
+            ctgz0   = 1.0_sp/tan(z0)
+            sctgz0  = ctgz0*ctgz0 
+            q1      = sqrt(0.5_sp*sctgz0)
+            t0      = sqrt(0.5_sp+sctgz0)
+            p1      = ctgz0/(2.0_sp+t0)
+            sp1     = p1*p1 
+            rat1    = p1/tbtR0 
+            exp1    = exp(-btR0*sp1)
+            t1      = (p1+q1*thtc)/tbtR0 
+            t0      = (p1+q1*thtc)*(p1+q1*thtc)
+            exp2    = exp(-btR0*t0)
+            trm1    = rat1*exp1 
+            trm2    = t1*exp2 
+            L       = trm1-trm2 
+         end function analytic_sol_L_atmos_wvle5cm_f534_r4
+
 end module emw_refraction
