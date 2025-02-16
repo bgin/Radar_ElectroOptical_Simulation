@@ -3911,19 +3911,54 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
          ! позволяет установить связь между
          ! радиусом-вектором 'r' и геоцентрическим углом 'theta'. С 
          ! учетом малости угла 'theta' эта зависимость имеет вид
-         elemental function ray_traj_inhomogenous_atmos_f531_r4(na,R0,z0,tht) result(r)
+         elemental function ray_traj_inhomogenous_atmos_f531_r4(n,na,R0,z0,tht) result(r)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: ray_traj_inhomogenous_atmos_f531_r4
             !dir$ attributes forceinline :: ray_traj_inhomogenous_atmos_f531_r4
 #endif 
 !$omp declare simd(ray_traj_inhomogenous_atmos_f531_r4)
+            real(kind=sp),   intent(in) :: n
             real(kind=sp),   intent(in) :: na 
             real(kind=sp),   intent(in) :: R0 ! a+H0
             real(kind=sp),   intent(in) :: z0 
             real(kind=sp),   intent(in) :: tht 
             real(kind=sp)    :: r 
-            real(kind=sp),   automatic  :: 
+            real(kind=sp),   automatic  :: ctgz0, sctgz0, trm1, trm2 
+            real(kind=sp),   automatic  :: stht, t0, t1  
+            trm1   = (na*R0)/n 
+            ctgz0  = 1.0_sp/tan(z0)
+            sctgz0 = ctgz0*ctgz0 
+            t1     = 1.0_sp+ctgz0*tht 
+            stht   = tht*tht 
+            t0     = (sctgz0+0.5_sp)*stht
+            trm2   = t1+t0 
+            r      = trm1*trm2 
          end function ray_traj_inhomogenous_atmos_f531_r4
+
+         elemental function ray_traj_inhomogenous_atmos_f531_r8(n,na,R0,z0,tht) result(r)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: ray_traj_inhomogenous_atmos_f531_r8
+            !dir$ attributes forceinline :: ray_traj_inhomogenous_atmos_f531_r8
+#endif 
+!$omp declare simd(ray_traj_inhomogenous_atmos_f531_r8)
+            real(kind=dp),   intent(in) :: n
+            real(kind=dp),   intent(in) :: na 
+            real(kind=dp),   intent(in) :: R0 ! a+H0
+            real(kind=dp),   intent(in) :: z0 
+            real(kind=dp),   intent(in) :: tht 
+            real(kind=dp)    :: r 
+            real(kind=dp),   automatic  :: ctgz0, sctgz0, trm1, trm2 
+            real(kind=dp),   automatic  :: stht, t0, t1  
+            trm1   = (na*R0)/n 
+            ctgz0  = 1.0_dp/tan(z0)
+            sctgz0 = ctgz0*ctgz0 
+            t1     = 1.0_dp+ctgz0*tht 
+            stht   = tht*tht 
+            t0     = (sctgz0+0.5_dp)*stht
+            trm2   = t1+t0 
+            r      = trm1*trm2 
+         end function ray_traj_inhomogenous_atmos_f531_r8
 
 end module emw_refraction
