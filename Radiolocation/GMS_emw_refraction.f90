@@ -4060,7 +4060,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             real(kind=sp),     intent(in) :: Rc ! (a+Hc) distance of emmiter from the earth center.
             real(kind=sp),     intent(in) :: nc ! refractive index at emmiter vicinity
             real(kind=sp),     intent(in) :: na 
-            real(kind=sp)                 :: angle 
+            real(kind=sp)                 :: alpha
             real(kind=sp),     automatic  :: p1, ctgz0, sctgz0
             real(kind=sp),     automatic  :: sp1, rat, sqr 
             real(kind=sp),     automatic  :: t0, t1, exp1 
@@ -4076,7 +4076,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             t0     = 1.0_sp+(p1*0.5_sp)*sqrt(sp1+rat-1.0_sp)
             t1     = 0.5_sp*(rat-1.0_sp)
             trm2   = t0+t1
-            angle  = trm1*trm2 
+            alpha  = trm1*trm2 
        end function refraction_angle_atmos_wvle5cm_f535_r4
 
        elemental function refraction_angle_atmos_wvle5cm_f535_r8(delnA,beta,R0,thtc,z0,  &
@@ -4095,7 +4095,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             real(kind=dp),     intent(in) :: Rc ! (a+Hc) distance of emmiter from the earth center.
             real(kind=dp),     intent(in) :: nc ! refractive index at emmiter vicinity
             real(kind=dp),     intent(in) :: na 
-            real(kind=dp)                 :: angle 
+            real(kind=dp)                 :: alpha 
             real(kind=dp),     automatic  :: p1, ctgz0, sctgz0
             real(kind=dp),     automatic  :: sp1, rat, sqr 
             real(kind=dp),     automatic  :: t0, t1, exp1 
@@ -4111,9 +4111,25 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             t0     = 1.0_dp+(p1*0.5_dp)*sqrt(sp1+rat-1.0_dp)
             t1     = 0.5_dp*(rat-1.0_dp)
             trm2   = t0+t1
-            angle  = trm1*trm2 
+            alpha  = trm1*trm2 
        end function refraction_angle_atmos_wvle5cm_f535_r8
 
-
+       !При одинаковых высотах излучателя и приемника и
+       !ри z0 = 90°
+       !!Formula: 5.36, page: 101
+       elemental function refraction_angle_atmos_wvle5cm_f536_r4(delnA,beta,R0,thtc) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_f536_r4
+            !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_f536_r4
+#endif 
+!$omp declare simd(refraction_angle_atmos_wvle5cm_f536_r4) 
+            real(kind=sp),     intent(in) :: delnA 
+            real(kind=sp),     intent(in) :: beta 
+            real(kind=sp),     intent(in) :: R0 
+            real(kind=sp),     intent(in) :: thtc 
+            real(kind=sp)                 :: alpha 
+            alpha  = delnA*beta*R0*thtc 
+       end function refraction_angle_atmos_wvle5cm_f536_r4
 
 end module emw_refraction
