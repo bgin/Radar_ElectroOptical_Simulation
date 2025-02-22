@@ -4001,4 +4001,82 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L       = trm1-trm2 
          end function analytic_sol_L_atmos_wvle5cm_f534_r4
 
+         elemental function analytic_sol_L_atmos_wvle5cm_f534_r8(z0,beta,R0,thtc) result(L)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L_atmos_wvle5cm_f534_r8
+            !dir$ attributes forceinline :: analytic_sol_L_atmos_wvle5cm_f534_r8
+#endif 
+!$omp declare simd(analytic_sol_L_atmos_wvle5cm_f534_r8)
+            real(kind=dp),   intent(in) :: z0 
+            real(kind=dp),   intent(in) :: beta 
+            real(kind=dp),   intent(in) :: R0 
+            real(kind=dp),   intent(in) :: thtc 
+            real(kind=dp)               :: L 
+            real(kind=dp), automatic    :: ctgz0, sctgz0, btR0
+            real(kind=dp), automatic    :: p1, q1, sp1
+            real(kind=dp), automatic    :: t0, t1
+            real(kind=dp), automatic    :: exp1, exp2 
+            real(kind=dp), automatic    :: rat1, rat2 
+            real(kind=dp), automatic    :: tbtR0, trm1, trm2  
+            btR0    = beta*R0 
+            tbtR0   = btR0+btR0 
+            ctgz0   = 1.0_dp/tan(z0)
+            sctgz0  = ctgz0*ctgz0 
+            q1      = sqrt(0.5_dp*sctgz0)
+            t0      = sqrt(0.5_dp+sctgz0)
+            p1      = ctgz0/(2.0_dp+t0)
+            sp1     = p1*p1 
+            rat1    = p1/tbtR0 
+            exp1    = exp(-btR0*sp1)
+            t1      = (p1+q1*thtc)/tbtR0 
+            t0      = (p1+q1*thtc)*(p1+q1*thtc)
+            exp2    = exp(-btR0*t0)
+            trm1    = rat1*exp1 
+            trm2    = t1*exp2 
+            L       = trm1-trm2 
+         end function analytic_sol_L_atmos_wvle5cm_f534_r8
+
+       !Рассмотрим несколько частных случаев соотношения
+       !(5.33), наиболее типичных для практических 
+       !приложений.
+       !А. Высоты излучателя и приемника близки .друг к
+       !другу, что равносильно выполнению неравенств u2 < 1
+       !И u1 < 1.
+       !Formula: 5.35, page: 101
+       elemental function refraction_angle_atmos_wvle5cm_f535_r4(delnA,beta,R0,thtc,z0,  &
+                                                                 Rc,nc,na) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_f535_r4
+            !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_f535_r4
+#endif 
+!$omp declare simd(refraction_angle_atmos_wvle5cm_f535_r4)
+            real(kind=sp),     intent(in) :: delnA 
+            real(kind=sp),     intent(in) :: beta 
+            real(kind=sp),     intent(in) :: R0 
+            real(kind=sp),     intent(in) :: thtc 
+            real(kind=sp),     intent(in) :: z0 
+            real(kind=sp),     intent(in) :: Rc ! (a+Hc) distance of emmiter from the earth center.
+            real(kind=sp),     intent(in) :: nc ! refractive index at emmiter vicinity
+            real(kind=sp),     intent(in) :: na 
+            real(kind=sp)                 :: angle 
+            real(kind=sp),     automatic  :: p1, ctgz0, sctgz0
+            real(kind=sp),     automatic  :: sp1, rat, sqr 
+            real(kind=sp),     automatic  :: t0, t1, exp1 
+            real(kind=sp),     automatic  :: trm1, trm2 
+            t0     = delnA*beta*R0*thtc 
+            ctgz0  = 1.0_sp/tan(z0)
+            sctgz0 = ctgz0*ctgz0 
+            p1     = ctgz0/(2.0_sp*sqrt(0.5_sp+sctgz0))
+            sp1    = p1*p1
+            t1     = exp(beta*R0*sp1)
+            trm1   = t0*t1 
+            rat    = (Rc*nc)/(R0*na)
+            t0     = 1.0_sp+(p1*0.5_sp)*sqrt(sp1+rat-1.0_sp)
+            t1     = 0.5_sp*(rat-1.0_sp)
+            trm2   = t0+t1
+            angle  = trm1*trm2 
+       end function refraction_angle_atmos_wvle5cm_f535_r4
+
 end module emw_refraction
