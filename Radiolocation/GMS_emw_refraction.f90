@@ -4117,19 +4117,53 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        !При одинаковых высотах излучателя и приемника и
        !ри z0 = 90°
        !!Formula: 5.36, page: 101
-       elemental function refraction_angle_atmos_wvle5cm_f536_r4(delnA,beta,R0,thtc) result(alpha)
+       elemental function refraction_angle_atmos_wvle5cm_z0eq90_f536_r4(delnA,beta,R0,thtc) result(alpha)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_f536_r4
-            !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_f536_r4
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_z0eq90_f536_r4
+            !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_z0eq90_f536_r4
 #endif 
-!$omp declare simd(refraction_angle_atmos_wvle5cm_f536_r4) 
+!$omp declare simd(refraction_angle_atmos_wvle5cm_z0eq90_f536_r4) 
             real(kind=sp),     intent(in) :: delnA 
             real(kind=sp),     intent(in) :: beta 
             real(kind=sp),     intent(in) :: R0 
             real(kind=sp),     intent(in) :: thtc 
             real(kind=sp)                 :: alpha 
             alpha  = delnA*beta*R0*thtc 
-       end function refraction_angle_atmos_wvle5cm_f536_r4
+       end function refraction_angle_atmos_wvle5cm_z0eq90_f536_r4
+
+       elemental function refraction_angle_atmos_wvle5cm_z0eq90_f536_r8(delnA,beta,R0,thtc) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_z0eq90_f536_r8
+            !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_z0eq90_f536_r8
+#endif 
+!$omp declare simd(refraction_angle_atmos_wvle5cm_z0eq90_f536_r8) 
+            real(kind=dp),     intent(in) :: delnA 
+            real(kind=dp),     intent(in) :: beta 
+            real(kind=dp),     intent(in) :: R0 
+            real(kind=dp),     intent(in) :: thtc 
+            real(kind=dp)                 :: alpha 
+            alpha  = delnA*beta*R0*thtc 
+       end function refraction_angle_atmos_wvle5cm_z0eq90_f536_r8
+
+       !Высоты излучателя и лриемнйка значительно 
+       !отличаются друг от друга, т. е. выполняется условие
+       !u2 > 1 и и u1 > 1.
+       !Formula: 5.37, page: 101
+       elemental function refraction_angle_atmos_wvle5cm_f537_r4(delnA,z0) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_f537_r4
+            !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_f537_r4
+#endif 
+!$omp declare simd(refraction_angle_atmos_wvle5cm_f537_r4) 
+            real(kind=sp),     intent(in) :: delnA 
+            real(kind=sp),     intent(in) :: z0 
+            real(kind=sp)                 :: alpha 
+            real(kind=sp),     automatic  :: tgz0 
+            tgz0  = tan(z0)
+            alpha = delNa*tgz0 
+       end function refraction_angle_atmos_wvle5cm_f537_r4
 
 end module emw_refraction
