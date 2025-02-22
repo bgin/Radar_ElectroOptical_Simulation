@@ -4218,5 +4218,59 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha  = trm1*trm2 
        end function refraction_angle_astronomical_wvle5cm_f538_r4
 
+       elemental function refraction_angle_astronomical_wvle5cm_f538_r8(delnA,beta,R0,z0) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_astronomical_wvle5cm_f538_r8
+            !dir$ attributes forceinline :: refraction_angle_astronomical_wvle5cm_f538_r8
+#endif 
+!$omp declare simd(refraction_angle_astronomical_wvle5cm_f538_r8) 
+            real(kind=dp),     intent(in) :: delnA 
+            real(kind=dp),     intent(in) :: beta
+            real(kind=dp),     intent(in) :: R0 
+            real(kind=dp),     intent(in) :: z0 
+            real(kind=dp)                 :: alpha 
+            real(kind=dp),     parameter  :: C314159265358979323846264338328 = & 
+                                                3.14159265358979323846264338328_dp 
+            real(kind=dp),     automatic  :: p1, q1 
+            real(kind=dp),     automatic  :: ctgz0, sctgz0 
+            real(kind=dp),     automatic  :: btR0, sqr 
+            real(kind=dp),     automatic  :: trm1, trm2 
+            real(kind=dp),     automatic  :: t0, t1 
+            ctgz0  = 1.0_dp/tan(z0)
+            btR0   = beta*R0 
+            sctgz0 = ctgz0 
+            p1     = ctgz0/(2.0_dp*sqrt(0.5_dp+sctgz0))
+            q1     = sqrt(0.5_dp*sctgz0)
+            sqr    = sqrt(C314159265358979323846264338328/btR0)
+            trm1   = delnA*(btR0/q1)
+            t0     = 0.5_dp*sqr 
+            t1     = (1.0_dp+(1.0_dp/(2.0_dp*btR0)))-p1 
+            trm2   = t0*t1 
+            alpha  = trm1*trm2 
+       end function refraction_angle_astronomical_wvle5cm_f538_r8
+
+       !Для астрономической рефракции на горизонте z0 == 90 deg.
+       elemental function refraction_angle_astronomical_wvle5cm_z0eq90_f539_r4(delnA,beta,R0) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_astronomical_wvle5cm_z0eq90_f539_r4
+            !dir$ attributes forceinline :: refraction_angle_astronomical_wvle5cm_z0eq90_f539_r4
+#endif 
+!$omp declare simd(refraction_angle_astronomical_wvle5cm_z0eq90_f539_r4) 
+            real(kind=sp),     intent(in) :: delnA 
+            real(kind=sp),     intent(in) :: beta
+            real(kind=sp),     intent(in) :: R0 
+            real(kind=sp)                 :: alpha 
+            real(kind=sp),     parameter  :: C314159265358979323846264338328 = & 
+                                                3.14159265358979323846264338328_sp 
+            real(kind=sp),     automatic  :: pibtR0, sqr 
+            real(kind=sp),     automatic  :: inv 
+            pibtR0  = C314159265358979323846264338328*beta*R0 
+            sqr     = sqrt(0.5_sp*pibtR0)
+            inv     = 1.0_sp/(2.0_sp*beta*R0)
+            alpha   = delnA*sqr*(1.0_sp+inv)
+       end function refraction_angle_astronomical_wvle5cm_z0eq90_f539_r4
+
 
 end module emw_refraction
