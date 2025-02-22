@@ -4166,4 +4166,57 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha = delNa*tgz0 
        end function refraction_angle_atmos_wvle5cm_f537_r4
 
+       elemental function refraction_angle_atmos_wvle5cm_f537_r8(delnA,z0) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_f537_r8
+            !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_f537_r8
+#endif 
+!$omp declare simd(refraction_angle_atmos_wvle5cm_f537_r8) 
+            real(kind=dp),     intent(in) :: delnA 
+            real(kind=dp),     intent(in) :: z0 
+            real(kind=dp)                 :: alpha 
+            real(kind=dp),     automatic  :: tgz0 
+            tgz0  = tan(z0)
+            alpha = delNa*tgz0 
+       end function refraction_angle_atmos_wvle5cm_f537_r8
+
+       !Излучатель находится за пределами атмосферы, а
+       !приемник — вблизи поверхности Земли, причем 
+       !видимый'зенитный угол близок к 90° (астрономическая 
+       !рефракция вблизи горизонта).
+       !В этом случае имеют месте) соотношения u2 > 1, u1 < 1
+       elemental function refraction_angle_astronomical_wvle5cm_f538_r4(delnA,beta,R0,z0) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_astronomical_wvle5cm_f538_r4
+            !dir$ attributes forceinline :: refraction_angle_astronomical_wvle5cm_f538_r4
+#endif 
+!$omp declare simd(refraction_angle_astronomical_wvle5cm_f538_r4) 
+            real(kind=sp),     intent(in) :: delnA 
+            real(kind=sp),     intent(in) :: beta
+            real(kind=sp),     intent(in) :: R0 
+            real(kind=sp),     intent(in) :: z0 
+            real(kind=sp)                 :: alpha 
+            real(kind=sp),     parameter  :: C314159265358979323846264338328 = & 
+                                                3.14159265358979323846264338328_sp 
+            real(kind=sp),     automatic  :: p1, q1 
+            real(kind=sp),     automatic  :: ctgz0, sctgz0 
+            real(kind=sp),     automatic  :: btR0, sqr 
+            real(kind=sp),     automatic  :: trm1, trm2 
+            real(kind=sp),     automatic  :: t0, t1 
+            ctgz0  = 1.0_sp/tan(z0)
+            btR0   = beta*R0 
+            sctgz0 = ctgz0 
+            p1     = ctgz0/(2.0_sp*sqrt(0.5_sp+sctgz0))
+            q1     = sqrt(0.5_sp*sctgz0)
+            sqr    = sqrt(C314159265358979323846264338328/btR0)
+            trm1   = delnA*(btR0/q1)
+            t0     = 0.5_sp*sqr 
+            t1     = (1.0_sp+(1.0_sp/(2.0_sp*btR0)))-p1 
+            trm2   = t0*t1 
+            alpha  = trm1*trm2 
+       end function refraction_angle_astronomical_wvle5cm_f538_r4
+
+
 end module emw_refraction
