@@ -4433,4 +4433,38 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L11   = -rat1*rat2 
        end function analytic_sol_L11_whole_atmosphere_f549_r4
 
+       elemental function analytic_sol_L11_whole_atmosphere_f549_r8(beta,R0,delnA,z0,H10) result(L11)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L11_whole_atmosphere_f549_r8
+            !dir$ attributes forceinline :: analytic_sol_L11_whole_atmosphere_f549_r8
+#endif 
+!$omp declare simd(analytic_sol_L11_whole_atmosphere_f549_r8) 
+            real(kind=dp),    intent(in) :: beta 
+            real(kind=dp),    intent(in) :: R0 
+            real(kind=dp),    intent(in) :: delnA 
+            real(kind=dp),    intent(in) :: z0 
+            real(kind=dp),    intent(in) :: H10 
+            real(kind=dp)                :: L11 
+            real(kind=dp),    automatic  :: btH10, exp1 
+            real(kind=dp),    automatic  :: exp2,  siz0 
+            real(kind=dp),    automatic  :: cosz0, stgz0 
+            real(kind=dp),    automatic  :: trm1, trm2 
+            real(kind=dp),    automatic  :: t0,   t1 
+            t0    = beta*R0*delnA*delnA 
+            btH10 = beta*H10 
+            siz0  = sin(z0) 
+            cosz0 = cos(z0) 
+            t1    = siz0*cosz0 
+            rat1  = t0/t1 
+            exp1  = exp(-btH10) 
+            t0    = tan(z0)
+            stgz0 = t0*t0 
+            exp2  = exp(-2.0_dp*btH10)
+            t0    = H10/R0 
+            t1    = sqrt(1.0_dp+2.0_dp*stgz0*t0) 
+            rat2  = (exp1-exp2)/t1 
+            L11   = -rat1*rat2 
+       end function analytic_sol_L11_whole_atmosphere_f549_r8
+
 end module emw_refraction
