@@ -4396,5 +4396,41 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             n     = trm1*trm2 
        end function refractive_idx_lo_ionosphere_wv5cm3m_f542_r8
 
+       ! угол полной атмосферной
+       ! рефракции а определяется соотношением
+       ! Formula: 5.49, page: 105 
+       elemental function analytic_sol_L11_whole_atmosphere_f549_r4(beta,R0,delnA,z0,H10) result(L11)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L11_whole_atmosphere_f549_r4
+            !dir$ attributes forceinline :: analytic_sol_L11_whole_atmosphere_f549_r4
+#endif 
+!$omp declare simd(analytic_sol_L11_whole_atmosphere_f549_r4) 
+            real(kind=sp),    intent(in) :: beta 
+            real(kind=sp),    intent(in) :: R0 
+            real(kind=sp),    intent(in) :: delnA 
+            real(kind=sp),    intent(in) :: z0 
+            real(kind=sp),    intent(in) :: H10 
+            real(kind=sp)                :: L11 
+            real(kind=sp),    automatic  :: btH10, exp1 
+            real(kind=sp),    automatic  :: exp2,  siz0 
+            real(kind=sp),    automatic  :: cosz0, stgz0 
+            real(kind=sp),    automatic  :: trm1, trm2 
+            real(kind=sp),    automatic  :: t0,   t1 
+            t0    = beta*R0*delnA*delnA 
+            btH10 = beta*H10 
+            siz0  = sin(z0) 
+            cosz0 = cos(z0) 
+            t1    = siz0*cosz0 
+            rat1  = t0/t1 
+            exp1  = exp(-btH10) 
+            t0    = tan(z0)
+            stgz0 = t0*t0 
+            exp2  = exp(-2.0_sp*btH10)
+            t0    = H10/R0 
+            t1    = sqrt(1.0_sp+2.0_sp*stgz0*t0) 
+            rat2  = (exp1-exp2)/t1 
+            L11   = -rat1*rat2 
+       end function analytic_sol_L11_whole_atmosphere_f549_r4
 
 end module emw_refraction
