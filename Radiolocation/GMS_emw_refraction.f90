@@ -4293,5 +4293,33 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha   = delnA*sqr*(1.0_dp+inv)
        end function refraction_angle_astronomical_wvle5cm_z0eq90_f539_r8
 
+       ! Рефракция радиоволн (5 см < X < 3 м)
+       ! в земной атмосфере при различных высотах
+       ! излучателя и приемника
+
+       ! Приемник помещен в нейтросфере в точке А
+       ! на высоте Н0 над поверхностью Земли, а 
+       ! излучатель—'в нижней ионосфере, в точке С на высоте
+       ! Нс над земной поверхностью.
+       ! Formula: 5.41, page: 103
+       elemental function refractive_idx_lo_ionosphere_wv5cm3m_f541_r4(delnA,beta,h) result(n) 
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_wv5cm3m_f541_r4
+            !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_wv5cm3m_f541_r4
+#endif 
+!$omp declare simd(refractive_idx_lo_ionosphere_wv5cm3m_f541_r4) 
+            real(kind=sp),     intent(in) :: delnA ! refractive index at point `A`
+            real(kind=sp),     intent(in) :: beta
+            real(kind=sp),     intent(in) :: h ! 0<=h<=H10 (H10==H1-H0)
+            real(kind=sp)                 :: n 
+            real(kind=sp),     automatic  :: bth, exp1
+            real(kind=sp),     automatic  :: t0 
+            t0   = 1.0_sp+delnA 
+            bth  = -beta*h 
+            exp1 = exp(bth)
+            n    = t0*exp1 
+       end function refractive_idx_lo_ionosphere_wv5cm3m_f541_r4
+
 
 end module emw_refraction
