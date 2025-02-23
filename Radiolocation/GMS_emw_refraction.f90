@@ -4590,4 +4590,43 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L12      = trm1*trm2 
        end function analytic_sol_L13_whole_atmosphere_f551_r4
 
+       elemental function analytic_sol_L13_whole_atmosphere_f551_r8(beta,R0,delnA,z0,H10) result(L13)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L13_whole_atmosphere_f551_r8
+            !dir$ attributes forceinline :: analytic_sol_L13_whole_atmosphere_f551_r8
+#endif 
+!$omp declare simd(analytic_sol_L13_whole_atmosphere_f551_r8) 
+            real(kind=dp),    intent(in) :: beta 
+            real(kind=dp),    intent(in) :: R0 
+            real(kind=dp),    intent(in) :: delnA 
+            real(kind=dp),    intent(in) :: z0 
+            real(kind=dp),    intent(in) :: H10 
+            real(kind=dp)                :: L13 
+            real(kind=dp),    parameter  :: C157079632679489661923132169164 = & 
+                                              1.57079632679489661923132169164_dp 
+            real(kind=dp),    automatic  :: btR0,  tgz0 
+            real(kind=dp),    automatic  :: stgz0, sctgz0 
+            real(kind=dp),    automatic  :: exp1,  rat1 
+            real(kind=dp),    automatic  :: prob1, prob2 
+            real(kind=dp),    automatic  :: trm1, trm2 
+            real(kind=dp),    automatic  :: btR0scz0, t0 
+            real(kind=dp),    automatic  :: t1 
+            tgz0     = tan(z0)
+            btR0     = beta*R0 
+            stgz0    = tgz0*tgz0 
+            t0       = 1.0_dp/tgz0 
+            sctgz0   = t0*t0 
+            btR0scz0 = btR0*sctgz0 
+            exp1     = exp(btR0/sctgz0)
+            t1       = sqrt((2.0_dp*btR0)/tgz0)
+            trm1     = delnA*t1*exp1*C157079632679489661923132169164 
+            t0       = sqrt(2.0_dp*btR0scz0+4.0_dp*beta*H10)
+            prob1    = prob_integral_r8(t0)
+            t1       = sqrt(2.0_dp*btR0scz0)
+            prob2    = prob_integral_r8(t1)
+            trm2     = prob1-prob2 
+            L12      = trm1*trm2 
+       end function analytic_sol_L13_whole_atmosphere_f551_r8
+
 end module emw_refraction
