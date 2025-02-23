@@ -4301,6 +4301,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        ! на высоте Н0 над поверхностью Земли, а 
        ! излучатель—'в нижней ионосфере, в точке С на высоте
        ! Нс над земной поверхностью.
+
        ! Formula: 5.41, page: 103
        elemental function refractive_idx_lo_ionosphere_wv5cm3m_f541_r4(delnA,beta,h) result(n) 
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
@@ -4320,6 +4321,80 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             exp1 = exp(bth)
             n    = t0*exp1 
        end function refractive_idx_lo_ionosphere_wv5cm3m_f541_r4
+
+       elemental function refractive_idx_lo_ionosphere_wv5cm3m_f541_r8(delnA,beta,h) result(n) 
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_wv5cm3m_f541_r8
+            !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_wv5cm3m_f541_r8
+#endif 
+!$omp declare simd(refractive_idx_lo_ionosphere_wv5cm3m_f541_r8) 
+            real(kind=dp),     intent(in) :: delnA ! refractive index at point `A`
+            real(kind=dp),     intent(in) :: beta
+            real(kind=dp),     intent(in) :: h ! 0<=h<=H10 (H10==H1-H0)
+            real(kind=dp)                 :: n 
+            real(kind=dp),     automatic  :: bth, exp1
+            real(kind=dp),     automatic  :: t0 
+            t0   = 1.0_dp+delnA 
+            bth  = -beta*h 
+            exp1 = exp(bth)
+            n    = t0*exp1 
+       end function refractive_idx_lo_ionosphere_wv5cm3m_f541_r8
+
+       ! Formula 5.42, page: 103
+       elemental function refractive_idx_lo_ionosphere_wv5cm3m_f542_r4(fc,Nmf,h,H10,H20) result(n) 
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_wv5cm3m_f542_r4
+            !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_wv5cm3m_f542_r4
+#endif 
+!$omp declare simd(refractive_idx_lo_ionosphere_wv5cm3m_f542_r4) 
+            real(kind=sp),    intent(in) :: fc 
+            real(kind=sp),    intent(in) :: Nmf 
+            real(kind=sp),    intent(in) :: h     !H10<=h<=H20
+            real(kind=sp),    intent(in) :: H10 
+            real(kind=sp),    intent(in) :: H20 
+            real(kind=sp)                :: n 
+            real(kind=sp),    automatic  :: delnM, hH10 
+            real(kind=sp),    automatic  :: H20H10, rat1 
+            real(kind=sp),    automatic  :: rat2,   trm1 
+            real(kind=sp),    automatic  :: trm2 
+            hH10  = h-H10 
+            delnM = compute_delnM_f414_r4(fc,Nmf)
+            H20H10= H20-H10 
+            rat1  = hH10/H20H10 
+            trm1  = 1.0_sp-delnM 
+            rat2  = (hH10*hH10)/(H20H10*H20H10)
+            trm2  = 2.0_sp*(rat1-rat2)
+            n     = trm1*trm2 
+       end function refractive_idx_lo_ionosphere_wv5cm3m_f542_r4
+
+       elemental function refractive_idx_lo_ionosphere_wv5cm3m_f542_r8(fc,Nmf,h,H10,H20) result(n) 
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_wv5cm3m_f542_r8
+            !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_wv5cm3m_f542_r8
+#endif 
+!$omp declare simd(refractive_idx_lo_ionosphere_wv5cm3m_f542_r8) 
+            real(kind=dp),    intent(in) :: fc 
+            real(kind=dp),    intent(in) :: Nmf 
+            real(kind=dp),    intent(in) :: h     !H10<=h<=H20
+            real(kind=dp),    intent(in) :: H10 
+            real(kind=dp),    intent(in) :: H20 
+            real(kind=dp)                :: n 
+            real(kind=dp),    automatic  :: delnM, hH10 
+            real(kind=dp),    automatic  :: H20H10, rat1 
+            real(kind=dp),    automatic  :: rat2,   trm1 
+            real(kind=dp),    automatic  :: trm2 
+            hH10  = h-H10 
+            delnM = compute_delnM_f414_r8(fc,Nmf)
+            H20H10= H20-H10 
+            rat1  = hH10/H20H10 
+            trm1  = 1.0_dp-delnM 
+            rat2  = (hH10*hH10)/(H20H10*H20H10)
+            trm2  = 2.0_dp*(rat1-rat2)
+            n     = trm1*trm2 
+       end function refractive_idx_lo_ionosphere_wv5cm3m_f542_r8
 
 
 end module emw_refraction
