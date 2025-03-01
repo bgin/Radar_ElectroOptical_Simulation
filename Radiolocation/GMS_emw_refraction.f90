@@ -5064,7 +5064,36 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha = -log(na/nc)*ctgz0+L                                                        
        end function refraction_angle_whole_atmos_vw5cm3m_f543_r8
 
-
+       ! Formula: 5.59, page: 106
+       elemental function analytic_sol_del11_whole_atmos_f559_r4(delnA,z0,H10,Hc0,beta) result(del11)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_del11_whole_atmos_f559_r4
+            !dir$ attributes forceinline :: analytic_sol_del11_whole_atmos_f559_r4
+#endif 
+!$omp declare simd(analytic_sol_del11_whole_atmos_f559_r4) 
+            real(kind=sp),   intent(in) :: delnA 
+            real(kind=sp),   intent(in) :: z0 
+            real(kind=sp),   intent(in) :: H10 
+            real(kind=sp),   intent(in) :: Hc0 
+            real(kind=sp),   intent(in) :: beta 
+            real(kind=sp)               :: del11 
+            real(kind=sp),   automatic  :: tgz0, H10Hc0
+            real(kind=sp),   automatic  :: btH10, exp1 
+            real(kind=sp),   automatic  :: btHc0, rat 
+            real(kind=sp),   automatic  :: trm1,  trm2 
+            real(kind=sp),   automatic  :: exp2
+            btH10  = beta*H10 
+            H10Hc0 = H10/Hc0 
+            tgz0   = tan(z0)
+            btHc0  = beta*Hc0 
+            exp1   = exp(-btH10)
+            exp2   = (1.0_sp-exp1)/btHc0
+            rat    = 1.0_sp*(1.0_sp-H10Hc0)
+            trm1   = delnA*tgz0
+            trm2   = rat*exp1-exp2
+            del11  = trm1*trm2 
+       end function analytic_sol_del11_whole_atmos_f559_r4
  
 
 
