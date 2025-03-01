@@ -4629,4 +4629,35 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L12      = trm1*trm2 
        end function analytic_sol_L13_whole_atmosphere_f551_r8
 
+       !Formula: 5.48, page: 104
+       elemental function analytic_sol_L1_whole_atmosphere_f548_r4(beta,R0,delnA,z0,H10) result(L1)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L1_whole_atmosphere_f548_r4
+            !dir$ attributes forceinline :: analytic_sol_L1_whole_atmosphere_f548_r4
+#endif 
+            real(kind=sp),    intent(in) :: beta 
+            real(kind=sp),    intent(in) :: R0 
+            real(kind=sp),    intent(in) :: delnA 
+            real(kind=sp),    intent(in) :: z0 
+            real(kind=sp),    intent(in) :: H10 
+            real(kind=sp)                :: L1
+            real(kind=sp),    automatic  :: ctgz0, scosz0 
+            real(kind=sp),    automatic  :: btR0dln,rat 
+            real(kind=sp),    automatic  :: trm1, trm2 
+            real(kind=sp),    automatic  :: L11, L12
+            real(kind=sp),    automatic  :: t0, L13 
+            btR0dln  = beta*R0*delnA 
+            L11      = analytic_sol_L11_whole_atmosphere_f549_r4(beta,R0,delnA,z0,H10)
+            ctgz0    = 1.0_sp/tan(z0)
+            t0       = cos(z0)
+            scosz0   = t0*t0 
+            rat      = ctgz0/scosz0 
+            L12      = analytic_sol_L12_whole_atmosphere_f550_r4(beta,R0,delnA,z0,H10)
+            L13      = analytic_sol_L13_whole_atmosphere_f551_r4(beta,R0,delnA,z0,H10)
+            trm1     = L11+rat*L12 
+            trm2     = btR0dln*rat*(L13-L12)
+            L1       = trm1+trm2 
+       end function analytic_sol_L1_whole_atmosphere_f548_r4
+
 end module emw_refraction
