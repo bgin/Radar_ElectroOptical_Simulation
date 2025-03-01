@@ -4944,8 +4944,33 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L22   = trm1*trm2*trm3 
        end function analytic_sol_L22_whole_atmosphere_f553a_r8
 
+       !Formula: 5.52, page: 105
+       elemental function analytic_sol_L2_whole_atmosphere_f552_r4(fc,Nmf,beta,R0,delnA,        &
+                                                                    z0,H0,H1,H2,Hc) result(L2)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L2_whole_atmosphere_f552_r4
+            !dir$ attributes forceinline :: analytic_sol_L2_whole_atmosphere_f552_r4
+#endif 
 
-
+            real(kind=sp),    intent(in) :: fc
+            real(kind=sp),    intent(in) :: Nmf 
+            real(kind=sp),    intent(in) :: beta 
+            real(kind=sp),    intent(in) :: R0 
+            real(kind=sp),    intent(in) :: delnA 
+            real(kind=sp),    intent(in) :: z0 
+            real(kind=sp),    intent(in) :: H0 
+            real(kind=sp),    intent(in) :: H1 
+            real(kind=sp),    intent(in) :: H2 
+            real(kind=sp),    intent(in) :: Hc 
+            real(kind=sp)                :: L2 
+            real(kind=sp),    automatic  :: L21, L22 
+            L21   = analytic_sol_L21_whole_atmosphere_f553_r4(fc,Nmf,beta,R0,delnA,        &
+                                                                    z0,H0,H1,H2,Hc)
+            L22   = analytic_sol_L22_whole_atmosphere_f553a_r4(fc,Nmf,beta,R0,delnA,        &
+                                                                    z0,H0,H1,H2,Hc)
+            L2    = L21+L22 
+       end function analytic_sol_L2_whole_atmosphere_f552_r4
 
 
 
