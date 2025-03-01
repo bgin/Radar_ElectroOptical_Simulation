@@ -4791,6 +4791,92 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             trm2  = H20*(sqr2-sqr1)+t3 
             trm3  = sqr3*sqr2-sqr3*sqr2 
             L21   = trm1*trm2*trm3 
-       end function analytic_sol_L21_whole_atmosphere_f553_r8
+       end function 
+       
+       ! Formula: 5.53a, page: 105 
+       elemental function analytic_sol_L22_whole_atmosphere_f553a_r4(fc,Nmf,beta,R0,delnA,        &
+                                                                    z0,H0,H1,H2,Hc) result(L22)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L22_whole_atmosphere_f553a_r4
+            !dir$ attributes forceinline :: analytic_sol_L22_whole_atmosphere_f553a_r4
+#endif 
+!$omp declare simd(analytic_sol_L22_whole_atmosphere_f553a_r4) 
+            real(kind=sp),    intent(in) :: fc
+            real(kind=sp),    intent(in) :: Nmf 
+            real(kind=sp),    intent(in) :: beta 
+            real(kind=sp),    intent(in) :: R0 
+            real(kind=sp),    intent(in) :: delnA 
+            real(kind=sp),    intent(in) :: z0 
+            real(kind=sp),    intent(in) :: H0 
+            real(kind=sp),    intent(in) :: H1 
+            real(kind=sp),    intent(in) :: H2 
+            real(kind=sp),    intent(in) :: Hc 
+            real(kind=sp)                :: L22 
+            real(kind=sp),    automatic  :: p2,q2
+            real(kind=sp),    automatic  :: b, m1 
+            real(kind=sp),    automatic  :: m2, g 
+            real(kind=sp),    automatic  :: delnM, tgz0 
+            real(kind=sp),    automatic  :: scosz0, H10 
+            real(kind=sp),    automatic  :: H20,Hc0 
+            real(kind=sp),    automatic  :: H2H1p4, sqr1 
+            real(kind=sp),    automatic  :: sqr2, t0 
+            real(kind=sp),    automatic  :: t1, t2 
+            real(kind=sp),    automatic  :: t3, trm1 
+            real(kind=sp),    automatic  :: trm2, trm3 
+            real(kind=sp),    automatic  :: m1p3, m1p2 
+            real(kind=sp),    automatic  :: m2p3, m1p2 
+            real(kind=sp),    automatic  :: bp3, stgz0 
+            real(kind=sp),    automatic  :: bp2, c0 
+            real(kind=sp),    automatic  :: c1  
+            Hc0   = Hc-H0 
+            delnM = compute_delnM_f414_r4(fc,Nmf)
+            H10   = H1-H0 
+            H20   = H2-H0 
+            tgz0  = tan(z0)
+            m1    = 1.0_sp+beta*Hc0 
+            m2    = 1.0_sp+beta*H10 
+            stgz0 = tgz0*tgz0 
+            t0    = cos(z0)
+            scosz0= t0*t0 
+            b     = 2.0_sp*(stgz0/R0)
+            t1    = (H2-H1)*(H2-H1)
+            t0    = 1.0_sp+(delnA/delnM)
+            g     = H20*H20-t1*t0 
+            m1p3  = m1*m1*m1 
+            m1p2  = m1*m1 
+            bp3   = b*b*b 
+            m2p3  = m2*m2*m2 
+            m2p2  = m2*m2 
+            t0    = m1p3*0.2_sp-m1p2+3.0_sp*m1+1.0_sp 
+            bp2   = b*b 
+            c0    = bp2*(2.0_sp*H20*H20+g)
+            c1    = bp3*H20*g 
+            t1    = 3.0_sp*H20*b*(m1p2*0.33333333333_sp-2.0_sp*m1-1.0_sp)
+            t2    = c0*(m1+1.0_sp)+c1 
+            p2    = t0-t1+t2 
+            t0    = m2p3*0.2_sp-m2p2+3.0_sp*m2+1.0_sp
+            t1    = 3.0_sp*H20*b*(m2p2*0.33333333333_sp-2.0_sp*m2-1.0_sp)
+            t2    = c0*(m2+1.0_sp)+c1 
+            q2    = t0-t1+t2 
+            t0    = (H2-H1)*(H2-H1)
+            t1    = t0*t0 
+            trm1  = 4.0_sp/(t1*bp2*bp2)
+            sqr1  = p2/sqrt(1.0_sp+beta*Hc0)
+            trm2  = tgz0/scosz0
+            sqr2  = q2/sqrt(1.0_sp+beta*H10)
+            trm3  = sqr1-sqr2 
+            L22   = trm1*trm2*trm3 
+       end function analytic_sol_L22_whole_atmosphere_f553a_r4
+
+
+
+
+
+
+
+
+
+
 
 end module emw_refraction
