@@ -5004,8 +5004,8 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
                                                               z0,H0,H1,H2,Hc) result(alpha)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L2_whole_atmosphere_f552_r4
-            !dir$ attributes forceinline :: analytic_sol_L2_whole_atmosphere_f552_r4
+            !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vw5cm3m_f543_r4
+            !dir$ attributes forceinline :: refraction_angle_whole_atmos_vw5cm3m_f543_r4
 #endif 
             real(kind=sp),    intent(in) :: na 
             real(kind=sp),    intent(in) :: nc 
@@ -5031,6 +5031,40 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L     = L1+L2 
             alpha = -log(na/nc)*ctgz0+L                                                        
        end function refraction_angle_whole_atmos_vw5cm3m_f543_r4
+
+       elemental function refraction_angle_whole_atmos_vw5cm3m_f543_r8(na,nc,fc,Nmf,beta,R0,delnA,        &
+                                                              z0,H0,H1,H2,Hc) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vw5cm3m_f543_r8
+            !dir$ attributes forceinline :: refraction_angle_whole_atmos_vw5cm3m_f543_r8
+#endif 
+            real(kind=dp),    intent(in) :: na 
+            real(kind=dp),    intent(in) :: nc 
+            real(kind=dp),    intent(in) :: fc
+            real(kind=dp),    intent(in) :: Nmf 
+            real(kind=dp),    intent(in) :: beta 
+            real(kind=dp),    intent(in) :: R0 
+            real(kind=dp),    intent(in) :: delnA 
+            real(kind=dp),    intent(in) :: z0 
+            real(kind=dp),    intent(in) :: H0 
+            real(kind=dp),    intent(in) :: H1 
+            real(kind=dp),    intent(in) :: H2 
+            real(kind=dp),    intent(in) :: Hc                     
+            real(kind=dp)                :: alpha 
+            real(kind=dp),   automatic   :: H10, ctgz0 
+            real(kind=dp),   automatic   :: L1, L2
+            real(kind=dp),   automatic   :: L  
+            H10   = H1-H0 
+            ctgz0 = 1.0_sp/tan(z0) 
+            L1    = analytic_sol_L1_whole_atmosphere_f548_r8(beta,R0,delnA,z0,H10)
+            L2    = analytic_sol_L2_whole_atmosphere_f552_r8(fc,Nmf,beta,R0,delnA,        &
+                                                                    z0,H0,H1,H2,Hc)
+            L     = L1+L2 
+            alpha = -log(na/nc)*ctgz0+L                                                        
+       end function refraction_angle_whole_atmos_vw5cm3m_f543_r8
+
+
  
 
 
