@@ -4679,7 +4679,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             real(kind=dp),    automatic  :: t0, L13 
             btR0dln  = beta*R0*delnA 
             L11      = analytic_sol_L11_whole_atmosphere_f549_r8(beta,R0,delnA,z0,H10)
-            ctgz0    = 1.0_sp/tan(z0)
+            ctgz0    = 1.0_dp/tan(z0)
             t0       = cos(z0)
             scosz0   = t0*t0 
             rat      = ctgz0/scosz0 
@@ -4741,5 +4741,56 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             trm3  = sqr3*sqr2-sqr3*sqr2 
             L21   = trm1*trm2*trm3 
        end function analytic_sol_L21_whole_atmosphere_f553_r4
+
+        elemental function analytic_sol_L21_whole_atmosphere_f553_r8(fc,Nmf,beta,R0,delnA,        &
+                                                                    z0,H0,H1,H2,Hc) result(L21)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L21_whole_atmosphere_f553_r8
+            !dir$ attributes forceinline :: analytic_sol_L21_whole_atmosphere_f553_r8
+#endif 
+!$omp declare simd(analytic_sol_L21_whole_atmosphere_f553_r8) 
+            real(kind=dp),    intent(in) :: fc
+            real(kind=dp),    intent(in) :: Nmf 
+            real(kind=dp),    intent(in) :: beta 
+            real(kind=dp),    intent(in) :: R0 
+            real(kind=dp),    intent(in) :: delnA 
+            real(kind=dp),    intent(in) :: z0 
+            real(kind=dp),    intent(in) :: H0 
+            real(kind=dp),    intent(in) :: H1 
+            real(kind=dp),    intent(in) :: H2 
+            real(kind=dp),    intent(in) :: Hc 
+            real(kind=dp)                :: L21 
+            real(kind=dp),    automatic  :: delnM, ctgz0 
+            real(kind=dp),    automatic  :: ssinz0,H10 
+            real(kind=dp),    automatic  :: H20,Hc0 
+            real(kind=dp),    automatic  :: stgz0, Hc0R0
+            real(kind=dp),    automatic  :: sqr1, sqr2 
+            real(kind=dp),    automatic  :: t0, t1 
+            real(kind=dp),    automatic  :: trm1, trm2 
+            real(kind=dp),    automatic  :: trm3, sqr3 
+            real(kind=dp),    automatic  ::  t2
+            Hc0   = Hc-H0 
+            H20   = H2-H0 
+            H10   = H1-H0 
+            t0    = sin(z0)
+            ssinz0= t0*t0 
+            t0    = tan(z0)
+            ctgz0 = 1.0_dp/t0 
+            stgz0 = t0*t0 
+            delnNm= compute_delnM_f414_r8(fc,Nmf)
+            t0    = 1.0_dp+2.0_dp*stgz0*(H10/R0)
+            sqr1  = sqrt(t0)
+            t1    = 1.0_dp+2.0_dp*stgz0*(Hc0/R0)
+            sqr2  = sqrt(t1)
+            sqr3  = 1.0_dp-stgz0*(Hc0/R0)
+            t1    = R0/((H2-H1)*(H2-H1))
+            t2    = ctgz0/ssinz0 
+            trm1  = (delnM+delnM)*t1*t2
+            t3    = R0/(3.0_dp*stgz0)
+            trm2  = H20*(sqr2-sqr1)+t3 
+            trm3  = sqr3*sqr2-sqr3*sqr2 
+            L21   = trm1*trm2*trm3 
+       end function analytic_sol_L21_whole_atmosphere_f553_r8
 
 end module emw_refraction
