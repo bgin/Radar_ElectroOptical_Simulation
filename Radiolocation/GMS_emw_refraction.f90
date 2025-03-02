@@ -5291,4 +5291,104 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             del12 = trm1*trm2-trm3+trm4 
        end function analytic_sol_del221_whole_atmos_f569_r4
 
+        elemental function analytic_sol_del221_whole_atmos_f569_r8(fc,Nmf,z0,H10,Hc0,beta,d) result(del221)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_del221_whole_atmos_f569_r8
+            !dir$ attributes forceinline :: analytic_sol_del221_whole_atmos_f569_r8
+#endif 
+!$omp declare simd(analytic_sol_del221_whole_atmos_f569_r8) 
+            real(kind=dp),   intent(in) :: fc 
+            real(kind=dp),   intent(in) :: Nmf 
+            real(kind=dp),   intent(in) :: z0 
+            real(kind=dp),   intent(in) :: H10 
+            real(kind=dp),   intent(in) :: Hc0 
+            real(kind=dp),   intent(in) :: beta 
+            real(kind=dp),   intent(in) :: d 
+            real(kind=dp)               :: del12 
+            real(kind=dp),   automatic  :: delnM, HHc0
+            real(kind=dp),   automatic  :: HH10, ctgz0, scosz0 
+            real(kind=dp),   automatic  :: rat1, rat2 
+            real(kind=dp),   automatic  :: rat3, rat4 
+            real(kind=dp),   automatic  :: t0, t1 
+            real(kind=dp),   automatic  :: trm1, trm2 
+            real(kind=dp),   automatic  :: trm3, trm4  
+            HH10  = H10*H10 
+            delnM = compute_delnM_f414_r8(fc,Nmf)
+            ctgz0 = 1.0_dp/tan(z0)
+            t0    = cos(z0)
+            scosz0= t0*t0 
+            rat1  = (Hc0-H10)/d 
+            HHc0  = Hc0*Hc0 
+            rat2  = 1.0_dp+(H10/d)
+            rat3  = 1.0_dp+(H10/Hc0)
+            t0    = HHc0+Hc0*H10+HH10 
+            rat4  = 1.0_dp+((Hc0+H10)/d)
+            t1    = 2.0_dp/(3.0_dp*Hc0*d)
+            trm1  = -delnM*(ctgz0/scosz0)*rat1
+            trm2  = 2.0_dp*rat1 
+            trm3  = rat3*rat4 
+            trm4  = t1*t0 
+            del12 = trm1*trm2-trm3+trm4 
+       end function analytic_sol_del221_whole_atmos_f569_r8
+
+       !Function: 5.70, page: 108
+       elemental function analytic_sol_del222_whole_atmos_f570_r4(fc,Nmf,z0,H10,Hc0,beta,d,h) result(del222)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_del222_whole_atmos_f570_r4
+            !dir$ attributes forceinline :: analytic_sol_del222_whole_atmos_f570_r4
+#endif 
+!$omp declare simd(analytic_sol_del222_whole_atmos_f570_r4) 
+            real(kind=sp),   intent(in) :: fc 
+            real(kind=sp),   intent(in) :: Nmf 
+            real(kind=sp),   intent(in) :: z0 
+            real(kind=sp),   intent(in) :: H10 
+            real(kind=sp),   intent(in) :: Hc0 
+            real(kind=sp),   intent(in) :: beta 
+            real(kind=sp),   intent(in) :: d 
+            real(kind=sp),   intent(in) :: h 
+            real(kind=sp)               :: del222 
+            real(kind=sp),   automatic  :: delnM, ctgz0 
+            real(kind=sp),   automatic  :: scosz0, M1 
+            real(kind=sp),   automatic  :: M2, M3 
+            real(kind=sp),   automatic  :: t1, t2 
+            real(kind=sp),   automatic  :: t3, x 
+            real(kind=sp),   automatic  :: b, stgz0 
+            real(kind=sp),   automatic  :: trm1, trm2 
+            real(kind=sp),   automatic  :: trm3
+            real(kind=sp),   automatic  :: c0, c1 
+            real(kind=sp),   automatic  :: c2, c3 
+            real(kind=sp),   automatic  :: sqrx 
+            c0     = tan(z0)
+            delN   = compute_delnM_f414_r4(fc,Nmf)
+            ctgz0  = 1.0_sp/c0
+            stgz0  = c0*c0 
+            b      = 2.0_sp*(stgz0/R0)
+            x      = 1.0_sp+b*h 
+            c1     = cos(z0)
+            scosz0 = c1*c1 
+            trm1   = 2.0_sp*(delnM/d)*(ctgz0/scosz0) ! T2 
+            t1     = 1.0_sp+(H10/d)
+            c2     = 1.0_sp/Hc0 
+            sqrx   = sqrt(x)
+            c3     = 1.0_sp/d 
+            c0     = H10/Hc0 
+            t2     = c2+c3*c0+c3 
+            t3     = 1.0_sp/(Hc0*d)
+            M1     = t1*(2.0_sp/b)*sqrx 
+            c0     = 0.333333333_sp*x-1.0_sp
+            c1     = 2.0_sp/(b*b)*sqrx
+            M2     = t2*c0*c1 
+            c2     = 0.2_sp*x*x 
+            c3     = 0.66666666666666666667_sp*x+1.0_sp 
+            c1     = 2.0_sp/(b*b*b)*sqrx 
+            M3     = t3*(c2-c3)*c1 
+            trm2   = M1*Hc0-M2*Hc0+M3*Hc0
+            trm3   = M1*H10-M2*H10+M3*H10 
+            del222 = trm1*(trm2-trm3)
+       end function analytic_sol_del222_whole_atmos_f570_r4
+
+
+
 end module emw_refraction
