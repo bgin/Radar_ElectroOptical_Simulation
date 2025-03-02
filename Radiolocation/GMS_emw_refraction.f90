@@ -5165,4 +5165,43 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             del12 = trm1*trm2-trm3+trm4 
        end function analytic_sol_del12_whole_atmos_f560_r4
 
+       elemental function analytic_sol_del12_whole_atmos_f560_r8(fc,Nmf,z0,H10,Hc0,beta,d) result(del12)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_del12_whole_atmos_f560_r8
+            !dir$ attributes forceinline :: analytic_sol_del12_whole_atmos_f560_r8
+#endif 
+!$omp declare simd(analytic_sol_del12_whole_atmos_f560_r8) 
+            real(kind=dp),   intent(in) :: fc 
+            real(kind=dp),   intent(in) :: Nmf 
+            real(kind=dp),   intent(in) :: z0 
+            real(kind=dp),   intent(in) :: H10 
+            real(kind=dp),   intent(in) :: Hc0 
+            real(kind=dp),   intent(in) :: beta 
+            real(kind=dp),   intent(in) :: d 
+            real(kind=dp)               :: del12 
+            real(kind=dp),   automatic  :: delnM, HHc0
+            real(kind=dp),   automatic  :: HH10, tgz0 
+            real(kind=dp),   automatic  :: rat1, rat2 
+            real(kind=dp),   automatic  :: rat3, rat4 
+            real(kind=dp),   automatic  :: t0, t1 
+            real(kind=dp),   automatic  :: trm1, trm2 
+            real(kind=dp),   automatic  :: trm3, trm4  
+            HH10  = H10*H10 
+            delnM = compute_delnM_f414_r8(fc,Nmf)
+            tgz0  = tan(z0)
+            rat1  = (Hc0-H10)/d 
+            HHc0  = Hc0*Hc0 
+            rat2  = 1.0_dp+(H10/d)
+            rat3  = 1.0_dp+(H10/Hc0)
+            t0    = HHc0+Hc0*H10+HH10 
+            rat4  = 1.0_dp+((Hc0+H10)/d)
+            t1    = 2.0_dp/(3.0_dp*Hc0*d)
+            trm1  = delnM*tgz0*rat1
+            trm2  = 2.0_dp*rat1 
+            trm3  = rat3*rat4 
+            trm4  = t1*t0 
+            del12 = trm1*trm2-trm3+trm4 
+       end function analytic_sol_del12_whole_atmos_f560_r8
+
 end module emw_refraction
