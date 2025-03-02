@@ -5095,7 +5095,74 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             del11  = trm1*trm2 
        end function analytic_sol_del11_whole_atmos_f559_r4
  
+       elemental function analytic_sol_del11_whole_atmos_f559_r8(delnA,z0,H10,Hc0,beta) result(del11)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_del11_whole_atmos_f559_r8
+            !dir$ attributes forceinline :: analytic_sol_del11_whole_atmos_f559_r8
+#endif 
+!$omp declare simd(analytic_sol_del11_whole_atmos_f559_r8) 
+            real(kind=dp),   intent(in) :: delnA 
+            real(kind=dp),   intent(in) :: z0 
+            real(kind=dp),   intent(in) :: H10 
+            real(kind=dp),   intent(in) :: Hc0 
+            real(kind=dp),   intent(in) :: beta 
+            real(kind=dp)               :: del11 
+            real(kind=dp),   automatic  :: tgz0, H10Hc0
+            real(kind=dp),   automatic  :: btH10, exp1 
+            real(kind=dp),   automatic  :: btHc0, rat 
+            real(kind=dp),   automatic  :: trm1,  trm2 
+            real(kind=dp),   automatic  :: exp2
+            btH10  = beta*H10 
+            H10Hc0 = H10/Hc0 
+            tgz0   = tan(z0)
+            btHc0  = beta*Hc0 
+            exp1   = exp(-btH10)
+            exp2   = (1.0_dp-exp1)/btHc0
+            rat    = 1.0_dp*(1.0_dp-H10Hc0)
+            trm1   = delnA*tgz0
+            trm2   = rat*exp1-exp2
+            del11  = trm1*trm2 
+       end function analytic_sol_del11_whole_atmos_f559_r8
 
-
+       !Formula: 5.60, page: 107
+       elemental function analytic_sol_del12_whole_atmos_f560_r4(fc,Nmf,z0,H10,Hc0,beta,d) result(del12)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_del12_whole_atmos_f560_r4
+            !dir$ attributes forceinline :: analytic_sol_del12_whole_atmos_f560_r4
+#endif 
+!$omp declare simd(analytic_sol_del12_whole_atmos_f560_r4) 
+            real(kind=sp),   intent(in) :: fc 
+            real(kind=sp),   intent(in) :: Nmf 
+            real(kind=sp),   intent(in) :: z0 
+            real(kind=sp),   intent(in) :: H10 
+            real(kind=sp),   intent(in) :: Hc0 
+            real(kind=sp),   intent(in) :: beta 
+            real(kind=sp),   intent(in) :: d 
+            real(kind=sp)               :: del12 
+            real(kind=sp),   automatic  :: delnM, HHc0
+            real(kind=sp),   automatic  :: HH10, tgz0 
+            real(kind=sp),   automatic  :: rat1, rat2 
+            real(kind=sp),   automatic  :: rat3, rat4 
+            real(kind=sp),   automatic  :: t0, t1 
+            real(kind=sp),   automatic  :: trm1, trm2 
+            real(kind=sp),   automatic  :: trm3, trm4  
+            HH10  = H10*H10 
+            delnM = compute_delnM_f414_r4(fc,Nmf)
+            tgz0  = tan(z0)
+            rat1  = (Hc0-H10)/d 
+            HHc0  = Hc0*Hc0 
+            rat2  = 1.0_sp+(H10/d)
+            rat3  = 1.0_sp+(H10/Hc0)
+            t0    = HHc0+Hc0*H10+HH10 
+            rat4  = 1.0_sp+((Hc0+H10)/d)
+            t1    = 2.0_sp/(3.0_sp*Hc0*d)
+            trm1  = delnM*tgz0*rat1
+            trm2  = 2.0_sp*rat1 
+            trm3  = rat3*rat4 
+            trm4  = t1*t0 
+            del12 = trm1*trm2-trm3+trm4 
+       end function analytic_sol_del12_whole_atmos_f560_r4
 
 end module emw_refraction
