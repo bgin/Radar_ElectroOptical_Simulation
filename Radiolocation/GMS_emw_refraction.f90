@@ -5680,7 +5680,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_del22_whole_atmos_f565_r8
 
         ! Formula: 5.62, page: 107
-       elemental function analytic_sol_del11_whole_atmos_f562_r4(delnA,z0,H10,Hc0,beta) result(del11)
+       elemental function analytic_sol_del211_whole_atmos_f562_r4(delnA,z0,H10,Hc0,beta) result(del11)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del211_whole_atmos_f562_r4
@@ -5714,5 +5714,57 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             trm2   = rat*exp1-exp2
             del11  = trm1*trm2 
        end function analytic_sol_del211_whole_atmos_f562_r4
+
+       elemental function analytic_sol_del211_whole_atmos_f562_r8(delnA,z0,H10,Hc0,beta) result(del11)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_del211_whole_atmos_f562_r8
+            !dir$ attributes forceinline :: analytic_sol_del211_whole_atmos_f562_r8
+#endif 
+!$omp declare simd(analytic_sol_del211_whole_atmos_f562_r8) 
+            real(kind=dp),   intent(in) :: delnA 
+            real(kind=dp),   intent(in) :: z0 
+            real(kind=dp),   intent(in) :: H10 
+            real(kind=dp),   intent(in) :: Hc0 
+            real(kind=dp),   intent(in) :: beta 
+            real(kind=dp)               :: del11 
+            real(kind=dp),   automatic  :: ctgz0, H10Hc0
+            real(kind=dp),   automatic  :: btH10, exp1 
+            real(kind=dp),   automatic  :: btHc0, rat 
+            real(kind=dp),   automatic  :: trm1,  trm2 
+            real(kind=dp),   automatic  :: exp2,  ssecz0
+            real(kind=dp),   automatic  :: t0  
+            
+            btH10  = beta*H10 
+            t0     = 1.0_dp/cos(z0)
+            H10Hc0 = H10/Hc0 
+            ctgz0  = 1.0_dp/tan(z0)
+            ssecz0 = t0*t0 
+            btHc0  = beta*Hc0 
+            exp1   = exp(-btH10)
+            exp2   = (1.0_dp-exp1)/btHc0
+            t0     = -ctgz0*ssecz0
+            rat    = 1.0_dp*(1.0_dp-H10Hc0)
+            trm1   = delnA*t0 
+            trm2   = rat*exp1-exp2
+            del11  = trm1*trm2 
+       end function analytic_sol_del211_whole_atmos_f562_r8
+
+       ! Formula: 5.63, page: 107
+        elemental function analytic_sol_del212_whole_atmos_f563_r4(delnA,z0,beta,H10,R0) result(del212)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_del212_whole_atmos_f563_r4
+            !dir$ attributes forceinline :: analytic_sol_del212_whole_atmos_f563_r4
+#endif 
+            
+            real(kind=sp),    intent(in) :: delnA 
+            real(kind=sp),    intent(in) :: z0 
+            real(kind=sp),    intent(in) :: beta 
+            real(kind=sp),    intent(in) :: H10 
+            real(kind=sp),    intent(in) :: R0 
+            real(kind=sp)  :: del212
+            del212  =  analytic_sol_tropo_del22_wvle5cm_deg0_80_f525_r4(delnA,z0,beta,H10,R0)
+        end function analytic_sol_del212_whole_atmos_f563_r4
 
 end module emw_refraction
