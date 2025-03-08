@@ -5783,4 +5783,21 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             del212  =  analytic_sol_tropo_del22_wvle5cm_deg0_80_f525_r8(delnA,z0,beta,H10,R0)
         end function analytic_sol_del212_whole_atmos_f563_r8
 
+        !Formula: 5.64, pagr: 107
+       elemental function analytic_sol_del213_whole_atmos_f564_r4(delnA,z0,beta,H10,R0) result(del213)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_del213_whole_atmos_f564_r4
+            !dir$ attributes forceinline :: analytic_sol_del213_whole_atmos_f564_r4
+#endif 
+            
+            real(kind=sp),    intent(in) :: delnA 
+            real(kind=sp),    intent(in) :: z0 
+            real(kind=sp),    intent(in) :: beta 
+            real(kind=sp),    intent(in) :: H10 
+            real(kind=sp),    intent(in) :: R0 
+            real(kind=sp)                :: del213 
+            del213   = analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r4(delnA,z0,beta,H10,R0)
+        end function analytic_sol_del213_whole_atmos_f564_r4
+
 end module emw_refraction
