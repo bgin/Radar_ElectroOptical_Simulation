@@ -5653,4 +5653,30 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             del22   = del221+del222+del223 
        end function analytic_sol_del22_whole_atmos_f565_r4
 
+       elemental function analytic_sol_del22_whole_atmos_f565_r8(delnA,fc,Nmf,z0,H10,          &
+                                                                 Hc0,beta,d,h,R0) result(del22)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_del22_whole_atmos_f565_r8
+            !dir$ attributes forceinline :: analytic_sol_del22_whole_atmos_f565_r8
+#endif 
+ 
+            real(kind=dp),   intent(in) :: delnA 
+            real(kind=dp),   intent(in) :: fc 
+            real(kind=dp),   intent(in) :: Nmf 
+            real(kind=dp),   intent(in) :: z0 
+            real(kind=dp),   intent(in) :: H10 
+            real(kind=dp),   intent(in) :: Hc0 
+            real(kind=dp),   intent(in) :: beta 
+            real(kind=dp),   intent(in) :: d 
+            real(kind=dp),   intent(in) :: h 
+            real(kind=dp),   intent(in) :: R0  
+            real(kind=dp)               :: del22
+            real(kind=dp),   automatic  :: del221, del222, del223 
+            del221  = analytic_sol_del221_whole_atmos_f569_r8(fc,Nmf,z0,H10,Hc0,beta,d)
+            del222  = analytic_sol_del222_whole_atmos_f570_r8(fc,Nmf,z0,H10,Hc0,beta,d,h,R0)
+            del223  = analytic_sol_del223_whole_atmos_f571_r8(delnA,fc,Nmf,z0,H10,Hc0,beta,d,h,R0)
+            del22   = del221+del222+del223 
+       end function analytic_sol_del22_whole_atmos_f565_r8
+
 end module emw_refraction
