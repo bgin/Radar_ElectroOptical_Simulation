@@ -5912,7 +5912,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vw5cm3m_f554_r4
-            !dir$ attributes forceinline :: efraction_angle_whole_atmos_vw5cm3m_f554_r4
+            !dir$ attributes forceinline :: refraction_angle_whole_atmos_vw5cm3m_f554_r4
 #endif 
             real(kind=sp),    intent(in) :: fc 
             real(kind=sp),    intent(in) :: Nmf 
@@ -5937,7 +5937,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vw5cm3m_f554_r8
-            !dir$ attributes forceinline :: efraction_angle_whole_atmos_vw5cm3m_f554_r8
+            !dir$ attributes forceinline :: refraction_angle_whole_atmos_vw5cm3m_f554_r8
 #endif 
             real(kind=dp),    intent(in) :: fc 
             real(kind=dp),    intent(in) :: Nmf 
@@ -5955,6 +5955,30 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             del2  = analytic_sol_del2_whole_atmos_wv5cm3m_f558_r8(fc,Nmf,delnA,z0,H10,           &
                                                                         Hc0,beta,d,h,R0)
             angle = del1+del2 
-       end function refraction_angle_whole_atmos_vw5cm3m_f554_r8
+       end function 
+       
+       !высотная зависимость показателя преломления в 
+       ! верхней ионосфере имеет вид
+       ! Formula: 5.72, page: 110
+       elemental function refractive_idx_hi_ionosphere_approx_f572_r4(fc,Nmf,beta,h,H20) result(n)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refractive_idx_hi_ionosphere_approx_f572_r4
+            !dir$ attributes forceinline :: refractive_idx_hi_ionosphere_approx_f572_r4
+#endif 
+!$omp declare simd(refractive_idx_hi_ionosphere_approx_f572_r4) 
+            real(kind=sp),      intent(in) :: fc 
+            real(kind=sp),      intent(in) :: Nmf 
+            real(kind=sp),      intent(in) :: beta 
+            real(kind=sp),      intent(in) :: h 
+            real(kind=sp),      intent(in) :: H20 
+            real(kind=sp)                  :: n 
+            real(kind=sp),      automatic  :: delNm, hH20 
+            real(kind=sp),      automatic  :: exp1 
+            hH20  = -beta*(h-H20)
+            delNm = compute_delnM_f414_r4(fc,Nmf)
+            exp1  = exp(hH20)
+            n     = 1.0_sp-delNm*exp1 
+       end function refractive_idx_hi_ionosphere_approx_f572_r4
 
 end module emw_refraction
