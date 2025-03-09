@@ -5932,4 +5932,29 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             angle = del1+del2 
        end function refraction_angle_whole_atmos_vw5cm3m_f554_r4
 
+       elemental function refraction_angle_whole_atmos_vw5cm3m_f554_r8(fc,Nmf,delnA,z0,H10,           &
+                                                                        Hc0,beta,d,h,R0)   result(angle)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vw5cm3m_f554_r8
+            !dir$ attributes forceinline :: efraction_angle_whole_atmos_vw5cm3m_f554_r8
+#endif 
+            real(kind=dp),    intent(in) :: fc 
+            real(kind=dp),    intent(in) :: Nmf 
+            real(kind=dp),    intent(in) :: delnA 
+            real(kind=dp),    intent(in) :: z0 
+            real(kind=dp),    intent(in) :: H10 
+            real(kind=dp),    intent(in) :: Hc0 
+            real(kind=dp),    intent(in) :: beta 
+            real(kind=dp),    intent(in) :: d 
+            real(kind=dp),    intent(in) :: h 
+            real(kind=dp),    intent(in) :: R0 
+            real(kind=dp)                :: angle 
+            real(kind=dp),    automatic  :: del1, del2 
+            del1  = analytic_sol_del1_whole_atmos_f555_r8(fc,Nmf,delnA,z0,H10,Hc0,beta,d)
+            del2  = analytic_sol_del2_whole_atmos_wv5cm3m_f558_r8(fc,Nmf,delnA,z0,H10,           &
+                                                                        Hc0,beta,d,h,R0)
+            angle = del1+del2 
+       end function refraction_angle_whole_atmos_vw5cm3m_f554_r8
+
 end module emw_refraction
