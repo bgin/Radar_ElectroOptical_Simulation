@@ -5837,4 +5837,24 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             del21   = del211+del212+del213 
        end function analytic_sol_del21_whole_atmos_f565_r4
 
+       elemental function analytic_sol_del21_whole_atmos_f565_r8(delnA,z0,beta,H10,R0) result(del21)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_del21_whole_atmos_f565_r8
+            !dir$ attributes forceinline :: analytic_sol_del21_whole_atmos_f565_r8
+#endif 
+            
+            real(kind=dp),    intent(in) :: delnA 
+            real(kind=dp),    intent(in) :: z0 
+            real(kind=dp),    intent(in) :: beta 
+            real(kind=dp),    intent(in) :: H10 
+            real(kind=dp),    intent(in) :: R0 
+            real(kind=dp)                :: del21 
+            real(kind=dp),    automatic  :: del211, del212, del213 
+            del211  = analytic_sol_del211_whole_atmos_f562_r8(delnA,z0,H10,Hc0,beta)
+            del212  = analytic_sol_del212_whole_atmos_f563_r8(delnA,z0,beta,H10,R0)
+            del213  = analytic_sol_del213_whole_atmos_f564_r8(delnA,z0,beta,H10,R0)
+            del21   = del211+del212+del213 
+       end function analytic_sol_del21_whole_atmos_f565_r8
+
 end module emw_refraction
