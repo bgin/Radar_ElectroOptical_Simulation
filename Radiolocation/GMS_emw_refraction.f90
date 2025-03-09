@@ -5857,4 +5857,29 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             del21   = del211+del212+del213 
        end function analytic_sol_del21_whole_atmos_f565_r8
 
+        !Formula: 5.58, page: 106
+       elemental function analytic_sol_del2_whole_atmos_wv5cm3m_f558_r4(fc,Nmf,delnA,z0,H10,           &
+                                                                        Hc0,beta,d,h,R0) result(del2)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_del2_whole_atmos_wv5cm3m_f558_r4
+            !dir$ attributes forceinline :: analytic_sol_del2_whole_atmos_wv5cm3m_f558_r4
+#endif 
+            real(kind=sp),    intent(in) :: fc 
+            real(kind=sp),    intent(in) :: Nmf 
+            real(kind=sp),    intent(in) :: delnA 
+            real(kind=sp),    intent(in) :: z0 
+            real(kind=sp),    intent(in) :: H10 
+            real(kind=sp),    intent(in) :: Hc0 
+            real(kind=sp),    intent(in) :: beta 
+            real(kind=sp),    intent(in) :: d 
+            real(kind=sp),    intent(in) :: h 
+            real(kind=sp),    intent(in) :: R0 
+            real(kind=sp)                :: del2 
+            real(kind=sp),    automatic  :: del21, del22 
+            del21   = analytic_sol_del21_whole_atmos_f565_r4(delnA,z0,beta,H10,R0)
+            del22   = analytic_sol_del22_whole_atmos_f565_r4(delnA,fc,Nmf,z0,H10,          &
+                                                                 Hc0,beta,d,h,R0)
+       end function analytic_sol_del2_whole_atmos_wv5cm3m_f558_r4
+
 end module emw_refraction
