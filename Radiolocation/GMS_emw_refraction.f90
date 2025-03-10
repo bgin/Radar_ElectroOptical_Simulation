@@ -5981,4 +5981,25 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             n     = 1.0_sp-delNm*exp1 
        end function refractive_idx_hi_ionosphere_approx_f572_r4
 
+       elemental function refractive_idx_hi_ionosphere_approx_f572_r8(fc,Nmf,beta,h,H20) result(n)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refractive_idx_hi_ionosphere_approx_f572_r8
+            !dir$ attributes forceinline :: refractive_idx_hi_ionosphere_approx_f572_r8
+#endif 
+!$omp declare simd(refractive_idx_hi_ionosphere_approx_f572_r8) 
+            real(kind=dp),      intent(in) :: fc 
+            real(kind=dp),      intent(in) :: Nmf 
+            real(kind=dp),      intent(in) :: beta 
+            real(kind=dp),      intent(in) :: h 
+            real(kind=dp),      intent(in) :: H20 
+            real(kind=dp)                  :: n 
+            real(kind=dp),      automatic  :: delNm, hH20 
+            real(kind=dp),      automatic  :: exp1 
+            hH20  = -beta*(h-H20)
+            delNm = compute_delnM_f414_r8(fc,Nmf)
+            exp1  = exp(hH20)
+            n     = 1.0_dp-delNm*exp1 
+       end function refractive_idx_hi_ionosphere_approx_f572_r8
+
 end module emw_refraction
