@@ -6002,4 +6002,52 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             n     = 1.0_dp-delNm*exp1 
        end function refractive_idx_hi_ionosphere_approx_f572_r8
 
+      !Приемник находится в нейтроофере в точке А на
+      !высоте H0, а излучатель — в верхней ионосфере в точке С
+      !на высоте Нс над поверхностью Земли. 
+      !Formula for 'L31' sub-component: 5.76, page: 111
+      elemental function analytic_sol_L31_whole_atmos_wv5cm3m_f576_r4(fc,Nmf,beta,R0,z0,H20,Hc0,Hc,H2) result(L31)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L31_whole_atmos_wv5cm3m_f576_r4
+            !dir$ attributes forceinline :: analytic_sol_L31_whole_atmos_wv5cm3m_f576_r4
+#endif 
+!$omp declare simd(analytic_sol_L31_whole_atmos_wv5cm3m_f576_r4) 
+            real(kind=sp),      intent(in) :: fc 
+            real(kind=sp),      intent(in) :: Nmf 
+            real(kind=sp),      intent(in) :: beta 
+            real(kind=sp),      intent(in) ::  R0 
+            real(kind=sp),      intent(in) :: z0 
+            real(kind=sp),      intent(in) :: H20 
+            real(kind=sp),      intent(in) :: Hc0 
+            real(kind=sp),      intent(in) :: Hc 
+            real(kind=sp),      intent(in) ::  H2
+            real(kind=sp)                  :: L31 
+            real(kind=sp),      automatic  :: t0, t1 
+            real(kind=sp),      automatic  :: stgz0, ctgz0 
+            real(kind=sp),      automatic  :: scosz0, earg 
+            real(kind=sp),      automatic  :: exp1, sqr1 
+            real(kind=sp),      automatic  :: trm1, trm2 
+            real(kind=sp),      automatic  :: trm3, sdelNm
+            real(kind=sp),      automatic  :: sqr2 
+            earg  = -2.0_sp*beta*(Hc-H2)
+            t0    = compute_delnM_f414_r4(fc,Nmf)
+            sdelNm= t0*t0 
+            t1    = tan(z0)
+            ctgz0 = 1.0_sp/t1
+            stgz0 = t1*t1 
+            t0    = cos(z0)
+            scosz0= t0*t0 
+            trm1  = -sdelNm*beta*R0*(ctgz0/scosz0)
+            t0    = H20/R0 
+            t1    = 2.0_sp*stgz0 
+            sqr1  = sqrt(1.0_sp+t1*t0)
+            trm2  = 1.0_sp/sqr1
+            exp1  = exp(earg)
+            t0    = Hc0/R0
+            sqr2  = sqrt(1.0_sp+t1*t0) 
+            trm3  = exp1/sqr2 
+            L13   = trm1*(trm2-trm3)
+      end function analytic_sol_L31_whole_atmos_wv5cm3m_f576_r4
+
 end module emw_refraction
