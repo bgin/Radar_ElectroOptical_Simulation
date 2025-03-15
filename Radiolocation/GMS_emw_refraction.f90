@@ -6245,7 +6245,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             real(kind=dp),      intent(in) :: z0 
             real(kind=dp),      intent(in) :: H20 
             real(kind=dp),      intent(in) :: Hc0 
-            real(kind=dp)                  :: L32 
+            real(kind=dp)                  :: L33 
             real(kind=dp),      parameter  :: C1253314137315500251207882642406 = & 
                                                   1.253314137315500251207882642406_dp
             real(kind=dp),      automatic  :: delNm, rat1 
@@ -6273,8 +6273,10 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             prob2  = prob_integral_r8(p2arg)
             trm2   = C1253314137315500251207882642406* &
                      (prob1-prob2)
-            L32    = trm1*trm2 
+            L33    = trm1*trm2 
        end function analytic_sol_L33_whole_atmos_wv5cm3m_f578_r8
+
+       ! 
 
 
 end module emw_refraction
