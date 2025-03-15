@@ -6185,4 +6185,51 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L32    = trm1*trm2 
        end function analytic_sol_L32_whole_atmos_wv5cm3m_f577_r8
 
+       !Formula: 5.78, page: 111
+       elemental function analytic_sol_L33_whole_atmos_wv5cm3m_f578_r4(fc,Nmf,beta,R0,z0,H20,Hc0) result(L33)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L33_whole_atmos_wv5cm3m_f578_r4
+            !dir$ attributes forceinline :: analytic_sol_L33_whole_atmos_wv5cm3m_f578_r4
+#endif 
+!$omp declare simd(analytic_sol_L33_whole_atmos_wv5cm3m_f578_r4) 
+            real(kind=sp),      intent(in) :: fc 
+            real(kind=sp),      intent(in) :: Nmf 
+            real(kind=sp),      intent(in) :: beta 
+            real(kind=sp),      intent(in) :: R0 
+            real(kind=sp),      intent(in) :: z0 
+            real(kind=sp),      intent(in) :: H20 
+            real(kind=sp),      intent(in) :: Hc0 
+            real(kind=sp)                  :: L32 
+            real(kind=sp),      parameter  :: C1253314137315500251207882642406 = & 
+                                                  1.253314137315500251207882642406_sp
+            real(kind=sp),      automatic  :: delNm, rat1 
+            real(kind=sp),      automatic  :: earg, exp1 
+            real(kind=sp),      automatic  :: tgz0, stgz0 
+            real(kind=sp),      automatic  :: prob1, prob2 
+            real(kind=sp),      automatic  :: p1arg, p2arg 
+            real(kind=sp),      automatic  :: t0, t1 
+            real(kind=sp),      automatic  :: sctgz0, trm1 
+            real(kind=sp),      automatic  :: trm2
+            tgz0   = tan(z0)
+            stgz0  = tgz0*tgz0 
+            t0     = 1.0_sp/tgz0 
+            sctgz0 = t0*t0 
+            delnNm = compute_delnM_f414_r4(fc,Nmf)
+            t1     = R0/stgz0 
+            earg   = beta*(t1+H20)
+            exp1   = exp(earg)
+            t0     = (beta+beta)*R0*sctgz0
+            p1arg  = sqrt(t0+4.0_sp*Hc0)
+            p2arg  = sqrt(t0+4.0_sp*H20)
+            t1     = sqrt((beta+beta)*R0)/tgz0 
+            trm1   = -delNm*t1*exp1 
+            prob1  = prob_integral_r4(p1arg)
+            prob2  = prob_integral_r4(p2arg)
+            trm2   = C1253314137315500251207882642406* &
+                     (prob1-prob2)
+            L32    = trm1*trm2 
+       end function analytic_sol_L33_whole_atmos_wv5cm3m_f578_r4
+
+
 end module emw_refraction
