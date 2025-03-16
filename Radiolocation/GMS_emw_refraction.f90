@@ -6419,5 +6419,51 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha  = R2*trm3  
       end function refraction_angle_lo_ionospere_wv5cm3m_f590_r4
 
+  elemental function refraction_angle_lo_ionospere_wv5cm3m_f590_r8(fc,Nmf,R0,thtc,z0,H2,H1) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f590_r8
+            !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f590_r8
+#endif 
+!$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f590_r8)
+            real(kind=dp),     intent(in)  :: fc 
+            real(kind=dp),     intent(in)  :: Nmf 
+            real(kind=dp),     intent(in)  :: R0 
+            real(kind=dp),     intent(in)  :: thtc 
+            real(kind=dp),     intent(in)  :: z0 
+            real(kind=dp),     intent(in)  :: H2 
+            real(kind=dp),     intent(in)  :: H1 
+            real(kind=dp)                  :: alpha 
+            real(kind=dp),     automatic   :: delNm, sH2H1
+            real(kind=dp),     automatic   :: thtc2, thtc4 
+            real(kind=dp),     automatic   :: t0, t1. t2  
+            real(kind=dp),     automatic   :: ctgz0, sctgz0
+            real(kind=dp),     automatic   :: sctgz0h, trm1 
+            real(kind=dp),     automatic   :: trm2, trm3 
+            real(kind=dp),     automatic   :: R2 
+            t0     = H2-H1 
+            sH2H1  = t0*t0 
+            t1     = tan(z0)
+            R2     = 6397.0_dp+H2 
+            ctgz0  = 1.0_dp/t1 
+            thtc2  = tht*tht 
+            sctgz0 = ctgz0*ctgz0 
+            thtc4  = thtc2*thtc2 
+            t0     = compute_delnM_f414_r8(fc,Nmf)
+            delNm  = t0*t0 
+            t1     = R0*thtc 
+            trm1   = ((delNm+delNm)/sH2H1)*t1 
+            sctgz0h= sctgz0+0.5_dp 
+            t0     = 1.0_dp+ctgz0*(0.5_dp*thtc)
+            t1     = sctgz0h*(thtc2*0.333333333333333333333333333_dp)
+            trm2   = R2*(t0+t1)
+            t2     = 1.0_dp+ctgz0+thtc 
+            t1     = (sctgz0+0.333333333333333333333333_dp)*thtc2
+            t0     = sctgz0+sctgz0*sctgz0h 
+            trm2   = t2+t1+t0 
+            trm3   = trm2+(sctgz0h*sctgz0h)*(tht4*0.2_dp)
+            alpha  = R2*trm3  
+      end function refraction_angle_lo_ionospere_wv5cm3m_f590_r8
+
 
 end module emw_refraction
