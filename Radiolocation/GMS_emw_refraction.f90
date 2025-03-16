@@ -6526,4 +6526,68 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha= G0*L 
       end function refraction_angle_lo_ionospere_wv5cm3m_f591_r8
 
+      !Приемник и излучатель радиоволн помещены в
+      !верхней ионосфере в точках А и С (рис. 5.1). 
+      !Показатель преломления верхней ионосферы 
+      !экспоненциально возрастает с высотой по закону (4.31).
+      !Formula 5.93, page: 116
+      elemental function refraction_angle_lo_ionospere_wv5cm3m_f593_r4(fc,Nmf,beta,R2,R0,z0,thtc) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f591_r4
+            !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f591_r4
+#endif 
+!$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f591_r4)
+            real(kind=sp),     intent(in)  :: fc 
+            real(kind=sp),     intent(in)  :: Nmf 
+            real(kind=sp),     intent(in)  :: beta 
+            real(kind=sp),     intent(in)  :: R0 
+            real(kind=sp),     intent(in)  :: R2
+            real(kind=sp),     intent(in)  :: z0 
+            real(kind=sp),     intent(in)  :: thtc 
+            real(kind=sp)                  :: alpha 
+            real(kind=sp),     parameter   :: C314159265358979323846264338328 = & 
+                                                 3.14159265358979323846264338328_sp  
+            real(kind=sp),     automatic   :: L,p 
+            real(kind=sp),     automatic   :: q,u1 
+            real(kind=sp),     automatic   :: u2, ctgz0 
+            real(kind=sp),     automatic   :: sctgz0 
+            real(kind=sp),     automatic   :: btR0p, delNma 
+            real(kind=sp),     automatic   :: t0, t1 
+            real(kind=sp),     automatic   :: t2, t3 
+            real(kind=sp),     automatic   :: trm1, trm2 
+            real(kind=sp),     automatic   :: prob1, prob2 
+            real(kind=sp),     automatic   :: tbtR0, sqr1  
+            real(kind=sp),     automatic   :: sqr2, exp1, exp2  
+            tbtR0    = 2.0_sp*beta*R0 
+            t0       = compute_delnM_f414_r4(fc,Nmf)
+            delNma   = t0*exp(beta*(R2-R0))
+            t1       = tan(z0)
+            ctgz0    = 1.0_sp/t1 
+            sctgz0   = ctgz0*ctgz0 
+            sqr1      = sqrt(0.5_sp+sctgz0)
+            q        = sqr 
+            p        = ctgz0/(sqr1+sqr1)
+            btR0p    = beta*R0*p*p 
+            t0       = (delNma*beta*R0)/q
+            t1       = exp(btR0p)
+            trm1     = t0*t1 
+            sqr2     = sqrt((beta+beta)*R0)
+            u1       = p*sqr2 
+            u2       = sqr2*(p+thtc*q)
+            prob1    = prob_integral_r4(u1)
+            prob2    = prob_integral_r4(u2)
+            t2       = C314159265358979323846264338328/(beta*R0)
+            t1       = 1.0_sp/((beta+beta)*R0)
+            t3       = 1.0_sp-p*p
+            trm2     = t3+t1*t2*(prob2-prob1)
+            t0       = p/tbtR0 
+            exp1     = exp(-btR0p)
+            t1       = p+q*thtc
+            t2       = t1/tbtR0 
+            exp2     = exp(-beta*R0*t1*t1)
+            L        = t0*exp1-t2*exp2 
+            alpha    = trm1*L+0.5_sp*trm2
+      end function refraction_angle_lo_ionospere_wv5cm3m_f593_r4 
+
 end module emw_refraction
