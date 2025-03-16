@@ -6365,5 +6365,59 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L13   = trm1*(trm2-trm3)
       end function analytic_sol_L34_whole_atmos_wv5cm3m_f579_r8
 
+      !Рефракция радиоволн (5 см < X < 3 м)
+      !в земной атмосфере
+      !при близких или равных высотах
+      !излучателя и приемника.
+      !Излучатель и приемник находятся в нижней 
+      !ионосфере, причем п (h) меняется с высотой по формуле
+      !(4.30).
+      !Formula: 5.90, page: 115
+      elemental function refraction_angle_lo_ionospere_wv5cm3m_f590_r4(fc,Nmf,R0,thtc,z0,H2,H1) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f590_r4
+            !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f590_r4
+#endif 
+!$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f590_r4)
+            real(kind=sp),     intent(in)  :: fc 
+            real(kind=sp),     intent(in)  :: Nmf 
+            real(kind=sp),     intent(in)  :: R0 
+            real(kind=sp),     intent(in)  :: thtc 
+            real(kind=sp),     intent(in)  :: z0 
+            real(kind=sp),     intent(in)  :: H2 
+            real(kind=sp),     intent(in)  :: H1 
+            real(kind=sp)                  :: alpha 
+            real(kind=sp),     automatic   :: delNm, sH2H1
+            real(kind=sp),     automatic   :: thtc2, thtc4 
+            real(kind=sp),     automatic   :: t0, t1. t2  
+            real(kind=sp),     automatic   :: ctgz0, sctgz0
+            real(kind=sp),     automatic   :: sctgz0h, trm1 
+            real(kind=sp),     automatic   :: trm2, trm3 
+            real(kind=sp),     automatic   :: R2 
+            t0     = H2-H1 
+            sH2H1  = t0*t0 
+            t1     = tan(z0)
+            R2     = 6397.0_sp+H2 
+            ctgz0  = 1.0_sp/t1 
+            thtc2  = tht*tht 
+            sctgz0 = ctgz0*ctgz0 
+            thtc4  = thtc2*thtc2 
+            t0     = compute_delnM_f414_r4(fc,Nmf)
+            delNm  = t0*t0 
+            t1     = R0*thtc 
+            trm1   = ((delNm+delNm)/sH2H1)*t1 
+            sctgz0h= sctgz0+0.5_sp 
+            t0     = 1.0_sp+ctgz0*(0.5_sp*thtc)
+            t1     = sctgz0h*(thtc2*0.333333333333333333333333333_sp)
+            trm2   = R2*(t0+t1)
+            t2     = 1.0_sp+ctgz0+thtc 
+            t1     = (sctgz0+0.333333333333333333333333_sp)*thtc2
+            t0     = sctgz0+sctgz0*sctgz0h 
+            trm2   = t2+t1+t0 
+            trm3   = trm2+(sctgz0h*sctgz0h)*(tht4*0.2_sp)
+            alpha  = R2*trm3  
+      end function refraction_angle_lo_ionospere_wv5cm3m_f590_r4
+
 
 end module emw_refraction
