@@ -6534,10 +6534,10 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       elemental function refraction_angle_lo_ionospere_wv5cm3m_f593_r4(fc,Nmf,beta,R2,R0,z0,thtc) result(alpha)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f591_r4
-            !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f591_r4
+            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f593_r4
+            !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f593_r4
 #endif 
-!$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f591_r4)
+!$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f593_r4)
             real(kind=sp),     intent(in)  :: fc 
             real(kind=sp),     intent(in)  :: Nmf 
             real(kind=sp),     intent(in)  :: beta 
@@ -6587,7 +6587,66 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             t2       = t1/tbtR0 
             exp2     = exp(-beta*R0*t1*t1)
             L        = t0*exp1-t2*exp2 
-            alpha    = trm1*L+0.5_sp*trm2
+            alpha    = trm1*(L+0.5_sp)*trm2
       end function refraction_angle_lo_ionospere_wv5cm3m_f593_r4 
+
+        elemental function refraction_angle_lo_ionospere_wv5cm3m_f593_r4(fc,Nmf,beta,R2,R0,z0,thtc) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f593_r4
+            !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f593_r4
+#endif 
+!$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f593_r4)
+            real(kind=dp),     intent(in)  :: fc 
+            real(kind=dp),     intent(in)  :: Nmf 
+            real(kind=dp),     intent(in)  :: beta 
+            real(kind=dp),     intent(in)  :: R0 
+            real(kind=dp),     intent(in)  :: R2
+            real(kind=dp),     intent(in)  :: z0 
+            real(kind=dp),     intent(in)  :: thtc 
+            real(kind=dp)                  :: alpha 
+            real(kind=dp),     parameter   :: C314159265358979323846264338328 = & 
+                                                 3.14159265358979323846264338328_dp  
+            real(kind=dp),     automatic   :: L,p 
+            real(kind=dp),     automatic   :: q,u1 
+            real(kind=dp),     automatic   :: u2, ctgz0 
+            real(kind=dp),     automatic   :: sctgz0 
+            real(kind=dp),     automatic   :: btR0p, delNma 
+            real(kind=dp),     automatic   :: t0, t1 
+            real(kind=dp),     automatic   :: t2, t3 
+            real(kind=dp),     automatic   :: trm1, trm2 
+            real(kind=dp),     automatic   :: prob1, prob2 
+            real(kind=dp),     automatic   :: tbtR0, sqr1  
+            real(kind=dp),     automatic   :: sqr2, exp1, exp2  
+            tbtR0    = 2.0_dp*beta*R0 
+            t0       = compute_delnM_f414_r8(fc,Nmf)
+            delNma   = t0*exp(beta*(R2-R0))
+            t1       = tan(z0)
+            ctgz0    = 1.0_dp/t1 
+            sctgz0   = ctgz0*ctgz0 
+            sqr1      = sqrt(0.5_dp+sctgz0)
+            q        = sqr 
+            p        = ctgz0/(sqr1+sqr1)
+            btR0p    = beta*R0*p*p 
+            t0       = (delNma*beta*R0)/q
+            t1       = exp(btR0p)
+            trm1     = t0*t1 
+            sqr2     = sqrt((beta+beta)*R0)
+            u1       = p*sqr2 
+            u2       = sqr2*(p+thtc*q)
+            prob1    = prob_integral_r8(u1)
+            prob2    = prob_integral_r8(u2)
+            t2       = C314159265358979323846264338328/(beta*R0)
+            t1       = 1.0_dp/((beta+beta)*R0)
+            t3       = 1.0_dp-p*p
+            trm2     = t3+t1*t2*(prob2-prob1)
+            t0       = p/tbtR0 
+            exp1     = exp(-btR0p)
+            t1       = p+q*thtc
+            t2       = t1/tbtR0 
+            exp2     = exp(-beta*R0*t1*t1)
+            L        = t0*exp1-t2*exp2 
+            alpha    = trm1*(L+0.5_dp)*trm2
+      end function refraction_angle_lo_ionospere_wv5cm3m_f593_r8
 
 end module emw_refraction
