@@ -6465,5 +6465,37 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha  = R2*trm3  
       end function refraction_angle_lo_ionospere_wv5cm3m_f590_r8
 
+      ! При равных высотах излучателя и приемника 
+      !величины, стоящие в квадратных скобках (5.90), близки к 1,
+      !и в этом случае угол рефракции 'а определяется 
+      !соотношением
+      !Formula: 5.91, page: 115
+      elemental function refraction_angle_lo_ionospere_wv5cm3m_f591_r4(fc,Nmf,H2,H1,thtc,R0,R2) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f591_r4
+            !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f591_r4
+#endif 
+!$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f591_r4)
+            real(kind=sp),     intent(in)  :: fc 
+            real(kind=sp),     intent(in)  :: Nmf 
+            real(kind=sp),     intent(in)  :: H2 
+            real(kind=sp),     intent(in)  :: H1 
+            real(kind=sp),     intent(in)  :: thtc 
+            real(kind=sp),     intent(in)  :: R0 
+            real(kind=sp),     intent(in)  :: R2 
+            real(kind=sp)                  :: alpha 
+            real(kind=sp),     automatic   :: delNm, sH2H1 
+            real(kind=sp),     automatic   :: R2R0 
+            real(kind=sp),     automatic   :: L, G0 
+            real(kind=sp),     automatic   :: t0
+            t0   = H2-H1
+            sH2H1= t0*t0 
+            R2R0 = R2-R0 
+            delNm= compute_delnM_f414_r4(fc,Nmf)
+            L    = thtc*R0 
+            G0   = ((delNm+delNm)/sH2H1)*R2R0
+            alpha= G0*L 
+      end function refraction_angle_lo_ionospere_wv5cm3m_f591_r4
 
 end module emw_refraction
