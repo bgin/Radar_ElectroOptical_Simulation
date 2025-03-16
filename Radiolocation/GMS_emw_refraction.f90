@@ -6498,4 +6498,32 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha= G0*L 
       end function refraction_angle_lo_ionospere_wv5cm3m_f591_r4
 
+       elemental function refraction_angle_lo_ionospere_wv5cm3m_f591_r8(fc,Nmf,H2,H1,thtc,R0,R2) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f591_r8
+            !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f591_r8
+#endif 
+!$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f591_r8)
+            real(kind=dp),     intent(in)  :: fc 
+            real(kind=dp),     intent(in)  :: Nmf 
+            real(kind=dp),     intent(in)  :: H2 
+            real(kind=dp),     intent(in)  :: H1 
+            real(kind=dp),     intent(in)  :: thtc 
+            real(kind=dp),     intent(in)  :: R0 
+            real(kind=dp),     intent(in)  :: R2 
+            real(kind=dp)                  :: alpha 
+            real(kind=dp),     automatic   :: delNm, sH2H1 
+            real(kind=dp),     automatic   :: R2R0 
+            real(kind=dp),     automatic   :: L, G0 
+            real(kind=dp),     automatic   :: t0
+            t0   = H2-H1
+            sH2H1= t0*t0 
+            R2R0 = R2-R0 
+            delNm= compute_delnM_f414_r8(fc,Nmf)
+            L    = thtc*R0 
+            G0   = ((delNm+delNm)/sH2H1)*R2R0
+            alpha= G0*L 
+      end function refraction_angle_lo_ionospere_wv5cm3m_f591_r8
+
 end module emw_refraction
