@@ -6883,13 +6883,13 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_LB3_whole_atmos_wvl5cm_f65_r8
 
        !Formula: 6.2, page: 119
-       elemental function refraction_angle_whole_atmos_vwl5cm_f62_r4(delnA,beta,R0,HB,H0) result(alpha)
+       elemental function refraction_angle_B_whole_atmos_vwl5cm_f62_r4(delnA,beta,R0,HB,H0) result(alpha)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vwl5cm_f62_r4
-            !dir$ attributes forceinline :: refraction_angle_whole_atmos_vwl5cm_f62_r4
+            !dir$ attributes code_align : 32 :: refraction_angle_B_whole_atmos_vwl5cm_f62_r4
+            !dir$ attributes forceinline :: refraction_angle_B_whole_atmos_vwl5cm_f62_r4
 #endif 
-!$omp declare simd(refraction_angle_whole_atmos_vwl5cm_f62_r4)
+!$omp declare simd(refraction_angle_B_whole_atmos_vwl5cm_f62_r4)
             real(kind=sp),     intent(in)  :: delnA 
             real(kind=sp),     intent(in)  :: beta 
             real(kind=sp),     intent(in)  :: R0 
@@ -6901,15 +6901,15 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             LB2  = analytic_sol_LB2_whole_atmos_wvl5cm_f64_r4(delnA,beta,R0,HB,H0)
             LB3  = analytic_sol_LB3_whole_atmos_wvl5cm_f65_r4(delnA,beta,R0,HB,H0)
             alpha= LB1+LB2+LB3 
-       end function refraction_angle_whole_atmos_vwl5cm_f62_r4
+       end function refraction_angle_B_whole_atmos_vwl5cm_f62_r4
 
-       elemental function refraction_angle_whole_atmos_vwl5cm_f62_r8(delnA,beta,R0,HB,H0) result(alpha)
+       elemental function refraction_angle_B_whole_atmos_vwl5cm_f62_r8(delnA,beta,R0,HB,H0) result(alpha)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vwl5cm_f62_r8
-            !dir$ attributes forceinline :: refraction_angle_whole_atmos_vwl5cm_f62_r8
+            !dir$ attributes code_align : 32 :: refraction_angle_B_whole_atmos_vwl5cm_f62_r8
+            !dir$ attributes forceinline :: refraction_angle_B_whole_atmos_vwl5cm_f62_r8
 #endif 
-!$omp declare simd(refraction_angle_whole_atmos_vwl5cm_f62_r8)
+!$omp declare simd(refraction_angle_B_whole_atmos_vwl5cm_f62_r8)
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
             real(kind=dp),     intent(in)  :: R0 
@@ -6921,7 +6921,9 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             LB2  = analytic_sol_LB2_whole_atmos_wvl5cm_f64_r8(delnA,beta,R0,HB,H0)
             LB3  = analytic_sol_LB3_whole_atmos_wvl5cm_f65_r8(delnA,beta,R0,HB,H0)
             alpha= LB1+LB2+LB3 
-       end function refraction_angle_whole_atmos_vwl5cm_f62_r8
+       end function refraction_angle_B_whole_atmos_vwl5cm_f62_r8
+
+
 
 
 end module emw_refraction
