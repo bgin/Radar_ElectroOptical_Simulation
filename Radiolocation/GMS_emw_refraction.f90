@@ -6732,7 +6732,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 !$omp declare simd(analytic_sol_LB1_whole_atmos_wvl5cm_f63_r8)
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
-            real(kind=dp),     intent(in)  :: R0 
+            real(kind=dp),     intent(in)  :: R0 ! R0=a + H0 — расстояние точки А от центра zemli.
             real(kind=dp),     intent(in)  :: HB 
             real(kind=dp),     intent(in)  :: H0 
             real(kind=dp)                  :: LB1 
@@ -6753,5 +6753,33 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             trm2   = sqr*(exp1-exp2)
             LB1    = trm1*trm2  
       end function analytic_sol_LB1_whole_atmos_wvl5cm_f63_r8
+
+      !Formula: 6.4, page: 120
+       elemental function analytic_sol_LB2_whole_atmos_wvl5cm_f64_r4(delnA,beta,R0,HB,H0) result(LB2)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_LB2_whole_atmos_wvl5cm_f64_r4
+            !dir$ attributes forceinline :: analytic_sol_LB2_whole_atmos_wvl5cm_f64_r4
+#endif 
+!$omp declare simd(analytic_sol_LB2_whole_atmos_wvl5cm_f64_r4)
+            real(kind=sp),     intent(in)  :: delnA 
+            real(kind=sp),     intent(in)  :: beta 
+            real(kind=sp),     intent(in)  :: R0 
+            real(kind=sp),     intent(in)  :: HB 
+            real(kind=sp),     intent(in)  :: H0 
+            real(kind=sp)                  :: LB2 
+            real(kind=sp),     parameter   :: C314159265358979323846264338328 = &
+                                                 3.14159265358979323846264338328_sp
+            real(kind=sp),     automatic   :: btR0, HBH0 
+            real(kind=sp),     automatic   :: sqr,  prob 
+            real(kind=sp),     automatic   :: t0,   t1 
+            HBH0  = HB-H0 
+            btR0  = beta*R0 
+            t0    = beta+HB0 
+            t1    = 0.5_sp*(C314159265358979323846264338328*btR0)
+            sqr   = sqrt(t1)
+            prob  = prob_integral_r4(sqrt(t0+t0))
+            LB2   = delnA*sqr*prob 
+       end function analytic_sol_LB2_whole_atmos_wvl5cm_f64_r4
 
 end module emw_refraction
