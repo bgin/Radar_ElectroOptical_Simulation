@@ -6936,7 +6936,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             real(kind=sp),     intent(in)  :: R0 
             real(kind=sp),     intent(in)  :: HC 
             real(kind=sp),     intent(in)  :: H0 
-            real(kind=sp)                  :: LB1 
+            real(kind=sp)                  :: LC1 
             real(kind=sp),     automatic   :: sdelnA, HC0 
             real(kind=sp),     automatic   :: btHb0, exp1 
             real(kind=sp),     automatic   :: exp2, sqr 
