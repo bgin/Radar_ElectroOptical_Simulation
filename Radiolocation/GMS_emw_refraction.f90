@@ -6590,13 +6590,13 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha    = trm1*(L+0.5_sp)*trm2
       end function refraction_angle_lo_ionospere_wv5cm3m_f593_r4 
 
-        elemental function refraction_angle_lo_ionospere_wv5cm3m_f593_r4(fc,Nmf,beta,R2,R0,z0,thtc) result(alpha)
+        elemental function refraction_angle_lo_ionospere_wv5cm3m_f593_r8(fc,Nmf,beta,R2,R0,z0,thtc) result(alpha)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f593_r4
-            !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f593_r4
+            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f593_r8
+            !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f593_r8
 #endif 
-!$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f593_r4)
+!$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f593_r8)
             real(kind=dp),     intent(in)  :: fc 
             real(kind=dp),     intent(in)  :: Nmf 
             real(kind=dp),     intent(in)  :: beta 
