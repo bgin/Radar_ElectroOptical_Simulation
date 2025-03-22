@@ -6782,4 +6782,31 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             LB2   = delnA*sqr*prob 
        end function analytic_sol_LB2_whole_atmos_wvl5cm_f64_r4
 
+       elemental function analytic_sol_LB2_whole_atmos_wvl5cm_f64_r8(delnA,beta,R0,HB,H0) result(LB2)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_LB2_whole_atmos_wvl5cm_f64_r8
+            !dir$ attributes forceinline :: analytic_sol_LB2_whole_atmos_wvl5cm_f64_r8
+#endif 
+!$omp declare simd(analytic_sol_LB2_whole_atmos_wvl5cm_f64_r8)
+            real(kind=dp),     intent(in)  :: delnA 
+            real(kind=dp),     intent(in)  :: beta 
+            real(kind=dp),     intent(in)  :: R0 
+            real(kind=dp),     intent(in)  :: HB 
+            real(kind=dp),     intent(in)  :: H0 
+            real(kind=dp)                  :: LB2 
+            real(kind=dp),     parameter   :: C314159265358979323846264338328 = &
+                                                 3.14159265358979323846264338328_dp
+            real(kind=dp),     automatic   :: btR0, HBH0 
+            real(kind=dp),     automatic   :: sqr,  prob 
+            real(kind=dp),     automatic   :: t0,   t1 
+            HBH0  = HB-H0 
+            btR0  = beta*R0 
+            t0    = beta+HB0 
+            t1    = 0.5_dp*(C314159265358979323846264338328*btR0)
+            sqr   = sqrt(t1)
+            prob  = prob_integral_r4(sqrt(t0+t0))
+            LB2   = delnA*sqr*prob 
+       end function analytic_sol_LB2_whole_atmos_wvl5cm_f64_r8
+
 end module emw_refraction
