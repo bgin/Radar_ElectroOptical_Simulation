@@ -6923,6 +6923,38 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha= LB1+LB2+LB3 
        end function refraction_angle_B_whole_atmos_vwl5cm_f62_r8
 
+       !Formula: 6.7, page: 120
+        elemental function analytic_sol_LC1_whole_atmos_wvl5cm_f67_r4(delnA,beta,R0,HC,H0) result(LC1)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_LC1_whole_atmos_wvl5cm_f67_r4
+            !dir$ attributes forceinline :: analytic_sol_LC1_whole_atmos_wvl5cm_f67_r4
+#endif 
+!$omp declare simd(analytic_sol_LC1_whole_atmos_wvl5cm_f63_r4)
+            real(kind=sp),     intent(in)  :: delnA 
+            real(kind=sp),     intent(in)  :: beta 
+            real(kind=sp),     intent(in)  :: R0 
+            real(kind=sp),     intent(in)  :: HC 
+            real(kind=sp),     intent(in)  :: H0 
+            real(kind=sp)                  :: LB1 
+            real(kind=sp),     automatic   :: sdelnA, HC0 
+            real(kind=sp),     automatic   :: btHb0, exp1 
+            real(kind=sp),     automatic   :: exp2, sqr 
+            real(kind=sp),     automatic   :: t0, t1 
+            real(kind=sp),     automatic   :: trm1, trm2 
+            HB0    = HC-H0 
+            sdelnA = delnA*delnA 
+            t0     = HB0+HB0 
+            t1     = R0/t0 
+            btHb0  = bt*HB0 
+            sqr    = sqrt(t1)
+            trm1   = -sdelnA*beta*R0 
+            exp1   = exp(-btHb0)
+            exp2   = exp(-(btHb0+btHb0))
+            trm2   = sqr*(exp1-exp2)
+            LC1    = trm1*trm2  
+      end function analytic_sol_LC1_whole_atmos_wvl5cm_f67_r4
+
 
 
 
