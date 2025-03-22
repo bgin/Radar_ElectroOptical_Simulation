@@ -6670,4 +6670,57 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha= t0*t1 
       end function refraction_angle_lo_ionospere_wv5cm3m_f595_r4
 
+      elemental function refraction_angle_lo_ionospere_wv5cm3m_f595_r8(delnA,beta,R0,thtc) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f595_r8
+            !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f595_r8
+#endif 
+!$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f595_r8)
+            real(kind=dp),     intent(in)  :: delnA 
+            real(kind=dp),     intent(in)  :: beta 
+            real(kind=dp),     intent(in)  :: R0 
+            real(kind=dp),     intent(in)  :: thtc 
+            real(kind=dp)                  :: alpha 
+            real(kind=dp),     automatic   :: t0, t1 
+            t0   = delnA*beta 
+            t1   = R0*thtc
+            alpha= t0*t1 
+      end function refraction_angle_lo_ionospere_wv5cm3m_f595_r8
+
+      !Рассмотрим метод расчета угла планетной рефракции а
+      !(рис. 6.1) для электромагнитных волн диапазона X <;
+      !< 5 см.
+      !Formula: 6.3, page: 119
+      elemental function analytic_sol_LB1_whole_atmos_wvl5cm_f63_r4(delnA,beta,R0,HB,H0) result(LB1)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_LB1_whole_atmos_wvl5cm_f63_r4
+            !dir$ attributes forceinline :: analytic_sol_LB1_whole_atmos_wvl5cm_f63_r4
+#endif 
+!$omp declare simd(analytic_sol_LB1_whole_atmos_wvl5cm_f63_r4)
+            real(kind=sp),     intent(in)  :: delnA 
+            real(kind=sp),     intent(in)  :: beta 
+            real(kind=sp),     intent(in)  :: R0 
+            real(kind=sp),     intent(in)  :: HB 
+            real(kind=sp),     intent(in)  :: H0 
+            real(kind=sp)                  :: LB1 
+            real(kind=sp),     automatic   :: sdelnA, HB0 
+            real(kind=sp),     automatic   :: btHb0, exp1 
+            real(kind=sp),     automatic   :: exp2, sqr 
+            real(kind=sp),     automatic   :: t0, t1 
+            real(kind=sp),     automatic   :: trm1, trm2 
+            HB0    = HB-H0 
+            sdelnA = delnA*delnA 
+            t0     = HB0+HB0 
+            t1     = R0/t0 
+            btHb0  = bt*HB0 
+            sqr    = sqrt(t1)
+            trm1   = -sdelnA*beta*R0 
+            exp1   = exp(-btHb0)
+            exp2   = exp(-(btHb0+btHb0))
+            trm2   = sqr*(exp1-exp2)
+            LB1    = trm1*trm2  
+      end function analytic_sol_LB1_whole_atmos_wvl5cm_f63_r4
+
 end module emw_refraction
