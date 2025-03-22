@@ -6649,4 +6649,25 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha    = trm1*(L+0.5_dp)*trm2
       end function refraction_angle_lo_ionospere_wv5cm3m_f593_r8
 
+      !При равных .высотах излучателя и приемника соот->
+      !ношение (5.93) упрощается (см. § 5.2) и принимает:
+      !Formula: 5.95, page: 116
+      elemental function refraction_angle_lo_ionospere_wv5cm3m_f595_r4(delnA,beta,R0,thtc) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f595_r4
+            !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f595_r4
+#endif 
+!$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f595_r4)
+            real(kind=sp),     intent(in)  :: delnA 
+            real(kind=sp),     intent(in)  :: beta 
+            real(kind=sp),     intent(in)  :: R0 
+            real(kind=sp),     intent(in)  :: thtc 
+            real(kind=sp)                  :: alpha 
+            real(kind=sp),     automatic   :: t0, t1 
+            t0   = delnA*beta 
+            t1   = R0*thtc
+            alpha= t0*t1 
+      end function refraction_angle_lo_ionospere_wv5cm3m_f595_r4
+
 end module emw_refraction
