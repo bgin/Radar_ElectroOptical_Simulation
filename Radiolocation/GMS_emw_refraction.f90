@@ -6775,7 +6775,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             real(kind=sp),     automatic   :: t0,   t1 
             HBH0  = HB-H0 
             btR0  = beta*R0 
-            t0    = beta+HB0 
+            t0    = beta+HBH0 
             t1    = 0.5_sp*(C314159265358979323846264338328*btR0)
             sqr   = sqrt(t1)
             prob  = prob_integral_r4(sqrt(t0+t0))
@@ -6802,7 +6802,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             real(kind=dp),     automatic   :: t0,   t1 
             HBH0  = HB-H0 
             btR0  = beta*R0 
-            t0    = beta+HB0 
+            t0    = beta+HBH0 
             t1    = 0.5_dp*(C314159265358979323846264338328*btR0)
             sqr   = sqrt(t1)
             prob  = prob_integral_r4(sqrt(t0+t0))
@@ -6937,14 +6937,14 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             real(kind=sp),     intent(in)  :: HC 
             real(kind=sp),     intent(in)  :: H0 
             real(kind=sp)                  :: LC1 
-            real(kind=sp),     automatic   :: sdelnA, HC0 
+            real(kind=sp),     automatic   :: sdelnA, HCH0 
             real(kind=sp),     automatic   :: btHb0, exp1 
             real(kind=sp),     automatic   :: exp2, sqr 
             real(kind=sp),     automatic   :: t0, t1 
             real(kind=sp),     automatic   :: trm1, trm2 
-            HB0    = HC-H0 
+            HCH0    = HC-H0 
             sdelnA = delnA*delnA 
-            t0     = HB0+HB0 
+            t0     = HCH0+HCH0 
             t1     = R0/t0 
             btHb0  = bt*HB0 
             sqr    = sqrt(t1)
@@ -6968,16 +6968,16 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             real(kind=dp),     intent(in)  :: HC 
             real(kind=dp),     intent(in)  :: H0 
             real(kind=dp)                  :: LC1 
-            real(kind=dp),     automatic   :: sdelnA, HC0 
+            real(kind=dp),     automatic   :: sdelnA, HCH0 
             real(kind=dp),     automatic   :: btHb0, exp1 
             real(kind=dp),     automatic   :: exp2, sqr 
             real(kind=dp),     automatic   :: t0, t1 
             real(kind=dp),     automatic   :: trm1, trm2 
-            HB0    = HC-H0 
+            HCH0    = HC-H0 
             sdelnA = delnA*delnA 
-            t0     = HB0+HB0 
+            t0     = HCH0+HCH0 
             t1     = R0/t0 
-            btHb0  = bt*HB0 
+            btHb0  = bt*HCH0 
             sqr    = sqrt(t1)
             trm1   = -sdelnA*beta*R0 
             exp1   = exp(-btHb0)
@@ -6985,6 +6985,34 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             trm2   = sqr*(exp1-exp2)
             LC1    = trm1*trm2  
       end function analytic_sol_LC1_whole_atmos_wvl5cm_f67_r8
+
+      !Formula: 6.8, page: 120
+        elemental function analytic_sol_LC2_whole_atmos_wvl5cm_f68_r4(delnA,beta,R0,HC,H0) result(LC2)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_LC2_whole_atmos_wvl5cm_f68_r4
+            !dir$ attributes forceinline :: analytic_sol_LC2_whole_atmos_wvl5cm_f68_r4
+#endif 
+!$omp declare simd(analytic_sol_LC2_whole_atmos_wvl5cm_f68_r4)
+            real(kind=sp),     intent(in)  :: delnA 
+            real(kind=sp),     intent(in)  :: beta 
+            real(kind=sp),     intent(in)  :: R0 
+            real(kind=sp),     intent(in)  :: HC
+            real(kind=sp),     intent(in)  :: H0 
+            real(kind=sp)                  :: LC2 
+            real(kind=sp),     parameter   :: C314159265358979323846264338328 = &
+                                                 3.14159265358979323846264338328_sp
+            real(kind=sp),     automatic   :: btR0, HCH0 
+            real(kind=sp),     automatic   :: sqr,  prob 
+            real(kind=sp),     automatic   :: t0,   t1 
+            HCH0  = HC-H0 
+            btR0  = beta*R0 
+            t0    = beta+HCH0 
+            t1    = 0.5_sp*(C314159265358979323846264338328*btR0)
+            sqr   = sqrt(t1)
+            prob  = prob_integral_r4(sqrt(t0+t0))
+            LB2   = delnA*sqr*prob 
+       end function analytic_sol_LC2_whole_atmos_wvl5cm_f68_r4
 
 
 
