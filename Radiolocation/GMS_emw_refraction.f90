@@ -7135,7 +7135,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha= LC1+LC2+LC3 
        end function refraction_angle_C_whole_atmos_vwl5cm_f66_r4
 
-         elemental function refraction_angle_C_whole_atmos_vwl5cm_f66_r8(delnA,beta,R0,HC,H0) result(alpha)
+       elemental function refraction_angle_C_whole_atmos_vwl5cm_f66_r8(delnA,beta,R0,HC,H0) result(alpha)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_whole_atmos_vwl5cm_f66_r8
@@ -7155,6 +7155,24 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha= LC1+LC2+LC3 
        end function refraction_angle_C_whole_atmos_vwl5cm_f66_r8
 
-      
+       !Formula 6.1, page: 119
+       elemental function refraction_angle_whole_atmos_vwl5cm_f61_r4(delnA,beta,R0,HB,HC,H0) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vwl5cm_f61_r4
+            !dir$ attributes forceinline :: refraction_angle_whole_atmos_vwl5cm_f61_r4
+#endif 
+            real(kind=sp),     intent(in)  :: delnA 
+            real(kind=sp),     intent(in)  :: beta 
+            real(kind=sp),     intent(in)  :: R0 
+            real(kind=sp),     intent(in)  :: HB 
+            real(kind=sp),     intent(in)  :: HC 
+            real(kind=sp),     intent(in)  :: H0 
+            real(kind=sp)                  :: alpha 
+            real(kind=sp),     automatic   :: alpha_b, alpha_c
+            alpha_b = refraction_angle_B_whole_atmos_vwl5cm_f62_r4(delnA,beta,R0,HB,H0)
+            alpha_c = refraction_angle_C_whole_atmos_vwl5cm_f66_r4(delnA,beta,R0,HC,H0)
+            alpha   = alpha_b+alpha_c 
+       end function refraction_angle_whole_atmos_vwl5cm_f61_r4
 
 end module emw_refraction
