@@ -7041,5 +7041,77 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             LB2   = delnA*sqr*prob 
        end function analytic_sol_LC2_whole_atmos_wvl5cm_f68_r8
 
+       !Formula: 6.9, page: 120
+       elemental function analytic_sol_LC3_whole_atmos_wvl5cm_f69_r4(delnA,beta,R0,HC,H0) result(LC3)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_LC3_whole_atmos_wvl5cm_f69_r4
+            !dir$ attributes forceinline :: analytic_sol_LC3_whole_atmos_wvl5cm_f69_r4
+#endif 
+!$omp declare simd(analytic_sol_LC3_whole_atmos_wvl5cm_f69_r4)
+            real(kind=sp),     intent(in)  :: delnA 
+            real(kind=sp),     intent(in)  :: beta 
+            real(kind=sp),     intent(in)  :: R0 
+            real(kind=sp),     intent(in)  :: HC 
+            real(kind=sp),     intent(in)  :: H0 
+            real(kind=sp)                  :: LB3 
+            real(kind=sp),     parameter   :: C314159265358979323846264338328 = &
+                                                 3.14159265358979323846264338328_sp
+            real(kind=sp),     parameter   :: C141421356237309504880168872421 = &
+                                                 1.41421356237309504880168872421_sp
+            real(kind=sp),     automatic   :: btR0, HCH0 
+            real(kind=sp),     automatic   :: sqr,  prob1 
+            real(kind=sp),     automatic   :: t0,   t1 
+            real(kind=sp),     automatic   :: prob2,sdelnA
+            real(kind=sp),     automatic   :: trm1, trm2 
+            HCH0  = HC-H0 
+            btR0  = beta*R0 
+            sdelnA= delnA*delnA 
+            t1    = 0.5_sp*(C314159265358979323846264338328*btR0)
+            sqr   = sqrt(t1)
+            trm1  = sdelnA*btR0*t1 
+            t0    = sqrt(4.0_sp*(beta*HCH0))
+            t1    = sqrt(2.0_sp*(beta*HCH0))
+            prob1 = prob_integral_r4(t0)
+            prob2 = prob_integral_r4(t1)
+            trm2  = C141421356237309504880168872421*(prob1-prob2)
+            LB3   = trm1*trm2 
+       end function analytic_sol_LC3_whole_atmos_wvl5cm_f69_r4
+
+        elemental function analytic_sol_LC3_whole_atmos_wvl5cm_f69_r8(delnA,beta,R0,HC,H0) result(LC3)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_LC3_whole_atmos_wvl5cm_f69_r8
+            !dir$ attributes forceinline :: analytic_sol_LC3_whole_atmos_wvl5cm_f69_r8
+#endif 
+!$omp declare simd(analytic_sol_LC3_whole_atmos_wvl5cm_f69_r8)
+            real(kind=dp),     intent(in)  :: delnA 
+            real(kind=dp),     intent(in)  :: beta 
+            real(kind=dp),     intent(in)  :: R0 
+            real(kind=dp),     intent(in)  :: HC 
+            real(kind=dp),     intent(in)  :: H0 
+            real(kind=dp)                  :: LB3 
+            real(kind=dp),     parameter   :: C314159265358979323846264338328 = &
+                                                 3.14159265358979323846264338328_dp
+            real(kind=dp),     parameter   :: C141421356237309504880168872421 = &
+                                                 1.41421356237309504880168872421_dp
+            real(kind=dp),     automatic   :: btR0, HCH0 
+            real(kind=dp),     automatic   :: sqr,  prob1 
+            real(kind=dp),     automatic   :: t0,   t1 
+            real(kind=dp),     automatic   :: prob2,sdelnA
+            real(kind=dp),     automatic   :: trm1, trm2 
+            HCH0  = HC-H0 
+            btR0  = beta*R0 
+            sdelnA= delnA*delnA 
+            t1    = 0.5_dp*(C314159265358979323846264338328*btR0)
+            sqr   = sqrt(t1)
+            trm1  = sdelnA*btR0*t1 
+            t0    = sqrt(4.0_dp*(beta*HCH0))
+            t1    = sqrt(2.0_dp*(beta*HCH0))
+            prob1 = prob_integral_r8(t0)
+            prob2 = prob_integral_r8(t1)
+            trm2  = C141421356237309504880168872421*(prob1-prob2)
+            LB3   = trm1*trm2 
+       end function analytic_sol_LC3_whole_atmos_wvl5cm_f69_r8
 
 end module emw_refraction
