@@ -7194,4 +7194,38 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha   = alpha_b+alpha_c 
        end function refraction_angle_whole_atmos_vwl5cm_f61_r8
 
+       !А. Излучатель и приемник находятся на таком рас-.;
+       !стоянии друг от друга, что выполняются условия
+       !SQRT(2*beta*HB0) and SQRT(2*beta*HC0) <= 1
+       !Formula: 6.10, page: 120 
+       elemental function refraction_angle_B_whole_atmos_vwl5cm_f610_r4(delnA,beta,R0,HB,H0) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_B_whole_atmos_vwl5cm_f610_r4
+            !dir$ attributes forceinline :: refraction_angle_B_whole_atmos_vwl5cm_f610_r4
+#endif 
+!$omp declare simd(refraction_angle_B_whole_atmos_vwl5cm_f610_r4)
+            real(kind=sp),     intent(in)  :: delnA 
+            real(kind=sp),     intent(in)  :: beta 
+            real(kind=sp),     intent(in)  :: R0 
+            real(kind=sp),     intent(in)  :: HB 
+            real(kind=sp),     intent(in)  :: H0 
+            real(kind=sp)                  :: alpha 
+            real(kind=sp),     automatic   :: sdelnA,sbt 
+            real(kind=sp),     automatic   :: RHB0, sqr1 
+            real(kind=sp),     automatic   :: sqr2, trm1 
+            real(kind=sp),     automatic   :: trm2, t0 
+            real(kind=sp),     automatic   :: HBH0 
+            HBH0  = HB-H0 
+            sbt   = beta*beta 
+            RHB0  = R0*HBH0 
+            sqr2  = sqrt(0.5_sp*RHB0)
+            sdelnA= delnA*delnA 
+            t0    = sdelnA*bt*R0 
+            trm2  = t0*sqr2 
+            sqr1  = sqrt(RHB0+RHB0)
+            trm1  = delnA*beta*sqr1 
+            alpha = trm1*trm2 
+       end function refraction_angle_B_whole_atmos_vwl5cm_f610_r4
+
 end module emw_refraction
