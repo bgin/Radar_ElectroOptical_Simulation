@@ -7289,4 +7289,34 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha = trm1*trm2 
        end function refraction_angle_C_whole_atmos_vwl5cm_f611_r4
 
+       elemental function refraction_angle_C_whole_atmos_vwl5cm_f611_r8(delnA,beta,R0,HC,H0) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_C_whole_atmos_vwl5cm_f611_r8
+            !dir$ attributes forceinline :: refraction_angle_C_whole_atmos_vwl5cm_f611_r8
+#endif 
+!$omp declare simd(refraction_angle_C_whole_atmos_vwl5cm_f611_r8)
+            real(kind=dp),     intent(in)  :: delnA 
+            real(kind=dp),     intent(in)  :: beta 
+            real(kind=dp),     intent(in)  :: R0 
+            real(kind=dp),     intent(in)  :: HC 
+            real(kind=dp),     intent(in)  :: H0 
+            real(kind=dp)                  :: alpha 
+            real(kind=dp),     automatic   :: sdelnA,sbt 
+            real(kind=dp),     automatic   :: RHC0, sqr1 
+            real(kind=dp),     automatic   :: sqr2, trm1 
+            real(kind=dp),     automatic   :: trm2, t0 
+            real(kind=dp),     automatic   :: HCH0 
+            HCH0  = HC-H0 
+            sbt   = beta*beta 
+            RHC0  = R0*HCH0 
+            sqr2  = sqrt(0.5_dp*RHC0)
+            sdelnA= delnA*delnA 
+            t0    = sdelnA*bt*R0 
+            trm2  = t0*sqr2 
+            sqr1  = sqrt(RHC0+RHC0)
+            trm1  = delnA*beta*sqr1 
+            alpha = trm1*trm2 
+       end function refraction_angle_C_whole_atmos_vwl5cm_f611_r8
+
 end module emw_refraction
