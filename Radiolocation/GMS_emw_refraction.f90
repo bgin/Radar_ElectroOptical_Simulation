@@ -7435,6 +7435,44 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha  = trm1*trm2 
         end function refraction_angle_B_whole_atmos_vwl5cm_f612_r8
 
+        !Formula: 6.13, page: 121
+       elemental function refraction_angle_B_whole_atmos_vwl5cm_f613_r4(delnA,beta,R0,HC,H0) result(alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_B_whole_atmos_vwl5cm_f613_r4
+            !dir$ attributes forceinline :: refraction_angle_B_whole_atmos_vwl5cm_f613_r4
+#endif 
+!$omp declare simd(refraction_angle_B_whole_atmos_vwl5cm_f613_r4)
+            real(kind=sp),     intent(in)  :: delnA 
+            real(kind=sp),     intent(in)  :: beta 
+            real(kind=sp),     intent(in)  :: R0 
+            real(kind=sp),     intent(in)  :: HC
+            real(kind=sp),     intent(in)  :: H0 
+            real(kind=sp)                  :: alpha 
+            real(kind=sp),     parameter   :: C314159265358979323846264338328 = &
+                                                 3.14159265358979323846264338328_sp
+            real(kind=sp),     parameter   :: C041421356237309504880168872421 = &
+                                                 0.41421356237309504880168872421_sp
+            real(kind=sp),     automatic   :: HCH0, btHCH0 
+            real(kind=sp),     automatic   :: btR0, sqr1
+            real(kind=sp),     automatic   :: sqr2, exp1 
+            real(kind=sp),     automatic   :: t0, t1 
+            real(kind=sp),     automatic   :: trm1, trm2 
+            HCH0   = HC-H0 
+            btR0   = beta*R0 
+            btHCH0 = beta*HCH0
+            t0     = C314159265358979323846264338328*btR0
+            sqr1   = sqrt(0.5_sp*t0)
+            t1     = C314159265358979323846264338328*btHCH0 
+            sqr2   = sqrt(t1)
+            trm1   = delnA*sqr1 
+            exp1   = exp(-btHCH0)/sqr2
+            t0     = 1.0_sp+C041421356237309504880168872421* &
+                     delnA*btR0
+            trm2   = t0-exp1 
+            alpha  = trm1*trm2 
+        end function refraction_angle_B_whole_atmos_vwl5cm_f613_r4
+
 
 
 end module emw_refraction
