@@ -7549,6 +7549,46 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             alpha   = alpha_b+alpha_c 
        end function refraction_angle_whole_atmos_case_B_vwl5cm_f61b_r8
 
+       !Formula: 6.19, page: 122
+       elemental function deriv_alpha_over_R0_f619_r4(deln0,beta,R0) result(dadR0)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: deriv_alpha_over_R0_f619_r4
+            !dir$ attributes forceinline :: deriv_alpha_over_R0_f619_r4
+#endif 
+!$omp declare simd(deriv_alpha_over_R0_f619_r4)
+            real(kind=sp),     intent(in)  :: deln0 
+            real(kind=sp),     intent(in)  :: beta 
+            real(kind=sp),     intent(in)  :: R0 
+            real(kind=sp)                  :: dadR0 
+            real(kind=sp),     parameter   :: C6283185307179586476925286766559 = & 
+                                                    6.283185307179586476925286766559_sp
+            real(kind=sp),     parameter   :: C041421356237309504880168872421 = &
+                                                 0.41421356237309504880168872421_sp
+            real(kind=sp),     automatic   :: m1, m2 
+            real(kind=sp),     automatic   :: bta, dexp1 
+            real(kind=sp),     automatic   :: btR0, exp1 
+            real(kind=sp),     automatic   :: sqr1, sqr2 
+            real(kind=sp),     automatic   :: t0,   t1 
+            real(kind=sp),     automatic   :: trm1, trm2 
+            bta   = beta*6378.0_sp 
+            dexp1 = exp(bta)
+            t0    = C6283185307179586476925286766559*beta 
+            sqr1  = sqrt(t0)
+            m1    = deln0*dexp1*sqr1 
+            t1    = beta*dexp1 
+            m2    = C041421356237309504880168872421*deln0*t1 
+            btR0  = beta*R0 
+            sqr2  = sqrt(R0)
+            exp1  = exp(-btR0)
+            t0    = -m1*beta*sqr2 
+            trm1  = t0*exp1 
+            t1    = 1.0_sp+m2+m2 
+            t0    = R0*exp1 
+            trm2  = t1*t0 
+            dadR0 = trm1*trm2 
+       end function deriv_alpha_over_R0_f619_r4
+
         
 
 
