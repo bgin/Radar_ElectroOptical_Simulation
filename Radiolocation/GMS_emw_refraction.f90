@@ -7658,7 +7658,34 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             Vp     = num/denom 
        end function refracted_signal_weakening_Vp_f618_r4
         
-
+       elemental function refracted_signal_weakening_Vp_f618_r8(deln0,beta,R0,gamma,Lc,Lb) result(Vp)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refracted_signal_weakening_Vp_f618_r8
+            !dir$ attributes forceinline :: refracted_signal_weakening_Vp_f618_r8
+#endif 
+!$omp declare simd(refracted_signal_weakening_Vp_f618_r8)
+            real(kind=dp),     intent(in)  :: deln0 
+            real(kind=dp),     intent(in)  :: beta 
+            real(kind=dp),     intent(in)  :: R0 
+            real(kind=dp),     intent(in)  :: gamma 
+            real(kind=dp),     intent(in)  :: Lc 
+            real(kind=dp),     intent(in)  :: Lb 
+            real(kind=dp)                  :: Vp 
+            real(kind=dp),     automatic   :: LcLb, cosg 
+            real(kind=dp),     automatic   :: scosg, dadR0 
+            real(kind=dp),     automatic   :: num, denom 
+            real(kind=dp),     automatic   :: t0, t1 
+            LcLb   = Lc+Lb 
+            cosg   = cos(gamma)
+            dadR0  = deriv_alpha_over_R0_f619_r8(deln0,beta,R0)
+            num    = cosg*LcLb 
+            scosg  = cosg*cosg 
+            t0     = (scosg/Lc)-dadR0
+            t1     = 1.0_dp+Lb*t0 
+            denom  = Lc*t1 
+            Vp     = num/denom 
+       end function refracted_signal_weakening_Vp_f618_r8
 
 
 
