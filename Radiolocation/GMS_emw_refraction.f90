@@ -7826,7 +7826,71 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             trm1  = cosg-(rat1*dadR0)
             Vp    = 1.0_dp/trm1 
        end function refracted_signal_weakening_case_3_Vp_f622_r8
- 
+
+      !Планетная рефракция радиоволн
+      !диапазона 5 см<Х<3 м в земной атмосфере.
+      elelmental function refraction_angle_C_earth_atmos_wv5cm3m_f623_r4(fc,Nmf,delna,beta,           &
+                                                                     R0,H3,H2,H1,H0) result(alpha_c)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_wv5cm3m_f623_r4
+            !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_wv5cm3m_f623_r4
+#endif 
+!$omp declare simd(refraction_angle_C_earth_atmos_wv5cm3m_f623_r4)
+            real(kind=sp),         intent(in) :: fc 
+            real(kind=sp),         intent(in) :: Nmf 
+            real(kind=sp),         intent(in) :: delna 
+            real(kind=sp),         intent(in) :: beta 
+            real(kind=sp),         intent(in) :: R0 
+            real(kind=sp),         intent(in) :: H3 
+            real(kind=sp),         intent(in) :: H2 
+            real(kind=sp),         intent(in) :: H1 
+            real(kind=sp),         intent(in) :: H0 
+            real(kind=sp)                     :: alpha_c 
+            real(kind=sp),         parameter  :: C314159265358979323846264338328 = &
+                                                           3.14159265358979323846264338328_sp 
+            real(kind=sp),         automatic  :: btR0, H10 
+            real(kind=sp),         automatic  :: H20, H30 
+            real(kind=sp),         automatic  :: prob1, prob2 
+            real(kind=sp),         automatic  :: prob3, sqrH10 
+            real(kind=sp),         automatic  :: sqr1,  sqrH20 
+            real(kind=sp),         automatic  :: sH2H1, rat1 
+            real(kind=sp),         automatic  :: rat2,  delnM 
+            real(kind=sp),         automatic  :: exp1,  t0 
+            real(kind=sp),         automatic  :: t1,    t2 
+            real(kind=sp),         automatic  :: t3,    trm1 
+            real(kind=sp),         automatic  :: trm2,  trm3 
+            btR0   = bt*R0 
+            H10    = H1-H0 
+            t0     = 0.5_sp*(C314159265358979323846264338328*btR0)
+            sqr1   = sqrt(t0)
+            H20    = H2-H0 
+            delnM  = compute_delnM_f414_r4(fc,Nmf)
+            H30    = H3-H0 
+            t1     = 2.0_sp*beta*H10 
+            t2     = sqrt(t1)
+            prob1  = prob_integral_r4(t2)
+            trm1   = delna*sqr1*prob1 
+            t0     = H2-H1 
+            sqrH10 = sqrt(H10)
+            sH2H1  = t0*t0 
+            sqrH20 = sqrt(H20)
+            t0     = sqrt(R0+R0)
+            t1     = (delnM+delnM)*(t0/sH2H1)
+            t2     = 0.666666666666666666666666666667_sp* &
+                     H20*sqrH20-H20*sqrH10 
+            t3     = (H10*sqrH10)*0.3333333333333333333333333333_sp
+            trm2   = t1*(t2+t3)
+            t0     = delnM*sqr1 
+            exp1   = exp(beta*H20)
+            t1     = sqrt(2.0_sp*beta*H30)
+            t2     = sqrt(2.0_sp*beta*H20)
+            prob2  = prob_integral_r4(t1) 
+            prob3  = prob_integral_r4(t2)
+            t3     = prob2-prob3 
+            trm3   = t0*exp1*t3 
+            alpha_c= trm1+trm2-trm3 
+      end function refraction_angle_C_earth_atmos_wv5cm3m_f623_r4
  
        
 
