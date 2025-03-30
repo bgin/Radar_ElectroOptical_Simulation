@@ -7687,7 +7687,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             Vp     = num/denom 
        end function refracted_signal_weakening_Vp_f618_r8
 
-       ! Lc >> Lb, что соответствует cos(y)~1.
+       ! Lc >> Lb, что соответствует cos(gamma)~1.
        !Formula: 6.20, page: 122
        elemental function refracted_signal_weakening_case_1_Vp_f620_r4(deln0,beta,R0,Lb) result(Vp)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
@@ -7706,6 +7706,44 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             trm1   = 1.0_sp-Lb*dadR0
             Vp     = 1.0_sp/trm1 
        end function refracted_signal_weakening_case_1_Vp_f620_r4
+
+        elemental function refracted_signal_weakening_case_1_Vp_f620_r8(deln0,beta,R0,Lb) result(Vp)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refracted_signal_weakening_case_1_Vp_f620_r8
+            !dir$ attributes forceinline :: refracted_signal_weakening_case_1_Vp_f620_r8
+#endif 
+!$omp declare simd(refracted_signal_weakening_case_1_Vp_f620_r8)
+            real(kind=dp),     intent(in)  :: deln0 
+            real(kind=dp),     intent(in)  :: beta 
+            real(kind=dp),     intent(in)  :: R0 
+            real(kind=dp),     intent(in)  :: Lb 
+            real(kind=dp)                  :: Vp 
+            real(kind=dp),     automatic   :: dadR0, trm1 
+            dadR0  = deriv_alpha_over_R0_f619_r8(deln0,beta,R0)
+            trm1   = 1.0_dp-Lb*dadR0
+            Vp     = 1.0_dp/trm1 
+       end function refracted_signal_weakening_case_1_Vp_f620_r8
+
+       ! Lb>>Lc; Lc>>a; cos(gamma)~1.
+       !Formula: 6.21, page: 123
+       elemental function refracted_signal_weakening_case_2_Vp_f621_r4(deln0,beta,R0,Lc) result(Vp)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refracted_signal_weakening_case_2_Vp_f621_r4
+            !dir$ attributes forceinline :: refracted_signal_weakening_case_2_Vp_f621_r4
+#endif 
+!$omp declare simd(refracted_signal_weakening_case_2_Vp_f621_r4)
+            real(kind=sp),     intent(in)  :: deln0 
+            real(kind=sp),     intent(in)  :: beta 
+            real(kind=sp),     intent(in)  :: R0 
+            real(kind=sp),     intent(in)  :: Lc
+            real(kind=sp)                  :: Vp 
+            real(kind=sp),     automatic   :: dadR0, trm1 
+            dadR0  = deriv_alpha_over_R0_f619_r4(deln0,beta,R0)
+            trm1   = 1.0_sp-Lc*dadR0
+            Vp     = 1.0_sp/trm1 
+       end function refracted_signal_weakening_case_2_Vp_f621_r4
 
 
 
