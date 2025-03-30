@@ -7829,14 +7829,14 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
       !Планетная рефракция радиоволн
       !диапазона 5 см<Х<3 м в земной атмосфере.
-      elelmental function refraction_angle_C_earth_atmos_wv5cm3m_f623_r4(fc,Nmf,delna,beta,           &
+      elelmental function refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r4(fc,Nmf,delna,beta,           &
                                                                      R0,H3,H2,H1,H0) result(alpha_c)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_wv5cm3m_f623_r4
-            !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_wv5cm3m_f623_r4
+            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r4
+            !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r4
 #endif 
-!$omp declare simd(refraction_angle_C_earth_atmos_wv5cm3m_f623_r4)
+!$omp declare simd(refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r4)
             real(kind=sp),         intent(in) :: fc 
             real(kind=sp),         intent(in) :: Nmf 
             real(kind=sp),         intent(in) :: delna 
@@ -7890,16 +7890,16 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             t3     = prob2-prob3 
             trm3   = t0*exp1*t3 
             alpha_c= trm1+trm2-trm3 
-      end function refraction_angle_C_earth_atmos_wv5cm3m_f623_r4
+      end function refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r4
 
-       elelmental function refraction_angle_C_earth_atmos_wv5cm3m_f623_r8(fc,Nmf,delna,beta,           &
+       elelmental function refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r8(fc,Nmf,delna,beta,           &
                                                                      R0,H3,H2,H1,H0) result(alpha_c)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_wv5cm3m_f623_r8
-            !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_wv5cm3m_f623_r8
+            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r8
+            !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r8
 #endif 
-!$omp declare simd(refraction_angle_C_earth_atmos_wv5cm3m_f623_r8)
+!$omp declare simd(refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r8)
             real(kind=dp),         intent(in) :: fc 
             real(kind=dp),         intent(in) :: Nmf 
             real(kind=dp),         intent(in) :: delna 
@@ -7953,7 +7953,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             t3     = prob2-prob3 
             trm3   = t0*exp1*t3 
             alpha_c= trm1+trm2-trm3 
-      end function refraction_angle_C_earth_atmos_wv5cm3m_f623_r8
+      end function refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r8
  
        
 
