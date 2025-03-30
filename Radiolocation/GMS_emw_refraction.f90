@@ -7687,14 +7687,15 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             Vp     = num/denom 
        end function refracted_signal_weakening_Vp_f618_r8
 
+       ! Lc >> Lb, что соответствует cos(y)~1.
        !Formula: 6.20, page: 122
-       elemental function refracted_signal_weakening_case1_Vp_f620_r4(deln0,beta,R0,Lb) result(Vp)
+       elemental function refracted_signal_weakening_case_1_Vp_f620_r4(deln0,beta,R0,Lb) result(Vp)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refracted_signal_weakening_case1_Vp_f620_r4
-            !dir$ attributes forceinline :: refracted_signal_weakening_case1_Vp_f620_r4
+            !dir$ attributes code_align : 32 :: refracted_signal_weakening_case_1_Vp_f620_r4
+            !dir$ attributes forceinline :: refracted_signal_weakening_case_1_Vp_f620_r4
 #endif 
-!$omp declare simd(refracted_signal_weakening_case1_Vp_f620_r4)
+!$omp declare simd(refracted_signal_weakening_case_1_Vp_f620_r4)
             real(kind=sp),     intent(in)  :: deln0 
             real(kind=sp),     intent(in)  :: beta 
             real(kind=sp),     intent(in)  :: R0 
@@ -7704,7 +7705,9 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             dadR0  = deriv_alpha_over_R0_f619_r4(deln0,beta,R0)
             trm1   = 1.0_sp-Lb*dadR0
             Vp     = 1.0_sp/trm1 
-       end function refracted_signal_weakening_case1_Vp_f620_r4
+       end function refracted_signal_weakening_case_1_Vp_f620_r4
+
+
 
        
 
