@@ -7745,6 +7745,25 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             Vp     = 1.0_sp/trm1 
        end function refracted_signal_weakening_case_2_Vp_f621_r4
 
+        elemental function refracted_signal_weakening_case_2_Vp_f621_r8(deln0,beta,R0,Lc) result(Vp)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refracted_signal_weakening_case_2_Vp_f621_r8
+            !dir$ attributes forceinline :: refracted_signal_weakening_case_2_Vp_f621_r8
+#endif 
+!$omp declare simd(refracted_signal_weakening_case_2_Vp_f621_r8)
+            real(kind=dp),     intent(in)  :: deln0 
+            real(kind=dp),     intent(in)  :: beta 
+            real(kind=dp),     intent(in)  :: R0 
+            real(kind=dp),     intent(in)  :: Lc
+            real(kind=dp)                  :: Vp 
+            real(kind=dp),     automatic   :: dadR0, trm1 
+            dadR0  = deriv_alpha_over_R0_f619_r8(deln0,beta,R0)
+            trm1   = 1.0_dp-Lc*dadR0
+            Vp     = 1.0_dp/trm1 
+       end function refracted_signal_weakening_case_2_Vp_f621_r8
+
+
 
 
        
