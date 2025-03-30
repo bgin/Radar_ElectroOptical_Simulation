@@ -7795,6 +7795,38 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             trm1  = cosg-(rat1*dadR0)
             Vp    = 1.0_sp/trm1 
        end function refracted_signal_weakening_case_3_Vp_f622_r4
+
+       elemental function refracted_signal_weakening_case_3_Vp_f622_r8(deln0,beta,R0,Lc,hc) result(Vp)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refracted_signal_weakening_case_3_Vp_f622_r8
+            !dir$ attributes forceinline :: refracted_signal_weakening_case_3_Vp_f622_r8
+#endif 
+!$omp declare simd(refracted_signal_weakening_case_3_Vp_f622_r8)
+            real(kind=dp),     intent(in)  :: deln0 
+            real(kind=dp),     intent(in)  :: beta 
+            real(kind=dp),     intent(in)  :: R0 
+            real(kind=dp),     intent(in)  :: Lc
+            real(kind=dp),     intent(in)  :: hc
+            real(kind=dp)                  :: Vp 
+            real(kind=dp),     automatic   :: cosg, rat1 
+            real(kind=dp),     automatic   :: rat2, sLc 
+            real(kind=dp),     automatic   :: dadR0, R0hc 
+            real(kind=dp),     automatic   :: sR0hc, trm1 
+            real(kind=dp),     automatic   :: t0,    t1  
+            sLc   = Lc*Lc 
+            dadR0 = deriv_alpha_over_R0_f619_r8(deln0,beta,R0)
+            R0hc  = R0-hc 
+            sR0hc = R0hc*R0hc 
+            rat2  = sR0hc/sLc 
+            t0    = sqrt(1.0_dp+rat2)
+            t1    = 1.0_dp/t0 
+            cosg  = cos(t1)
+            rat1  = Lc/cosg 
+            trm1  = cosg-(rat1*dadR0)
+            Vp    = 1.0_dp/trm1 
+       end function refracted_signal_weakening_case_3_Vp_f622_r8
+ 
  
        
 
