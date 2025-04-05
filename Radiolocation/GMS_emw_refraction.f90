@@ -8097,6 +8097,44 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             prob1   = prob(sqr2)
             alpha_c = trm1*prob1 
        end function refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r4
+
+        elemental function refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r8(fc,Nmf,delna,beta,           &
+                                                                               R0,H3,H2,H1,H0) result(alpha_c)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r8
+            !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r8
+#endif 
+!$omp declare simd(refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r8)
+            real(kind=dp),         intent(in) :: fc 
+            real(kind=dp),         intent(in) :: Nmf 
+            real(kind=dp),         intent(in) :: delna 
+            real(kind=dp),         intent(in) :: beta 
+            real(kind=dp),         intent(in) :: R0 
+            real(kind=dp),         intent(in) :: H3 
+            real(kind=dp),         intent(in) :: H2 
+            real(kind=dp),         intent(in) :: H0 
+            real(kind=dp)                     :: alpha_c 
+            real(kind=dp),         parameter  :: C314159265358979323846264338328 = &
+                                                           3.14159265358979323846264338328_dp 
+            real(kind=dp),         automatic  :: delnM, pibtR0 
+            real(kind=dp),         automatic  :: H20,   H30 
+            real(kind=dp),         automatic  :: sqr1,  sqr2 
+            real(kind=dp),         automatic  :: prob1, exp1 
+            real(kind=dp),         automatic  :: t0,    trm1 
+          
+            H20     = H2-H0 
+            pibtR0  = 0.5_dp*(C314159265358979323846264338328*bt*R0) 
+            delnM   = compute_delnM_f414_r8(fc,Nmf)
+            H30     = H3-H0 
+            exp1    = exp(beta*H20)
+            sqr1    = sqrt(pibtR0)
+            trm1    = -delnM*sqr1*exp1 
+            t0      = 2.0_dp*beta*H30 
+            sqr2    = sqrt(t0)
+            prob1   = prob(sqr2)
+            alpha_c = trm1*prob1 
+       end function refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r8
        
 
 end module emw_refraction
