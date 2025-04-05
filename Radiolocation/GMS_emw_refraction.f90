@@ -8135,6 +8135,83 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             prob1   = prob(sqr2)
             alpha_c = trm1*prob1 
        end function refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r8
+
+       !Слоистые неоднородности нейтросферы
+       !и их влияние на вертикальную рефракцию
+       !радиоволн
+       !Угол полной атмосферной рефракции при
+       !наличии слоя.
+       !Formula: 7.2, page: 132
+        elemental function refraction_angle_C_earth_atmos_stratified_f72_r4(beta,z0,deln0,nc,           &
+                                                                         nb,nh,Hb,Hc,Hh) result(alpha_c)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_stratified_f72_r4
+            !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_stratified_f72_r4
+#endif 
+!$omp declare simd(refraction_angle_C_earth_atmos_stratified_f72_r4)
+             real(kind=sp),         intent(in) :: beta 
+             real(kind=sp),         intent(in) :: z0 
+             real(kind=sp),         intent(in) :: deln0 
+             real(kind=sp),         intent(in) :: nc 
+             real(kind=sp),         intent(in) :: nb 
+             real(kind=sp),         intent(in) :: nh 
+             real(kind=sp),         intent(in) :: Hb 
+             real(kind=sp),         intent(in) :: Hc 
+             real(kind=sp),         intent(in) :: Hh 
+             real(kind=sp)                     :: alpha_c 
+             real(kind=sp),         parameter  :: C157079632679489661923132169164 = &
+                                                   1.57079632679489661923132169164_sp
+             real(kind=sp),         automatic  :: ctgz0, scosz0 
+             real(kind=sp),         automatic  :: stgz0, tgz0 
+             real(kind=sp),         automatic  :: btHb,  btHh 
+             real(kind=sp),         automatic  :: sqr1,  sqr2 
+             real(kind=sp),         automatic  :: sqr3,  sqr4 
+             real(kind=sp),         automatic  :: L4,    t0 
+             real(kind=sp),         automatic  :: t1,    t2 
+             real(kind=sp),         automatic  :: t3
+             real(kind=sp),         automatic  :: prob1, prob2 
+             real(kind=sp),         automatic  :: rat1,  rat2 
+             real(kind=sp),         automatic  :: btctgz0, trm1  
+             real(kind=sp),         automatic  :: trm2,    trm3 
+             real(kind=sp),         automatic  :: exp1 
+             btHb    = beta*Hb 
+             tgz0    = tan(z0)
+             stgz0   = tgz0*tgz0 
+             btHh    = beta*Hh 
+             ctgz0   = 1.0_sp/tgz0 
+             t0      = cos(z0)
+             scosz0  = t0*t0 
+             btctgz0 = beta*6378.0_sp*sctgz0 
+             exp1    = exp(0.5_sp*btctgz0)
+             t1      = 2.0_sp*btHb 
+             sqr3    = sqrt(btctgz0+t1)
+             t2      = 2.0_sp*btHh 
+             sqr4    = sqrt(btctgz0+t2)
+             prob1   = prob_integral_r4(sqr3)
+             prob2   = prob_integral_r4(sqr4)
+             t3      = prob1-prob2 
+             t0      = deln0*sqrt(beta*6378.0_sp)*ctgz0
+             L4      = t0*exp1*C157079632679489661923132169164* &
+                       t3 
+             t2      = ctgz0/scosz0
+             rat1    = t2*L4 
+             rat2    = t2*(6378.0_sp/stgz0)
+             t1      = (nc-nh)/(Hc-Hh)
+             trm1    = rat1+rat2*t1 
+             t0      = 1.0_sp+(stgz0+stgz0)*Hc*0.00015678896205707118218877391_sp
+             sqr1    = sqrt(t0)
+             t1      = 1.0_sp+(tgz0+tgz0)*Hh*0.00015678896205707118218877391_sp
+             sqr2    = sqrt(t1)
+             trm2    = sqr1-sqr2 
+             t3      = (nb-nc)/(Hb-Hc)
+             t0      = 1.0_sp+(stgz0+stgz0)*Hb*0.00015678896205707118218877391_sp
+             sqr3    = sqrt(t0)
+             t1      = 1.0_sp+(tgz0+tgz0)*Hc*0.00015678896205707118218877391_sp
+             sqr4    = sqrt(t1)
+             trm3    = t3*(sqr3-sqr4)
+             alpha_c = trm1*trm2+trm3 
+        end function refraction_angle_C_earth_atmos_stratified_f72_r4
        
 
 end module emw_refraction
