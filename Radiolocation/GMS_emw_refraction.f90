@@ -7829,6 +7829,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
       !Планетная рефракция радиоволн
       !диапазона 5 см<Х<3 м в земной атмосфере.
+      !Formula: 6.23, page: 126
       elemental function refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r4(fc,Nmf,delna,beta,           &
                                                                      R0,H3,H2,H1,H0) result(alpha_c)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
@@ -7954,7 +7955,59 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             trm3   = t0*exp1*t3 
             alpha_c= trm1+trm2-trm3 
       end function refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r8
- 
+
+      !Точка Л (рис. 6.1) расположена в нижней 
+      !ионосфере на высоте Я0 над поверхностью Земли.
+      !Formula: 6.25, page: 126
+      elemental function refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r4(fc,Nmf,delna,beta,           &
+                                                                               R0,H3,H2,H1,H0) result(alpha_c)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r4
+            !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r4
+#endif 
+!$omp declare simd(refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r4)
+            real(kind=sp),         intent(in) :: fc 
+            real(kind=sp),         intent(in) :: Nmf 
+            real(kind=sp),         intent(in) :: delna 
+            real(kind=sp),         intent(in) :: beta 
+            real(kind=sp),         intent(in) :: R0 
+            real(kind=sp),         intent(in) :: H3 
+            real(kind=sp),         intent(in) :: H2 
+            real(kind=sp),         intent(in) :: H1 
+            real(kind=sp),         intent(in) :: H0 
+            real(kind=sp)                     :: alpha_c 
+            real(kind=sp),         parameter  :: C314159265358979323846264338328 = &
+                                                           3.14159265358979323846264338328_sp 
+            real(kind=sp),         automatic  :: delnM, H20 
+            real(kind=sp),         automatic  :: sH2H1, pibtR0 
+            real(kind=sp),         automatic  :: H30,   btH30
+            real(kind=sp),         automatic  :: btH20, prob1 
+            real(kind=sp),         automatic  :: prob2, sqr1 
+            real(kind=sp),         automatic  :: sqr2,  t0 
+            real(kind=sp),         automatic  :: t1,    exp1 
+            real(kind=sp),         automatic  :: trm1,  trm2 
+            H20     = H2-H0 
+            delnM   = compute_delnM_f414_r4(fc,Nmf)
+            t0      = H2-H1 
+            sH2H1   = t0*t0 
+            H30     = H3-H0 
+            btH20   = beta*H20 
+            pibtR0  = 0.5_sp*(C314159265358979323846264338328*bt*R0) 
+            exp1    = exp(btH20)
+            t0      = H20/sH2H1
+            t1      = 1.333333333333333333333333333333_sp*delnM 
+            sqr1    = sqrt(H20*R0)
+            trm1    = t1*t0*sqr1 
+            t0      = sqrt(pibtR0)
+            sqr1    = sqrt(2.0_sp*beta*H30)
+            prob1   = prob_integral_r4(sqr1)
+            sqr2    = sqrt(2.0_sp*beta*H20)
+            prob2   = prob_integral_r4(sqr2)
+            t1      = prob1-prob2 
+            trm2    = -delnM*t0*exp1*t1 
+            alpha_c = trm1-trm2 
+      end function refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r4
        
 
 end module emw_refraction
