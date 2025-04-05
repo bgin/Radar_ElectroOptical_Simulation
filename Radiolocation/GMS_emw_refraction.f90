@@ -7974,7 +7974,6 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             real(kind=sp),         intent(in) :: R0 
             real(kind=sp),         intent(in) :: H3 
             real(kind=sp),         intent(in) :: H2 
-            real(kind=sp),         intent(in) :: H1 
             real(kind=sp),         intent(in) :: H0 
             real(kind=sp)                     :: alpha_c 
             real(kind=sp),         parameter  :: C314159265358979323846264338328 = &
@@ -8008,6 +8007,60 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             trm2    = -delnM*t0*exp1*t1 
             alpha_c = trm1-trm2 
       end function refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r4
+
+      elemental function refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r8(fc,Nmf,delna,beta,           &
+                                                                               R0,H3,H2,H1,H0) result(alpha_c)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r8
+            !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r8
+#endif 
+!$omp declare simd(refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r8)
+            real(kind=dp),         intent(in) :: fc 
+            real(kind=dp),         intent(in) :: Nmf 
+            real(kind=dp),         intent(in) :: delna 
+            real(kind=dp),         intent(in) :: beta 
+            real(kind=dp),         intent(in) :: R0 
+            real(kind=dp),         intent(in) :: H3 
+            real(kind=dp),         intent(in) :: H2 
+            real(kind=dp),         intent(in) :: H0 
+            real(kind=dp)                     :: alpha_c 
+            real(kind=dp),         parameter  :: C314159265358979323846264338328 = &
+                                                           3.14159265358979323846264338328_dp 
+            real(kind=dp),         automatic  :: delnM, H20 
+            real(kind=dp),         automatic  :: sH2H1, pibtR0 
+            real(kind=dp),         automatic  :: H30,   btH30
+            real(kind=dp),         automatic  :: btH20, prob1 
+            real(kind=dp),         automatic  :: prob2, sqr1 
+            real(kind=dp),         automatic  :: sqr2,  t0 
+            real(kind=dp),         automatic  :: t1,    exp1 
+            real(kind=dp),         automatic  :: trm1,  trm2 
+            H20     = H2-H0 
+            delnM   = compute_delnM_f414_r8(fc,Nmf)
+            t0      = H2-H1 
+            sH2H1   = t0*t0 
+            H30     = H3-H0 
+            btH20   = beta*H20 
+            pibtR0  = 0.5_dp*(C314159265358979323846264338328*bt*R0) 
+            exp1    = exp(btH20)
+            t0      = H20/sH2H1
+            t1      = 1.333333333333333333333333333333_dp*delnM 
+            sqr1    = sqrt(H20*R0)
+            trm1    = t1*t0*sqr1 
+            t0      = sqrt(pibtR0)
+            sqr1    = sqrt(2.0_dp*beta*H30)
+            prob1   = prob_integral_r8(sqr1)
+            sqr2    = sqrt(2.0_dp*beta*H20)
+            prob2   = prob_integral_r8(sqr2)
+            t1      = prob1-prob2 
+            trm2    = -delnM*t0*exp1*t1 
+            alpha_c = trm1-trm2 
+      end function refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r8
+
+      !Точка А (рис. 6.1) находится в верхней ионосфере
+      !на высоте Я0 над поверхностью Земли.
+      !Formula: 6.27, page: 127
+      
        
 
 end module emw_refraction
