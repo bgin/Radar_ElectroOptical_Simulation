@@ -8212,6 +8212,77 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
              trm3    = t3*(sqr3-sqr4)
              alpha_c = trm1*trm2+trm3 
         end function refraction_angle_C_earth_atmos_stratified_f72_r4
+
+         elemental function refraction_angle_C_earth_atmos_stratified_f72_r8(beta,z0,deln0,nc,           &
+                                                                         nb,nh,Hb,Hc,Hh) result(alpha_c)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_stratified_f72_r8
+            !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_stratified_f72_r8
+#endif 
+!$omp declare simd(refraction_angle_C_earth_atmos_stratified_f72_r8)
+             real(kind=dp),         intent(in) :: beta 
+             real(kind=dp),         intent(in) :: z0 
+             real(kind=dp),         intent(in) :: deln0 
+             real(kind=dp),         intent(in) :: nc 
+             real(kind=dp),         intent(in) :: nb 
+             real(kind=dp),         intent(in) :: nh 
+             real(kind=dp),         intent(in) :: Hb 
+             real(kind=dp),         intent(in) :: Hc 
+             real(kind=dp),         intent(in) :: Hh 
+             real(kind=dp)                     :: alpha_c 
+             real(kind=dp),         parameter  :: C157079632679489661923132169164 = &
+                                                   1.57079632679489661923132169164_dp
+             real(kind=dp),         automatic  :: ctgz0, scosz0 
+             real(kind=dp),         automatic  :: stgz0, tgz0 
+             real(kind=dp),         automatic  :: btHb,  btHh 
+             real(kind=dp),         automatic  :: sqr1,  sqr2 
+             real(kind=dp),         automatic  :: sqr3,  sqr4 
+             real(kind=dp),         automatic  :: L4,    t0 
+             real(kind=dp),         automatic  :: t1,    t2 
+             real(kind=dp),         automatic  :: t3
+             real(kind=dp),         automatic  :: prob1, prob2 
+             real(kind=dp),         automatic  :: rat1,  rat2 
+             real(kind=dp),         automatic  :: btctgz0, trm1  
+             real(kind=dp),         automatic  :: trm2,    trm3 
+             real(kind=dp),         automatic  :: exp1 
+             btHb    = beta*Hb 
+             tgz0    = tan(z0)
+             stgz0   = tgz0*tgz0 
+             btHh    = beta*Hh 
+             ctgz0   = 1.0_dp/tgz0 
+             t0      = cos(z0)
+             scosz0  = t0*t0 
+             btctgz0 = beta*6378.0_dp*sctgz0 
+             exp1    = exp(0.5_dp*btctgz0)
+             t1      = 2.0_dp*btHb 
+             sqr3    = sqrt(btctgz0+t1)
+             t2      = 2.0_dp*btHh 
+             sqr4    = sqrt(btctgz0+t2)
+             prob1   = prob_integral_r8(sqr3)
+             prob2   = prob_integral_r8(sqr4)
+             t3      = prob1-prob2 
+             t0      = deln0*sqrt(beta*6378.0_dp)*ctgz0
+             L4      = t0*exp1*C157079632679489661923132169164* &
+                       t3 
+             t2      = ctgz0/scosz0
+             rat1    = t2*L4 
+             rat2    = t2*(6378.0_dp/stgz0)
+             t1      = (nc-nh)/(Hc-Hh)
+             trm1    = rat1+rat2*t1 
+             t0      = 1.0_dp+(stgz0+stgz0)*Hc*0.00015678896205707118218877391_dp
+             sqr1    = sqrt(t0)
+             t1      = 1.0_dp+(tgz0+tgz0)*Hh*0.00015678896205707118218877391_dp
+             sqr2    = sqrt(t1)
+             trm2    = sqr1-sqr2 
+             t3      = (nb-nc)/(Hb-Hc)
+             t0      = 1.0_dp+(stgz0+stgz0)*Hb*0.00015678896205707118218877391_dp
+             sqr3    = sqrt(t0)
+             t1      = 1.0_dp+(tgz0+tgz0)*Hc*0.00015678896205707118218877391_dp
+             sqr4    = sqrt(t1)
+             trm3    = t3*(sqr3-sqr4)
+             alpha_c = trm1*trm2+trm3 
+        end function refraction_angle_C_earth_atmos_stratified_f72_r8
        
 
 end module emw_refraction
