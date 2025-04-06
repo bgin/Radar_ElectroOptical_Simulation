@@ -8360,4 +8360,52 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
              alpha_c= trm1+trm2 
        end function refraction_angle_C_earth_atmos_stratified_case_1_f74_r8
 
+       !For: 80(deg) << z0 << 90(deg)
+       !Formula: 7.5, page: 133
+       elemental function refraction_angle_C_earth_atmos_stratified_case_2_f75_r4(z0,deln0,delnc,,Hb,Hh,Hc)  &
+                                                                         result(alpha_c)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_stratified_case_2_f75_r4
+            !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_stratified_case_2_f75_r4
+#endif 
+!$omp declare simd(refraction_angle_C_earth_atmos_stratified_case_2_f75_r4)
+             real(kind=sp),         intent(in) :: z0 
+             real(kind=sp),         intent(in) :: delnc 
+             real(kind=sp),         intent(in) :: Hb 
+             real(kind=sp),         intent(in) :: Hh 
+             real(kind=sp),         intent(in) :: Hc
+             real(kind=sp)                     :: alpha_c 
+             real(kind=sp),         parameter  :: C000015678896205707118218877391 = &
+                                                     0.00015678896205707118218877391_sp
+             real(kind=sp),         automatic  :: ssinz0, sctgz0 
+             real(kind=sp),         automatic  :: Hca,    Hba 
+             real(kind=sp),         automatic  :: Hha,    HcHh
+             real(kind=sp),         automatic  :: HbHc,   sqr1 
+             real(kind=sp),         automatic  :: sqr2,   sqr3 
+             real(kind=sp),         automatic  :: t0,     t1 
+             real(kind=sp),         automatic  :: rat1,   rat2 
+             real(kind=sp),         automatic  :: trm1,   trm2 
+             Hca   = (Hc+Hc)*C000015678896205707118218877391
+             t0    = sin(z0)
+             Hba   = (Hb+Hb)*C000015678896205707118218877391
+             ssinz0= t0*t0 
+             t1    = 1.0_sp/tan(z0) 
+             Hha   = (Hh+Hh)*C000015678896205707118218877391
+             sctgz0= t1*t1 
+             HbHc  = Hb-Hc
+             trm1  = (delnc*6378.0_sp)/ssinz0
+             HcHc  = Hc-Hh 
+             t0    = sctgz0+Hca 
+             sqr1  = sqrt(t0)
+             t1    = sctgz0+Hha 
+             sqr2  = sqrt(t1)
+             t0    = sctgz0+Hba 
+             sqr3  = sqrt(t0)
+             rat1  = (sqr1-sqr2)/HcHh 
+             rat2  = (sqr3-sqr1)/HbHc
+             trm2  = rat1-rat2 
+             alpha_c = trm1*trm2 
+       end function refraction_angle_C_earth_atmos_stratified_case_2_f75_r4
+
 end module emw_refraction
