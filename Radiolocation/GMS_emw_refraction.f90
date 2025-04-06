@@ -8533,4 +8533,80 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
              del_alpha = t3*(L1+L2+L3)
        end function refraction_angle_delta_ionosphere_strata_f714_r4
 
+        elemental function refraction_angle_delta_ionosphere_strata_f714_r8(fc,Nmf,z0,Hb,Hh,Hc,  &
+                                                                           H2,H1,nc,nh,nb) result(del_alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_delta_ionosphere_strata_f714_r8
+            !dir$ attributes forceinline :: refraction_angle_delta_ionosphere_strata_f714_r8
+#endif 
+!$omp declare simd(refraction_angle_delta_ionosphere_strata_f714_r8)
+             real(kind=dp),         intent(in) :: fc 
+             real(kind=dp),         intent(in) :: Nmf 
+             real(kind=dp),         intent(in) :: z0 
+             real(kind=dp),         intent(in) :: Hb 
+             real(kind=sp),         intent(in) :: Hh 
+             real(kind=dp),         intent(in) :: Hc
+             real(kind=dp),         intent(in) :: H2 
+             real(kind=dp),         intent(in) :: H1 
+             real(kind=dp),         intent(in) :: nc 
+             real(kind=dp),         intent(in) :: nh 
+             real(kind=dp),         intent(in) :: nb 
+            
+             real(kind=dp)                     :: del_alpha 
+             real(kind=dp),         parameter  :: C000015678896205707118218877391 = &
+                                                     0.00015678896205707118218877391_dp
+             real(kind=dp),         automatic  :: ctgz0, scosz0 
+             real(kind=dp),         automatic  :: stgz0, Hba 
+             real(kind=dp),         automatic  :: Hha,   Hca 
+             real(kind=dp),         automatic  :: p,     q 
+             real(kind=dp),         automatic  :: L1,    L2 
+             real(kind=dp),         automatic  :: L3,    H2H1 
+             real(kind=dp),         automatic  :: sqrtrm,t0 
+             real(kind=dp),         automatic  :: t1,    t2 
+             real(kind=dp),         automatic  :: t3,    trm1 
+             real(kind=dp),         automatic  :: trm2,  trm3 
+             real(kind=dp),         automatic  :: delnM, mh 
+             real(kind=dp),         automatic  :: mb,    dh 
+             real(kind=dp),         automatic  :: db,    stgzt
+             real(kind=dp),         automatic  :: sqr1,  sqr2 
+             real(kind=dp),         automatic  :: sqr3 
+             Hba   = Hb*C000015678896205707118218877391
+             t0    = tan(z0)
+             stgz0 = t0*t0 
+             ctgz0 = 1.0_dp/t0 
+             sqrtrm= 1.0_dp+2.0_dp*stgz0 
+             Hca   = Hc*C000015678896205707118218877391
+             delnM = compute_delnM_f414_r8(fc,Nmf)
+             dh    = Hc-Hh 
+             H2H1  = (H2-H1)*(H2-H1)
+             db    = Hb-Hc 
+             t0    = (delnM+delnM)*H2
+             p     = t0/H2H1 
+             t1    = cos(z0)
+             scosz0= t1*t1 
+             mh    = nc-nh
+             q     = (delnM+delnM)/H2H1 
+             mb    = nb-nc 
+             stgzt = 1.0_dp-stgz0 
+             t0    = (p*6378.0_dp)/stgz0 
+             sqr1  = sqrt(sqrtrm+Hba)
+             sqr2  = sqrt(sqrtrm+Hha)
+             sqr3  = sqrt(sqrtrm+Hca)
+             trm1  = sqr1-sqr2 
+             t1    = -0.3333333333333333_dp*((q*12756.0_dp)/(stgz0*stgz0))
+             t2    = stgzt*Hba 
+             t3    = stgzt*Hha 
+             trm2  = t2*sqr1 
+             trm3  = t3*sqr2 
+             L1    = t0*trm1-t1*(trm2-trm3)
+             t0    = 6378.0_dp/stgz0 
+             t1    = mh/dh 
+             L2    = t1*t0*(sqr3-sqr2)
+             t2    = mb/db
+             L3    = t2*t0*(sqr1-sqr3)
+             t3    = -ctgz0/scosz0 
+             del_alpha = t3*(L1+L2+L3)
+       end function refraction_angle_delta_ionosphere_strata_f714_r8
+
 end module emw_refraction
