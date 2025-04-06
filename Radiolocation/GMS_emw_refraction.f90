@@ -8657,7 +8657,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
              t1    = 0.333333333333333333333_sp*delnM 
              trm2  = delnc+t1*t0 
              del_alpha = trm1*trm2 
-       end function efraction_angle_delta_ionosphere_strata_case_1_f714_r4
+       end function refraction_angle_delta_ionosphere_strata_case_1_f714_r4
 
         elemental function refraction_angle_delta_ionosphere_strata_case_1_f714_r8(fc,Nmf,z0,Hb,Hh,Hc,  &
                                                                            nc,nh,H2,H1) result(del_alpha)
@@ -8705,9 +8705,11 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
              t1    = 0.333333333333333333333_dp*delnM 
              trm2  = delnc+t1*t0 
              del_alpha = trm1*trm2 
-       end function efraction_angle_delta_ionosphere_strata_case_1_f714_r8
+       end function refraction_angle_delta_ionosphere_strata_case_1_f714_r8
 
+       !Рефракционные погрешности
+       !при определении дальности
+       !между источником излучения и приемником
        
-
 
 end module emw_refraction
