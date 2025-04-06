@@ -8609,4 +8609,53 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
              del_alpha = t3*(L1+L2+L3)
        end function refraction_angle_delta_ionosphere_strata_f714_r8
 
+       !Пусть выполняется условие 2tg^2(z0)*(HBla) << 1
+       !имеет место при z0 << 70°.
+       elemental function refraction_angle_delta_ionosphere_strata_case_1_f714_r4(fc,Nmf,z0,Hb,Hh,Hc,  &
+                                                                           nc,nh,H2,H1) result(del_alpha)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_delta_ionosphere_strata_case_1_f714_r4
+            !dir$ attributes forceinline :: refraction_angle_delta_ionosphere_strata_case_1_f714_r4
+#endif 
+!$omp declare simd(refraction_angle_delta_ionosphere_strata_case_1_f714_r4)
+             real(kind=sp),         intent(in) :: fc 
+             real(kind=sp),         intent(in) :: Nmf 
+             real(kind=sp),         intent(in) :: z0 
+             real(kind=sp),         intent(in) :: Hb 
+             real(kind=sp),         intent(in) :: Hh 
+             real(kind=sp),         intent(in) :: Hc
+             real(kind=sp),         intent(in) :: H2 
+             real(kind=sp),         intent(in) :: H1 
+             real(kind=sp),         intent(in) :: nc 
+             real(kind=sp),         intent(in) :: nh 
+             real(kind=sp)                     :: del_alpha 
+             real(kind=sp),         parameter  :: C0000078394481028535591094386955 = &
+                                                     0.000078394481028535591094386955_sp
+             real(kind=sp),         automatic  :: tgz0, scosz0 
+             real(kind=sp),         automatic  :: delnM,delnc 
+             real(kind=sp),         automatic  :: dh,   db 
+             real(kind=sp),         automatic  :: d,    H2H1 
+             real(kind=sp),         automatic  :: sdb,  sdh 
+             real(kind=sp),         automatic  :: t0,   t1 
+             real(kind=sp),         automatic  :: trm1, trm2 
+             dh    = Hc-Hh 
+             tgz0  = tan(z0)
+             delnc = nc-nh 
+             t0    = cos(z0)
+             db    = Hb-Hc 
+             scosz0= t0*t0 
+             H2H1  = (H2-H1)*(H2-H1)
+             delnM = compute_delnM_f414_r4(fc,Nmf)
+             d     = dh+db 
+             t0    = tgz0/scosz0 
+             t1    = d*C0000078394481028535591094386955
+             trm1  = t0*t1 
+             sdb   = db*db 
+             sdh   = dh*dh 
+             t0    = ((sdb-db)*(dh+sdh))/H2H1 
+             t1    = 0.333333333333333333333_sp*delnM 
+             trm2  = delnc+t1*t0 
+             del_alpha = trm1*trm2 
+       end function efraction_angle_delta_ionosphere_strata_case_1_f714_r4
 end module emw_refraction
