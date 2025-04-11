@@ -8969,4 +8969,28 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             a_gamm= (num/denom)*6378.0_sp 
        end function a_gamma_coeff_f739_r4
 
+        elemental function a_gamma_coeff_f739_r8(g,deln0,beta,z0,H,n0) result(a_gamm)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: a_gamma_coeff_f739_r8
+            !dir$ attributes forceinline :: a_gamma_coeff_f739_r8
+#endif 
+            real(kind=dp),        intent(in) :: g 
+            real(kind=dp),        intent(in) :: deln0 
+            real(kind=dp),        intent(in) :: beta 
+            real(kind=dp),        intent(in) :: z0 
+            real(kind=dp),        intent(in) :: H 
+            real(kind=dp),        intent(in) :: n0 
+            real(kind=dp)                    :: a_gamm 
+            real(kind=dp),        automatic  :: stgz0, M 
+            real(kind=dp),        automatic  :: num, denom 
+            real(kind=dp),        automatic  :: t0 
+            t0    = tan(z0)
+            M     = analytic_sol_M_horizontal_grad_atmos_f736_r8(g,deln0,beta,z0,H,n0) 
+            stgz0 = t0*t0 
+            denom = 1.0_dp+M 
+            num   = 1.0_dp-(stgz0+stgz0)*M 
+            a_gamm= (num/denom)*6378.0_dp 
+       end function a_gamma_coeff_f739_r8
+
 end module emw_refraction
