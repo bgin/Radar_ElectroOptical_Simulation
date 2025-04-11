@@ -8832,4 +8832,32 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             I     = g*L2/beta*cosz0  
        end function analytic_sol_I_horizontal_grad_atmos_f732_r8
 
+       !характеризующее рефракцию 
+       !электромагнитных волн в двумерно-неоднородной среде.
+       !Formula: 7.36, page:142
+       elemental function analytic_sol_M_horizontal_grad_atmos_f736_r4(g,deln0,beta,z0,H,n0) result(M)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_M_horizontal_grad_atmos_f736_r4
+            !dir$ attributes forceinline :: analytic_sol_M_horizontal_grad_atmos_f736_r4
+#endif 
+            real(kind=sp),        intent(in) :: g 
+            real(kind=sp),        intent(in) :: deln0 
+            real(kind=sp),        intent(in) :: beta 
+            real(kind=sp),        intent(in) :: z0 
+            real(kind=sp),        intent(in) :: H 
+            real(kind=sp),        intent(in) :: n0 
+            real(kind=sp)                    :: M 
+            real(kind=sp),        automatic  :: L2,   sinz0 
+            real(kind=sp),        automatic  :: cosz, num 
+            real(kind=sp),        automatic  :: denom, t0 
+            t0    = beta*6378.0_sp*n0 
+            sinz0 = sin(z0) 
+            L2    = analytic_sol_L2_horizontal_grad_atmos_f733_r4(deln0,beta,z0,H)
+            cosz0 = cos(z0)
+            denom = t0*sinz0*cosz0 
+            num   = g*L2 
+            M     = num/denom 
+       end function analytic_sol_M_horizontal_grad_atmos_f736_r4
+
 end module emw_refraction
