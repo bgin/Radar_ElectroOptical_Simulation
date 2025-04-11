@@ -8916,4 +8916,32 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             gamma = sqr-ctgz0  
        end function refraction_angle_atmos_2D_stratified_f737_r4
 
+        elemental function refraction_angle_atmos_2D_stratified_f737_r8(g,deln0,beta,z0,H,n0,h1) result(gamma)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f737_r8
+            !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f737_r8
+#endif 
+            real(kind=dp),        intent(in) :: g 
+            real(kind=dp),        intent(in) :: deln0 
+            real(kind=dp),        intent(in) :: beta 
+            real(kind=dp),        intent(in) :: z0 
+            real(kind=dp),        intent(in) :: H 
+            real(kind=dp),        intent(in) :: n0 
+            real(kind=dp),        intent(in) :: h1 
+            real(kind=dp)                    :: gamma 
+            real(kind=dp),        parameter  :: C000015678896205707118218877391 = &
+                                                  0.00015678896205707118218877391_dp 
+            real(kind=dp),        automatic  :: M, sctgz0 
+            real(kind=dp),        automatic  :: ctgz0, sqr 
+            real(kind=dp),        automatic  :: trm1,  t0 
+            M     = analytic_sol_M_horizontal_grad_atmos_f736_r8(g,deln0,beta,z0,H,n0) 
+            ctgz0 = 1.0_dp/tan(z0)
+            sctgz0= ctgz0*ctgz0 
+            t0    = 2.0_dp*h1*C000015678896205707118218877391
+            trm1  = t0*(1.0_dp+M)-M 
+            sqr   = sqrt(sctgz0+trm1)
+            gamma = sqr-ctgz0  
+       end function refraction_angle_atmos_2D_stratified_f737_r8
+
 end module emw_refraction
