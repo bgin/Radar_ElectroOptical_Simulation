@@ -8860,4 +8860,29 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             M     = num/denom 
        end function analytic_sol_M_horizontal_grad_atmos_f736_r4
 
+        elemental function analytic_sol_M_horizontal_grad_atmos_f736_r8(g,deln0,beta,z0,H,n0) result(M)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_M_horizontal_grad_atmos_f736_r8
+            !dir$ attributes forceinline :: analytic_sol_M_horizontal_grad_atmos_f736_r8
+#endif 
+            real(kind=dp),        intent(in) :: g 
+            real(kind=dp),        intent(in) :: deln0 
+            real(kind=dp),        intent(in) :: beta 
+            real(kind=dp),        intent(in) :: z0 
+            real(kind=dp),        intent(in) :: H 
+            real(kind=dp),        intent(in) :: n0 
+            real(kind=dp)                    :: M 
+            real(kind=dp),        automatic  :: L2,   sinz0 
+            real(kind=dp),        automatic  :: cosz, num 
+            real(kind=dp),        automatic  :: denom, t0 
+            t0    = beta*6378.0_dp*n0 
+            sinz0 = sin(z0) 
+            L2    = analytic_sol_L2_horizontal_grad_atmos_f733_r8(deln0,beta,z0,H)
+            cosz0 = cos(z0)
+            denom = t0*sinz0*cosz0 
+            num   = g*L2 
+            M     = num/denom 
+       end function analytic_sol_M_horizontal_grad_atmos_f736_r8
+
 end module emw_refraction
