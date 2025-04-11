@@ -8944,4 +8944,29 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             gamma = sqr-ctgz0  
        end function refraction_angle_atmos_2D_stratified_f737_r8
 
+       !Formula: 7.39, page: 143
+       elemental function a_gamma_coeff_f739_r4(g,deln0,beta,z0,H,n0) result(a_gamm)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: a_gamma_coeff_f739_r4
+            !dir$ attributes forceinline :: a_gamma_coeff_f739_r4
+#endif 
+            real(kind=sp),        intent(in) :: g 
+            real(kind=sp),        intent(in) :: deln0 
+            real(kind=sp),        intent(in) :: beta 
+            real(kind=sp),        intent(in) :: z0 
+            real(kind=sp),        intent(in) :: H 
+            real(kind=sp),        intent(in) :: n0 
+            real(kind=sp)                    :: a_gamm 
+            real(kind=sp),        automatic  :: stgz0, M 
+            real(kind=sp),        automatic  :: num, denom 
+            real(kind=sp),        automatic  :: t0 
+            t0    = tan(z0)
+            M     = analytic_sol_M_horizontal_grad_atmos_f736_r4(g,deln0,beta,z0,H,n0) 
+            stgz0 = t0*t0 
+            denom = 1.0_sp+M 
+            num   = 1.0_sp-(stgz0+stgz0)*M 
+            a_gamm= (num/denom)*6378.0_sp 
+       end function a_gamma_coeff_f739_r4
+
 end module emw_refraction
