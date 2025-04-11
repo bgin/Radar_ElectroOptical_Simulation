@@ -9041,4 +9041,51 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L2      = trm1*trm2 
        end function analytic_sol_Lgamm_horizontal_grad_atmos_f741_r4
 
+        elemental function analytic_sol_Lgamm_horizontal_grad_atmos_f741_r8(g,deln0,beta,z0,H,n0) result(Lgamm)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_Lgamm_horizontal_grad_atmos_f741_r8
+            !dir$ attributes forceinline :: analytic_sol_Lgamm_horizontal_grad_atmos_f741_r8
+#endif 
+!$omp declare simd(analytic_sol_Lgamm_horizontal_grad_atmos_f741_r8)
+            real(kind=dp),        intent(in) :: g 
+            real(kind=dp),        intent(in) :: deln0 
+            real(kind=dp),        intent(in) :: beta 
+            real(kind=dp),        intent(in) :: z0 
+            real(kind=dp),        intent(in) :: H 
+            real(kind=dp),        intent(in) :: n0 
+            real(kind=dp)                    :: Lgamm 
+            real(kind=dp),        parameter  :: C1253314137315500251207882642406 = & 
+                                                 1.253314137315500251207882642406_sp
+            real(kind=dp),        automatic  :: tgz0,    sctgz0 
+            real(kind=dp),        automatic  :: bactgz0, earg 
+            real(kind=dp),        automatic  :: exp1,    prob1 
+            real(kind=dp),        automatic  :: prob2,   sqr1 
+            real(kind=dp),        automatic  :: sqr2,    sqr3 
+            real(kind=dp),        automatic  :: t0,      t1 
+            real(kind=dp),        automatic  :: trm1,    trm2 
+            real(kind=dp),        automatic  :: a_gamm,  btag  
+            tgz0    = tan(z0)
+            t0      = 1.0_dp/tgz0 
+            a_gamm  = a_gamma_coeff_f739_r8(g,deln0,beta,z0,H,n0)
+            sctgz0  = t0*t0 
+            btag    = beta*a_gamm
+            cosz0   = cos(z0)
+            bactgz0 = btag*sctgz0 
+            t1      = sqrt(btag)
+            sqr1    = t1/tgz0 
+            t0      = btag/(sctgz0+sctgz0)
+            exp1    = exp(t0)
+            trm1    = deln0*sqr1*exp1*C1253314137315500251207882642406 
+            t0      = (beta+beta)*H
+            sqr2    = sqrt(bactgz0+t0)
+            prob1   = prob_integral_r8(sqr2) 
+            sqr3    = sqrt(bactgz0)
+            prob2   = prob_integral_r8(sqr3)
+            trm2    = prob1-prob2 
+            L2      = trm1*trm2 
+       end function analytic_sol_Lgamm_horizontal_grad_atmos_f741_r8
+
+
+
 end module emw_refraction
