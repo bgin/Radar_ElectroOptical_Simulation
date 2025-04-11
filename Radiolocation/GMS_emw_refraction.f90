@@ -8792,6 +8792,25 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             trm2    = prob1-prob2 
             L2      = trm1*trm2 
        end function analytic_sol_L2_horizontal_grad_atmos_f733_r8
-       !Formula: 7.32, page:
+
+       !Formula: 7.32, page: 142
+       elemental function analytic_sol_I_horizontal_grad_atmos_f732_r4(g,deln0,beta,z0,H) result(I)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_I_horizontal_grad_atmos_f732_r4
+            !dir$ attributes forceinline :: analytic_sol_I_horizontal_grad_atmos_f732_r4
+#endif 
+!$omp declare simd(analytic_sol_I_horizontal_grad_atmos_f732_r4)
+            real(kind=sp),        intent(in) :: g 
+            real(kind=sp),        intent(in) :: deln0 
+            real(kind=sp),        intent(in) :: beta 
+            real(kind=sp),        intent(in) :: z0 
+            real(kind=sp),        intent(in) :: H 
+            real(kind=sp)                    :: I 
+            real(kind=sp),        automatic  :: L2, cosz0
+            L2    = analytic_sol_L2_horizontal_grad_atmos_f733_r4(deln0,beta,z0,H)
+            cosz0 = cos(z0)
+            I     = g*L2/beta*cosz0  
+       end function analytic_sol_I_horizontal_grad_atmos_f732_r4
 
 end module emw_refraction
