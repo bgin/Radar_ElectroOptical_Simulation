@@ -8885,4 +8885,35 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             M     = num/denom 
        end function analytic_sol_M_horizontal_grad_atmos_f736_r8
 
+       !угла Gammar, характеризующее рефракцию 
+       !электромагнитных волн в двумерно-неоднородной среде.
+       !Formula: 7.37, page: 142
+       elemental function refraction_angle_atmos_2D_stratified_f737_r4(g,deln0,beta,z0,H,n0,h1) result(gamma)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f737_r4
+            !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f737_r4
+#endif 
+            real(kind=sp),        intent(in) :: g 
+            real(kind=sp),        intent(in) :: deln0 
+            real(kind=sp),        intent(in) :: beta 
+            real(kind=sp),        intent(in) :: z0 
+            real(kind=sp),        intent(in) :: H 
+            real(kind=sp),        intent(in) :: n0 
+            real(kind=sp),        intent(in) :: h1 
+            real(kind=sp)                    :: gamma 
+            real(kind=sp),        parameter  :: C000015678896205707118218877391 = &
+                                                  0.00015678896205707118218877391_sp 
+            real(kind=sp),        automatic  :: M, sctgz0 
+            real(kind=sp),        automatic  :: ctgz0, sqr 
+            real(kind=sp),        automatic  :: trm1,  t0 
+            M     = analytic_sol_M_horizontal_grad_atmos_f736_r4(g,deln0,beta,z0,H,n0) 
+            ctgz0 = 1.0_sp/tan(z0)
+            sctgz0= ctgz0*ctgz0 
+            t0    = 2.0_sp*h1*C000015678896205707118218877391
+            trm1  = t0*(1.0_sp+M)-M 
+            sqr   = sqrt(sctgz0+trm1)
+            gamma = sqr-ctgz0  
+       end function refraction_angle_atmos_2D_stratified_f737_r4
+
 end module emw_refraction
