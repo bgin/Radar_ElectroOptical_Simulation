@@ -9268,4 +9268,33 @@ module atmos_refraction
             alpha_g= deln0*sqr1*inv 
         end function refraction_angle_atmos_2D_stratified_f747_r4
 
+         elemental function refraction_angle_atmos_2D_stratified_f747_r8(g,deln0,beta) result(alpha_g)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f747_r8
+            !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f747_r8
+#endif 
+!$omp declare simd(refraction_angle_atmos_2D_stratified_f747_r8)
+            real(kind=dp),          intent(in) :: g
+            real(kind=dp),          intent(in) :: deln0 
+            real(kind=dp),          intent(in) :: beta 
+            real(kind=dp)                      :: alpha_g 
+            real(kind=dp),          parameter  :: C314159265358979323846264338328 = &
+                                                      3.14159265358979323846264338328_dp
+            real(kind=dp),          parameter  :: C20037077944595701274914739498556669 = &
+                                                      20037.077944595701274914739498556669_dp
+            real(kind=dp),          automatic  :: sqr1, sqr2 
+            real(kind=dp),          automatic  :: sqr3, inv 
+            real(kind=dp),          automatic  :: t0, pibta 
+            real(kind=dp),          automatic  :: t1  
+            pibta  = C314159265358979323846264338328*beta*6378.0_dp 
+            sqr1   = sqrt(0.5_dp*pibta)
+            t0     = C20037077944595701274914739498556669/(beta+beta)
+            sqr2   = sqrt(t0)
+            t1     = 1.0_dp+sqr2*g 
+            sqr3   = sqrt(t1)
+            inv    = 1.0_dp/sqr3 
+            alpha_g= deln0*sqr1*inv 
+        end function refraction_angle_atmos_2D_stratified_f747_r8
+
 end module atmos_refraction
