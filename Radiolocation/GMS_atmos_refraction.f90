@@ -9203,5 +9203,23 @@ module atmos_refraction
             alpha_g= trm1+trm2 
        end function refraction_angle_atmos_2D_stratified_f743_r8
 
+       !For: z0 = 90(deg)
+       !Formula: 7.44, page: 144
+        elemental function refraction_angle_atmos_2D_stratified_f744_r4(g,deln0,beta) result(alpha_g)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f744_r4
+            !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f744_r4
+#endif 
+!$omp declare simd(refraction_angle_atmos_2D_stratified_f744_r4)
+            real(kind=sp),          intent(in) :: g
+            real(kind=sp),          intent(in) :: deln0 
+            real(kind=sp),          intent(in) :: beta 
+            real(kind=sp)                      :: alpha_g 
+            real(kind=sp),          automatic  :: sdeln0, t0 
+            sdeln0  = deln0*deln0 
+            alpha_g = sdeln0*g/beta*6378.0_sp 
+        end function refraction_angle_atmos_2D_stratified_f744_r4
+
 
 end module atmos_refraction
