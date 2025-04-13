@@ -1911,7 +1911,7 @@ module atmos_refraction
       ! 0<=h<=H1
       ! formula: 4.29, page: 80
       elemental function n_avg_0_h_H1_f429_r4(deln0,beta,h) result(n)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_avg_0_h_H1_f429_r4
             !dir$ attributes forceinline :: n_avg_0_h_H1_f429_r4
@@ -1928,7 +1928,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function n_avg_0_h_H1_f429_r4
 
       elemental function n_avg_0_h_H1_f429_r8(deln0,beta,h) result(n)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_avg_0_h_H1_f429_r8
             !dir$ attributes forceinline :: n_avg_0_h_H1_f429_r8
@@ -1949,7 +1949,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       ! H1<=h<=H2
       ! formula: 4.30, page: 80
        elemental function n_avg_H1_h_H2_f430_r4(fc,Nmf,h,H1,H2) result(n)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_avg_H1_h_H2_f430_r4
             !dir$ attributes forceinline :: n_avg_H1_h_H2_f430_r4
@@ -1974,7 +1974,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function n_avg_H1_h_H2_f430_r4
 
        elemental function n_avg_H1_h_H2_f430_r8(fc,Nmf,h,H1,H2) result(n)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_avg_H1_h_H2_f430_r8
             !dir$ attributes forceinline :: n_avg_H1_h_H2_f430_r8
@@ -2003,7 +2003,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       ! H2<=h<=H3
       ! formula: 4.31, page: 80
       elemental function n_avg_H2_h_H3_f431_r4(fc,Nmf,h,H2) result(n)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_avg_H2_h_H3_f431_r4
             !dir$ attributes forceinline :: n_avg_H2_h_H3_f431_r4
@@ -2023,7 +2023,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function n_avg_H2_h_H3_f431_r4
 
       elemental function n_avg_H2_h_H3_f431_r8(fc,Nmf,h,H2) result(n)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: n_avg_H2_h_H3_f431_r8
             !dir$ attributes forceinline :: n_avg_H2_h_H3_f431_r8
@@ -2049,7 +2049,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       !L=L1+L2+L3
 
       elemental function analytic_sol_L11_lo_ionosphere_f439_r4(deln0,beta,a,z0,H1) result(L11)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L11_lo_ionosphere_f439_r4
             !dir$ attributes forceinline :: analytic_sol_L11_lo_ionosphere_f439_r4
@@ -2082,7 +2082,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function analytic_sol_L11_lo_ionosphere_f439_r4
 
       elemental function analytic_sol_L11_lo_ionosphere_f439_r8(deln0,beta,a,z0,H1) result(L11)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L11_lo_ionosphere_f439_r8
             !dir$ attributes forceinline :: analytic_sol_L11_lo_ionosphere_f439_r8
@@ -2115,7 +2115,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function analytic_sol_L11_lo_ionosphere_f439_r8
 
       elemental function analytic_sol_L12_lo_ionosphere_f440_r4(deln0,beta,a,z0,H1) result(L12)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L12_lo_ionosphere_f440_r4
             !dir$ attributes forceinline :: analytic_sol_L12_lo_ionosphere_f440_r4
@@ -2146,7 +2146,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function analytic_sol_L12_lo_ionosphere_f440_r4
 
      elemental function analytic_sol_L12_lo_ionosphere_f440_r8(deln0,beta,a,z0,H1) result(L12)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L12_lo_ionosphere_f440_r8
             !dir$ attributes forceinline :: analytic_sol_L12_lo_ionosphere_f440_r8
@@ -2177,7 +2177,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function analytic_sol_L12_lo_ionosphere_f440_r8
 
       elemental function analytic_sol_L13_lo_ionosphere_f441_r4(deln0,beta,a,z0,H1) result(L12)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L13_lo_ionosphere_f441_r4
             !dir$ attributes forceinline :: analytic_sol_L13_lo_ionosphere_f441_r4
@@ -2208,7 +2208,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function analytic_sol_L13_lo_ionosphere_f441_r4
 
       elemental function analytic_sol_L13_lo_ionosphere_f441_r8(deln0,beta,a,z0,H1) result(L12)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L13_lo_ionosphere_f441_r8
             !dir$ attributes forceinline :: analytic_sol_L13_lo_ionosphere_f441_r8
@@ -2241,7 +2241,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       ! refraction angle whole atmosphere (lower part).
       ! formula: 4.38, page: 82
       elemental function refraction_angle_atmos_L1_lo_f438_r4(deln0,beta,a,z0,H1) resilt(L1)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_atmos_L1_lo_f438_r4
             !dir$ attributes forceinline :: refraction_angle_atmos_L1_lo_f438_r4
@@ -2270,7 +2270,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function refraction_angle_atmos_L1_lo_f438_r4
 
       elemental function refraction_angle_atmos_L1_lo_f438_r8(deln0,beta,a,z0,H1) resilt(L1)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_atmos_L1_lo_f438_r8
             !dir$ attributes forceinline :: refraction_angle_atmos_L1_lo_f438_r8
@@ -2300,7 +2300,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
       ! formula: 4.43, page: 82
       elemental function analytic_sol_L21_med_ionosphere_f443_r4(fc,Nmf,H1,H2,a,z0) result(L21)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L21_med_ionosphere_f443_r4
             !dir$ attributes forceinline :: analytic_sol_L21_med_ionosphere_f443_r4
@@ -2337,7 +2337,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function analytic_sol_L21_med_ionosphere_f443_r4
 
        elemental function analytic_sol_L21_med_ionosphere_f443_r8(fc,Nmf,H1,H2,a,z0) result(L21)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L21_med_ionosphere_f443_r8
             !dir$ attributes forceinline :: analytic_sol_L21_med_ionosphere_f443_r8
@@ -2375,7 +2375,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
       ! formula: 4.44, page: 82
       elemental function analytic_sol_L22_med_ionosphere_f444_r4(deln0,fc,Nmf,H1,H2,a,z0) result(L22)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L22_med_ionosphere_f444_r4
             !dir$ attributes forceinline :: analytic_sol_L22_med_ionosphere_f444_r4
@@ -2429,7 +2429,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function analytic_sol_L22_med_ionosphere_f444_r4
 
       elemental function analytic_sol_L22_med_ionosphere_f444_r8(deln0,fc,Nmf,H1,H2,a,z0) result(L22)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L22_med_ionosphere_f444_r8
             !dir$ attributes forceinline :: analytic_sol_L22_med_ionosphere_f444_r8
@@ -2485,7 +2485,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       ! refraction angle whole atmosphere (medium part).
       ! formula: 4.42, page: 82
       elemental function refraction_angle_atmos_L2_med_f442_r4(deln0,fc,Nmf,H1,H2,a,z0) result(L2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_atmos_L2_med_f442_r4
             !dir$ attributes forceinline :: refraction_angle_atmos_L2_med_f442_r4
@@ -2506,7 +2506,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function refraction_angle_atmos_L2_med_f442_r4
 
       elemental function refraction_angle_atmos_L2_med_f442_r8(deln0,fc,Nmf,H1,H2,a,z0) result(L2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_atmos_L2_med_f442_r8
             !dir$ attributes forceinline :: refraction_angle_atmos_L2_med_f442_r8
@@ -2529,7 +2529,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       ! Analytic solution upper ionosphere.
       ! Formula: 4.46, page: 83
        elemental function analytic_sol_L31_up_ionosphere_f446_r4(fc,Nmf,H2,H3,beta,a,z0) result(L31)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L31_up_ionosphere_f446_r4
             !dir$ attributes forceinline :: analytic_sol_L31_up_ionosphere_f446_r4
@@ -2565,7 +2565,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function analytic_sol_L31_up_ionosphere_f446_r4
 
         elemental function analytic_sol_L31_up_ionosphere_f446_r8(fc,Nmf,H2,H3,beta,a,z0) result(L31)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L31_up_ionosphere_f446_r8
             !dir$ attributes forceinline :: analytic_sol_L31_up_ionosphere_f446_r8
@@ -2602,7 +2602,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
         ! Formula: 4.47, page: 83
         elemental function analytic_sol_L32_up_ionosphere_f447_r4(fc,Nmf,H2,H3,beta,a,z0) result(L32)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L32_up_ionosphere_f447_r4
             !dir$ attributes forceinline :: analytic_sol_L32_up_ionosphere_f447_r4
@@ -2638,7 +2638,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_L32_up_ionosphere_f447_r4
 
        elemental function analytic_sol_L32_up_ionosphere_f447_r8(fc,Nmf,H2,H3,beta,a,z0) result(L32)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L32_up_ionosphere_f447_r8
             !dir$ attributes forceinline :: analytic_sol_L32_up_ionosphere_f447_r8
@@ -2675,7 +2675,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        ! Formula: 4.48, page: 83
         elemental function analytic_sol_L33_up_ionosphere_f448_r4(fc,Nmf,H2,H3,beta,a,z0) result(L33)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L33_up_ionosphere_f448_r4
             !dir$ attributes forceinline :: analytic_sol_L33_up_ionosphere_f448_r4
@@ -2711,7 +2711,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_L33_up_ionosphere_f448_r4
 
        elemental function analytic_sol_L33_up_ionosphere_f448_r8(fc,Nmf,H2,H3,beta,a,z0) result(L33)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L33_up_ionosphere_f448_r8
             !dir$ attributes forceinline :: analytic_sol_L33_up_ionosphere_f448_r8
@@ -2748,7 +2748,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        ! Formula: 4.49, page: 83
        elemental function analytic_sol_L34_up_ionosphere_f449_r4(deln0,fc,Nmf,H2,H3,beta,a,z0) result(L34)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L34_up_ionosphere_f449_r4
             !dir$ attributes forceinline :: analytic_sol_L34_up_ionosphere_f449_r4
@@ -2785,7 +2785,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function analytic_sol_L34_up_ionosphere_f449_r4
 
          elemental function analytic_sol_L34_up_ionosphere_f449_r8(deln0,fc,Nmf,H2,H3,beta,a,z0) result(L34)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L34_up_ionosphere_f449_r8
             !dir$ attributes forceinline :: analytic_sol_L34_up_ionosphere_f449_r8
@@ -2824,7 +2824,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        ! refraction angle whole atmosphere (upper part).
        ! formula: 4.49, page: 83
       elemental function refraction_angle_atmos_L3_upper_f445_r4(deln0,fc,Nmf,H2,H3,beta,a,z0) result(L3)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_atmos_L3_upper_f445_r4
             !dir$ attributes forceinline :: refraction_angle_atmos_L3_upper_f445_r4
@@ -2859,7 +2859,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refraction_angle_atmos_L3_upper_f445_r4
 
        elemental function refraction_angle_atmos_L3_upper_f445_r8(deln0,fc,Nmf,H2,H3,beta,a,z0) result(L3)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_atmos_L3_upper_f445_r8
             !dir$ attributes forceinline :: refraction_angle_atmos_L3_upper_f445_r8
@@ -2898,7 +2898,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        ! 2*tg^2(z0)*H2/a«1, z0<60°.
        ! Formula: 4.50, page: 84
        elemental function refraction_angle_z0le60_med_atmos_f450_r4(fc,Nmf,z0,deln0,g,H1,H2) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_z0le60_med_atmos_f450_r4
             !dir$ attributes forceinline :: refraction_angle_z0le60_med_atmos_f450_r4
@@ -2942,7 +2942,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refraction_angle_z0le60_med_atmos_f450_r4
 
        elemental function refraction_angle_z0le60_med_atmos_f450_r8(fc,Nmf,z0,deln0,g,H1,H2) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_z0le60_med_atmos_f450_r8
             !dir$ attributes forceinline :: refraction_angle_z0le60_med_atmos_f450_r8
@@ -2991,7 +2991,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        ! 
        ! Formula: 4.51, page: 84
        elemental function refraction_angle_z0eq90_med_atmos_f451_r4(fc,Nmf,z0,deln0,g,H1,H2) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_z0eq90_med_atmos_f451_r4
             !dir$ attributes forceinline :: refraction_angle_z0eq90_med_atmos_f451_r4
@@ -3040,7 +3040,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refraction_angle_z0eq90_med_atmos_f451_r4
 
         elemental function refraction_angle_z0eq90_med_atmos_f451_r8(fc,Nmf,z0,deln0,g,H1,H2) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_z0eq90_med_atmos_f451_r8
             !dir$ attributes forceinline :: refraction_angle_z0eq90_med_atmos_f451_r8
@@ -3094,7 +3094,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        ! Formula: 5.4, page: 93
      
        elemental function analytic_sol_L1_troposph_wvle5cm_f54_r4(beta,R0,delnA,z0,Hc0) result(L1)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L1_troposph_wvle5cm_f54_r4
             !dir$ attributes forceinline :: analytic_sol_L1_troposph_wvle5cm_f54_r4
@@ -3126,7 +3126,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function analytic_sol_L1_troposph_wvle5cm_f54_r4
 
          elemental function analytic_sol_L1_troposph_wvle5cm_f54_r8(beta,R0,delnA,z0,Hc0) result(L1)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L1_troposph_wvle5cm_f54_r8
             !dir$ attributes forceinline :: analytic_sol_L1_troposph_wvle5cm_f54_r8
@@ -3158,7 +3158,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function analytic_sol_L1_troposph_wvle5cm_f54_r8
 
         elemental function analytic_sol_L2_troposph_wvle5cm_f55_r4(beta,R0,delnA,z0,Hc0) result(L2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L2_troposph_wvle5cm_f55_r4
             !dir$ attributes forceinline :: analytic_sol_L2_troposph_wvle5cm_f55_r4
@@ -3192,7 +3192,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function analytic_sol_L2_troposph_wvle5cm_f55_r4
 
         elemental function analytic_sol_L2_troposph_wvle5cm_f55_r8(beta,R0,delnA,z0,Hc0) result(L2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L2_troposph_wvle5cm_f55_r8
             !dir$ attributes forceinline :: analytic_sol_L2_troposph_wvle5cm_f55_r8
@@ -3226,7 +3226,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function analytic_sol_L2_troposph_wvle5cm_f55_r8
 
         elemental function analytic_sol_L3_troposph_wvle5cm_f56_r4(beta,R0,delnA,z0,Hc0) result(L3)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L3_troposph_wvle5cm_f56_r4
             !dir$ attributes forceinline :: analytic_sol_L3_troposph_wvle5cm_f56_r4
@@ -3260,7 +3260,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function analytic_sol_L3_troposph_wvle5cm_f56_r4
 
         elemental function analytic_sol_L3_troposph_wvle5cm_f56_r8(beta,R0,delnA,z0,Hc0) result(L2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L3_troposph_wvle5cm_f56_r8
             !dir$ attributes forceinline :: analytic_sol_L3_troposph_wvle5cm_f56_r8
@@ -3296,7 +3296,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         ! Formula 5.3, page: 93
         ! An angle of atmospheric (troposheric) refraction for wavelength <= 5cm (different TX,RX height)
         elemental function refraction_angle_tropo_wvle5cm_f53_r4(na,nc,beta,R0,delnA,z0,Hc0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_tropo_wvle5cm_f53_r4
             !dir$ attributes forceinline :: refraction_angle_tropo_wvle5cm_f53_r4
@@ -3329,7 +3329,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function refraction_angle_tropo_wvle5cm_f53_r4
 
         elemental function refraction_angle_tropo_wvle5cm_f53_r8(na,nc,beta,R0,delnA,z0,Hc0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_tropo_wvle5cm_f53_r8
             !dir$ attributes forceinline :: refraction_angle_tropo_wvle5cm_f53_r8
@@ -3371,7 +3371,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
         ! formula: 5.22, page: 96
         elemental function analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r4(delnA,z0,beta,Hc0) result(del1)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r4
             !dir$ attributes forceinline :: analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r4
@@ -3391,7 +3391,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r4
 
         elemental function analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r8(delnA,z0,beta,Hc0) result(del1)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r8
             !dir$ attributes forceinline :: analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r8
@@ -3412,7 +3412,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
         !formula: 5.24, page: 97
         elemental function analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r4(delnA,z0,beta,Hc0) result(del21)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r4
             !dir$ attributes forceinline :: analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r4
@@ -3436,7 +3436,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r4
 
         elemental function analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r8(delnA,z0,beta,Hc0) result(del21)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r8
             !dir$ attributes forceinline :: analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r8
@@ -3461,7 +3461,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
         ! formula: 5.25, page: 97
         elemental function analytic_sol_tropo_del22_wvle5cm_deg0_80_f525_r4(delnA,z0,beta,Hc0,R0) result(del22)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del22_wvle5cm_deg0_80_f525_r4
             !dir$ attributes forceinline :: analytic_sol_tropo_del22_wvle5cm_deg0_80_f525_r4
@@ -3503,7 +3503,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function analytic_sol_tropo_del22_wvle5cm_deg0_80_f525_r4
 
          elemental function analytic_sol_tropo_del22_wvle5cm_deg0_80_f525_r8(delnA,z0,beta,Hc0,R0) result(del22)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del22_wvle5cm_deg0_80_f525_r8
             !dir$ attributes forceinline :: analytic_sol_tropo_del22_wvle5cm_deg0_80_f525_r8
@@ -3546,7 +3546,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
           ! formula: 5.27, page: 97
         elemental function analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r4(delnA,z0,beta,Hc0,R0) result(del231)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r4
             !dir$ attributes forceinline :: analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r4
@@ -3583,7 +3583,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r4
 
          elemental function analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r8(delnA,z0,beta,Hc0,R0) result(del231)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r8
             !dir$ attributes forceinline :: analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r8
@@ -3621,7 +3621,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
         ! formula: 5.28, page: 97
         elemental function analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r4(delnA,z0,beta,Hc0,R0) result(del232)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r4
             !dir$ attributes forceinline :: analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r4
@@ -3658,7 +3658,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r4
 
         elemental function analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r8(delnA,z0,beta,Hc0,R0) result(del232)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r8
             !dir$ attributes forceinline :: analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r8
@@ -3696,7 +3696,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
         ! formula: 5.256, page: 97
         elemental function analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r4(delnA,z0,beta,Hc0,R0) result(del23)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r4
             !dir$ attributes forceinline :: analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r4
@@ -3724,7 +3724,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r4
 
        elemental function analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r8(delnA,z0,beta,Hc0,R0) result(del23)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r8
             !dir$ attributes forceinline :: analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r8
@@ -3753,7 +3753,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
         ! formula: 5.23, page: 96
         elemental function analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r4(delnA,z0,beta,Hc0,R0) result(del2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r4
             !dir$ attributes forceinline :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r4
@@ -3773,7 +3773,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r4
 
         elemental function analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r48(delnA,z0,beta,Hc0,R0) result(del2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r8
             !dir$ attributes forceinline :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r8
@@ -3795,7 +3795,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         ! Final calculation of refractive angle.
         ! Formula 5.17, page: 95
         elemental function refraction_angle_tropo_wvle5cm_f517_r4(delnA,z0,beta,Hc0,R0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_tropo_wvle5cm_f517_r4
             !dir$ attributes forceinline :: refraction_angle_tropo_wvle5cm_f517_r4
@@ -3814,7 +3814,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function refraction_angle_tropo_wvle5cm_f517_r4
 
         elemental function refraction_angle_tropo_wvle5cm_f517_r8(delnA,z0,beta,Hc0,R0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_tropo_wvle5cm_f517_r8
             !dir$ attributes forceinline :: refraction_angle_tropo_wvle5cm_f517_r8
@@ -3835,7 +3835,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         ! For: z0<=80(deg), p*sqrt(2*q) >= 1, sqrt(2*q) >= 1, ***can be used instead of 5.23***
         ! Formula: 5.29, page: 95
          elemental function analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r4(delnA,z0,beta,Hc0,R0) result(del2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r4
             !dir$ attributes forceinline :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r4
@@ -3869,7 +3869,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
          end function analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r4
 
          elemental function analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r8(delnA,z0,beta,Hc0,R0) result(del2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r8
             !dir$ attributes forceinline :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r8
@@ -3912,7 +3912,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
          ! радиусом-вектором 'r' и геоцентрическим углом 'theta'. С 
          ! учетом малости угла 'theta' эта зависимость имеет вид
          elemental function ray_traj_inhomogenous_atmos_f531_r4(n,na,R0,z0,tht) result(r)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: ray_traj_inhomogenous_atmos_f531_r4
             !dir$ attributes forceinline :: ray_traj_inhomogenous_atmos_f531_r4
@@ -3937,7 +3937,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
          end function ray_traj_inhomogenous_atmos_f531_r4
 
          elemental function ray_traj_inhomogenous_atmos_f531_r8(n,na,R0,z0,tht) result(r)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: ray_traj_inhomogenous_atmos_f531_r8
             !dir$ attributes forceinline :: ray_traj_inhomogenous_atmos_f531_r8
@@ -3966,7 +3966,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
          ! высотах излучателя и приемника.
          ! Formula: 5.34, page: 100
          elemental function analytic_sol_L_atmos_wvle5cm_f534_r4(z0,beta,R0,thtc) result(L)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L_atmos_wvle5cm_f534_r4
             !dir$ attributes forceinline :: analytic_sol_L_atmos_wvle5cm_f534_r4
@@ -4002,7 +4002,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
          end function analytic_sol_L_atmos_wvle5cm_f534_r4
 
          elemental function analytic_sol_L_atmos_wvle5cm_f534_r8(z0,beta,R0,thtc) result(L)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L_atmos_wvle5cm_f534_r8
             !dir$ attributes forceinline :: analytic_sol_L_atmos_wvle5cm_f534_r8
@@ -4046,7 +4046,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        !Formula: 5.35, page: 101
        elemental function refraction_angle_atmos_wvle5cm_f535_r4(delnA,beta,R0,thtc,z0,  &
                                                                  Rc,nc,na) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_f535_r4
             !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_f535_r4
@@ -4081,7 +4081,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        elemental function refraction_angle_atmos_wvle5cm_f535_r8(delnA,beta,R0,thtc,z0,  &
                                                                  Rc,nc,na) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_f535_r8
             !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_f535_r8
@@ -4118,7 +4118,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        !ри z0 = 90°
        !!Formula: 5.36, page: 101
        elemental function refraction_angle_atmos_wvle5cm_z0eq90_f536_r4(delnA,beta,R0,thtc) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_z0eq90_f536_r4
             !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_z0eq90_f536_r4
@@ -4133,7 +4133,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refraction_angle_atmos_wvle5cm_z0eq90_f536_r4
 
        elemental function refraction_angle_atmos_wvle5cm_z0eq90_f536_r8(delnA,beta,R0,thtc) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_z0eq90_f536_r8
             !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_z0eq90_f536_r8
@@ -4152,7 +4152,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        !u2 > 1 и и u1 > 1.
        !Formula: 5.37, page: 101
        elemental function refraction_angle_atmos_wvle5cm_f537_r4(delnA,z0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_f537_r4
             !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_f537_r4
@@ -4167,7 +4167,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refraction_angle_atmos_wvle5cm_f537_r4
 
        elemental function refraction_angle_atmos_wvle5cm_f537_r8(delnA,z0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_f537_r8
             !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_f537_r8
@@ -4187,7 +4187,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        !рефракция вблизи горизонта).
        !В этом случае имеют месте) соотношения u2 > 1, u1 < 1
        elemental function refraction_angle_astronomical_wvle5cm_f538_r4(delnA,beta,R0,z0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_astronomical_wvle5cm_f538_r4
             !dir$ attributes forceinline :: refraction_angle_astronomical_wvle5cm_f538_r4
@@ -4219,7 +4219,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refraction_angle_astronomical_wvle5cm_f538_r4
 
        elemental function refraction_angle_astronomical_wvle5cm_f538_r8(delnA,beta,R0,z0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_astronomical_wvle5cm_f538_r8
             !dir$ attributes forceinline :: refraction_angle_astronomical_wvle5cm_f538_r8
@@ -4252,7 +4252,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Для астрономической рефракции на горизонте z0 == 90 deg.
        elemental function refraction_angle_astronomical_wvle5cm_z0eq90_f539_r4(delnA,beta,R0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_astronomical_wvle5cm_z0eq90_f539_r4
             !dir$ attributes forceinline :: refraction_angle_astronomical_wvle5cm_z0eq90_f539_r4
@@ -4273,7 +4273,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refraction_angle_astronomical_wvle5cm_z0eq90_f539_r4
 
        elemental function refraction_angle_astronomical_wvle5cm_z0eq90_f539_r8(delnA,beta,R0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_astronomical_wvle5cm_z0eq90_f539_r8
             !dir$ attributes forceinline :: refraction_angle_astronomical_wvle5cm_z0eq90_f539_r8
@@ -4304,7 +4304,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        ! Formula: 5.41, page: 103
        elemental function refractive_idx_lo_ionosphere_wv5cm3m_f541_r4(delnA,beta,h) result(n) 
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_wv5cm3m_f541_r4
             !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_wv5cm3m_f541_r4
@@ -4323,7 +4323,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refractive_idx_lo_ionosphere_wv5cm3m_f541_r4
 
        elemental function refractive_idx_lo_ionosphere_wv5cm3m_f541_r8(delnA,beta,h) result(n) 
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_wv5cm3m_f541_r8
             !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_wv5cm3m_f541_r8
@@ -4343,7 +4343,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        ! Formula 5.42, page: 103
        elemental function refractive_idx_lo_ionosphere_wv5cm3m_f542_r4(fc,Nmf,h,H10,H20) result(n) 
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_wv5cm3m_f542_r4
             !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_wv5cm3m_f542_r4
@@ -4370,7 +4370,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refractive_idx_lo_ionosphere_wv5cm3m_f542_r4
 
        elemental function refractive_idx_lo_ionosphere_wv5cm3m_f542_r8(fc,Nmf,h,H10,H20) result(n) 
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_wv5cm3m_f542_r8
             !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_wv5cm3m_f542_r8
@@ -4400,7 +4400,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        ! рефракции а определяется соотношением
        ! Formula: 5.49, page: 105 
        elemental function analytic_sol_L11_whole_atmosphere_f549_r4(beta,R0,delnA,z0,H10) result(L11)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L11_whole_atmosphere_f549_r4
             !dir$ attributes forceinline :: analytic_sol_L11_whole_atmosphere_f549_r4
@@ -4434,7 +4434,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_L11_whole_atmosphere_f549_r4
 
        elemental function analytic_sol_L11_whole_atmosphere_f549_r8(beta,R0,delnA,z0,H10) result(L11)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L11_whole_atmosphere_f549_r8
             !dir$ attributes forceinline :: analytic_sol_L11_whole_atmosphere_f549_r8
@@ -4471,7 +4471,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        ! рефракции а определяется соотношением
        ! Formula: 5.50, page: 105 
        elemental function analytic_sol_L12_whole_atmosphere_f550_r4(beta,R0,delnA,z0,H10) result(L12)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L12_whole_atmosphere_f550_r4
             !dir$ attributes forceinline :: analytic_sol_L12_whole_atmosphere_f550_r4
@@ -4510,7 +4510,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_L12_whole_atmosphere_f550_r4
 
        elemental function analytic_sol_L12_whole_atmosphere_f550_r8(beta,R0,delnA,z0,H10) result(L12)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L12_whole_atmosphere_f550_r8
             !dir$ attributes forceinline :: analytic_sol_L12_whole_atmosphere_f550_r8
@@ -4552,7 +4552,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        ! рефракции а определяется соотношением
        ! Formula: 5.51, page: 105 
        elemental function analytic_sol_L13_whole_atmosphere_f551_r4(beta,R0,delnA,z0,H10) result(L13)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L13_whole_atmosphere_f551_r4
             !dir$ attributes forceinline :: analytic_sol_L13_whole_atmosphere_f551_r4
@@ -4591,7 +4591,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_L13_whole_atmosphere_f551_r4
 
        elemental function analytic_sol_L13_whole_atmosphere_f551_r8(beta,R0,delnA,z0,H10) result(L13)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L13_whole_atmosphere_f551_r8
             !dir$ attributes forceinline :: analytic_sol_L13_whole_atmosphere_f551_r8
@@ -4631,7 +4631,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 5.48, page: 104
        elemental function analytic_sol_L1_whole_atmosphere_f548_r4(beta,R0,delnA,z0,H10) result(L1)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L1_whole_atmosphere_f548_r4
             !dir$ attributes forceinline :: analytic_sol_L1_whole_atmosphere_f548_r4
@@ -4661,7 +4661,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_L1_whole_atmosphere_f548_r4
 
        elemental function analytic_sol_L1_whole_atmosphere_f548_r8(beta,R0,delnA,z0,H10) result(L1)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L1_whole_atmosphere_f548_r8
             !dir$ attributes forceinline :: analytic_sol_L1_whole_atmosphere_f548_r8
@@ -4693,7 +4693,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        ! Formula: 5.53, page: 105
        elemental function analytic_sol_L21_whole_atmosphere_f553_r4(fc,Nmf,beta,R0,delnA,        &
                                                                     z0,H0,H1,H2,Hc) result(L21)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L21_whole_atmosphere_f553_r4
             !dir$ attributes forceinline :: analytic_sol_L21_whole_atmosphere_f553_r4
@@ -4744,7 +4744,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
         elemental function analytic_sol_L21_whole_atmosphere_f553_r8(fc,Nmf,beta,R0,delnA,        &
                                                                     z0,H0,H1,H2,Hc) result(L21)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L21_whole_atmosphere_f553_r8
             !dir$ attributes forceinline :: analytic_sol_L21_whole_atmosphere_f553_r8
@@ -4796,7 +4796,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        ! Formula: 5.53a, page: 105 
        elemental function analytic_sol_L22_whole_atmosphere_f553a_r4(fc,Nmf,beta,R0,delnA,        &
                                                                     z0,H0,H1,H2,Hc) result(L22)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L22_whole_atmosphere_f553a_r4
             !dir$ attributes forceinline :: analytic_sol_L22_whole_atmosphere_f553a_r4
@@ -4871,7 +4871,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        elemental function analytic_sol_L22_whole_atmosphere_f553a_r8(fc,Nmf,beta,R0,delnA,        &
                                                                     z0,H0,H1,H2,Hc) result(L22)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L22_whole_atmosphere_f553a_r8
             !dir$ attributes forceinline :: analytic_sol_L22_whole_atmosphere_f553a_r8
@@ -4947,7 +4947,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        !Formula: 5.52, page: 105
        elemental function analytic_sol_L2_whole_atmosphere_f552_r4(fc,Nmf,beta,R0,delnA,        &
                                                                     z0,H0,H1,H2,Hc) result(L2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L2_whole_atmosphere_f552_r4
             !dir$ attributes forceinline :: analytic_sol_L2_whole_atmosphere_f552_r4
@@ -4974,7 +4974,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        elemental function analytic_sol_L2_whole_atmosphere_f552_r8(fc,Nmf,beta,R0,delnA,        &
                                                                     z0,H0,H1,H2,Hc) result(L2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L2_whole_atmosphere_f552_r8
             !dir$ attributes forceinline :: analytic_sol_L2_whole_atmosphere_f552_r8
@@ -5002,7 +5002,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        ! Formula: 5.43, page: 104
        elemental function refraction_angle_whole_atmos_vw5cm3m_f543_r4(na,nc,fc,Nmf,beta,R0,delnA,        &
                                                               z0,H0,H1,H2,Hc) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vw5cm3m_f543_r4
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_vw5cm3m_f543_r4
@@ -5034,7 +5034,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        elemental function refraction_angle_whole_atmos_vw5cm3m_f543_r8(na,nc,fc,Nmf,beta,R0,delnA,        &
                                                               z0,H0,H1,H2,Hc) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vw5cm3m_f543_r8
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_vw5cm3m_f543_r8
@@ -5066,7 +5066,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        ! Formula: 5.59, page: 106
        elemental function analytic_sol_del11_whole_atmos_f559_r4(delnA,z0,H10,Hc0,beta) result(del11)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del11_whole_atmos_f559_r4
             !dir$ attributes forceinline :: analytic_sol_del11_whole_atmos_f559_r4
@@ -5096,7 +5096,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_del11_whole_atmos_f559_r4
  
        elemental function analytic_sol_del11_whole_atmos_f559_r8(delnA,z0,H10,Hc0,beta) result(del11)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del11_whole_atmos_f559_r8
             !dir$ attributes forceinline :: analytic_sol_del11_whole_atmos_f559_r8
@@ -5127,7 +5127,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 5.60, page: 107
        elemental function analytic_sol_del12_whole_atmos_f560_r4(fc,Nmf,z0,H10,Hc0,beta,d) result(del12)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del12_whole_atmos_f560_r4
             !dir$ attributes forceinline :: analytic_sol_del12_whole_atmos_f560_r4
@@ -5166,7 +5166,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_del12_whole_atmos_f560_r4
 
        elemental function analytic_sol_del12_whole_atmos_f560_r8(fc,Nmf,z0,H10,Hc0,beta,d) result(del12)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del12_whole_atmos_f560_r8
             !dir$ attributes forceinline :: analytic_sol_del12_whole_atmos_f560_r8
@@ -5206,7 +5206,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 5.55, page: 106
        elemental function analytic_sol_del1_whole_atmos_f555_r4(fc,Nmf,delnA,z0,H10,Hc0,beta,d) result(del1)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del1_whole_atmos_f555_r4
             !dir$ attributes forceinline :: analytic_sol_del1_whole_atmos_f555_r4
@@ -5228,7 +5228,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_del1_whole_atmos_f555_r4
 
        elemental function analytic_sol_del1_whole_atmos_f555_r8(fc,Nmf,delnA,z0,H10,Hc0,beta,d) result(del1)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del1_whole_atmos_f555_r8
             !dir$ attributes forceinline :: analytic_sol_del1_whole_atmos_f555_r8
@@ -5251,7 +5251,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 5.69, page: 108
        elemental function analytic_sol_del221_whole_atmos_f569_r4(fc,Nmf,z0,H10,Hc0,beta,d) result(del221)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del221_whole_atmos_f569_r4
             !dir$ attributes forceinline :: analytic_sol_del221_whole_atmos_f569_r4
@@ -5292,7 +5292,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_del221_whole_atmos_f569_r4
 
         elemental function analytic_sol_del221_whole_atmos_f569_r8(fc,Nmf,z0,H10,Hc0,beta,d) result(del221)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del221_whole_atmos_f569_r8
             !dir$ attributes forceinline :: analytic_sol_del221_whole_atmos_f569_r8
@@ -5334,7 +5334,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Function: 5.70, page: 108
        elemental function analytic_sol_del222_whole_atmos_f570_r4(fc,Nmf,z0,H10,Hc0,beta,d,h,R0) result(del222)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del222_whole_atmos_f570_r4
             !dir$ attributes forceinline :: analytic_sol_del222_whole_atmos_f570_r4
@@ -5391,7 +5391,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_del222_whole_atmos_f570_r4
 
         elemental function analytic_sol_del222_whole_atmos_f570_r8(fc,Nmf,z0,H10,Hc0,beta,d,h,R0) result(del222)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del222_whole_atmos_f570_r8
             !dir$ attributes forceinline :: analytic_sol_del222_whole_atmos_f570_r8
@@ -5449,7 +5449,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
         !Function: 5.71, page: 108
        elemental function analytic_sol_del223_whole_atmos_f571_r4(delnA,fc,Nmf,z0,H10,Hc0,beta,d,h,R0) result(del223)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del223_whole_atmos_f571_r4
             !dir$ attributes forceinline :: analytic_sol_del223_whole_atmos_f571_r4
@@ -5538,7 +5538,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_del223_whole_atmos_f571_r4
 
         elemental function analytic_sol_del223_whole_atmos_f571_r8(delnA,fc,Nmf,z0,H10,Hc0,beta,d,h,R0) result(del223)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del223_whole_atmos_f571_r8
             !dir$ attributes forceinline :: analytic_sol_del223_whole_atmos_f571_r8
@@ -5629,7 +5629,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        !Formula: 5.65, page: 108
        elemental function analytic_sol_del22_whole_atmos_f565_r4(delnA,fc,Nmf,z0,H10,          &
                                                                  Hc0,beta,d,h,R0) result(del22)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del22_whole_atmos_f565_r4
             !dir$ attributes forceinline :: analytic_sol_del22_whole_atmos_f565_r4
@@ -5655,7 +5655,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        elemental function analytic_sol_del22_whole_atmos_f565_r8(delnA,fc,Nmf,z0,H10,          &
                                                                  Hc0,beta,d,h,R0) result(del22)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del22_whole_atmos_f565_r8
             !dir$ attributes forceinline :: analytic_sol_del22_whole_atmos_f565_r8
@@ -5681,7 +5681,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
         ! Formula: 5.62, page: 107
        elemental function analytic_sol_del211_whole_atmos_f562_r4(delnA,z0,H10,Hc0,beta) result(del11)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del211_whole_atmos_f562_r4
             !dir$ attributes forceinline :: analytic_sol_del211_whole_atmos_f562_r4
@@ -5716,7 +5716,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_del211_whole_atmos_f562_r4
 
        elemental function analytic_sol_del211_whole_atmos_f562_r8(delnA,z0,H10,Hc0,beta) result(del11)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del211_whole_atmos_f562_r8
             !dir$ attributes forceinline :: analytic_sol_del211_whole_atmos_f562_r8
@@ -5752,7 +5752,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        ! Formula: 5.63, page: 107
         elemental function analytic_sol_del212_whole_atmos_f563_r4(delnA,z0,beta,H10,R0) result(del212)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del212_whole_atmos_f563_r4
             !dir$ attributes forceinline :: analytic_sol_del212_whole_atmos_f563_r4
@@ -5768,7 +5768,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function analytic_sol_del212_whole_atmos_f563_r4
 
         elemental function analytic_sol_del212_whole_atmos_f563_r8(delnA,z0,beta,H10,R0) result(del212)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del212_whole_atmos_f563_r8
             !dir$ attributes forceinline :: analytic_sol_del212_whole_atmos_f563_r8
@@ -5785,7 +5785,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
         !Formula: 5.64, pagr: 107
        elemental function analytic_sol_del213_whole_atmos_f564_r4(delnA,z0,beta,H10,R0) result(del213)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del213_whole_atmos_f564_r4
             !dir$ attributes forceinline :: analytic_sol_del213_whole_atmos_f564_r4
@@ -5801,7 +5801,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function analytic_sol_del213_whole_atmos_f564_r4
 
        elemental function analytic_sol_del213_whole_atmos_f564_r8(delnA,z0,beta,H10,R0) result(del213)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del213_whole_atmos_f564_r8
             !dir$ attributes forceinline :: analytic_sol_del213_whole_atmos_f564_r8
@@ -5818,7 +5818,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        ! Formula: 5.65, page: 108
        elemental function analytic_sol_del21_whole_atmos_f565_r4(delnA,z0,beta,H10,R0) result(del21)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del21_whole_atmos_f565_r4
             !dir$ attributes forceinline :: analytic_sol_del21_whole_atmos_f565_r4
@@ -5838,7 +5838,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_del21_whole_atmos_f565_r4
 
        elemental function analytic_sol_del21_whole_atmos_f565_r8(delnA,z0,beta,H10,R0) result(del21)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del21_whole_atmos_f565_r8
             !dir$ attributes forceinline :: analytic_sol_del21_whole_atmos_f565_r8
@@ -5860,7 +5860,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         !Formula: 5.58, page: 106
        elemental function analytic_sol_del2_whole_atmos_wv5cm3m_f558_r4(fc,Nmf,delnA,z0,H10,           &
                                                                         Hc0,beta,d,h,R0) result(del2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del2_whole_atmos_wv5cm3m_f558_r4
             !dir$ attributes forceinline :: analytic_sol_del2_whole_atmos_wv5cm3m_f558_r4
@@ -5884,7 +5884,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        elemental function analytic_sol_del2_whole_atmos_wv5cm3m_f558_r8(fc,Nmf,delnA,z0,H10,           &
                                                                         Hc0,beta,d,h,R0) result(del2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_del2_whole_atmos_wv5cm3m_f558_r8
             !dir$ attributes forceinline :: analytic_sol_del2_whole_atmos_wv5cm3m_f558_r8
@@ -5909,7 +5909,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        ! Formule: 5.54, page: 106
        elemental function refraction_angle_whole_atmos_vw5cm3m_f554_r4(fc,Nmf,delnA,z0,H10,           &
                                                                         Hc0,beta,d,h,R0)   result(angle)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vw5cm3m_f554_r4
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_vw5cm3m_f554_r4
@@ -5934,7 +5934,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        elemental function refraction_angle_whole_atmos_vw5cm3m_f554_r8(fc,Nmf,delnA,z0,H10,           &
                                                                         Hc0,beta,d,h,R0)   result(angle)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vw5cm3m_f554_r8
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_vw5cm3m_f554_r8
@@ -5961,7 +5961,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        ! верхней ионосфере имеет вид
        ! Formula: 5.72, page: 110
        elemental function refractive_idx_hi_ionosphere_approx_f572_r4(fc,Nmf,beta,h,H20) result(n)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refractive_idx_hi_ionosphere_approx_f572_r4
             !dir$ attributes forceinline :: refractive_idx_hi_ionosphere_approx_f572_r4
@@ -5982,7 +5982,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refractive_idx_hi_ionosphere_approx_f572_r4
 
        elemental function refractive_idx_hi_ionosphere_approx_f572_r8(fc,Nmf,beta,h,H20) result(n)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refractive_idx_hi_ionosphere_approx_f572_r8
             !dir$ attributes forceinline :: refractive_idx_hi_ionosphere_approx_f572_r8
@@ -6007,7 +6007,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       !на высоте Нс над поверхностью Земли. 
       !Formula for 'L31' sub-component: 5.76, page: 111
       elemental function analytic_sol_L31_whole_atmos_wv5cm3m_f576_r4(fc,Nmf,beta,R0,z0,H20,Hc0,Hc,H2) result(L31)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L31_whole_atmos_wv5cm3m_f576_r4
             !dir$ attributes forceinline :: analytic_sol_L31_whole_atmos_wv5cm3m_f576_r4
@@ -6051,7 +6051,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function analytic_sol_L31_whole_atmos_wv5cm3m_f576_r4
 
       elemental function analytic_sol_L31_whole_atmos_wv5cm3m_f576_r8(fc,Nmf,beta,R0,z0,H20,Hc0,Hc,H2) result(L31)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L31_whole_atmos_wv5cm3m_f576_r8
             !dir$ attributes forceinline :: analytic_sol_L31_whole_atmos_wv5cm3m_f576_r8
@@ -6096,7 +6096,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
       !Formula: 5.77, page: 111
       elemental function analytic_sol_L32_whole_atmos_wv5cm3m_f577_r4(fc,Nmf,beta,R0,z0,H20,Hc0) result(L32)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L32_whole_atmos_wv5cm3m_f577_r4
             !dir$ attributes forceinline :: analytic_sol_L32_whole_atmos_wv5cm3m_f577_r4
@@ -6141,7 +6141,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_L32_whole_atmos_wv5cm3m_f577_r4
 
        elemental function analytic_sol_L32_whole_atmos_wv5cm3m_f577_r8(fc,Nmf,beta,R0,z0,H20,Hc0) result(L32)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L32_whole_atmos_wv5cm3m_f577_r8
             !dir$ attributes forceinline :: analytic_sol_L32_whole_atmos_wv5cm3m_f577_r8
@@ -6187,7 +6187,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 5.78, page: 111
        elemental function analytic_sol_L33_whole_atmos_wv5cm3m_f578_r4(fc,Nmf,beta,R0,z0,H20,Hc0) result(L33)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L33_whole_atmos_wv5cm3m_f578_r4
             !dir$ attributes forceinline :: analytic_sol_L33_whole_atmos_wv5cm3m_f578_r4
@@ -6232,7 +6232,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_L33_whole_atmos_wv5cm3m_f578_r4
 
        elemental function analytic_sol_L33_whole_atmos_wv5cm3m_f578_r8(fc,Nmf,beta,R0,z0,H20,Hc0) result(L33)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L33_whole_atmos_wv5cm3m_f578_r8
             !dir$ attributes forceinline :: analytic_sol_L33_whole_atmos_wv5cm3m_f578_r8
@@ -6278,7 +6278,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 5.79, page: 111
        elemental function analytic_sol_L34_whole_atmos_wv5cm3m_f579_r4(delnA,fc,Nmf,beta,R0,z0,H20,Hc0,Hc,H2) result(L31)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L34_whole_atmos_wv5cm3m_f579_r4
             !dir$ attributes forceinline :: analytic_sol_L34_whole_atmos_wv5cm3m_f579_r4
@@ -6322,7 +6322,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function analytic_sol_L34_whole_atmos_wv5cm3m_f579_r4
 
       elemental function analytic_sol_L34_whole_atmos_wv5cm3m_f579_r8(delnA,fc,Nmf,beta,R0,z0,H20,Hc0,Hc,H2) result(L31)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L34_whole_atmos_wv5cm3m_f579_r8
             !dir$ attributes forceinline :: analytic_sol_L34_whole_atmos_wv5cm3m_f579_r4
@@ -6374,7 +6374,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       !(4.30).
       !Formula: 5.90, page: 115
       elemental function refraction_angle_lo_ionospere_wv5cm3m_f590_r4(fc,Nmf,R0,thtc,z0,H2,H1) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f590_r4
             !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f590_r4
@@ -6420,7 +6420,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function refraction_angle_lo_ionospere_wv5cm3m_f590_r4
 
   elemental function refraction_angle_lo_ionospere_wv5cm3m_f590_r8(fc,Nmf,R0,thtc,z0,H2,H1) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f590_r8
             !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f590_r8
@@ -6471,7 +6471,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       !соотношением
       !Formula: 5.91, page: 115
       elemental function refraction_angle_lo_ionospere_wv5cm3m_f591_r4(fc,Nmf,H2,H1,thtc,R0,R2) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f591_r4
             !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f591_r4
@@ -6499,7 +6499,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function refraction_angle_lo_ionospere_wv5cm3m_f591_r4
 
        elemental function refraction_angle_lo_ionospere_wv5cm3m_f591_r8(fc,Nmf,H2,H1,thtc,R0,R2) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f591_r8
             !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f591_r8
@@ -6532,7 +6532,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       !экспоненциально возрастает с высотой по закону (4.31).
       !Formula 5.93, page: 116
       elemental function refraction_angle_lo_ionospere_wv5cm3m_f593_r4(fc,Nmf,beta,R2,R0,z0,thtc) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f593_r4
             !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f593_r4
@@ -6591,7 +6591,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function refraction_angle_lo_ionospere_wv5cm3m_f593_r4 
 
         elemental function refraction_angle_lo_ionospere_wv5cm3m_f593_r8(fc,Nmf,beta,R2,R0,z0,thtc) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f593_r8
             !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f593_r8
@@ -6653,7 +6653,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       !ношение (5.93) упрощается (см. § 5.2) и принимает:
       !Formula: 5.95, page: 116
       elemental function refraction_angle_lo_ionospere_wv5cm3m_f595_r4(delnA,beta,R0,thtc) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f595_r4
             !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f595_r4
@@ -6671,7 +6671,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function refraction_angle_lo_ionospere_wv5cm3m_f595_r4
 
       elemental function refraction_angle_lo_ionospere_wv5cm3m_f595_r8(delnA,beta,R0,thtc) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f595_r8
             !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f595_r8
@@ -6693,7 +6693,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       !< 5 см.
       !Formula: 6.3, page: 119
       elemental function analytic_sol_LB1_whole_atmos_wvl5cm_f63_r4(delnA,beta,R0,HB,H0) result(LB1)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_LB1_whole_atmos_wvl5cm_f63_r4
             !dir$ attributes forceinline :: analytic_sol_LB1_whole_atmos_wvl5cm_f63_r4
@@ -6724,7 +6724,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function analytic_sol_LB1_whole_atmos_wvl5cm_f63_r4
 
       elemental function analytic_sol_LB1_whole_atmos_wvl5cm_f63_r8(delnA,beta,R0,HB,H0) result(LB1)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_LB1_whole_atmos_wvl5cm_f63_r8
             !dir$ attributes forceinline :: analytic_sol_LB1_whole_atmos_wvl5cm_f63_r8
@@ -6756,7 +6756,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
       !Formula: 6.4, page: 120
        elemental function analytic_sol_LB2_whole_atmos_wvl5cm_f64_r4(delnA,beta,R0,HB,H0) result(LB2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_LB2_whole_atmos_wvl5cm_f64_r4
             !dir$ attributes forceinline :: analytic_sol_LB2_whole_atmos_wvl5cm_f64_r4
@@ -6783,7 +6783,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_LB2_whole_atmos_wvl5cm_f64_r4
 
        elemental function analytic_sol_LB2_whole_atmos_wvl5cm_f64_r8(delnA,beta,R0,HB,H0) result(LB2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_LB2_whole_atmos_wvl5cm_f64_r8
             !dir$ attributes forceinline :: analytic_sol_LB2_whole_atmos_wvl5cm_f64_r8
@@ -6811,7 +6811,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 6.5, page: 120
        elemental function analytic_sol_LB3_whole_atmos_wvl5cm_f65_r4(delnA,beta,R0,HB,H0) result(LB3)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_LB3_whole_atmos_wvl5cm_f65_r4
             !dir$ attributes forceinline :: analytic_sol_LB3_whole_atmos_wvl5cm_f65_r4
@@ -6847,7 +6847,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_LB3_whole_atmos_wvl5cm_f65_r4
 
         elemental function analytic_sol_LB3_whole_atmos_wvl5cm_f65_r8(delnA,beta,R0,HB,H0) result(LB3)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_LB3_whole_atmos_wvl5cm_f65_r8
             !dir$ attributes forceinline :: analytic_sol_LB3_whole_atmos_wvl5cm_f65_r8
@@ -6884,7 +6884,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 6.2, page: 119
        elemental function refraction_angle_B_whole_atmos_vwl5cm_f62_r4(delnA,beta,R0,HB,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_B_whole_atmos_vwl5cm_f62_r4
             !dir$ attributes forceinline :: refraction_angle_B_whole_atmos_vwl5cm_f62_r4
@@ -6904,7 +6904,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refraction_angle_B_whole_atmos_vwl5cm_f62_r4
 
        elemental function refraction_angle_B_whole_atmos_vwl5cm_f62_r8(delnA,beta,R0,HB,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_B_whole_atmos_vwl5cm_f62_r8
             !dir$ attributes forceinline :: refraction_angle_B_whole_atmos_vwl5cm_f62_r8
@@ -6925,7 +6925,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 6.7, page: 120
         elemental function analytic_sol_LC1_whole_atmos_wvl5cm_f67_r4(delnA,beta,R0,HC,H0) result(LC1)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_LC1_whole_atmos_wvl5cm_f67_r4
             !dir$ attributes forceinline :: analytic_sol_LC1_whole_atmos_wvl5cm_f67_r4
@@ -6956,7 +6956,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       end function analytic_sol_LC1_whole_atmos_wvl5cm_f67_r4
 
        elemental function analytic_sol_LC1_whole_atmos_wvl5cm_f67_r8(delnA,beta,R0,HC,H0) result(LC1)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_LC1_whole_atmos_wvl5cm_f67_r8
             !dir$ attributes forceinline :: analytic_sol_LC1_whole_atmos_wvl5cm_f67_r8
@@ -6988,7 +6988,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
       !Formula: 6.8, page: 120
         elemental function analytic_sol_LC2_whole_atmos_wvl5cm_f68_r4(delnA,beta,R0,HC,H0) result(LC2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_LC2_whole_atmos_wvl5cm_f68_r4
             !dir$ attributes forceinline :: analytic_sol_LC2_whole_atmos_wvl5cm_f68_r4
@@ -7015,7 +7015,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_LC2_whole_atmos_wvl5cm_f68_r4
 
        elemental function analytic_sol_LC2_whole_atmos_wvl5cm_f68_r8(delnA,beta,R0,HC,H0) result(LC2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_LC2_whole_atmos_wvl5cm_f68_r8
             !dir$ attributes forceinline :: analytic_sol_LC2_whole_atmos_wvl5cm_f68_r8
@@ -7043,7 +7043,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 6.9, page: 120
        elemental function analytic_sol_LC3_whole_atmos_wvl5cm_f69_r4(delnA,beta,R0,HC,H0) result(LC3)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_LC3_whole_atmos_wvl5cm_f69_r4
             !dir$ attributes forceinline :: analytic_sol_LC3_whole_atmos_wvl5cm_f69_r4
@@ -7079,7 +7079,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_LC3_whole_atmos_wvl5cm_f69_r4
 
         elemental function analytic_sol_LC3_whole_atmos_wvl5cm_f69_r8(delnA,beta,R0,HC,H0) result(LC3)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_LC3_whole_atmos_wvl5cm_f69_r8
             !dir$ attributes forceinline :: analytic_sol_LC3_whole_atmos_wvl5cm_f69_r8
@@ -7116,7 +7116,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 6.6, page: 120
         elemental function refraction_angle_C_whole_atmos_vwl5cm_f66_r4(delnA,beta,R0,HC,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_whole_atmos_vwl5cm_f66_r4
             !dir$ attributes forceinline :: refraction_angle_C_whole_atmos_vwl5cm_f66_r4
@@ -7136,7 +7136,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refraction_angle_C_whole_atmos_vwl5cm_f66_r4
 
        elemental function refraction_angle_C_whole_atmos_vwl5cm_f66_r8(delnA,beta,R0,HC,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_whole_atmos_vwl5cm_f66_r8
             !dir$ attributes forceinline :: refraction_angle_C_whole_atmos_vwl5cm_f66_r8
@@ -7157,7 +7157,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula 6.1, page: 119
        elemental function refraction_angle_whole_atmos_vwl5cm_f61_r4(delnA,beta,R0,HB,HC,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vwl5cm_f61_r4
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_vwl5cm_f61_r4
@@ -7176,7 +7176,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refraction_angle_whole_atmos_vwl5cm_f61_r4
 
          elemental function refraction_angle_whole_atmos_vwl5cm_f61_r8(delnA,beta,R0,HB,HC,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vwl5cm_f61_r8
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_vwl5cm_f61_r8
@@ -7199,7 +7199,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        !SQRT(2*beta*HB0) and SQRT(2*beta*HC0) <= 1
        !Formula: 6.10, page: 120 
        elemental function refraction_angle_B_whole_atmos_vwl5cm_f610_r4(delnA,beta,R0,HB,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_B_whole_atmos_vwl5cm_f610_r4
             !dir$ attributes forceinline :: refraction_angle_B_whole_atmos_vwl5cm_f610_r4
@@ -7229,7 +7229,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refraction_angle_B_whole_atmos_vwl5cm_f610_r4
 
          elemental function refraction_angle_B_whole_atmos_vwl5cm_f610_r8(delnA,beta,R0,HB,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_B_whole_atmos_vwl5cm_f610_r8
             !dir$ attributes forceinline :: refraction_angle_B_whole_atmos_vwl5cm_f610_r8
@@ -7260,7 +7260,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 6.11, page: 120
         elemental function refraction_angle_C_whole_atmos_vwl5cm_f611_r4(delnA,beta,R0,HC,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_whole_atmos_vwl5cm_f611_r4
             !dir$ attributes forceinline :: refraction_angle_C_whole_atmos_vwl5cm_f611_r4
@@ -7290,7 +7290,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refraction_angle_C_whole_atmos_vwl5cm_f611_r4
 
        elemental function refraction_angle_C_whole_atmos_vwl5cm_f611_r8(delnA,beta,R0,HC,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_whole_atmos_vwl5cm_f611_r8
             !dir$ attributes forceinline :: refraction_angle_C_whole_atmos_vwl5cm_f611_r8
@@ -7321,7 +7321,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 6.1b, page: 119
        elemental function refraction_angle_whole_atmos_vwl5cm_f61b_r4(delnA,beta,R0,HB,HC,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vwl5cm_f61b_r4
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_vwl5cm_f61b_r4
@@ -7340,7 +7340,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refraction_angle_whole_atmos_vwl5cm_f61b_r4
 
        elemental function refraction_angle_whole_atmos_vwl5cm_f61b_r8(delnA,beta,R0,HB,HC,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vwl5cm_f61b_r8
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_vwl5cm_f61b_r8
@@ -7362,7 +7362,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        !   на такое расстояние, что выполняются неравенства) SQRT(2*beta*HB0) >> 1 , SQRT(2*beta*HC0) >> 1
        !Formula: 6.12, page: 121
         elemental function refraction_angle_B_whole_atmos_vwl5cm_f612_r4(delnA,beta,R0,HB,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_B_whole_atmos_vwl5cm_f612_r4
             !dir$ attributes forceinline :: refraction_angle_B_whole_atmos_vwl5cm_f612_r4
@@ -7399,7 +7399,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function refraction_angle_B_whole_atmos_vwl5cm_f612_r4
 
        elemental function refraction_angle_B_whole_atmos_vwl5cm_f612_r8(delnA,beta,R0,HB,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_B_whole_atmos_vwl5cm_f612_r8
             !dir$ attributes forceinline :: refraction_angle_B_whole_atmos_vwl5cm_f612_r8
@@ -7437,7 +7437,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
         !Formula: 6.13, page: 121
        elemental function refraction_angle_C_whole_atmos_vwl5cm_f613_r4(delnA,beta,R0,HC,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_whole_atmos_vwl5cm_f613_r4
             !dir$ attributes forceinline :: refraction_angle_C_whole_atmos_vwl5cm_f613_r4
@@ -7474,7 +7474,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
         end function refraction_angle_C_whole_atmos_vwl5cm_f613_r4
 
          elemental function refraction_angle_C_whole_atmos_vwl5cm_f613_r8(delnA,beta,R0,HC,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_whole_atmos_vwl5cm_f613_r8
             !dir$ attributes forceinline :: refraction_angle_C_whole_atmos_vwl5cm_f613_r8
@@ -7512,7 +7512,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 6.1b, page: 119
        elemental function refraction_angle_whole_atmos_case_B_vwl5cm_f61b_r4(delnA,beta,R0,HB,HC,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_case_B_vwl5cm_f61b_r4
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_case_B_vwl5cm_f61b_r4
@@ -7531,7 +7531,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refraction_angle_whole_atmos_case_B_vwl5cm_f61b_r4
 
        elemental function refraction_angle_whole_atmos_case_B_vwl5cm_f61b_r8(delnA,beta,R0,HB,HC,H0) result(alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_case_B_vwl5cm_f61b_r8
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_case_B_vwl5cm_f61b_r8
@@ -7551,7 +7551,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 6.19, page: 122
        elemental function deriv_alpha_over_R0_f619_r4(deln0,beta,R0) result(dadR0)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: deriv_alpha_over_R0_f619_r4
             !dir$ attributes forceinline :: deriv_alpha_over_R0_f619_r4
@@ -7590,7 +7590,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function deriv_alpha_over_R0_f619_r4
 
         elemental function deriv_alpha_over_R0_f619_r8(deln0,beta,R0) result(dadR0)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: deriv_alpha_over_R0_f619_r8
             !dir$ attributes forceinline :: deriv_alpha_over_R0_f619_r8
@@ -7630,7 +7630,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 6.18, page: 122
        elemental function refracted_signal_weakening_Vp_f618_r4(deln0,beta,R0,gamma,Lc,Lb) result(Vp)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refracted_signal_weakening_Vp_f618_r4
             !dir$ attributes forceinline :: refracted_signal_weakening_Vp_f618_r4
@@ -7659,7 +7659,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refracted_signal_weakening_Vp_f618_r4
         
        elemental function refracted_signal_weakening_Vp_f618_r8(deln0,beta,R0,gamma,Lc,Lb) result(Vp)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refracted_signal_weakening_Vp_f618_r8
             !dir$ attributes forceinline :: refracted_signal_weakening_Vp_f618_r8
@@ -7690,7 +7690,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        ! Lc >> Lb, что соответствует cos(gamma)~1.
        !Formula: 6.20, page: 122
        elemental function refracted_signal_weakening_case_1_Vp_f620_r4(deln0,beta,R0,Lb) result(Vp)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refracted_signal_weakening_case_1_Vp_f620_r4
             !dir$ attributes forceinline :: refracted_signal_weakening_case_1_Vp_f620_r4
@@ -7708,7 +7708,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refracted_signal_weakening_case_1_Vp_f620_r4
 
         elemental function refracted_signal_weakening_case_1_Vp_f620_r8(deln0,beta,R0,Lb) result(Vp)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refracted_signal_weakening_case_1_Vp_f620_r8
             !dir$ attributes forceinline :: refracted_signal_weakening_case_1_Vp_f620_r8
@@ -7728,7 +7728,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        ! Lb>>Lc; Lc>>a; cos(gamma)~1.
        !Formula: 6.21, page: 123
        elemental function refracted_signal_weakening_case_2_Vp_f621_r4(deln0,beta,R0,Lc) result(Vp)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refracted_signal_weakening_case_2_Vp_f621_r4
             !dir$ attributes forceinline :: refracted_signal_weakening_case_2_Vp_f621_r4
@@ -7746,7 +7746,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refracted_signal_weakening_case_2_Vp_f621_r4
 
         elemental function refracted_signal_weakening_case_2_Vp_f621_r8(deln0,beta,R0,Lc) result(Vp)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refracted_signal_weakening_case_2_Vp_f621_r8
             !dir$ attributes forceinline :: refracted_signal_weakening_case_2_Vp_f621_r8
@@ -7766,7 +7766,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        ! Lb > Lc, Lc > а, cos(gamma) < 1
        !Formula: 6.22, page: 123
        elemental function refracted_signal_weakening_case_3_Vp_f622_r4(deln0,beta,R0,Lc,hc) result(Vp)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refracted_signal_weakening_case_3_Vp_f622_r4
             !dir$ attributes forceinline :: refracted_signal_weakening_case_3_Vp_f622_r4
@@ -7797,7 +7797,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refracted_signal_weakening_case_3_Vp_f622_r4
 
        elemental function refracted_signal_weakening_case_3_Vp_f622_r8(deln0,beta,R0,Lc,hc) result(Vp)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refracted_signal_weakening_case_3_Vp_f622_r8
             !dir$ attributes forceinline :: refracted_signal_weakening_case_3_Vp_f622_r8
@@ -7832,7 +7832,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       !Formula: 6.23, page: 126
       elemental function refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r4(fc,Nmf,delna,beta,           &
                                                                      R0,H3,H2,H1,H0) result(alpha_c)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r4
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r4
@@ -7895,7 +7895,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        elemental function refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r8(fc,Nmf,delna,beta,           &
                                                                      R0,H3,H2,H1,H0) result(alpha_c)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r8
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r8
@@ -7961,7 +7961,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       !Formula: 6.25, page: 126
       elemental function refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r4(fc,Nmf,delna,beta,           &
                                                                                R0,H3,H2,H1,H0) result(alpha_c)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r4
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r4
@@ -8010,7 +8010,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
       elemental function refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r8(fc,Nmf,delna,beta,           &
                                                                                R0,H3,H2,H1,H0) result(alpha_c)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r8
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r8
@@ -8062,7 +8062,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       !Formula: 6.27, page: 127
        elemental function refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r4(fc,Nmf,delna,beta,           &
                                                                                R0,H3,H2,H1,H0) result(alpha_c)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r4
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r4
@@ -8100,7 +8100,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
         elemental function refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r8(fc,Nmf,delna,beta,           &
                                                                                R0,H3,H2,H1,H0) result(alpha_c)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r8
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r8
@@ -8144,7 +8144,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        !Formula: 7.2, page: 132
         elemental function refraction_angle_C_earth_atmos_stratified_f72_r4(beta,z0,deln0,nc,           &
                                                                          nb,nh,Hb,Hc,Hh) result(alpha_c)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_stratified_f72_r4
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_stratified_f72_r4
@@ -8215,7 +8215,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
          elemental function refraction_angle_C_earth_atmos_stratified_f72_r8(beta,z0,deln0,nc,           &
                                                                          nb,nh,Hb,Hc,Hh) result(alpha_c)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_stratified_f72_r8
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_stratified_f72_r8
@@ -8288,7 +8288,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
       !Formula: 7.4, page: 132
        elemental function refraction_angle_C_earth_atmos_stratified_case_1_f74_r4(beta,z0,deln0,delnc,           &
                                                                          delnb,delnh,Hb,Hh,Hc) result(alpha_c)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_stratified_case_1_f74_r4
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_stratified_case_1_f74_r4
@@ -8325,7 +8325,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        elemental function refraction_angle_C_earth_atmos_stratified_case_1_f74_r8(beta,z0,deln0,delnc,           &
                                                                          delnb,delnh,Hb,Hh,Hc) result(alpha_c)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_stratified_case_1_f74_r8
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_stratified_case_1_f74_r8
@@ -8364,7 +8364,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        !Formula: 7.5, page: 133
        elemental function refraction_angle_C_earth_atmos_stratified_case_2_f75_r4(z0,deln0,delnc,Hb,Hh,Hc)  &
                                                                          result(alpha_c)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_stratified_case_2_f75_r4
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_stratified_case_2_f75_r4
@@ -8410,7 +8410,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
         elemental function refraction_angle_C_earth_atmos_stratified_case_2_f75_r8(z0,deln0,delnc,Hb,Hh,Hc)  &
                                                                          result(alpha_c)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_stratified_case_2_f75_r8
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_stratified_case_2_f75_r8
@@ -8459,7 +8459,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        !Formula: 7.14, page: 137
        elemental function refraction_angle_delta_ionosphere_strata_f714_r4(fc,Nmf,z0,Hb,Hh,Hc,  &
                                                                            H2,H1,nc,nh,nb) result(del_alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_delta_ionosphere_strata_f714_r4
             !dir$ attributes forceinline :: refraction_angle_delta_ionosphere_strata_f714_r4
@@ -8535,7 +8535,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
         elemental function refraction_angle_delta_ionosphere_strata_f714_r8(fc,Nmf,z0,Hb,Hh,Hc,  &
                                                                            H2,H1,nc,nh,nb) result(del_alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_delta_ionosphere_strata_f714_r8
             !dir$ attributes forceinline :: refraction_angle_delta_ionosphere_strata_f714_r8
@@ -8613,7 +8613,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        !имеет место при z0 << 70°.
        elemental function refraction_angle_delta_ionosphere_strata_case_1_f714_r4(fc,Nmf,z0,Hb,Hh,Hc,  &
                                                                            nc,nh,H2,H1) result(del_alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_delta_ionosphere_strata_case_1_f714_r4
             !dir$ attributes forceinline :: refraction_angle_delta_ionosphere_strata_case_1_f714_r4
@@ -8661,7 +8661,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
         elemental function refraction_angle_delta_ionosphere_strata_case_1_f714_r8(fc,Nmf,z0,Hb,Hh,Hc,  &
                                                                            nc,nh,H2,H1) result(del_alpha)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_delta_ionosphere_strata_case_1_f714_r8
             !dir$ attributes forceinline :: refraction_angle_delta_ionosphere_strata_case_1_f714_r8
@@ -8712,7 +8712,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        !на рефракцию электромагнитных волн 
        !Formula: 7.33, page: 142
        elemental function analytic_sol_L2_horizontal_grad_atmos_f733_r4(deln0,beta,z0,H) result(L2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L2_horizontal_grad_atmos_f733_r4
             !dir$ attributes forceinline :: analytic_sol_L2_horizontal_grad_atmos_f733_r4
@@ -8753,7 +8753,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_L2_horizontal_grad_atmos_f733_r4
        
        elemental function analytic_sol_L2_horizontal_grad_atmos_f733_r8(deln0,beta,z0,H) result(L2)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L2_horizontal_grad_atmos_f733_r8
             !dir$ attributes forceinline :: analytic_sol_L2_horizontal_grad_atmos_f733_r8
@@ -8795,7 +8795,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 7.32, page: 142
        elemental function analytic_sol_I_horizontal_grad_atmos_f732_r4(gdeln0,beta,z0,H) result(I)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_I_horizontal_grad_atmos_f732_r4
             !dir$ attributes forceinline :: analytic_sol_I_horizontal_grad_atmos_f732_r4
@@ -8814,7 +8814,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_I_horizontal_grad_atmos_f732_r4
 
        elemental function analytic_sol_I_horizontal_grad_atmos_f732_r8(g,deln0,beta,z0,) result(I)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_I_horizontal_grad_atmos_f732_r8
             !dir$ attributes forceinline :: analytic_sol_I_horizontal_grad_atmos_f732_r8
@@ -8836,7 +8836,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        !электромагнитных волн в двумерно-неоднородной среде.
        !Formula: 7.36, page:142
        elemental function analytic_sol_M_horizontal_grad_atmos_f736_r4(g,deln0,beta,z0,H,n0) result(M)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_M_horizontal_grad_atmos_f736_r4
             !dir$ attributes forceinline :: analytic_sol_M_horizontal_grad_atmos_f736_r4
@@ -8861,7 +8861,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_M_horizontal_grad_atmos_f736_r4
 
         elemental function analytic_sol_M_horizontal_grad_atmos_f736_r8(g,deln0,beta,z0,H,n0) result(M)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_M_horizontal_grad_atmos_f736_r8
             !dir$ attributes forceinline :: analytic_sol_M_horizontal_grad_atmos_f736_r8
@@ -8889,7 +8889,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        !электромагнитных волн в двумерно-неоднородной среде.
        !Formula: 7.37, page: 142
        elemental function refraction_angle_atmos_2D_stratified_f737_r4(g,deln0,beta,z0,H,n0,h1) result(gamma)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f737_r4
             !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f737_r4
@@ -8917,7 +8917,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refraction_angle_atmos_2D_stratified_f737_r4
 
         elemental function refraction_angle_atmos_2D_stratified_f737_r8(g,deln0,beta,z0,H,n0,h1) result(gamma)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f737_r8
             !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f737_r8
@@ -8946,7 +8946,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 7.39, page: 143
        elemental function a_gamma_coeff_f739_r4(g,deln0,beta,z0,H,n0) result(a_gamm)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: a_gamma_coeff_f739_r4
             !dir$ attributes forceinline :: a_gamma_coeff_f739_r4
@@ -8970,7 +8970,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function a_gamma_coeff_f739_r4
 
         elemental function a_gamma_coeff_f739_r8(g,deln0,beta,z0,H,n0) result(a_gamm)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: a_gamma_coeff_f739_r8
             !dir$ attributes forceinline :: a_gamma_coeff_f739_r8
@@ -8997,7 +8997,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        !атмосфере.
        !Formula: 7.41, page: 143
         elemental function analytic_sol_Lgamm_horizontal_grad_atmos_f741_r4(g,deln0,beta,z0,H,n0) result(Lgamm)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_Lgamm_horizontal_grad_atmos_f741_r4
             !dir$ attributes forceinline :: analytic_sol_Lgamm_horizontal_grad_atmos_f741_r4
@@ -9042,7 +9042,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function analytic_sol_Lgamm_horizontal_grad_atmos_f741_r4
 
         elemental function analytic_sol_Lgamm_horizontal_grad_atmos_f741_r8(g,deln0,beta,z0,H,n0) result(Lgamm)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_Lgamm_horizontal_grad_atmos_f741_r8
             !dir$ attributes forceinline :: analytic_sol_Lgamm_horizontal_grad_atmos_f741_r8
@@ -9088,7 +9088,7 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
 
        !Formula: 7.41, page: 143 (The main formula which "uses" the above-stated code)
        elemental function refraction_angle_atmos_2D_stratified_f741_r4(g,deln0,beta,z0,H,n0) result(alpha_g)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f741_r4
             !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f741_r4
@@ -9122,19 +9122,19 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
        end function refraction_angle_atmos_2D_stratified_f741_r4
 
        elemental function refraction_angle_atmos_2D_stratified_f741_r8(g,deln0,beta,z0,H,n0) result(alpha_g)
-if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f741_r8
             !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f741_r8
 #endif 
 
-            real(kind=sp),        intent(in) :: g 
-            real(kind=sp),        intent(in) :: deln0 
-            real(kind=sp),        intent(in) :: beta 
-            real(kind=sp),        intent(in) :: z0 
-            real(kind=sp),        intent(in) :: H 
-            real(kind=sp),        intent(in) :: n0 
-            real(kind=sp)                    :: alpha_g 
+            real(kind=dp),        intent(in) :: g 
+            real(kind=dp),        intent(in) :: deln0 
+            real(kind=dp),        intent(in) :: beta 
+            real(kind=dp),        intent(in) :: z0 
+            real(kind=dp),        intent(in) :: H 
+            real(kind=dp),        intent(in) :: n0 
+            real(kind=dp)                    :: alpha_g 
             real(kind=dp),        automatic  :: ctgz0,  scosz0 
             real(kind=dp),        automatic  :: tgz0,   Lg 
             real(kind=dp),        automatic  :: M,      rat1 
@@ -9154,6 +9154,31 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             t1      = rat1*rat2
             alpha_g = -deln0*ctgz0+t1 
        end function refraction_angle_atmos_2D_stratified_f741_r8
+
+       !For: SQRT(beta*ag*ctg^2(z0)) >> 1 and z0 << 70(deg)
+       !Formula: 7.43, page: 144
+       elemental function refraction_angle_atmos_2D_stratified_f743_r4(deln0,z0,beta) result(alpha_g)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f743_r4
+            !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f743_r4
+#endif 
+!$omp declare simd(refraction_angle_atmos_2D_stratified_f743_r4)
+            real(kind=sp),          intent(in) :: deln0 
+            real(kind=sp),          intent(in) :: z0 
+            real(kind=sp),          intent(in) :: beta 
+            real(kind=sp)                      :: alpha_g 
+            real(kind=sp),          automatic  :: tgz0, qcosz0 
+            real(kind=sp),          automatic  :: t0,   t1 
+            real(kind=sp),          automatic  :: trm1, trm2 
+            tgz0   = tan(z0)
+            trm1   = deln0*tgz0
+            t0     = cos(z0)
+            qcosz0 = t0*t0*t0*t0 
+            t1     = deln0*deln0
+            trm2   = t1*g/beta*6378.0_sp*t1 
+            alpha_g= trm1+trm2 
+       end function refraction_angle_atmos_2D_stratified_f743_r4
 
 
 end module atmos_refraction
