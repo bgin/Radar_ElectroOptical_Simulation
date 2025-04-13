@@ -8993,8 +8993,8 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             a_gamm= (num/denom)*6378.0_dp 
        end function a_gamma_coeff_f739_r8
 
-       !угла рефракции в двумерно-неоднородной 
-       !атмосфере выражение
+       !угoл рефракции в двумерно-неоднородной 
+       !атмосфере.
        !Formula: 7.41, page: 143
         elemental function analytic_sol_Lgamm_horizontal_grad_atmos_f741_r4(g,deln0,beta,z0,H,n0) result(Lgamm)
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
@@ -9086,6 +9086,40 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             L2      = trm1*trm2 
        end function analytic_sol_Lgamm_horizontal_grad_atmos_f741_r8
 
+       !Formula: 7.41, page: 143 (The main formula which "uses" the above-stated code)
+       elemental function refraction_angle_atmos_2D_stratified_f741_r4(g,deln0,beta,z0,H,n0) result(alpha_g)
+if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f741_r4
+            !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f741_r4
+#endif 
+
+            real(kind=sp),        intent(in) :: g 
+            real(kind=sp),        intent(in) :: deln0 
+            real(kind=sp),        intent(in) :: beta 
+            real(kind=sp),        intent(in) :: z0 
+            real(kind=sp),        intent(in) :: H 
+            real(kind=sp),        intent(in) :: n0 
+            real(kind=sp)                    :: alpha_g 
+            real(kind=sp),        automatic  :: ctgz0,  scosz0 
+            real(kind=sp),        automatic  :: tgz0,   Lg 
+            real(kind=sp),        automatic  :: M,      rat1 
+            real(kind=sp),        automatic  :: sqr,    rat2 
+            real(kind=sp),        automatic  :: t0,     t1  
+            tgz0    = tan(z0)
+            Lg      = analytic_sol_Lgamm_horizontal_grad_atmos_f741_r4(g,deln0,beta,z0,H,n0) 
+            ctgz0   = 1.0_sp/tgz0 
+            t0      = cos(z0)
+            scosz0  = t0*t0 
+            M       = analytic_sol_M_horizontal_grad_atmos_f736_r4(g,deln0,beta,z0,H,n0) 
+            rat1    = ctgz0/scosz0 
+            t1      = tgz0*tgz0
+            t0      = 1.0_sp-2.0_sp*t1*M 
+            sqr     = sqrt(t0)
+            rat2    = Lg/sqr 
+            t1      = rat1*rat2
+            alpha_g = -deln0*ctgz0+t1 
+       end function refraction_angle_atmos_2D_stratified_f741_r4
 
 
 end module emw_refraction
