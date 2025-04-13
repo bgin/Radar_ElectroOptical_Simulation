@@ -8816,24 +8816,29 @@ if defined(__INTEL_COMPILER) && !defined(__GNUC__)
             Iy     = gy*L2/beta*cosz0
        end subroutine analytic_sol_I_horizontal_grad_atmos_f732_r4
 
-       elemental function analytic_sol_I_horizontal_grad_atmos_f732_r8(g,deln0,beta,z0,H) result(I)
+       elemental subroutine analytic_sol_I_horizontal_grad_atmos_f732_r8(gx,gy,deln0,beta,z0,H,Ix,Iy) 
 if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_I_horizontal_grad_atmos_f732_r8
             !dir$ attributes forceinline :: analytic_sol_I_horizontal_grad_atmos_f732_r8
 #endif 
 !$omp declare simd(analytic_sol_I_horizontal_grad_atmos_f732_r8)
-            real(kind=dp),        intent(in) :: g 
+            real(kind=dp),        intent(in) :: gx 
+            real(kind=dp),        intent(in) :: gy
             real(kind=dp),        intent(in) :: deln0 
             real(kind=dp),        intent(in) :: beta 
             real(kind=dp),        intent(in) :: z0 
             real(kind=dp),        intent(in) :: H 
-            real(kind=dp)                    :: I 
+            real(kind=dp),        intent(out):: Ix 
+            real(kind=dp),        intent(out):: Iy  
             real(kind=dp),        automatic  :: L2, cosz0
             L2    = analytic_sol_L2_horizontal_grad_atmos_f733_r8(deln0,beta,z0,H)
             cosz0 = cos(z0)
-            I     = g*L2/beta*cosz0  
-       end function analytic_sol_I_horizontal_grad_atmos_f732_r8
+            Ix     = gx*L2/beta*cosz0  
+            Iy     = gy*L2/beta*cosz0
+       end subroutine analytic_sol_I_horizontal_grad_atmos_f732_r8
+
+     
 
        !характеризующее рефракцию 
        !электромагнитных волн в двумерно-неоднородной среде.
