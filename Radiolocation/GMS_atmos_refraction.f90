@@ -9180,5 +9180,28 @@ module atmos_refraction
             alpha_g= trm1+trm2 
        end function refraction_angle_atmos_2D_stratified_f743_r4
 
+       elemental function refraction_angle_atmos_2D_stratified_f743_r8(deln0,z0,beta) result(alpha_g)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f743_r8
+            !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f743_r8
+#endif 
+!$omp declare simd(refraction_angle_atmos_2D_stratified_f743_r8)
+            real(kind=dp),          intent(in) :: deln0 
+            real(kind=dp),          intent(in) :: z0 
+            real(kind=dp),          intent(in) :: beta 
+            real(kind=dp)                      :: alpha_g 
+            real(kind=dp),          automatic  :: tgz0, qcosz0 
+            real(kind=dp),          automatic  :: t0,   t1 
+            real(kind=dp),          automatic  :: trm1, trm2 
+            tgz0   = tan(z0)
+            trm1   = deln0*tgz0
+            t0     = cos(z0)
+            qcosz0 = t0*t0*t0*t0 
+            t1     = deln0*deln0
+            trm2   = t1*g/beta*6378.0_dp*t1 
+            alpha_g= trm1+trm2 
+       end function refraction_angle_atmos_2D_stratified_f743_r8
+
 
 end module atmos_refraction
