@@ -9221,5 +9221,51 @@ module atmos_refraction
             alpha_g = sdeln0*g/beta*6378.0_sp 
         end function refraction_angle_atmos_2D_stratified_f744_r4
 
+        elemental function refraction_angle_atmos_2D_stratified_f744_r8(g,deln0,beta) result(alpha_g)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f744_r8
+            !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f744_r8
+#endif 
+!$omp declare simd(refraction_angle_atmos_2D_stratified_f744_r8)
+            real(kind=dp),          intent(in) :: g
+            real(kind=dp),          intent(in) :: deln0 
+            real(kind=dp),          intent(in) :: beta 
+            real(kind=dp)                      :: alpha_g 
+            real(kind=dp),          automatic  :: sdeln0, t0 
+            sdeln0  = deln0*deln0 
+            alpha_g = sdeln0*g/beta*6378.0_dp 
+        end function refraction_angle_atmos_2D_stratified_f744_r8
+        
+        !For: SQRT(beta*ag*ctg^2(z0)) << 1 and z0 ~ 90(deg)
+        !Formula: 7.47, page: 144
+        elemental function refraction_angle_atmos_2D_stratified_f747_r4(g,deln0,beta) result(alpha_g)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f747_r4
+            !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f747_r4
+#endif 
+!$omp declare simd(refraction_angle_atmos_2D_stratified_f747_r4)
+            real(kind=sp),          intent(in) :: g
+            real(kind=sp),          intent(in) :: deln0 
+            real(kind=sp),          intent(in) :: beta 
+            real(kind=sp)                      :: alpha_g 
+            real(kind=sp),          parameter  :: C314159265358979323846264338328 = &
+                                                      3.14159265358979323846264338328_sp
+            real(kind=sp),          parameter  :: C20037077944595701274914739498556669 = &
+                                                      20037.077944595701274914739498556669_sp
+            real(kind=sp),          automatic  :: sqr1, sqr2 
+            real(kind=sp),          automatic  :: sqr3, inv 
+            real(kind=sp),          automatic  :: t0, pibta 
+            real(kind=sp),          automatic  :: t1  
+            pibta  = C314159265358979323846264338328*beta*6378.0_sp 
+            sqr1   = sqrt(0.5_sp*pibta)
+            t0     = C20037077944595701274914739498556669/(beta+beta)
+            sqr2   = sqrt(t0)
+            t1     = 1.0_sp+sqr2*g 
+            sqr3   = sqrt(t1)
+            inv    = 1.0_sp/sqr3 
+            alpha_g= deln0*sqr1*inv 
+        end function refraction_angle_atmos_2D_stratified_f747_r4
 
 end module atmos_refraction
