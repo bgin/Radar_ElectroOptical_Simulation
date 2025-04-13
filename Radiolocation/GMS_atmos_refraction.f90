@@ -9301,6 +9301,42 @@ module atmos_refraction
         !при определении дальности
         !между источником излучения и приемником!
         !Formula: 9.7, page: 153
+        elemental function analytic_sol_L1_refractive_error_f97_r4(deln0,z0,beta,Hc) result(L1)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L1_refractive_error_f97_r4
+            !dir$ attributes forceinline :: analytic_sol_L1_refractive_error_f97_r4
+#endif 
+!$omp declare simd(analytic_sol_L1_refractive_error_f97_r4)
+             real(kind=sp),        intent(in) :: deln0 
+             real(kind=sp),        intent(in) :: z0 
+             real(kind=sp),        intent(in) :: beta 
+             real(kind=sp),        intent(in) :: Hc 
+             real(kind=sp)                    :: L1 
+             real(kind=sp),        parameter  :: C000015678896205707118218877391 = &
+                                                    0.00015678896205707118218877391_sp 
+             real(kind=sp),        automatic  :: sdeln0, cosz0 
+             real(kind=sp),        automatic  :: btHc,   stgz0 
+             real(kind=sp),        automatic  :: exp1,   exp2 
+             real(kind=sp),        automatic  :: num,    rat 
+             real(kind=sp),        automatic  :: sqr,    t0 
+             real(kind=sp),        automatic  :: t1 
+             btHc    = beta*Hc 
+             sdeln0  = deln0*deln0 
+             cosz0   = cos(z0)
+             exp1    = exp(-btHc)
+             t0      = tan(z0)
+             exp2    = exp(-2.0_sp*btHc)
+             stgz0   = t0*t0 
+             num     = exp1-exp2 
+             t1      = 1.0_sp+2.0_sp*stgz0* &
+                           C000015678896205707118218877391
+             sqr     = sqrt(t1)
+             t0      = -sdeln0/cosz0 
+             rat     = num/sqr 
+             L1      = t0*rat  
+        end function analytic_sol_L1_refractive_error_f97_r4
+
         elemental function analytic_sol_L1_refractive_error_f97_r8(deln0,z0,beta,Hc) result(L1)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
@@ -9336,5 +9372,8 @@ module atmos_refraction
              rat     = num/sqr 
              L1      = t0*rat  
         end function analytic_sol_L1_refractive_error_f97_r8
+
+        !Formula: 9.8, page: 153
+
 
 end module atmos_refraction
