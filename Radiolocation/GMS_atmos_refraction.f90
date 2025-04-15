@@ -9454,6 +9454,47 @@ module atmos_refraction
              L2   = trm1*trm2 
         end function analytic_sol_L2_refractive_error_f98_r8
 
+        !Formula: 9.9, page: 153
+       elemental function analytic_sol_L3_refractive_error_f99_r4(deln0,z0,beta,Hc) result(L3)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L3_refractive_error_f99_r4
+            !dir$ attributes forceinline :: analytic_sol_L3_refractive_error_f99_r4
+#endif 
+!$omp declare simd(analytic_sol_L3_refractive_error_f99_r4)
+             real(kind=sp),        intent(in) :: deln0 
+             real(kind=sp),        intent(in) :: z0 
+             real(kind=sp),        intent(in) :: beta 
+             real(kind=sp),        intent(in) :: Hc 
+             real(kind=sp)                    :: L2 
+             real(kind=sp),        parameter  :: C157079632679489661923132169164 = &
+                                                   1.57079632679489661923132169164_sp 
+             real(kind=sp),        automatic  :: bta,   tgz0 
+             real(kind=sp),        automatic  :: stgz0, exp1 
+             real(kind=sp),        automatic  :: bsctg,btHc 
+             real(kind=sp),        automatic  :: sqr1,  sqr2 
+             real(kind=sp),        automatic  :: prob1, prob2 
+             real(kind=sp),        automatic  :: t0,    t1 
+             real(kind=sp),        automatic  :: trm1,  trm2 
+             bta  = beta*6378.0_sp 
+             btHc = beta*Hc 
+             tgz0 = tan(z0)
+             stgz0= tgz0*tgz0 
+             t0   = bta/stgz0
+             exp1 = exp(t0)
+             t1   = sqrt(2.0_sp*bta)/tgz0
+             trm1 = deln0*t1*exp1* & 
+                    C157079632679489661923132169164
+             t0   = 1.0_sp/stgz0 
+             bsctg= bta*t0 
+             sqr1 = sqrt(2.0_sp*bsctg+4.0_sp*btHc)
+             prob1= prob_integral_r4(sqr1)
+             sqr2 = sqrt(2.0_sp*bsctg)
+             prob2= prob_integral_r4(sqr2)
+             trm2 = trm1-trm2 
+             L2   = trm1*trm2 
+        end function analytic_sol_L3_refractive_error_f99_r4
+
 
 
 end module atmos_refraction
