@@ -9803,6 +9803,38 @@ module atmos_refraction
              L2     = trm1*trm2 
         end function analytic_sol_L3_refractive_error_f912_r8
 
+        !Formula: 9.6, page: 153 (Case: 2)
+        ! для
+        !разности между фазовым путем Ьф и геометрическим
+        elemental function analytic_sol_phase_to_geo_path_case_2_f96_r4(deln0,z0,beta,Hc) result(delLf)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_phase_to_geo_path_case_2_f96_r4
+            !dir$ attributes forceinline :: analytic_sol_phase_to_geo_path_case_2_f96_r4
+#endif 
+
+             real(kind=sp),        intent(in) :: deln0 
+             real(kind=sp),        intent(in) :: z0 
+             real(kind=sp),        intent(in) :: beta 
+             real(kind=sp),        intent(in) :: Hc 
+             real(kind=sp)                    :: delLf
+             real(kind=sp),        automatic  :: L1, L2 
+             real(kind=sp),        automatic  :: L3, cosz0 
+             real(kind=sp),        automatic  :: rat1, rat2 
+             real(kind=sp),        automatic  :: t0, t1 
+             real(kind=sp),        automatic  :: trm1, trm2 
+             cosz0 = cos(z0)
+             t0    = 1.0_sp-deln0*beta*6378.0_sp 
+             L1    = analytic_sol_L1_refractive_error_f97_r4(deln0,z0,beta,Hc)
+             rat1  = t0/(beta*cosz0) 
+             L2    = analytic_sol_L2_refractive_error_f911_r4(deln0,z0,beta,Hc)
+             rat2  = (deln0*beta)/cosz0 
+             L3    = analytic_sol_L3_refractive_error_f912_r4(deln0,z0,beta,Hc)
+             trm1  = L1+rat1*L2 
+             trm2  = rat2*L3 
+             delLf = trm1+trm2 
+        end function analytic_sol_phase_to_geo_path_case_2_f96_r4
+
 
 
 end module atmos_refraction
