@@ -9864,6 +9864,33 @@ module atmos_refraction
              delLf = trm1+trm2 
         end function analytic_sol_phase_to_geo_path_case_2_f96_r8
 
+        !For: z0 == 90(deg)
+        !Formula: 9.13, page: 154
+        elemental function analytic_sol_phase_to_geo_path_case_3_f913_r4(deln0,beta) result(delLf)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_phase_to_geo_path_case_3_f913_r4
+            !dir$ attributes forceinline :: analytic_sol_phase_to_geo_path_case_3_f913_r4
+#endif 
+
+             real(kind=sp),        intent(in) :: deln0 
+             real(kind=sp),        intent(in) :: beta 
+             real(kind=sp)                    :: delLf
+             real(kind=sp),        parameter  :: C314159265358979323846264338328 = &
+                                                   3.14159265358979323846264338328_sp
+             real(kind=sp),        parameter  :: C041421356237309504880168872421 = &
+                                                    0.41421356237309504880168872421_sp 
+             real(kind=sp),        automatic  :: tbt, sqr 
+             real(kind=sp),        automatic  :: bta, t0  
+             real(kind=sp),        automatic  :: deln0bt
+             bta     = beta*6378.0_sp 
+             t0      = C314159265358979323846264338328*a 
+             tbt     = beta+beta 
+             deln0bt = deln0*bta 
+             sqr     = sqrt(t0/tbt)
+             t0      = C041421356237309504880168872421*deln0bt
+             delLf   = deln0*sqr*1.0_sp+t0 
+        end function analytic_sol_phase_to_geo_path_case_3_f913_r4
         
 
 
