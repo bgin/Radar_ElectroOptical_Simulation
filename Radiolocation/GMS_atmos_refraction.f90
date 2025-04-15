@@ -9835,6 +9835,36 @@ module atmos_refraction
              delLf = trm1+trm2 
         end function analytic_sol_phase_to_geo_path_case_2_f96_r4
 
+        elemental function analytic_sol_phase_to_geo_path_case_2_f96_r8(deln0,z0,beta,Hc) result(delLf)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_phase_to_geo_path_case_2_f96_r8
+            !dir$ attributes forceinline :: analytic_sol_phase_to_geo_path_case_2_f96_r8
+#endif 
+
+             real(kind=dp),        intent(in) :: deln0 
+             real(kind=dp),        intent(in) :: z0 
+             real(kind=dp),        intent(in) :: beta 
+             real(kind=dp),        intent(in) :: Hc 
+             real(kind=dp)                    :: delLf
+             real(kind=dp),        automatic  :: L1, L2 
+             real(kind=dp),        automatic  :: L3, cosz0 
+             real(kind=dp),        automatic  :: rat1, rat2 
+             real(kind=dp),        automatic  :: t0, t1 
+             real(kind=dp),        automatic  :: trm1, trm2 
+             cosz0 = cos(z0)
+             t0    = 1.0_dp-deln0*beta*6378.0_dp 
+             L1    = analytic_sol_L1_refractive_error_f97_r8deln0,z0,beta,Hc)
+             rat1  = t0/(beta*cosz0) 
+             L2    = analytic_sol_L2_refractive_error_f911_r8(deln0,z0,beta,Hc)
+             rat2  = (deln0*beta)/cosz0 
+             L3    = analytic_sol_L3_refractive_error_f912_r8(deln0,z0,beta,Hc)
+             trm1  = L1+rat1*L2 
+             trm2  = rat2*L3 
+             delLf = trm1+trm2 
+        end function analytic_sol_phase_to_geo_path_case_2_f96_r8
+
+        
 
 
 end module atmos_refraction
