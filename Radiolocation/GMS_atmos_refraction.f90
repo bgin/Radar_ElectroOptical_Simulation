@@ -9596,6 +9596,39 @@ module atmos_refraction
              delLf = trm1+trm2 
         end function analytic_sol_phase_to_geo_path_f96_r8
 
-
+        !For: beta*ctg^2(z0) >> 1 and z0 << 70(deg)
+        !Formula: 9.10, page: 153
+        elemental function analytic_sol_phase_to_geo_path_case_1_f910_r4(deln0,z0,beta,Hc) result(delLf)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_phase_to_geo_path_case_1_f910_r4
+            !dir$ attributes forceinline :: analytic_sol_phase_to_geo_path_case_1_f910_r4
+#endif 
+!$omp declare simd(analytic_sol_phase_to_geo_path_case_1_f910_r4)
+             real(kind=sp),        intent(in) :: deln0 
+             real(kind=sp),        intent(in) :: z0 
+             real(kind=sp),        intent(in) :: beta 
+             real(kind=sp),        intent(in) :: Hc 
+             real(kind=sp)                    :: delLf
+             real(kind=sp),        parameter  :: C000015678896205707118218877391 = &
+                                                   0.00015678896205707118218877391_sp
+             real(kind=sp),        automatic  :: cosz0,  btHc 
+             real(kind=sp),        automatic  :: Hca,    exp1 
+             real(kind=sp),        automatic  :: rat1,   sqr 
+             real(kind=sp),        automatic  :: rat2,   stgz0 
+             real(kind=sp),        automatic  :: t0,     t1 
+             btHc   = beta*Hc 
+             cosz0  = cos(z0)
+             Hca    = Hc*C000015678896205707118218877391
+             t0     = tan(z0)
+             stgz0  = t0*t0 
+             rat1   = deln0/(beta*cosz0)
+             exp1   = exp(-btHc)
+             t1     = 1.0_sp+2.0_sp*stgz0 
+             t0     = t1*Hca 
+             sqr    = sqrt(t0)
+             rat    = 1.0_sp-(exp1/sqr)
+             delLf  = rat1*rat2 
+        end function analytic_sol_phase_to_geo_path_case_1_f910_r4
 
 end module atmos_refraction
