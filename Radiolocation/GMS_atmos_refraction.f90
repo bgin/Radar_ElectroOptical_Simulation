@@ -10226,4 +10226,54 @@ module atmos_refraction
             Hc     = 6378.0_sp*sqr 
        end function emitter_known_height_f921_r4
 
+        elemental function emitter_known_height_f921_r8(z0,L) result(Hc)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: emitter_known_height_f921_r8
+            !dir$ attributes forceinline :: emitter_known_height_f921_r8
+#endif 
+!$omp declare simd(emitter_known_height_f921_r8)
+            real(kind=dp),         intent(in) :: z0 
+            real(kind=dp),         intent(in) :: L 
+            real(kind=dp)                     :: Hc 
+            real(kind=dp),         automatic  :: cosz0, LLaa 
+            real(kind=dp),         automatic  :: La,    sqr 
+            real(kind=dp),         automatic  :: t0,    t1 
+            La     = L*6378.0_dp 
+            cosz0  = cos(z0)
+            LLaa   = (L*L)*0.000000024582778622933706834239_dp
+            t0     = 1.0_sp+LLaa 
+            t1     = (La+La)*cosz0-6378.0_dp 
+            sqr    = sqrt(t0+t1)
+            Hc     = 6378.0_dp*sqr 
+       end function emitter_known_height_f921_r8
+       
+       !Height delta due to earth atmos refraction
+       !Formula: 9.24, page: 157
+       elemental function emitter_height_delta_atmos_refraction_f924_r4(del,z0,L) result(dHc)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: emitter_height_delta_atmos_refraction_f924_r4
+            !dir$ attributes forceinline :: emitter_height_delta_atmos_refraction_f924_r4
+#endif 
+!$omp declare simd(emitter_height_delta_atmos_refraction_f924_r4)
+            real(kind=sp),         intent(in) :: del 
+            real(kind=sp),         intent(in) :: z0 
+            real(kind=sp),         intent(in) :: L 
+            real(kind=sp)                     :: dHc 
+            real(kind=sp),         automatic  :: sinz0, cosz0 
+            real(kind=sp),         automatic  :: Hc,    scosz0 
+            real(kind=sp),         automatic  :: sqr,   t0 
+            real(kind=sp),         automatic  :: t1 
+            sinz0  = sin(z0)
+            cosz0  = cos(z0)
+            Hc     = emitter_known_height_f921_r4(z0,L)
+            scosz0 = cosz0*cosz0 
+            t0     = 40678884.0_sp*scosz0
+            t1     = 12756.0_sp*Hc 
+            sqr    = t0+t1 
+            t0     = 6378.0_sp-cosz0 
+            dHc    = del*sinz0*sqr-t0 
+       end function emitter_height_delta_atmos_refraction_f924_r4
+
 end module atmos_refraction
