@@ -9917,6 +9917,80 @@ module atmos_refraction
              t0      = C041421356237309504880168872421*deln0bt
              delLf   = deln0*sqr*1.0_dp+t0 
         end function analytic_sol_phase_to_geo_path_case_3_f913_r8
+
+        !ионосфере при
+        !расположении излучателя выше максимума слоя F2 а
+        !приемника — на поверхности Земли.
+        !Phase shift between ionospheric emitter and earth receiver.
+        !Formula: 9.17, page: 155
+        elemental function analytic_sol_phase_shift_ionosphere_to_earth_f917_r4(fc,Nmf,H2,H1,z0) result(L1)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_phase_shift_ionosphere_to_earth_f917_r4
+            !dir$ attributes forceinline :: analytic_sol_phase_shift_ionosphere_to_earth_f917_r4
+#endif 
+!$omp declare simd(analytic_sol_phase_shift_ionosphere_to_earth_f917_r4)
+            real(kind=sp),         intent(in) :: fc
+            real(kind=sp),         intent(in) :: Nmf 
+            real(kind=sp),         intent(in) :: H2 !Height of F2 ionospheric layer
+            real(kind=sp),         intent(in) :: H1 !Height of lower ionospheric boundary
+            real(kind=sp),         intent(in) :: z0 
+            real(kind=sp)                     :: L1 
+            real(kind=sp),         parameter  :: C000015678896205707118218877391 = &
+                                                    0.00015678896205707118218877391_sp
+            real(kind=sp),         parameter  :: C0000000024582778622933706834239 = &
+                                                    0.000000024582778622933706834239_sp !a^2 
+            real(kind=sp),         automatic  :: delnM, sH2H1 
+            real(kind=sp),         automatic  :: cosz0, ssinz0 
+            real(kind=sp),         automatic  :: stgz0, qtgz0 
+            real(kind=sp),         automatic  :: rat1,  rat2 
+            real(kind=sp),         automatic  :: H2a,   H1a 
+            real(kind=sp),         automatic  :: tgtrm1, tgtrm2 
+            real(kind=sp),         automatic  :: tgtrm3, tgtrm4 
+            real(kind=sp),         automatic  :: tgtrm5, tgtrm6 
+            real(kind=sp),         automatic  :: t0,     t1 
+            real(kind=sp),         automatic  :: t2,     t3 
+            real(kind=sp),         automatic  :: trm1,   trm2 
+            real(kind=sp),         automatic  :: trm3,   trm4 
+            real(kind=sp),         automatic  :: trm5 
+            real(kind=sp),         automatic  :: tant1,  tant2 
+            H2a   = H2*C000015678896205707118218877391
+            cosz0 = cos(z0)
+            H1a   = H1*C000015678896205707118218877391
+            delnM = compute_delnM_f414_r4(fc,Nmf)
+            t0    = tan(z0)
+            stgz0 = t0*t0 
+            qtgz0 = stgz0*stgz0 
+            t1    = H2-H1 
+            sH2H1 = t1*t1 
+            t2    = sin(z0)
+            ssinz0= t2*t2 
+            t0    = C000015678896205707118218877391/sH2H1 
+            t1    = cosz0/ssinz0 
+            trm1  = -delnM*t0*t1 
+            t2    = H1*(H1*2.0_sp*H2)
+            t3    = H2a/stgz0 
+            t1    = C0000000024582778622933706834239/(4.0_sp*qtgz0)
+            trm2  = t2-t3+t1
+            tant1 = 1.0_sp+2.0_sp*stgz0*H2a 
+            tgtrm1= sqrt(tant1)
+            tant2 = 1.0_sp+2.0_sp*stgz0*H1a 
+            tgtrm2= sqrt(tant2)
+            trm3  = tgtrm1-tgtrm2 
+            t2    = H2a/(3.0_sp*stgz0)
+            t3    = C0000000024582778622933706834239/(6.0_sp*qtgz0)
+            rat1  = t2-t3 
+            tgtrm3= tant1**1.5_sp 
+            tgtrm4= tant2**1.5_sp 
+            trm4  = rat1*(tgtrm3-tgtrm4)
+            rat2  = C0000000024582778622933706834239/(20.0_sp*qtgz0)
+            tgtrm5= tant1**2.5_sp 
+            tgtrm6= tant2**2.5_sp 
+            trm5  = ratr2*(tgtrm5-tgtrm6)
+            t0    = trm1*trm2
+            t1    = trm3*trm4*trm5
+            L1    = t0*t1  
+        end function analytic_sol_phase_shift_ionosphere_to_earth_f917_r4
         
 
 
