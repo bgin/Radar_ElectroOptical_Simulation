@@ -10061,4 +10061,53 @@ module atmos_refraction
             L1    = t0*t1  
         end function analytic_sol_phase_shift_ionosphere_to_earth_f917_r8
 
+        !Formula: 9.18, page: 155 
+        !Phase shift between ionospheric emitter and earth receiver.
+        elemental function analytic_sol_phase_shift_ionosphere_to_earth_f918_r4(fc,Nmf,beta,H2,Hc,z0) result(L2)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_phase_shift_ionosphere_to_earth_f918_r4
+            !dir$ attributes forceinline :: analytic_sol_phase_shift_ionosphere_to_earth_f918_r4
+#endif 
+!$omp declare simd(analytic_sol_phase_shift_ionosphere_to_earth_f918_r4)
+            real(kind=sp),         intent(in) :: fc
+            real(kind=sp),         intent(in) :: Nmf 
+            real(kind=sp),         intent(in) :: beta
+            real(kind=sp),         intent(in) :: H2 !Height of F2 ionospheric layer
+            real(kind=sp),         intent(in) :: Hc 
+            real(kind=sp),         intent(in) :: z0 
+            real(kind=sp)                     :: L2
+            real(kind=sp),         parameter  :: C20037077944595701274914739498556669 = &
+                                                    20037.077944595701274914739498556669_sp
+            real(kind=sp),         automatic  :: delnM,   sqr 
+            real(kind=sp),         automatic  :: isinz0,  exp1 
+            real(kind=sp),         automatic  :: sctgz0,  btHc 
+            real(kind=sp),         automatic  :: btactgz0, t0 
+            real(kind=sp),         automatic  :: t1,       sqr2 
+            real(kind=sp),         automatic  :: sqr3,     prob1 
+            real(kind=sp),         automatic  :: prob2,    trm1 
+            real(kind=sp),         automatic  :: trm2,     btH2  
+            btHc    = beta*Hc 
+            t0      = sin(z0)
+            isinz0  = 1.0_sp/t0 
+            btH2    = beta*H2 
+            t1      = 1.0_sp/tan(z0)
+            sctgz0  = t1*t1 
+            sqr1    = C20037077944595701274914739498556669/(beta+beta)
+            delnM   = compute_delnM_f414_r4(fc,Nmf)
+            t0      = 6378.0_sp*(0.5_sp*sctgz0)
+            t1      = beta*(H2+t0)
+            exp1    = exp(t1)
+            btactgz0= beta*6378.0_sp*sctgz0 
+            trm1    = -delnM*sqr1*isinz0*exp1 
+            t0      = btactgz0+2.0_sp*btHc 
+            sqr2    = sqrt(t0)
+            prob1   = prob_integral_r4(sqr2)
+            t1      = btactgz0+2.0_sp*btH2 
+            sqr3    = sqrt(t1)
+            prob2   = prob_integral_r4(sqr3)
+            trm2    = prob1-prob2 
+            L2      = trm1*trm2 
+       end function analytic_sol_phase_shift_ionosphere_to_earth_f918_r4
+
 end module atmos_refraction
