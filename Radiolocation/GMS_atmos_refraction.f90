@@ -9992,6 +9992,73 @@ module atmos_refraction
             L1    = t0*t1  
         end function analytic_sol_phase_shift_ionosphere_to_earth_f917_r4
         
-
+        elemental function analytic_sol_phase_shift_ionosphere_to_earth_f917_r8(fc,Nmf,H2,H1,z0) result(L1)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_phase_shift_ionosphere_to_earth_f917_r8
+            !dir$ attributes forceinline :: analytic_sol_phase_shift_ionosphere_to_earth_f917_r8
+#endif 
+!$omp declare simd(analytic_sol_phase_shift_ionosphere_to_earth_f917_r8)
+            real(kind=dp),         intent(in) :: fc
+            real(kind=dp),         intent(in) :: Nmf 
+            real(kind=dp),         intent(in) :: H2 !Height of F2 ionospheric layer
+            real(kind=dp),         intent(in) :: H1 !Height of lower ionospheric boundary
+            real(kind=dp),         intent(in) :: z0 
+            real(kind=dp)                     :: L1 
+            real(kind=dp),         parameter  :: C000015678896205707118218877391 = &
+                                                    0.00015678896205707118218877391_dp
+            real(kind=sp),         parameter  :: C0000000024582778622933706834239 = &
+                                                    0.000000024582778622933706834239_dp !a^2 
+            real(kind=dp),         automatic  :: delnM, sH2H1 
+            real(kind=dp),         automatic  :: cosz0, ssinz0 
+            real(kind=dp),         automatic  :: stgz0, qtgz0 
+            real(kind=dp),         automatic  :: rat1,  rat2 
+            real(kind=dp),         automatic  :: H2a,   H1a 
+            real(kind=dp),         automatic  :: tgtrm1, tgtrm2 
+            real(kind=dp),         automatic  :: tgtrm3, tgtrm4 
+            real(kind=dp),         automatic  :: tgtrm5, tgtrm6 
+            real(kind=dp),         automatic  :: t0,     t1 
+            real(kind=dp),         automatic  :: t2,     t3 
+            real(kind=dp),         automatic  :: trm1,   trm2 
+            real(kind=dp),         automatic  :: trm3,   trm4 
+            real(kind=dp),         automatic  :: trm5 
+            real(kind=dp),         automatic  :: tant1,  tant2 
+            H2a   = H2*C000015678896205707118218877391
+            cosz0 = cos(z0)
+            H1a   = H1*C000015678896205707118218877391
+            delnM = compute_delnM_f414_r8(fc,Nmf)
+            t0    = tan(z0)
+            stgz0 = t0*t0 
+            qtgz0 = stgz0*stgz0 
+            t1    = H2-H1 
+            sH2H1 = t1*t1 
+            t2    = sin(z0)
+            ssinz0= t2*t2 
+            t0    = C000015678896205707118218877391/sH2H1 
+            t1    = cosz0/ssinz0 
+            trm1  = -delnM*t0*t1 
+            t2    = H1*(H1*2.0_dp*H2)
+            t3    = H2a/stgz0 
+            t1    = C0000000024582778622933706834239/(4.0_sp*qtgz0)
+            trm2  = t2-t3+t1
+            tant1 = 1.0_dp+2.0_dp*stgz0*H2a 
+            tgtrm1= sqrt(tant1)
+            tant2 = 1.0_dp+2.0_dp*stgz0*H1a 
+            tgtrm2= sqrt(tant2)
+            trm3  = tgtrm1-tgtrm2 
+            t2    = H2a/(3.0_dp*stgz0)
+            t3    = C0000000024582778622933706834239/(6.0_dp*qtgz0)
+            rat1  = t2-t3 
+            tgtrm3= tant1**1.5_dp 
+            tgtrm4= tant2**1.5_dp 
+            trm4  = rat1*(tgtrm3-tgtrm4)
+            rat2  = C0000000024582778622933706834239/(20.0_dp*qtgz0)
+            tgtrm5= tant1**2.5_dp 
+            tgtrm6= tant2**2.5_dp 
+            trm5  = ratr2*(tgtrm5-tgtrm6)
+            t0    = trm1*trm2
+            t1    = trm3*trm4*trm5
+            L1    = t0*t1  
+        end function analytic_sol_phase_shift_ionosphere_to_earth_f917_r8
 
 end module atmos_refraction
