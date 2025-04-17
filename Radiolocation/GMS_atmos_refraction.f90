@@ -10199,4 +10199,31 @@ module atmos_refraction
             delLf= L1+L2 
        end function analytic_sol_phase_shift_ionosphere_to_earth_f914_r8
 
+       ! Рефракционные погрешности
+       !при определении высоты источника излучения
+       ! Height increment of emitter due to earth atmospheric refraction for
+       ! the known emitter height (absolute)
+       ! Formula: 9.21, page: 157
+       elemental function emitter_known_height_f921_r4(z0,L) result(Hc)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: emitter_known_height_f921_r4
+            !dir$ attributes forceinline :: emitter_known_height_f921_r4
+#endif 
+!$omp declare simd(emitter_known_height_f921_r4)
+            real(kind=sp),         intent(in) :: z0 
+            real(kind=sp),         intent(in) :: L 
+            real(kind=sp)                     :: Hc 
+            real(kind=sp),         automatic  :: cosz0, LLaa 
+            real(kind=sp),         automatic  :: La,    sqr 
+            real(kind=sp),         automatic  :: t0,    t1 
+            La     = L*6378.0_sp 
+            cosz0  = cos(z0)
+            LLaa   = (L*L)*0.000000024582778622933706834239_sp
+            t0     = 1.0_sp+LLaa 
+            t1     = (La+La)*cosz0-6378.0_sp 
+            sqr    = sqrt(t0+t1)
+            Hc     = 6378.0_sp*sqr 
+       end function emitter_known_height_f921_r4
+
 end module atmos_refraction
