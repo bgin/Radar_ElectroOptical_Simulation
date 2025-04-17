@@ -10179,4 +10179,24 @@ module atmos_refraction
             delLf= L1+L2 
        end function analytic_sol_phase_shift_ionosphere_to_earth_f914_r4
 
+        elemental function analytic_sol_phase_shift_ionosphere_to_earth_f914_r8(fc,Nmf,beta,H2,H1,z0) result(delLf)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_phase_shift_ionosphere_to_earth_f914_r8
+            !dir$ attributes forceinline :: analytic_sol_phase_shift_ionosphere_to_earth_f914_r8
+#endif 
+
+            real(kind=dp),         intent(in) :: fc
+            real(kind=dp),         intent(in) :: Nmf 
+            real(kind=dp),         intent(in) :: beta 
+            real(kind=dp),         intent(in) :: H2 !Height of F2 ionospheric layer
+            real(kind=dp),         intent(in) :: H1 !Height of lower ionospheric boundary
+            real(kind=dp),         intent(in) :: z0 
+            real(kind=dp)                     :: delLf 
+            real(kind=dp),         automatic  :: L1, L2 
+            L1   = analytic_sol_phase_shift_ionosphere_to_earth_f917_r8(fc,Nmf,H2,H1,z0) 
+            L2   = analytic_sol_phase_shift_ionosphere_to_earth_f918_r8(fc,Nmf,beta,H2,Hc,z0)
+            delLf= L1+L2 
+       end function analytic_sol_phase_shift_ionosphere_to_earth_f914_r8
+
 end module atmos_refraction
