@@ -10157,4 +10157,26 @@ module atmos_refraction
             L2      = trm1*trm2 
        end function analytic_sol_phase_shift_ionosphere_to_earth_f918_r8
 
+       !Formula: 9.14, page: 154
+       !Phase shift between ionospheric emitter and earth receiver.
+       elemental function analytic_sol_phase_shift_ionosphere_to_earth_f914_r4(fc,Nmf,beta,H2,H1,z0) result(delLf)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_phase_shift_ionosphere_to_earth_f914_r4
+            !dir$ attributes forceinline :: analytic_sol_phase_shift_ionosphere_to_earth_f914_r4
+#endif 
+
+            real(kind=sp),         intent(in) :: fc
+            real(kind=sp),         intent(in) :: Nmf 
+            real(kind=sp),         intent(in) :: beta 
+            real(kind=sp),         intent(in) :: H2 !Height of F2 ionospheric layer
+            real(kind=sp),         intent(in) :: H1 !Height of lower ionospheric boundary
+            real(kind=sp),         intent(in) :: z0 
+            real(kind=sp)                     :: delLf 
+            real(kind=sp),         automatic  :: L1, L2 
+            L1   = analytic_sol_phase_shift_ionosphere_to_earth_f917_r4(fc,Nmf,H2,H1,z0) 
+            L2   = analytic_sol_phase_shift_ionosphere_to_earth_f918_r4(fc,Nmf,beta,H2,Hc,z0)
+            delLf= L1+L2 
+       end function analytic_sol_phase_shift_ionosphere_to_earth_f914_r4
+
 end module atmos_refraction
