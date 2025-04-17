@@ -10276,4 +10276,30 @@ module atmos_refraction
             dHc    = del*sinz0*sqr-t0 
        end function emitter_height_delta_atmos_refraction_f924_r4
 
+       elemental function emitter_height_delta_atmos_refraction_f924_r8(del,z0,L) result(dHc)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: emitter_height_delta_atmos_refraction_f924_r8
+            !dir$ attributes forceinline :: emitter_height_delta_atmos_refraction_f924_r8
+#endif 
+!$omp declare simd(emitter_height_delta_atmos_refraction_f924_r8)
+            real(kind=dp),         intent(in) :: del 
+            real(kind=dp),         intent(in) :: z0 
+            real(kind=dp),         intent(in) :: L 
+            real(kind=dp)                     :: dHc 
+            real(kind=dp),         automatic  :: sinz0, cosz0 
+            real(kind=dp),         automatic  :: Hc,    scosz0 
+            real(kind=dp),         automatic  :: sqr,   t0 
+            real(kind=dp),         automatic  :: t1 
+            sinz0  = sin(z0)
+            cosz0  = cos(z0)
+            Hc     = emitter_known_height_f921_r8(z0,L)
+            scosz0 = cosz0*cosz0 
+            t0     = 40678884.0_dp*scosz0
+            t1     = 12756.0_dp*Hc 
+            sqr    = t0+t1 
+            t0     = 6378.0_dp-cosz0 
+            dHc    = del*sinz0*sqr-t0 
+       end function emitter_height_delta_atmos_refraction_f924_r8
+
 end module atmos_refraction
