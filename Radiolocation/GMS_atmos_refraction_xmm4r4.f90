@@ -340,6 +340,7 @@ module atmos_refraction_xmm4r4
             type(XMM4r4_t),       parameter  :: C000015678896205707118218877391 = &
                                                 XMM4r4_t(0.00015678896205707118218877391_sp)
             type(XMM4r4_t),       automatic  :: inv_rho 
+             !dir$ attributes align : 16 :: C000015678896205707118218877391
              !dir$ attributes align : 16 :: inv_rho 
              !dir$ attributes align : 16 :: t0 
 #if (GMS_EXPLICIT_VECTORIZE) == 1
@@ -363,7 +364,24 @@ module atmos_refraction_xmm4r4
                 k_rel.v   = C000015678896205707118218877391.v* &
                                inv_rho.v 
 #endif 
-     end function k_relative_f254_xmm4r4
+      end function k_relative_f254_xmm4r4
+
+      ! отношения радиуса кривизны траекторий
+     ! луча к радиусу Земли:, formula 2.67, page: 52 
+      pure function rho_to_a_f267_xmm4r4(dndh) result(R)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)            
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: rho_to_a_f267_xmm4r4
+            !dir$ attributes forceinline :: rho_to_a_f267_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rho_to_a_f267_xmm4r4
+#endif 
+            type(XMM4r4_t),      intent(in) :: dndh 
+            type(XMM4r4_t)                  :: R 
+            type(XMM4r4_t),       parameter :: C000015678896205707118218877391 = &
+                                                XMM4r4_t(0.00015678896205707118218877391_sp)  
+            !dir$ attributes align : 16 ::   C000015678896205707118218877391 
+            R.v  =  C000015678896205707118218877391.v*dndh.v       
+      end function rho_to_a_f267_xmm4r4 
     
 
 
