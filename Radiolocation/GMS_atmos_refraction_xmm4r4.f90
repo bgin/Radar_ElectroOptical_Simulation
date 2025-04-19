@@ -197,6 +197,95 @@ module atmos_refraction_xmm4r4
                 n_o_tht.v= rat_d.v-rat_s.v    
 #endif 
      end function n_refract_tht_f243_xmm4r4
+
+       pure function n_refract_phi_f243_xmm4r4(n,n0,z,z0,r,R0,phi,phi0) result(n_o_phi)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)            
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: n_refract_phi_f243_xmm4r4
+            !dir$ attributes forceinline :: n_refract_phi_f243_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: n_refract_phi_f243_xmm4r4
+#endif   
+            use mod_vecconsts,    only : v4r4_1
+            type(XMM4r4_t),       intent(in) :: n 
+            type(XMM4r4_t),       intent(in) :: n0 
+            type(XMM4r4_t),       intent(in) :: z 
+            type(XMM4r4_t),       intent(in) :: z0 
+            type(XMM4r4_t),       intent(in) :: r 
+            type(XMM4r4_t),       intent(in) :: R0 
+            type(XMM4r4_t),       intent(in) :: phi 
+            type(XMM4r4_t),       intent(in) :: phi0 
+            type(XMM4r4_t), automatic :: tgz
+            type(XMM4r4_t), automatic :: tgz0 
+            type(XMM4r4_t), automatic :: tgphi 
+            type(XMM4r4_t), automatic :: tgphi0 
+            type(XMM4r4_t), automatic :: num_d 
+            type(XMM4r4_t), automatic :: num_s
+            type(XMM4r4_t), automatic :: den_d 
+            type(XMM4r4_t), automatic :: den_s 
+            type(XMM4r4_t), automatic :: rat_s 
+            type(XMM4r4_t), automatic :: rat_d 
+            type(XMM4r4_t), automatic :: stgz 
+            type(XMM4r4_t), automatic :: stgphi
+            type(XMM4r4_t), automatic :: stgz0
+            type(XMM4r4_t), automatic :: stgphi0
+            !dir$ attributes align : 16 :: tgz 
+            !dir$ attributes align : 16 :: tgz0 
+            !dir$ attributes align : 16 :: tgphi 
+            !dir$ attributes align : 16 :: tgphi0 
+            !dir$ attributes align : 16 :: num_d 
+            !dir$ attributes align : 16 :: num_s 
+            !dir$ attributes align : 16 :: den_d 
+            !dir$ attributes align : 16 :: den_s 
+            !dir$ attributes align : 16 :: rat_s 
+            !dir$ attributes align : 16 :: rat_d 
+            !dir$ attributes align : 16 :: stgz 
+            !dir$ attributes align : 16 :: stgphi 
+            !dir$ attributes align : 16 :: stgz0 
+            !dir$ attributes align : 16 :: stgphi0
+
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#endif             
+             do j=0,3  
+                tgz.v(j)        = tan(z.v(j))
+                stgz.v(j)       = tgz.v(j)*tgz.v(j)
+                tgz0.v(j)       = tan(z0.v(j))
+                stgz0.v(j)      = tgz0.v(j)*tgz0.v(j)
+                tgphi.v(j)      = tan(phi.v(j))
+                stgphi.v(j)     = tgphi.v(j)*tgphi.v(j) 
+                tgphi0.v(j)     = tan(phi0.v(j))
+                stgphi0.v(j)    = tgphi0.v(j)*tgphi0.v(j)
+                num_d.v(j)      = n.v(j)*r.v(j)*tgphi.v(j) 
+                num_s.v(j)      = n0.v(j)*R0.v(j)*tgphi0.v(j) 
+                den_d.v(j)      = sqrt(v4r4_1.v(j)+stgz.v(j)+stgphi.v(j)) 
+                den_s.v(j)      = sqrt(v4r4_1.v(j)+stgz0.v(j)+stgphi0.v(j))
+                rat_s.v(j)      = num_s.v(j)/den_s.v(j) 
+                rat_d.v(j)      = num_d.v(j)/den_d.v(j) 
+                n_o_phi.v(j)    = rat_d.v(j)-rat_s.v(j) 
+             end do 
+#else
+            tgz.v        = tan(z.v)
+            stgz.v       = tgz.v*tgz.v
+            tgz0.v       = tan(z0.v)
+            stgz0.v      = tgz0.v*tgz0.v
+            tgphi.v      = tan(phi.v)
+            stgphi.v     = tgphi.v*tgphi.v 
+            tgphi0.v     = tan(phi0.v)
+            stgphi0.v    = tgphi0.v*tgphi0.v
+            num_d.v      = n.v*r.v*tgphi.v 
+            num_s.v      = n0.v*R0.v*tgphi0.v 
+            den_d.v      = sqrt(v4r4_1.v+stgz.v+stgphi.v) 
+            den_s.v      = sqrt(v4r4_1.v+stgz0.v+stgphi0.v)
+            rat_s.v      = num_s.v/den_s.v 
+            rat_d.v      = num_d.v/den_d.v 
+            n_o_phi.v    = rat_d.v-rat_s.v 
+#endif
+      end function n_refract_phi_f243_xmm4r4
     
 
 
