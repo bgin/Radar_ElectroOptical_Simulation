@@ -482,6 +482,90 @@ module atmos_refraction_xmm4r4
             t0.v  = erf(x.v*C0707106781186547524400844362105.v)
             int.v = C05.v*(v4r4_1.v+t0.v)
       end function prob_integral_xmm4r4
+
+       !формулу (3.35) для расчета регулярной
+       !рефракции оптических волн в земной атмосфере.
+       ! formula 3.37, page: 68
+      pure function analytic_sol_L1_f337_xmm4r4(beta,dn0,z0,H) result(L1)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)            
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L1_f337_xmm4r4
+            !dir$ attributes forceinline :: analytic_sol_L1_f337_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: analytic_sol_L1_f337_xmm4r4
+#endif  
+            use mod_vecconsts, only : v4r4_1
+            type(XMM4r4_t),      intent(in) :: beta 
+            type(XMM4r4_t),      intent(in) :: dn0 
+            type(XMM4r4_t),      intent(in) :: z0 
+            type(XMM4r4_t),      intent(in) :: H 
+            type(XMM4r4_t)                  :: L1 
+            type(XMM4r4_t),      parameter  :: C6378 = XMM4r4_t(6378.0_sp)
+            type(XMM4r4_t),      parameter  :: Cn20  = XMM4r4_t(-2.0_sp)
+            type(XMM4r4_t),      parameter  :: C20   = XMM4r4_t(2.0_sp)
+            type(XMM4r4_t),      automatic  :: cosz0,ctgz0,ea1
+            type(XMM4r4_t),      automatic  :: ea2,exp1,exp2,num2
+            type(XMM4r4_t),      automatic  :: den2,num1,den1,sdn0
+            type(XMM4r4_t),      automatic  :: stgz0,rat1,rat2 
+             !dir$ attributes align : 16 :: C6378 
+             !dir$ attributes align : 16 :: Cn20
+             !dir$ attributes align : 16 :: C20 
+             !dir$ attributes align : 16 :: cosz0 
+             !dir$ attributes align : 16 :: ctgz0 
+             !dir$ attributes align : 16 :: ea1 
+             !dir$ attributes align : 16 :: ea2
+             !dir$ attributes align : 16 :: exp1 
+             !dir$ attributes align : 16 :: exp2 
+             !dir$ attributes align : 16 :: num2 
+             !dir$ attributes align : 16 :: den2 
+             !dir$ attributes align : 16 :: num1 
+             !dir$ attributes align : 16 :: den1 
+             !dir$ attributes align : 16 :: sdn0 
+             !dir$ attributes align : 16 :: stgz0 
+             !dir$ attributes align : 16 :: rat1 
+             !dir$ attributes align : 16 :: rat2 
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#endif             
+             do j=0,3  
+                 ea1.v(j)   = Cn20.v(j)*beta.v(j)*H.v(j)
+                 ea2.v(j)   = -beta.v(j)*H.v(j) 
+                 ctgz0.v(j) = v4r4_1.v(j)/tan(z0.v(j))
+                 sdn0.v(j)  = dn0.v(j)*dn0.v(j) 
+                 exp1.v(j)  = exp(ea1.v(j))
+                 num1.v(j)  = beta.v(j)*a.v(j)*sdn0.v(j)*ctgz0.v(j)
+                 cosz0.v(j) = cos(z0.v(j))
+                 den1.v(j)  = cosz0.v(j)*cosz0.v(j) 
+                 exp2.v(j)  = exp(ea2.v(j))
+                 rat1.v(j)  = num1.v(j)/den1.v(j) 
+                 stgz0.v(j) = C20.v(j)*(tgz0.v(j)*tgz0.v(j)) 
+                 den2.v(j)  = sqrt(v4r4_1.v(j)+stgz0.v(j)*(H.v(j)/a.v(j)))
+                 num2.v(j)  = exp1.v(j)-exp2.v(j) 
+                 rat2.v(j)  = num2.v(j)/den2.v(j) 
+                 L1.v(j)    = rat1.v(j)*rat2.v(j) 
+             end do 
+#else 
+                 ea1.v   = Cn20.v*beta.v*H.v
+                 ea2.v   = -beta.v*H.v
+                 ctgz0.v = v4r4_1.v/tan(z0.v)
+                 sdn0.v  = dn0.v*dn0.v
+                 exp1.v  = exp(ea1.v)
+                 num1.v = beta.v*a.v*sdn0.v*ctgz0.v
+                 cosz0.v = cos(z0.v)
+                 den1.v  = cosz0.v*cosz0.v 
+                 exp2.v  = exp(ea2.v)
+                 rat1.v  = num1.v/den1.v 
+                 stgz0.v = C20.v*(tgz0.v*tgz0.v) 
+                 den2.v  = sqrt(v4r4_1.v+stgz0.v*(H.v/a.v))
+                 num2.v  = exp1.v-exp2.v 
+                 rat2.v  = num2.v/den2.v 
+                 L1.v    = rat1.v*rat2.v 
+#endif
+      end function analytic_sol_L1_f337_xmm4r4
     
 
 
