@@ -286,6 +286,42 @@ module atmos_refraction_xmm4r4
             n_o_phi.v    = rat_d.v-rat_s.v 
 #endif
       end function n_refract_phi_f243_xmm4r4
+
+      !Радиус кривизны траектории луча, formula 2.51, page: 47
+      pure function rad_ray_curvature_f251_xmm4r4(n,z,dndr) result(rho)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)            
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: rad_ray_curvature_f251_xmm4r4
+            !dir$ attributes forceinline :: rad_ray_curvature_f251_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rad_ray_curvature_f251_xmm4r4
+#endif 
+            type(XMM4r4_t),       intent(in) :: n 
+            type(XMM4r4_t),       intent(in) :: z 
+            type(XMM4r4_t),       intent(in) :: dndr 
+            type(XMM4r4_t)                   :: rho 
+            type(XMM4r4_t),       automatic  :: t0 
+            type(XMM4r4_t),       automatic  :: sinz 
+            !dir$ attributes align : 16 :: t0 
+            !dir$ attributes align : 16 :: sinz 
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#endif             
+             do j=0,3  
+                 sinz.v(j) = sin(z.v(j))
+                 t0.v(j)   = -n.v(j)/sinz.v(j) 
+                 rho.v(j)  = t0.v(j)*dndr.v(j) 
+             end do 
+#else 
+                 sinz.v = sin(z.v)
+                 t0.v   = -n.v/sinz.v
+                 rho.v  = t0.v*dndr.v
+#endif
+      end function rad_ray_curvature_f251_xmm4r4
     
 
 
