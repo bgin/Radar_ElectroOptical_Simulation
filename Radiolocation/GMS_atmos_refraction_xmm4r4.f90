@@ -420,6 +420,46 @@ module atmos_refraction_xmm4r4
               nah.v  = t0.v*exp(earg.v) 
 #endif 
       end function n_avg_h_f145_xmm4r4
+
+      !связь между величинами dn0 , beta, formula 1.46, page: 29
+      pure function approx_beta_coeff_f146_xmm4r4(dn0) result(beta)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)            
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: approx_beta_coeff_f146_xmm4r4
+            !dir$ attributes forceinline :: approx_beta_coeff_f146_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: approx_beta_coeff_f146_xmm4r4
+#endif  
+            type(XMM4r4_t),        intent(in) :: dn0 
+            type(XMM4r4_t)                    :: beta 
+            type(XMM4r4_t),        parameter  :: C000000732 = &
+                                                   XMM4r4_t(0.00000732_sp)
+            type(XMM4r4_t),        parameter  :: C5577      = &
+                                                   XMM4r4_t(5577.0_sp)
+            type(XMM4r4_t),        automatic  :: t0 
+            type(XMM4r4_t),        automatic  :: earg 
+            !dir$ attributes align : 16 :: C000000732
+            !dir$ attributes align : 16 :: C5577
+            !dir$ attributes align : 16 :: earg 
+            !dir$ attributes align : 16 :: t0  
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#endif             
+             do j=0,3  
+                t0.v(j)   = C000000732.v(j)/dn0.v(j) 
+                earg.v(j) = C5577.v(j)*dn0.v(j) 
+                beta.v(j) = t0.v(j)*exp(earg.v(j))  
+             end do 
+#else 
+                t0.v   = C000000732.v/dn0.v 
+                earg.v = C5577.v*dn0.v
+                beta.v = t0.v*exp(earg.v)  
+#endif
+      end function approx_beta_coeff_f146_xmm4r4
     
 
 
