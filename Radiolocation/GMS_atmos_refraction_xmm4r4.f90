@@ -460,6 +460,28 @@ module atmos_refraction_xmm4r4
                 beta.v = t0.v*exp(earg.v)  
 #endif
       end function approx_beta_coeff_f146_xmm4r4
+
+      pure function prob_integral_xmm4r4(x) result(int)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)            
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: prob_integral_xmm4r4
+            !dir$ attributes forceinline :: prob_integral_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: prob_integral_xmm4r4
+#endif  
+            use mod_vecconsts, only : v4r4_1
+            type(XMM4r4_t),        intent(in) :: x 
+            type(XMM4r4_t)                    :: int 
+            type(XMM4r4_t),        parameter  :: C0707106781186547524400844362105 = &
+                                                   XMM4r4_t(0.707106781186547524400844362105_sp)
+            type(XMM4r4_t),        parameter  :: C05 = & 
+                                                   XMM4r4_t(0.5_sp)
+            type(XMM4r4_t),        automatic  ::  t0 
+            !dir$ attributes align : 16 :: C0707106781186547524400844362105
+            !dir$ attributes align : 16 :: C05 
+            !dir$ attributes align : 16 :: t0 
+            t0.v  = erf(x.v*C0707106781186547524400844362105.v)
+            int.v = C05.v*(v4r4_1.v+t0.v)
+      end function prob_integral_xmm4r4
     
 
 
