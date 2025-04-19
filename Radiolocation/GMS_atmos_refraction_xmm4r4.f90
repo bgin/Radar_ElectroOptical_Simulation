@@ -322,6 +322,48 @@ module atmos_refraction_xmm4r4
                  rho.v  = t0.v*dndr.v
 #endif
       end function rad_ray_curvature_f251_xmm4r4
+
+     !относителыную кривизну по-1
+     !верхности Земли и траектории волны, formula: 2.54, page: 48
+     pure function k_relative_f254_xmm4r4(n,z,dndr) result(k_rel)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)            
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: k_relative_f254_xmm4r4
+            !dir$ attributes forceinline :: k_relative_f254_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: k_relative_f254_xmm4r4
+#endif 
+            use mod_vecconsts,    only : v4r4_1
+            type(XMM4r4_t),       intent(in) :: n 
+            type(XMM4r4_t),       intent(in) :: z 
+            type(XMM4r4_t),       intent(in) :: dndr 
+            type(XMM4r4_t)                   :: k_rel 
+            type(XMM4r4_t),       parameter  :: C000015678896205707118218877391 = &
+                                                XMM4r4_t(0.00015678896205707118218877391_sp)
+            type(XMM4r4_t),       automatic  :: inv_rho 
+             !dir$ attributes align : 16 :: inv_rho 
+             !dir$ attributes align : 16 :: t0 
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+#endif 
+             t0    =    rad_ray_curvature_f251_xmm4r4(n,z,dndr)
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#endif             
+             do j=0,3  
+                inv_rho.v(j) = v4r4_1.v(j)/t0.v(j)
+                k_rel.v(j)   = C000015678896205707118218877391.v(j)* &
+                               inv_rho.v(j)
+             end do 
+#else 
+                inv_rho.v = v4r4_1.v/t0.v
+                k_rel.v   = C000015678896205707118218877391.v* &
+                               inv_rho.v 
+#endif 
+     end function k_relative_f254_xmm4r4
     
 
 
