@@ -382,6 +382,44 @@ module atmos_refraction_xmm4r4
             !dir$ attributes align : 16 ::   C000015678896205707118218877391 
             R.v  =  C000015678896205707118218877391.v*dndh.v       
       end function rho_to_a_f267_xmm4r4 
+
+      !Усредненная зависимость показателя преломления от 
+      !высоты, formula: 1.45, page 29
+      pure function n_avg_h_f145_xmm4r4(dn0,beta,h) result(nah)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)            
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: n_avg_h_f145_xmm4r4
+            !dir$ attributes forceinline :: n_avg_h_f145_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: n_avg_h_f145_xmm4r4
+#endif 
+            use mod_vecconsts,    only : v4r4_1
+            type(XMM4r4_t),      intent(in) :: dn0 
+            type(XMM4r4_t),      intent(in) :: beta 
+            type(XMM4r4_t),      intent(in) :: h 
+            type(XMM4r4_t)                  :: nah 
+            type(XMM4r4_t),      automatic  :: earg 
+            type(XMM4r4_t),      automatic  :: t0 
+            !dir$ attributes align : 16 :: earg 
+            !dir$ attributes align : 16 :: t0 
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#endif             
+             do j=0,3  
+                t0.v(j)   = v4r4_1.v(j)+dn0.v(j) 
+                earg.v(j) = -beta.v(j)*h.v(j) 
+                nah.v(j)  = t0.v(j)*exp(earg.v(j)) 
+             end do 
+#else 
+              t0.v   = v4r4_1.v+dn0.v 
+              earg.v = -beta.v*h.v 
+              nah.v  = t0.v*exp(earg.v) 
+#endif 
+      end function n_avg_h_f145_xmm4r4
     
 
 
