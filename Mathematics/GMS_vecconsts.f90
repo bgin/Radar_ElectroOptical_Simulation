@@ -140,6 +140,8 @@ module mod_vecconsts
     type(XMM4r4_t), parameter, public  :: v4r4_n1over4    = XMM4r4_t(-0.25E+00_sp)
     
     type(XMM4r4_t), parameter, public  :: v4r4_1over8     = XMM4r4_t(0.125E+00_sp)
+
+    type(XMM4r4_t), parameter, public  :: v4r4_4         = XMM4r4_t(4.0E+00_sp)
     
     type(XMM4r4_t), parameter, public  :: v4r4_2         = XMM4r4_t(2.0E+00_sp)
     
