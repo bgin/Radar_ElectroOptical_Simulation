@@ -939,6 +939,72 @@ module atmos_refraction_xmm4r4
 #endif
       end function analytic_sol_n90_L3_f351_xmm4r4
 
+       ! z0 близко к 90°.
+       ! The angle of arrival close to horizon.
+       ! formula 3.51, page: 70
+       ! The whole solution for angle alpha near 90 (deg)
+       pure function refraction_angle_n90_f351_xmm4r4(dn0,beta,z0) result(alpha)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)            
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_n90_f351_xmm4r4
+            !dir$ attributes forceinline :: refraction_angle_n90_f351_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refraction_angle_n90_f351_xmm4r4
+#endif  
+            use mod_vecconsts, only : v4r4_1
+            type(XMM4r4_t),     intent(in) :: dn0 
+            type(XMM4r4_t),     intent(in) :: beta 
+            type(XMM4r4_t),     intent(in) :: z0 
+            type(XMM4r4_t)                 :: alpha 
+            type(XMM4r4_t),     parameter  :: a = XMM4r4_t(6378.0_sp)
+            type(XMM4r4_t),     automatic  :: ctgz0, badn0
+            type(XMM4r4_t),     automatic  :: cosz0, scosz0 
+            type(XMM4r4_t),     automatic  :: L2, L3 
+            type(XMM4r4_t),     automatic  :: t0, t1 
+            type(XMM4r4_t),     automatic  :: rat 
+            !dir$ attributes align : 16 :: a 
+            !dir$ attributes align : 16 :: ctgz0 
+            !dir$ attributes align : 16 :: badn0 
+            !dir$ attributes align : 16 :: cosz0 
+            !dir$ attributes align : 16 :: scosz0 
+            !dir$ attributes align : 16 :: L2 
+            !dir$ attributes align : 16 :: L3 
+            !dir$ attributes align : 16 :: t0 
+            !dir$ attributes align : 16 :: t1 
+            !dir$ attributes align : 16 :: rat 
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+#endif 
+             L2 = analytic_sol_n90_L2_f351_xmm4r4(dn0,beta,z0)
+             L3 = analytic_sol_n90_L3_f351_xmm4r4(dn0,beta,z0)
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+ #if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#endif             
+             do j=0,3
+                 cosz0.v(j) = cos(z0.v(j))
+                 badn0.v(j) = beta.v(j)*dn0.v(j)*a.v(j) 
+                 ctgz0.v(j) = v4r4_1.v(j)/tan(z0.v(j))
+                 scosz0.v(j)= cosz0.v(j)*cosz0.v(j) 
+                 rat.v(j)   = ctgz0.v(j)/scosz0.v(j) 
+                 t0.v(j)    = -dn0.v(j)*ctgz0.v(j)+(v4r4_1.v(j)-badn0.v(j)) 
+                 t1.v(j)    = rat.v(j)*L2.v(j)+badn0.v(j)*rat.v(j)*L3.v(j) 
+                 alpha.v(j) = t0.v(j)*t1.v(j) 
+             end do 
+#else 
+                 cosz0.v = cos(z0.v)
+                 badn0.v = beta.v*dn0.v*a.v
+                 ctgz0.v = v4r4_1.v/tan(z0.v)
+                 scosz0.v= cosz0.v*cosz0.v
+                 rat.v   = ctgz0.v/scosz0.v
+                 t0.v    = -dn0.v*ctgz0.v+(v4r4_1.v-badn0.v) 
+                 t1.v    = rat.v*L2.v+badn0.v*rat.v*L3.v
+                 alpha.v = t0.v*t1.v
+#endif 
+       end function refraction_angle_n90_f351_xmm4r4
+
 
 
 
