@@ -1005,6 +1005,51 @@ module atmos_refraction_xmm4r4
 #endif 
        end function refraction_angle_n90_f351_xmm4r4
 
+        !z0 = 90° формула (3.51) упрощается.
+       ! formula: 3.52, page: 71
+       pure function refraction_angle_at90_f352_xmm4r4(dn0,beta) result(alpha)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)            
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_at90_f352_xmm4r4
+            !dir$ attributes forceinline :: refraction_angle_at90_f352_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refraction_angle_at90_f352_xmm4r4
+#endif  
+            use mod_vecconsts, only : v4r4_1, v4r4_1over2
+            type(XMM4r4_t),     intent(in) :: dn0 
+            type(XMM4r4_t),     intent(in) :: beta
+            type(XMM4r4_t)                 :: alpha 
+            type(XMM4r4_t),     parameter  :: a =  XMM4r4_t(6378.0_sp)
+            type(XMM4r4_t),     parameter :: C041421356237309504880168872421 =                  &
+                                                   XMM4r4_t(0.41421356237309504880168872421_sp) 
+            type(XMM4r4_t),     parameter :: C314159265358979323846264338328 =                  &
+                                                   XMM4r4_t(3.14159265358979323846264338328_sp)
+            type(XMM4r4_t),     automatic  :: t0, t1, t2 
+            !dir$ attributes align : 16 :: a 
+            !dir$ attributes align : 16 :: C041421356237309504880168872421
+            !dir$ attributes align : 16 :: C314159265358979323846264338328 
+            !dir$ attributes align : 16 :: t0 
+            !dir$ attributes align : 16 :: t1 
+            !dir$ attributes align : 16 :: t2 
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#endif             
+             do j=0,3  
+                 t0.v(j) = dn0.v(j)*sqrt((C314159265358979323846264338328.v(j)*beta.v(j)*a.v(j))*v4r4_1over2.v(j))
+                 t1.v(j) = v4r4_1.v(j)+C041421356237309504880168872421.v(j)*beta.v(j)*a.v(j)*dn0.v(j) 
+                 alpha.v(j) = t0.v(j)*t1.v(j) 
+             end do 
+#else 
+                 t0.v = dn0.v*sqrt((C314159265358979323846264338328.v*beta.v*a.v)*v4r4_1over2.v)
+                 t1.v = v4r4_1.v+C041421356237309504880168872421.v*beta.v*a.v*dn0.v
+                 alpha.v = t0.v*t1.v  
+#endif 
+       end function refraction_angle_at90_f352_xmm4r4 
+
 
 
 
