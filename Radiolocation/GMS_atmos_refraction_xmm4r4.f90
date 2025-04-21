@@ -867,6 +867,78 @@ module atmos_refraction_xmm4r4
 #endif
       end function analytic_sol_n90_L2_f351_xmm4r4
 
+       ! z0 близко к 90°.
+       ! The angle of arrival close to horizon.
+       ! formula 3.51, page: 70
+       ! analytic solution L3 for angle near 90 (deg)
+       pure function analytic_sol_n90_L3_f351_xmm4r4(dn0,beta,z0) result(L2) 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)            
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_n90_L3_f351_xmm4r4
+            !dir$ attributes forceinline :: analytic_sol_n90_L3_f351_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: analytic_sol_n90_L3_f351_xmm4r4
+#endif  
+            use mod_vecconsts, only : v4r4_1, v4r4_2, v4r4_4 
+            type(XMM4r4_t),     intent(in) :: dn0 
+            type(XMM4r4_t),     intent(in) :: beta 
+            type(XMM4r4_t),     intent(in) :: z0 
+            type(XMM4r4_t)                 :: L2 
+            type(XMM4r4_t),     parameter  :: a = XMM4r4_t(6378.0_sp)
+            type(XMM4r4_t),     parameter :: C1253314137315500251207882642406 =  &
+                                                    XMM4r4_t(1.253314137315500251207882642406_sp) 
+            type(XMM4r4_t),     parameter :: C0318309886183790671537767526745 =  &
+                                                    XMM4r4_t(0.318309886183790671537767526745_sp)
+            type(XMM4r4_t),     automatic :: sba, tgz0
+            type(XMM4r4_t),     automatic :: stgz0, ctgz0 
+            type(XMM4r4_t),     automatic :: earg, exp1
+            type(XMM4r4_t),     automatic :: t0,   t1 
+            type(XMM4r4_t),     automatic :: strm 
+             !dir$ attributes align : 16 :: a 
+             !dir$ attributes align : 16 :: C1253314137315500251207882642406
+             !dir$ attributes align : 16 :: C0318309886183790671537767526745 
+             !dir$ attributes align : 16 :: sba 
+             !dir$ attributes align : 16 :: tgz0 
+             !dir$ attributes align : 16 :: stgz0 
+             !dir$ attributes align : 16 :: ctgz0 
+             !dir$ attributes align : 16 :: earg 
+             !dir$ attributes align : 16 :: exp1 
+             !dir$ attributes align : 16 :: t0 
+             !dir$ attributes align : 16 :: t1 
+             !dir$ attributes align : 16 :: strm 
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#endif             
+             do j=0,3  
+                 sba.v(j)  = sqrt(v4r4_2.v(j)*beta.v(j)*a.v(j))
+                 tgz0.v(j) = tan(z0.v(j))
+                 ctgz0.v(j)= v4r4_1.v(j)/tan(z0.v(j))
+                 earg.v(j) = beta.v(j)*a.v(j)/(tgz0.v(j)*tgz0.v(j))
+                 exp1.v(j) = exp(earg.v(j))
+                 t0.v(j)   = dn0.v(j)*(sba.v(j)/tgz0.v(j))*exp1.v(j) 
+                 strm.v(j) = sqrt(v4r4_4.v(j)*beta.v(j)*a.v(j)*C0318309886183790671537767526745.v(j))
+                 t1.v(j)   = C1253314137315500251207882642406.v(j)* &
+                             (v4r4_1.v(j)-strm.v(j)*ctgz0.v(j))
+                 L2.v(j)   = t0.v(j)*t1.v(j) 
+             end do 
+#else 
+                 sba.v  = sqrt(v4r4_2.v*beta.v*a.v)
+                 tgz0.v = tan(z0.v)
+                 ctgz0.v= v4r4_1.v/tan(z0.v)
+                 earg.v = beta.v*a.v/(v4r4_2.v*tgz0.v*tgz0.v)
+                 exp1.v = exp(earg.v)
+                 t0.v   = dn0.v*(sba.v/tgz0.v)*exp1.v
+                 strm.v = sqrt(v4r4_4.v*beta.v*a.v*C0318309886183790671537767526745.v)
+                 t1.v   = C1253314137315500251207882642406.v* &
+                             (v4r4_1.v-strm.v*ctgz0.v)
+                 L2.v   = t0.v*t1.v 
+#endif
+      end function analytic_sol_n90_L3_f351_xmm4r4
+
 
 
 
