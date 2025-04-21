@@ -1137,12 +1137,12 @@ module atmos_refraction_xmm4r4
             !dir$ attributes forceinline :: analytic_sol_L2_gl5cm_f43_xmm4r4
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: analytic_sol_L2_gl5cm_f43_xmm4r4
 #endif  
-            use mod_vecconsts, only : v4r4_1, v4r4_2, v4r4_n2, v4r4_1over2 
+            use mod_vecconsts, only : v4r4_1, v4r4_2, v4r4_1over2 
             type(XMM4r4_t),     intent(in) :: dn0 
             type(XMM4r4_t),     intent(in) :: beta 
             type(XMM4r4_t),     intent(in) :: z0 
             type(XMM4r4_t),     intent(in) :: H 
-            type(XMM4r4_t)                 :: L1 
+            type(XMM4r4_t)                 :: L2
             type(XMM4r4_t),     parameter  :: a =  XMM4r4_t(6378.0_sp)
             type(XMM4r4_t),     parameter  :: C314159265358979323846264338328 =   &
                                                           XMM4r4_t(3.14159265358979323846264338328_sp)
@@ -1172,6 +1172,51 @@ module atmos_refraction_xmm4r4
             trm2.v   = trm1.v*exp1.v 
             L2.v     = trm2.v*trm3.v        
       end function analytic_sol_L2_gl5cm_f43_xmm4r4
+
+      pure function analytic_sol_L3_gl5cm_f43_xmm4r4(dn0,beta,z0,H) result(L3)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)            
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L3_gl5cm_f43_xmm4r4
+            !dir$ attributes forceinline :: analytic_sol_L3_gl5cm_f43_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: analytic_sol_L3_gl5cm_f43_xmm4r4
+#endif  
+            use mod_vecconsts, only : v4r4_1, v4r4_2
+            type(XMM4r4_t),     intent(in) :: dn0 
+            type(XMM4r4_t),     intent(in) :: beta 
+            type(XMM4r4_t),     intent(in) :: z0 
+            type(XMM4r4_t),     intent(in) :: H 
+            type(XMM4r4_t)                 :: L1 
+            type(XMM4r4_t),     parameter  :: a =  XMM4r4_t(6378.0_sp)
+            type(XMM4r4_t),     parameter  :: C314159265358979323846264338328 =   &
+                                                          XMM4r4_t(3.14159265358979323846264338328_sp)
+            type(XMM4r4_t), automatic :: piba2, ctgz0, 
+            type(XMM4r4_t), automatic :: bactgz0, exp1 
+            type(XMM4r4_t), automatic :: t0, t1 
+            type(XMM4r4_t), automatic :: trm1, trm2, trm3 
+            !dir$ attributes align : 16 :: a 
+            !dir$ attributes align : 16 :: C314159265358979323846264338328
+            !dir$ attributes align : 16 :: piba2 
+            !dir$ attributes align : 16 :: ctgz0 
+            !dir$ attributes align : 16 :: bactgz0 
+            !dir$ attributes align : 16 :: exp1 
+            !dir$ attributes align : 16 :: t0 
+            !dir$ attributes align : 16 :: t1 
+            !dir$ attributes align : 16 :: trm1 
+            !dir$ attributes align : 16 :: trm2 
+            !dir$ attributes align : 16 :: trm3 
+            piba2.v  = sqrt(C314159265358979323846264338328.v*beta.v*a.v)
+            ctgz0.v  = v4r4_1.v/tan(z0.v)
+            bactgz0.v= beta.v*a.v*ctgz0.v*ctgz0.v 
+            exp1.v   = exp(bactgz0.v)
+            trm1.v   = dn0.v*sqrt(piba2.v)*ctgz0.v 
+            t0       = prob_integral_r4(sqrt(v4r4_2.v*bactgz0.v+v4r4_4.v*beta.v*H.v))
+            t1       = prob_integral_r4(sqrt(v4r4_2.v*bactgz0.v))
+            trm3.v   = t0.v-t1.v 
+            trm2.v   = trm1.v*exp1.v 
+            L2.v     = trm2.v*trm3.v        
+      end function analytic_sol_L3_gl5cm_f43_xmm4r4
+
+
 
 
 
