@@ -641,6 +641,82 @@ module atmos_refraction_xmm4r4
                  L2.v     = t0.v*exp1.v*t1.v
 #endif
       end function analytic_sol_L2_f341_xmm4r4
+
+       !формулa (3.35) для расчета регулярной
+       !рефракции оптических волн в земной атмосфере.
+       ! formula 3.42, page: 68
+      pure function analytic_sol_L3_f342_xmm4r4(dn0,beta,z0,H) result(L3)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)            
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L3_f342_xmm4r4
+            !dir$ attributes forceinline :: analytic_sol_L3_f342_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: analytic_sol_L3_f342_xmm4r4
+#endif  
+            use mod_vecconsts, only : v4r4_1
+            type(XMM4r4_t),      intent(in) :: beta 
+            type(XMM4r4_t),      intent(in) :: dn0 
+            type(XMM4r4_t),      intent(in) :: z0 
+            type(XMM4r4_t),      intent(in) :: H 
+            type(XMM4r4_t)                  :: L2 
+            type(XMM4r4_t),      parameter  :: C6378 = XMM4r4_t(6378.0_sp)
+            type(XMM4r4_t),      parameter  :: C20   = XMM4r4_t(2.0_sp)
+            type(XMM4r4_t),      parameter  :: C1253314137315500251207882642406 = &
+                                                       XMM4r4_t(1.253314137315500251207882642406_sp)
+            type(XMM4r4_t),      parameter  :: C05   = XMM4r4_t(0.5_sp)  
+            type(XMM4r4_t),      parameter  :: C40   = XMM4r4_t(4.0_sp)                                           
+            type(XMM4r4_t), automatic :: sba, ctgz0, ba 
+            type(XMM4r4_t), automatic :: sctgz0, tbh, phi1, phi2 
+            type(XMM4r4_t), automatic :: exp1, bactgz0, t0, t1  
+             !dir$ attributes align : 16 :: C6378 
+             !dir$ attributes align : 16 :: C20 
+             !dir$ attributes align : 16 :: sba 
+             !dir$ attributes align : 16 :: ctgz0 
+             !dir$ attributes align : 16 :: ba 
+             !dir$ attributes align : 16 :: sctgz0 
+             !dir$ attributes align : 16 :: tbh 
+             !dir$ attributes align : 16 :: phi1 
+             !dir$ attributes align : 16 :: phi2 
+             !dir$ attributes align : 16 :: exp1 
+             !dir$ attributes align : 16 :: bactgz0 
+             !dir$ attributes align : 16 :: t0 
+             !dir$ attributes align : 16 :: t1 
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#endif             
+             do j=0,3  
+                 sba.v(j)    = sqrt(C20.v(j)*beta.v(j)*C6378.v(j))
+                 ctgz0.v(j)  = v4r4_1.v(j)/tan(z0.v(j))
+                 sctgz0.v(j) = ctgz0.v(j)*ctgz0.v(j)  
+                 bactgz0.v(j)= C20.v(j)*beta.v(j)*C6378.v(j)*sctgz0.v(j)  
+                 tbH.v(j)    = c40.v(j)*beta.v(j)*H.v(j)  
+                 t0.v(j)     = dn0.v(j)*sqrt(beta.v(j)*C6378.v(j)*ctgz0.v(j))
+                 exp1.v(j)   = exp(sctgz0.v(j))* &
+                                 C1253314137315500251207882642406.v(j)
+                 phi1.v(j)   = prob_integral_xmm4r4(sqrt(bactgz0.v(j)+tbH.v(j)))
+                 phi2.v(j)   = prob_integral_xmm4r4(sqrt(bactgz0.v(j)))
+                 t1.v(j)     = phi1.v(j)-phi2.v(j) 
+                 L2.v(j)     = t0.v(j)*exp1.v(j)*t1.v(j) 
+             end do 
+#else 
+                 sba.v    = sqrt(C20.v*beta.v*C6378.v)
+                 ctgz0.v  = v4r4_1.v/tan(z0.v)
+                 sctgz0.v = ctgz0.v*ctgz0.v 
+                 bactgz0.v= C20.v*beta.v*C6378.v*sctgz0.v 
+                 tbH.v    = c40.v*beta.v*H.v 
+                 t0.v     = dn0.v*sqrt(beta.v*C6378.v*ctgz0.v)
+                 exp1.v   = exp(sctgz0.v)* &
+                                 C1253314137315500251207882642406.v
+                 phi1.v   = prob_integral_xmm4r4(sqrt(bactgz0.v+tbH.v))
+                 phi2.v   = prob_integral_xmm4r4(sqrt(bactgz0.v))
+                 t1.v     = phi1.v-phi2.v
+                 L2.v     = t0.v*exp1.v*t1.v
+#endif
+      end function analytic_sol_L3_f342_xmm4r4
     
 
 
