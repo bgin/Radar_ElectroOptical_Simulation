@@ -718,7 +718,82 @@ module atmos_refraction_xmm4r4
 #endif
       end function analytic_sol_L3_f342_xmm4r4
     
-
+       !Формула' (3.35) справедлива во всем диапазоне 
+       !изменения зенитных углов (0 < z0 <90°) при любых 
+       !зависимостях n(h).
+       ! The angle of refraction.
+      pure function refraction_angle_f345_xmm4r4(n0,nh,z0,dn0,beta,H) result(alpha)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)            
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_f345_xmm4r4
+            !dir$ attributes forceinline :: refraction_angle_f345_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refraction_angle_f345_xmm4r4
+#endif  
+            use mod_vecconsts, only : v4r4_1
+            type(XMM4r4_t),     intent(in) :: n0 
+            type(XMM4r4_t),     intent(in) :: nh 
+            type(XMM4r4_t),     intent(in) :: z0 
+            type(XMM4r4_t),     intent(in) :: dn0 
+            type(XMM4r4_t),     intent(in) :: beta 
+            type(XMM4r4_t),     intent(in) :: H 
+            type(XMM4r4_t)                 :: alpha 
+            type(XMM4r4_t),     parameter  :: a = XMM4r4_t(6378.0_sp)
+            type(XMM4r4_t),     automatic  :: ctgz0, ln0nh
+            type(XMM4r4_t),     automatic  :: ssecz0,badn0 
+            type(XMM4r4_t),     automatic  :: ctgzsec0, t0 
+            type(XMM4r4_t),     automatic  :: t1,       t2 
+            type(XMM4r4_t),     automatic  :: L1,       L2 
+            type(XMM4r4_t),     automatic  :: L3 
+             !dir$ attributes align : 16 :: a
+             !dir$ attributes align : 16 :: ctgz0 
+             !dir$ attributes align : 16 :: ln0nh 
+             !dir$ attributes align : 16 :: ssecz0 
+             !dir$ attributes align : 16 :: badn0 
+             !dir$ attributes align : 16 :: ctgzsec0 
+             !dir$ attributes align : 16 :: t0 
+             !dir$ attributes align : 16 :: t1 
+             !dir$ attributes align : 16 :: t2 
+             !dir$ attributes align : 16 :: L1 
+             !dir$ attributes align : 16 :: L2 
+             !dir$ attributes align : 16 :: L3 
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+#endif 
+             L1  =   analytic_sol_L1_f337_xmm4r4(dn0,beta,z0,H)   
+             L2  =   analytic_sol_L2_f341_xmm4r4(dn0,beta,z0,H)
+             L3  =   analytic_sol_L3_f342_xmm4r4(dn0,beta,z0,H)   
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#endif             
+             do j=0,3      
+                 badn0.v(j)    = beta.v(j)*a.v(j)*dn0.v(j) 
+                 ctgz0.v(j)    = v4r4_1.v(j)/tan(z0.v(j))
+                 ln0nh.v(j)    = log(n0.v(j)/nh.v(j)) 
+                 t0.v(j)       = v4r4_1.v(j)/sin(z0.v(j))
+                 ssecz0.v(j)   = t0.v(j)*t0.v(j) 
+                 t0.v(j)       = -ctgz0.v(j)*ln0nh.v(j)+L1.v(j) 
+                 ctgzsec0.v(j) = ctgz0.v(j)*ssecz0.v(j)
+                 t1.v(j)       = ctgzsec0.v(j)*L2.v(j)
+                 t2.v(j)       = badn0.v(j)*ctgzsec0.v(j)*(L3.v(j)-L2.v(j))
+                 alpha.v(j)    = t0.v(j)+t1.v(j)+t2.v(j) 
+             end do 
+#else 
+                 badn0.v    = beta.v*a.v*dn0.v 
+                 ctgz0.v   = v4r4_1.v/tan(z0.v)
+                 ln0nh.v    = log(n0.v/nh.v) 
+                 t0.v       = v4r4_1.v/sin(z0.v)
+                 ssecz0.v   = t0.v*t0.v
+                 t0.v       = -ctgz0.v*ln0nh.v+L1.v
+                 ctgzsec0.v = ctgz0.v*ssecz0.v
+                 t1.v      = ctgzsec0.v*L2.v
+                 t2.v       = badn0.v*ctgzsec0.v*(L3.v-L2.v)
+                 alpha.v   = t0.v+t1.v+t2.v 
+#endif
+      end function refraction_angle_f345_xmm4r4
 
 
 
