@@ -1050,7 +1050,85 @@ module atmos_refraction_xmm4r4
 #endif 
        end function refraction_angle_at90_f352_xmm4r4 
 
-
+       !угол радиорефракции I типа в 
+       !земной атмосфере для длин волн, меньших 5 см
+       ! formula: 4.2, page 73.
+       pure function analytic_sol_L1_gl5cm_f42_xmm4r4(dn0,beta,z0,H) result(L1)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)            
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L1_gl5cm_f42_xmm4r4
+            !dir$ attributes forceinline :: analytic_sol_L1_gl5cm_f42_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: analytic_sol_L1_gl5cm_f42_xmm4r4
+#endif  
+            use mod_vecconsts, only : v4r4_1, v4r4_2, v4r4_n2 
+            type(XMM4r4_t),     intent(in) :: dn0 
+            type(XMM4r4_t),     intent(in) :: beta 
+            type(XMM4r4_t),     intent(in) :: z0 
+            type(XMM4r4_t),     intent(in) :: H 
+            type(XMM4r4_t)                 :: L1 
+            type(XMM4r4_t),     parameter  :: a =  XMM4r4_t(6378.0_sp)
+            type(XMM4r4_t),     automatic  :: ctgz0, secz0
+            type(XMM4r4_t),     automatic  :: tgz0, betaH  
+            type(XMM4r4_t),     automatic  :: t0,   t1 
+            type(XMM4r4_t),     automatic  :: earg, exp1 
+            type(XMM4r4_t),     automatic  :: exp2, sdn0ba 
+            type(XMM4r4_t),     automatic  :: trm1,  trm2 
+            type(XMM4r4_t),     automatic  :: trm3 
+            !dir$ attributes align : 16 :: a 
+            !dir$ attributes align : 16 :: ctgz0 
+            !dir$ attributes align : 16 :: secz0 
+            !dir$ attributes align : 16 :: tgz0 
+            !dir$ attributes align : 16 :: betaH
+            !dir$ attributes align : 16 :: t0 
+            !dir$ attributes align : 16 :: t1 
+            !dir$ attributes align : 16 :: earg 
+            !dir$ attributes align : 16 :: exp1 
+            !dir$ attributes align : 16 :: exp2 
+            !dir$ attributes align : 16 :: sdn0ba 
+            !dir$ attributes align : 16 :: trm1 
+            !dir$ attributes align : 16 :: trm2 
+            !dir$ attributes align : 16 :: trm3 
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#endif             
+             do j=0,3  
+                 betaH.v(j)  = beta.v(j)*H.v(j) 
+                 ctgz0.v(j)  = v4r4_1.v(j)/tan(z0.v(j))
+                 sdn0ba.v(j) = -dn0.v(j)*dn0.v(j)*beta.v(j)*a.v(j) 
+                 t0.v(j)     = tan(z0.v(j)) 
+                 tgz0.v(j)   = t0.v(j)*t0.v(j) 
+                 t1.v(j)     = v4r4_1.v(j)/cos(z0.v(j)) 
+                 secz0.v(j)  = t1.v(j)*t1.v(j) 
+                 exp1.v(j)   = exp(-betaH.v(j))
+                 ctgz0.v(j)  = v4r4_1.v(j)/t0.v(j) 
+                 exp2.v(j)   = exp(v4r4_n2.v(j)*betaH.v(j))
+                 trm1.v(j)   = sdn0ba.v(j)*ctgz0.v(j)*secz0.v(j) 
+                 trm2.v(j)   = exp1.v(j)-exp2.v(j) 
+                 trm3.v(j)   = sqrt(v4r4_1.v(j)+v4r4_2.v(j)*tgz0.v(j)*(H.v(j)/a.v(j)))
+                 L1.v(j)    = trm1.v(j)*trm2.v(j)*trm3.v(j) 
+             end do 
+#else 
+                 betaH.v  = beta.v*H.v
+                 ctgz0.v  = v4r4_1.v/tan(z0.v)
+                 sdn0ba.v = -dn0.v*dn0.v*beta.v*a.v
+                 t0.v     = tan(z0.v) 
+                 tgz0.v   = t0.v*t0.v 
+                 t1.v     = v4r4_1.v/cos(z0.v) 
+                 secz0.v  = t1.v*t1.v
+                 exp1.v   = exp(-betaH.v)
+                 ctgz0.v  = v4r4_1.v/t0.v
+                 exp2.v   = exp(v4r4_n2.v*betaH.v)
+                 trm1.v   = sdn0ba.v*ctgz0.v*secz0.v
+                 trm2.v   = exp1.v-exp2.v 
+                 trm3.v   = sqrt(v4r4_1.v+v4r4_2.v*tgz0.v*(H.v/a.v))
+                 L1.v    = trm1.v*trm2.v*trm3.v
+#endif
+      end function analytic_sol_L1_gl5cm_f42_xmm4r4
 
 
 
