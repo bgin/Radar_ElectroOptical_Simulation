@@ -1450,6 +1450,86 @@ module atmos_refraction_xmm4r4
              end do  
       end function compute_delnEps_f421_xmm4r4
 
+      pure function analytic_sol_L1_lo_ionosphere_f418_xmm4r4(fc,Nmf,z0,d,R0) result(L1)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L1_lo_ionosphere_f418_xmm4r4
+            !dir$ attributes forceinline :: analytic_sol_L1_lo_ionosphere_f418_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: analytic_sol_L1_lo_ionosphere_f418_xmm4r4
+#endif  
+            use mod_vecconsts,   only : v4r4_1, v4r4_n2, v4r4_2, v4r4_3, v4r4_5, &
+                                        v4r4_10, v4r4_19 
+            type(XMM4r4_t),      intent(in) :: fc 
+            type(XMM4r4_t),      intent(in) :: Nmf 
+            type(XMM4r4_t),      intent(in) :: z0 
+            type(XMM4r4_t),      intent(in) :: d 
+            type(XMM4r4_t),      intent(in) :: R0 
+            type(XMM4r4_t)                  :: L1 
+            type(XMM4r4_t),      automatic  :: delnM, m
+            type(XMM4r4_t),      automatic  :: c2mm, c12m 
+            type(XMM4r4_t),      automatic  :: ctgz0, cos2z0
+            type(XMM4r4_t),      automatic  :: c3m, tgz0 
+            type(XMM4r4_t),      automatic  :: c5mm, sqr 
+            type(XMM4r4_t),      automatic  :: t0, t1 
+            type(XMM4r4_t),      automatic  :: t2, t3 
+            type(XMM4r4_t),      automatic  :: trm1, trm2
+            type(XMM4r4_t),      automatic  :: trm3, trm4 
+            integer(kind=i4)                :: j
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)   
+             !dir$ attributes align : 16 :: delnM
+             !dir$ attributes align : 16 :: m 
+             !dir$ attributes align : 16 :: c2mm
+             !dir$ attributes align : 16 :: c12m 
+             !dir$ attributes align : 16 :: ctgz0
+             !dir$ attributes align : 16 :: cos2z0 
+             !dir$ attributes align : 16 :: c3m
+             !dir$ attributes align : 16 :: tgz0 
+             !dir$ attributes align : 16 :: c5mm
+             !dir$ attributes align : 16 :: sqr 
+             !dir$ attributes align : 16 :: t0 
+             !dir$ attributes align : 16 :: t1 
+             !dir$ attributes align : 16 :: t2 
+             !dir$ attributes align : 16 :: t3 
+             !dir$ attributes align : 16 :: trm1 
+             !dir$ attributes align : 16 :: trm2 
+             !dir$ attributes align : 16 :: trm3 
+             !dir$ attributes align : 16 :: trm4
+#endif       
+             dnM.v = compute_delnM_f414_xmm4r4(fc,Nmf)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#elif defined(__GNUC__) && !defined(__INTEL_COMPILER)
+             !$omp simd simdlen(4) linear(j:1)
+#endif
+             do j=0,3 
+                  tgz0.v(j)  = tan(z0.v(j))
+                  ctgz0.v(j) = v4r4_1.v(j)/tgz0.v(j) 
+                  m.v(j)     = (tgz0.v(j)*tgz0.v(j)*d.v(j))/R0.v(j)
+                  sqr.v(j)   = sqrt(v4r4_1.v(j)+v4r4_2.v(j)*m.v(j))
+                  t0.v(j)    = cos(z0.v(j))
+                  cos2z0.v(j)= t0.v(j)*t0.v(j) 
+                  t1.v(j)    = ctgz0.v(j)/cos2z0.v(j)
+                  t2.v(j)    = (v4r4_n2.v(j)*delNm.v(j))/m.v(j)
+                  c5mm.v(j)  = v4r4_5.v(j)*m.v(j)*m.v(j) 
+                  trm1.v(j)  = t2.v(j)*t1.v(j) 
+                  c3m.v(j)   = v4r4_3.v(j)*m.v(j)
+                  trm2.v(j)  = (v4r4_1.v(j)-sqr.v(j))+(v4r4_1.v(j)/c3m.v(j))*  &
+                                m.v(j)-v4r4_1.v(j)*sqr.v(j)+v4r4_1.v(j)
+                  t2.v(j)    = (v4r4_2.v(j)*delnM.v(j)*delnM.v(j))/c5mm.v(j)
+                  t3.v(j)    = tgz0.v(j)/cos2z0.v(j) 
+                  trm3.v(j)  = t2.v(j)*t3.v(j) 
+                  c2mm.v(j)  = v4r4_2.v(j)/(m.v(j)*m.v(j))
+                  c12m.v(j)  = v4r4_12.v(j)/m.v(j) 
+                  t1.v(j)    = c2mm.v(j)+c12m.v(j)+v4r4_12.v(j)+v4r4_6.v(j)*m.v(j) 
+                  t2.v(j)    = c2mm.v(j)+(v4r4_10.v(j)/m.v(j))+v4r4_10.v(j) 
+                  trm4.v(j)  = (v4r4_1.v(j)/sqr.v(j))*t1.v(j)-t2.v(j)
+                  L1.v(j)    = trm1.v(j)*trm2.v(j)+trm3.v(j)*trm4.v(j) 
+             end do      
+      end function analytic_sol_L1_lo_ionosphere_f418_xmm4r4
+
 
 
 
