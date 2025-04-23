@@ -1289,6 +1289,51 @@ module atmos_refraction_xmm4r4
 #endif 
       end function refraction_angle_for_gl5cm_f41_xmm4r4
 
+        !показатель преломления ионосферы в среднем
+      pure function refractive_idx_lo_ionosphere_f412_xmm4r4(h,d,f,Nmf) result(n)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_f412_xmm4r4
+            !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_f412_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refractive_idx_lo_ionosphere_f412_xmm4r4
+#endif  
+             use mod_vecconsts, only : v4r4_1, v4r4_2 
+             type(XMM4r4_t),        intent(in) :: h 
+             type(XMM4r4_t),        intent(in) :: d 
+             type(XMM4r4_t),        intent(in) :: f 
+             type(XMM4r4_t),        intent(in) :: Nmf 
+             type(XMM4r4_t)                    :: n 
+             type(XMM4r4_t),        parameter  :: C808 = XMM4r4_t(80.0_sp)
+             type(XMM4r4_t),        automatic  :: dnm, hd 
+             type(XMM4r4_t),        automatic  :: hhdd, fcr 
+             !dir$ attributes align : 16 :: dnm 
+             !dir$ attributes align : 16 :: hd 
+             !dir$ attributes align : 16 :: hhdd 
+             !dir$ attributes align : 16 :: fcr 
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+             integer(kind=i4) :: j
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#endif             
+             do j=0,3  
+                 fcr.v(j) = sqrt(C808.v(j)*Nmf.v(j))
+                 hd.v(j)  = h.v(j)/d.v(j) 
+                 dnm.v(j) = fcr.v(j)*fcr.v(j)/(v4r4_2.v(j)*f.v(j)*f.v(j))
+                 hhdd.v(j)= hd.v(j)*hd.v(j) 
+                 n.v(j)   = v4r4_1.v(j)-dnm.v(j)*(v4r4_2.v(j)*hd.v(j)-hhdd.v(j))
+             end do 
+#else 
+                 fcr.v = sqrt(C808.v*Nmf.v)
+                 hd.v  = h.v/d.v 
+                 dnm.v = fcr.v*fcr.v/(v4r4_2.v*f.v*f.v)
+                 hhdd.v= hd.v*hd.v 
+                 n.v   = v4r4_1.v-dnm.v*(v4r4_2.v*hd.v-hhdd.v)
+#endif
+      end function refractive_idx_lo_ionosphere_f412_xmm4r4
+
 
 
 
