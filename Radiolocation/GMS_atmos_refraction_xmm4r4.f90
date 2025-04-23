@@ -1530,9 +1530,79 @@ module atmos_refraction_xmm4r4
              end do      
       end function analytic_sol_L1_lo_ionosphere_f418_xmm4r4
 
-
-
-
+      ! formula: 4.22, page: 78
+      pure function analytic_sol_L01_hi_ionosphere_f422_xmm4r4(fc,Nmf,beta,d,R0,z0,D1) result(L01)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  analytic_sol_L01_hi_ionosphere_f422_xmm4r4
+            !dir$ attributes forceinline ::  analytic_sol_L01_hi_ionosphere_f422_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  analytic_sol_L01_hi_ionosphere_f422_xmm4r4
+#endif  
+            use mod_vecconsts,   only : v4r4_1, v4r4_n2, v4r4_2 
+            type(XMM4r4_t),      intent(in) :: fc 
+            type(XMM4r4_t),      intent(in) :: Nmf 
+            type(XMM4r4_t),      intent(in) :: beta 
+            type(XMM4r4_t),      intent(in) :: d 
+            type(XMM4r4_t),      intent(in) :: R0 
+            type(XMM4r4_t),      intent(in) :: z0 
+            type(XMM4r4_t),      intent(in) :: D1 
+            type(XMM4r4_t)                  :: L01 
+            integer(kind=i4)                :: j 
+            type(XMM4r4_t),      automatic  :: sdnE, ctgz0 
+            type(XMM4r4_t),      automatic  :: sec2z0, bd
+            type(XMM4r4_t),      automatic  :: bD1,  strm 
+            type(XMM4r4_t),      automatic  :: exp1,  exp2 
+            type(XMM4r4_t),      automatic  :: exp3, exp4
+            type(XMM4r4_t),      automatic  :: trm1, trm2 
+            type(XMM4r4_t),      automatic  :: t0, t1
+            type(XMM4r4_t),      automatic  :: tg2z0, trm3  
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)   
+             !dir$ attributes align : 16 :: sdnE
+             !dir$ attributes align : 16 :: ctgz0 
+             !dir$ attributes align : 16 :: sec2z0 
+             !dir$ attributes align : 16 :: bd 
+             !dir$ attributes align : 16 :: bD1
+             !dir$ attributes align : 16 :: strm 
+             !dir$ attributes align : 16 :: exp1 
+             !dir$ attributes align : 16 :: exp2 
+             !dir$ attributes align : 16 :: exp3 
+             !dir$ attributes align : 16 :: exp4 
+             !dir$ attributes align : 16 :: trm1 
+             !dir$ attributes align : 16 :: trm2 
+             !dir$ attributes align : 16 :: t0 
+             !dir$ attributes align : 16 :: t1 
+             !dir$ attributes align : 16 :: tg2z0 
+             !dir$ attributes align : 16 :: trm3 
+#endif 
+             t0.v  = compute_delnEps_f421_xmm4r4(fc,Nmf,beta,d)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#elif defined(__GNUC__) && !defined(__INTEL_COMPILER)
+             !$omp simd simdlen(4) linear(j:1)
+#endif
+                 do j=0,3   
+                    bd.v(j)    = beta.v(j)*d.v(j) 
+                    bD1.v(j)   = beta.v(j)*D1.v(j) 
+                    ctgz0.v(j) = v4r4_1.v(j)/tan(z0.v(j))
+                    sdnE.v(j)  = t0.v(j)*t0.v(j) 
+                    t1.v(j)    = v4r4_1.v(j)/cos(z0.v(j))
+                    sec2z0.v(j)= t1.v(j)*t1.v(j) 
+                    t0.v(j)    = tan(z0.v(j))
+                    tg2z0.v(j) = t0.v(j)*t0.v(j) 
+                    strm.v(j)  = sqrt((v4r4_1.v(j)+v4r4_2.v(j)*tg2z0.v(j)*d.v(j))/R0.v(j))
+                    trm1.v(j)  = sdnE.v(j)*beta.v(j)*R0.v(j)*ctgz0.v(j)*sec2z0.v(j)
+                    exp1.v(j)  = exp(-bd.v(j))
+                    exp2.v(j)  = exp(v4r4_n2.v(j)*bd.v(j))
+                    exp3.v(j)  = exp(-bD1.v(j))
+                    exp4.v(j)  = exp(v4r4_n2.v(j)*bD1.v(j))
+                    trm2.v(j)  = (exp1.v(j)-exp2.v(j))*strm.v(j)
+                    trm3.v(j)  = (exp3.v(j)-exp4.v(j))*strm.v(j)
+                    L01.v(j)   = trm1.v(j)*(trm2.v(j)-trm3.v(j))
+                 end do           
+      end function  analytic_sol_L01_hi_ionosphere_f422_xmm4r4
 
 
 
