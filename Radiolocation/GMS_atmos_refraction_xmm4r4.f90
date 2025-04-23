@@ -1392,7 +1392,7 @@ module atmos_refraction_xmm4r4
             type(XMM4r4_t)                  :: dnM 
             type(XMM4r4_t),      parameter  :: C808 = XMM4r4_t(80.0_sp)
             type(XMM4r4_t),      automatic  :: fcr, sfc 
-            integer(kind=i4) :: j
+            integer(kind=i4)                :: j
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)   
              !dir$ attributes align : 16 :: C808
              !dir$ attributes align : 16 :: sfc
@@ -1412,10 +1412,43 @@ module atmos_refraction_xmm4r4
                  fcr.v(j) = sqrt(C808.v(j)*Nmf.v(j))
                  dnM.v(j) = fcr.v(j)*fcr.v(j)/sfc.v(j)  
              end do 
-                        
       end function compute_delnM_f414_xmm4r4
 
-
+      pure function compute_delnEps_f421_xmm4r4(fc,Nmf,beta,d) result(dnE)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: compute_delnEps_f421_xmm4r4
+            !dir$ attributes forceinline :: compute_delnEps_f421_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_delnEps_f421_xmm4r4
+#endif  
+            type(XMM4r4_t),      intent(in) :: fc 
+            type(XMM4r4_t),      intent(in) :: Nmf 
+            type(XMM4r4_t),      intent(in) :: beta 
+            type(XMM4r4_t),      intent(in) :: d 
+            type(XMM4r4_t)                  :: dnE 
+            type(XMM4r4_t),      automatic  :: dnM, earg 
+            type(XMM4r4_t),      automatic  :: exp1 
+            integer(kind=i4)                :: j 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)   
+             !dir$ attributes align : 16 :: dnm
+             !dir$ attributes align : 16 :: earg
+             !dir$ attributes align : 16 :: exp1
+#endif 
+             dnM.v = compute_delnM_f414_xmm4r4(fc,Nmf)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#elif defined(__GNUC__) && !defined(__INTEL_COMPILER)
+             !$omp simd simdlen(4) linear(j:1)
+#endif
+             do j=0,3 
+                 earg.v(j) = beta.v(j)*d.v(j) 
+                 exp1.v(j) = exp(earg.v(j))
+                 dnE.v(j)  = dnM.v(j)*exp1.v(j)
+             end do  
+      end function compute_delnEps_f421_xmm4r4
 
 
 
