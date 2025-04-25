@@ -1675,7 +1675,7 @@ module atmos_refraction_xmm4r4
             type(XMM4r4_t),      intent(in) :: R0 
             type(XMM4r4_t),      intent(in) :: z0 
             type(XMM4r4_t),      intent(in) :: D1 
-            type(XMM4r4_t)                  :: L02
+            type(XMM4r4_t)                  :: L03
             type(XMM4r4_t),      parameter  :: C314159265358979323846264338328 =  & 
                                                  XMM4r4_t(3.14159265358979323846264338328_sp)
             type(XMM4r4_t),      automatic :: dnEps, ctgz0
@@ -1713,5 +1713,76 @@ module atmos_refraction_xmm4r4
             trm2.v    = prob1.v-prob2.v 
             L02.v     = trm1.v*trm2.v  
       end function analytic_sol_L03_hi_ionosphere_f424_xmm4r4
+
+       ! formula: 4.20, page: 78
+      pure function analytic_sol_L2_hi_ionosphere_f420_xmm4r4(fc,Nmf,beta,d,R0,z0,D1) result(L2)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  analytic_sol_L2_hi_ionosphere_f420_xmm4r4
+            !dir$ attributes forceinline ::  analytic_sol_L2_hi_ionosphere_f420_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  analytic_sol_L2_hi_ionosphere_f420_xmm4r4
+#endif  
+            use mod_vecconsts,   only : v4r4_1
+            type(XMM4r4_t),      intent(in) :: fc 
+            type(XMM4r4_t),      intent(in) :: Nmf 
+            type(XMM4r4_t),      intent(in) :: beta 
+            type(XMM4r4_t),      intent(in) :: d 
+            type(XMM4r4_t),      intent(in) :: R0 
+            type(XMM4r4_t),      intent(in) :: z0 
+            type(XMM4r4_t),      intent(in) :: D1 
+            type(XMM4r4_t)                  :: L2 
+            type(XMM4r4_t),      automatic  :: L01, L02, L03 
+            type(XMM4r4_t),      automatic  :: dnEps, ctgz0
+            type(XMM4r4_t),      automatic  :: i2cosz0, ssecz0 
+            type(XMM4r4_t),      automatic  :: trm1, trm2
+            type(XMM4r4_t),      automatic  :: trm3, t0
+            type(XMM4r4_t),      automatic  :: t1,   t2   
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)   
+              !dir$ attributes align : 16 ::  L01 
+              !dir$ attributes align : 16 ::  L02
+              !dir$ attributes align : 16 ::  L03
+              !dir$ attributes align : 16 ::  dnEps
+              !dir$ attributes align : 16 ::  ctgz0
+              !dir$ attributes align : 16 ::  i2cosz0
+              !dir$ attributes align : 16 ::  ssecz0
+              !dir$ attributes align : 16 ::  trm1 
+              !dir$ attributes align : 16 ::  trm2 
+              !dir$ attributes align : 16 ::  trm3 
+              !dir$ attributes align : 16 ::  t0 
+              !dir$ attributes align : 16 ::  t1
+              !dir$ attributes align : 16 ::  t2 
+#endif 
+              integer(kind=i4)            :: j
+
+              dnEps = compute_delnEps_f421_xmm4r4(fc,Nmf,beta,d)
+              L01   = analytic_sol_L01_hi_ionosphere_f422_xmm4r4(fc,Nmf,beta,d,R0,z0,D1)
+              L02   = analytic_sol_L02_hi_ionosphere_f423_xmm4r4(fc,Nmf,beta,d,R0,z0,D1)
+              L03   = analytic_sol_L03_hi_ionosphere_f424_xmm4r4(fc,Nmf,beta,d,R0,z0,D1)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#elif defined(__GNUC__) && !defined(__INTEL_COMPILER)
+             !$omp simd simdlen(4) linear(j:1)
+#endif
+                 do j=0,3
+                      ctgz0.v(j)  = v4r4_1.v(j)/tan(z0.v(j)) 
+                      t0.v(j)     = cos(z0.v(j))
+                      t1.v(j)     = v4r4_1.v(j)/t0.v(j) 
+                      ssecz0.v(j) = t1.v(j)*t1.v(j) 
+                      i2cosz0.v(j)= v4r4_1.v(j)/(t0.v(j)*t0.v(j)) 
+                      trm1.v(j)   = L01.v(j)+(v4r4_1.v(j)-beta.v(j)*R0.v(j)*dnEps.v(j))
+                      trm2.v(j)   = ctgz0.v(j)*ssecz0.v(j)*L02.v(j) 
+                      t2.v(j)     = ctgz0.v(j)*i2cosz0.v(j)*L03.v(j) 
+                      trm3.v(j)   = dnEps.v(j)*beta.v(j)*R0.v(j)*t2.v(j)
+                      L2.v(j)     = trm1.v(j)+trm2.v(j)+trm3.v(j) 
+                 end do 
+      end function analytic_sol_L2_hi_ionosphere_f420_xmm4r4
+
+       ! угол рефракции в ионосфере
+      ! L1 — величина угла рефракции в нижней 
+      ! ионосфере; L2 — величина угла рефракции в верхней ионосфере;
+      ! formula: 4.15, page: 77
 
 end module atmos_refraction_xmm4r4
