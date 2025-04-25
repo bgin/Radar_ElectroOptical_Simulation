@@ -1059,7 +1059,7 @@ module atmos_refraction
             real(kind=sp), parameter :: C314159265358979323846264338328 = 3.14159265358979323846264338328_sp
             real(kind=sp), automatic :: piba2, ctgz0, bactgz0, exp1 
             real(kind=sp), automatic :: t0, t1, trm1, trm2, trm3 
-            piba2  = sqrt((C314159265358979323846264338328*beta*a)/2)
+            piba2  = sqrt((C314159265358979323846264338328*beta*a)*0.5_sp)
             ctgz0  = 1.0_sp/tan(z0)
             bactgz0= beta*a*ctgz0*ctgz0 
             exp1   = exp(bactgz0*0.5_sp)
