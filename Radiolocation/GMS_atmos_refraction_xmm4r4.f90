@@ -2050,5 +2050,72 @@ module atmos_refraction_xmm4r4
                      n.v(j)    =  v4r4_1.v(j)-delnM.v(j)*exp1.v(j)
                  end do 
       end function n_avg_H2_h_H3_f431_xmm4r4
+
+       !усредненная зависимость показателя 
+      !преломления атмосферы определяется тремя 
+      !соотношениями (4.29), (4.30) и (4.31), то (4.33) целесообразно 
+      !разбить на три слагаемых
+      !L=L1+L2+L3
+      pure function analytic_sol_L11_lo_ionosphere_f439_xmm4r4(deln0,beta,z0,H1) result(L11)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L11_lo_ionosphere_f439_xmm4r4
+            !dir$ attributes forceinline :: analytic_sol_L11_lo_ionosphere_f439_xmm4r4
+#endif 
+            use mod_vecconsts, only : v4r4_1, v4r4_n2, v4r4_2
+            type(XMM4r4_t),  intent(in) :: deln0 
+            type(XMM4r4_t),  intent(in) :: beta 
+            type(XMM4r4_t),  intent(in) :: z0 
+            type(XMM4r4_t),  intent(in) :: H1 
+            type(XMM4r4_t)              :: L11 
+            type(XMM4r4_t),   parameter :: a = XMM4r4_t(6378.0_sp)
+            type(XMM4r4_t),   automatic :: ctgz0, ssecz0
+            type(XMM4r4_t),   automatic :: stgz0, delba
+            type(XMM4r4_t),   automatic :: bH1, sqr
+            type(XMM4r4_t),   automatic :: sqrtrm, t0, t1 
+            type(XMM4r4_t),   automatic :: exp1, exp2 
+            type(XMM4r4_t),   automatic :: trm1, trm2
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__) 
+              !dir$ attributes align : 16 :: ctgz0 
+              !dir$ attributes align : 16 :: ssecz0 
+              !dir$ attributes align : 16 :: stgz0 
+              !dir$ attributes align : 16 :: delba 
+              !dir$ attributes align : 16 :: bH1 
+              !dir$ attributes align : 16 :: sqr 
+              !dir$ attributes align : 16 :: sqrtrm 
+              !dir$ attributes align : 16 :: t0 
+              !dir$ attributes align : 16 :: t1 
+              !dir$ attributes align : 16 :: exp1 
+              !dir$ attributes align : 16 :: exp2 
+              !dir$ attributes align : 16 :: trm1 
+              !dir$ attributes align : 16 :: trm2 
+#endif
+              integer(kind=i4)            :: j 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#elif defined(__GNUC__) && !defined(__INTEL_COMPILER)
+             !$omp simd simdlen(4) linear(j:1)
+#endif
+                 do j=0,3
+                     bH1.v(j)    = beta.v(j)*H1.v(j) 
+                     exp1.v(j)   = exp(-bH1.v(j))
+                     t0.v(j)     = v4r4_1.v(j)/cos(z0.v(j))
+                     ssecz0.v(j) = t0.v(j)*t0.v(j) 
+                     delba.v(j)  = deln0.v(j)*deln0.v(j)*beta.v(j)*a.v(j) 
+                     t0.v(j)     = tan(z0.v(j))
+                     stgz0.v(j)  = t0.v(j)*t0.v(j) 
+                     t1.v(j)     = v4r4_1.v(j)/t0.v(j) 
+                     ctgz0.v(j)  = t1.v(j)*t1.v(j) 
+                     trm1.v(j)   = delba.v(j)*ctgz0.v(j)*ssecz0.v(j) 
+                     exp2.v(j)   = exp1(v4r4_n2.v(j)*bH1.v(j))
+                     sqrtrm.v(j) = v4r4_1.v(j)+(v4r4_2.v(j)*stgz0.v(j)*H1.v(j))/a.v(j) 
+                     sqr.v(j)    = sqrt(sqrtrm.v(j))
+                     trm2.v(j)   = (exp1.v(j)-exp2.v(j))*sqr.v(j) 
+                     L11.v(j)    = trm1.v(j)*trm2.v(j)
+                 end do               
+      end function analytic_sol_L11_lo_ionosphere_f439_xmm4r4
       
 end module atmos_refraction_xmm4r4
