@@ -1784,5 +1784,30 @@ module atmos_refraction_xmm4r4
       ! L1 — величина угла рефракции в нижней 
       ! ионосфере; L2 — величина угла рефракции в верхней ионосфере;
       ! formula: 4.15, page: 77
-
+      pure function refraction_angle_in_ionosphere_f415_xmm4r4(fc,Nmf,beta,d,R0,z0,D1) result(L)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  refraction_angle_in_ionosphere_f415_xmm4r4
+            !dir$ attributes forceinline ::  refraction_angle_in_ionosphere_f415_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  refraction_angle_in_ionosphere_f415_xmm4r4
+#endif  
+            
+            type(XMM4r4_t),      intent(in) :: fc 
+            type(XMM4r4_t),      intent(in) :: Nmf 
+            type(XMM4r4_t),      intent(in) :: beta 
+            type(XMM4r4_t),      intent(in) :: d 
+            type(XMM4r4_t),      intent(in) :: R0 
+            type(XMM4r4_t),      intent(in) :: z0 
+            type(XMM4r4_t),      intent(in) :: D1 
+            type(XMM4r4_t)                  :: L
+            type(XMM4r4_t),      automatic  :: L1, L2 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)   
+             !dir$ attributes align : 16 :: L1 
+             !dir$ attributes align : 16 :: L2 
+#endif 
+             L1.v = analytic_sol_L1_lo_ionosphere_f418_xmm4r4(fc,Nmf,z0,d,R0)
+             L2.v = analytic_sol_L2_hi_ionosphere_f420_xmm4r4(fc,Nmf,beta,d,R0,z0,D1)
+             L.v  = L1.v+L2.v           
+      end function refraction_angle_in_ionosphere_f415_xmm4r4
+      
 end module atmos_refraction_xmm4r4
