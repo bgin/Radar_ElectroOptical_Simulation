@@ -2118,4 +2118,58 @@ module atmos_refraction_xmm4r4
                  end do               
       end function analytic_sol_L11_lo_ionosphere_f439_xmm4r4
       
+      pure function analytic_sol_L12_lo_ionosphere_f440_xmm4r4(deln0,beta,z0,H1) result(L12)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L12_lo_ionosphere_f440_xmm4r4
+            !dir$ attributes forceinline :: analytic_sol_L12_lo_ionosphere_f440_xmm4r4
+#endif 
+            use mod_vecconsts, only : v4r4_1, v4r4_1over2, v4r4_2
+            type(XMM4r4_t),  intent(in) :: deln0 
+            type(XMM4r4_t),  intent(in) :: beta 
+            type(XMM4r4_t),  intent(in) :: z0 
+            type(XMM4r4_t),  intent(in) :: H1 
+            type(XMM4r4_t)              :: L12 
+            type(XMM4r4_t),  parameter  :: a = XMM4r4_t(6378.0_sp)
+            type(XMM4r4_t),  parameter  :: C314159265358979323846264338328 = & 
+                                                XMM4r4_t(3.14159265358979323846264338328_sp)
+            type(XMM4r4_t),  automatic  :: deln0, ctgz0, 
+            type(XMM4r4_t),  automatic  :: piba, bactgz0, sctgz0  
+            type(XMM4r4_t),  automatic  :: prob1, prob2
+            type(XMM4r4_t),  automatic  :: sqr1, sqr2 
+            type(XMM4r4_t),  automatic  :: trm1, trm2
+            type(XMM4r4_t)   automatic  :: exp1, earg
+            type(XMM4r4_t),  automatic  :: t0, t1
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__) 
+              !dir$ attributes align : 16 :: C314159265358979323846264338328
+              !dir$ attributes align : 16 :: deln0 
+              !dir$ attributes align : 16 :: ctgz0 
+              !dir$ attributes align : 16 :: piba 
+              !dir$ attributes align : 16 :: bactgz0 
+              !dir$ attributes align : 16 :: sctgz0 
+              !dir$ attributes align : 16 :: prob1 
+              !dir$ attributes align : 16 :: prob2 
+              !dir$ attributes align : 16 :: sqr1 
+              !dir$ attributes align : 16 :: sqr2 
+              !dir$ attributes align : 16 :: trm1 
+              !dir$ attributes align : 16 :: trm2 
+              !dir$ attributes align : 16 :: exp1 
+              !dir$ attributes align : 16 :: earg 
+              !dir$ attributes align : 16 :: t0 
+              !dir$ attributes align : 16 :: t1 
+#endif
+            piba.v    = C314159265358979323846264338328.v*beta.v*a.v*v4r4_1over2.v  
+            ctgz0.v   = v4r4_1.v/tan(z0)
+            sctgz0.v  = ctgz0.v*ctgz0.v 
+            bactgz0.v = beta.v*a.v*sctgz0.v
+            exp1.v    = exp(bactgz0.v*v4r4_1over2.v)
+            trm1.v    = deln0.v*sqrt(piba.v)*ctgz0.v*exp1.v 
+            t0.v      = sqrt(bactgz0.v+v4r4_2.v*beta.v*H1.v)
+            t1.v      = sqrt(bactgz0.v)
+            prob1     = prob_integral_r4(t0)
+            prob2     = prob_integral_r4(t1)
+            trm2.v    = prob1.v-prob2.v 
+            L12.v     = trm1.v*trm2.v 
+      end function analytic_sol_L12_lo_ionosphere_f440_xmm4r4
+
 end module atmos_refraction_xmm4r4
