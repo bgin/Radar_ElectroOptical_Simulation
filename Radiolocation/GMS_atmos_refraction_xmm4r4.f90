@@ -1914,5 +1914,42 @@ module atmos_refraction_xmm4r4
                     angle.v(j)  = trm1.v(j)+trm2.v(j) 
                  end do                          
       end function refraction_angle_ionosphere_z0eq90_f428_xmm4r4 
+
+       ! усредненный
+      ! показатель преломления атмосферы меняется.
+      ! 0<=h<=H1
+      ! formula: 4.29, page: 80
+      pure function n_avg_0_h_H1_f429_xmm4r4(deln0,beta,h) result(n)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  n_avg_0_h_H1_f429_xmm4r4
+            !dir$ attributes forceinline ::  n_avg_0_h_H1_f429_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: n_avg_0_h_H1_f429_xmm4r4
+#endif
+            use mod_vecconsts, only : v4r4_1 
+            type(XMM4r4_t), intent(in) :: deln0 
+            type(XMM4r4_t), intent(in) :: beta 
+            type(XMM4r4_t), intent(in) :: h 
+            type(XMM4r4_t)             :: n 
+            type(XMM4r4_t), automatic  :: bh, exp1 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__) 
+              !dir$ attributes align : 16 :: bh 
+              !dir$ attributes align : 16 :: exp1
+#endif 
+              integer(kind=i4)            :: j 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#elif defined(__GNUC__) && !defined(__INTEL_COMPILER)
+             !$omp simd simdlen(4) linear(j:1)
+#endif
+                 do j=0,3 
+                     bh.v(j)  = -beta.v(j)*h.v(j) 
+                     exp1.v(j)= exp(bh.v(j))
+                     n.v(j)   = v4r4_1.v(j)+deln0.v(j)*exp1.v(j) 
+                 end do                          
+      end function n_avg_0_h_H1_f429_xmm4r4
       
 end module atmos_refraction_xmm4r4
