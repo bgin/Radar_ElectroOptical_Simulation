@@ -1657,6 +1657,61 @@ module atmos_refraction_xmm4r4
             prob2     = prob_integral_xmm4r4(sqr2)
             trm2.v    = prob1.v-prob2.v 
             L02.v     = trm1.v*trm2.v  
-      end function analytic_sol_L02_hi_ionosphere_f423_x
+      end function analytic_sol_L02_hi_ionosphere_f423_xmm4r4
+
+      ! formula 4.24, page: 78
+      pure function analytic_sol_L03_hi_ionosphere_f424_xmm4r4(fc,Nmf,beta,d,R0,z0,D1) result(L03)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  analytic_sol_L03_hi_ionosphere_f424_xmm4r4
+            !dir$ attributes forceinline ::  analytic_sol_L03_hi_ionosphere_f424_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  analytic_sol_L03_hi_ionosphere_f424_xmm4r4
+#endif  
+            use mod_vecconsts,   only : v4r4_1, v4r4_2, v4r4_4
+            type(XMM4r4_t),      intent(in) :: fc 
+            type(XMM4r4_t),      intent(in) :: Nmf 
+            type(XMM4r4_t),      intent(in) :: beta 
+            type(XMM4r4_t),      intent(in) :: d 
+            type(XMM4r4_t),      intent(in) :: R0 
+            type(XMM4r4_t),      intent(in) :: z0 
+            type(XMM4r4_t),      intent(in) :: D1 
+            type(XMM4r4_t)                  :: L02
+            type(XMM4r4_t),      parameter  :: C314159265358979323846264338328 =  & 
+                                                 XMM4r4_t(3.14159265358979323846264338328_sp)
+            type(XMM4r4_t),      automatic :: dnEps, ctgz0
+            type(XMM4r4_t),      automatic :: sctgz0, sqr
+            type(XMM4r4_t),      automatic :: bRctgz0, sqr1 
+            type(XMM4r4_t),      automatic :: sqr2, exp1 
+            type(XMM4r4_t),      automatic :: prob1, prob2 
+            type(XMM4r4_t),      automatic :: trm1, trm2 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)   
+            !dir$ attributes align : 16 ::  C314159265358979323846264338328
+            !dir$ attributes align : 16 ::  dnEps 
+            !dir$ attributes align : 16 ::  ctgz0 
+            !dir$ attributes align : 16 ::  sctgz0 
+            !dir$ attributes align : 16 ::  sqr 
+            !dir$ attributes align : 16 ::  bRctgz0
+            !dir$ attributes align : 16 ::  sqr1 
+            !dir$ attributes align : 16 ::  sqr2 
+            !dir$ attributes align : 16 ::  exp1 
+            !dir$ attributes align : 16 ::  prob1 
+            !dir$ attributes align : 16 ::  prob2 
+            !dir$ attributes align : 16 ::  trm1
+            !dir$ attributes align : 16 ::  trm2
+#endif 
+            sqr.v     = sqrt(C314159265358979323846264338328.v*beta.v*R0.v)
+            ctgz0.v   = v4r4_1.v/tan(z0.v)
+            dnEps     = compute_delnEps_f421_r8(fc,Nmf,beta,d)
+            sctgz0.v  = ctgz0.v*ctgz0.v 
+            bRctgz0.v = beta.v*R0.v*sctgz0.v
+            exp1.v    = exp(bRctgz0.v) 
+            sqr1.v    = sqrt(v4r4_2.v*bRctgz0.v+v4r4_4.v*beta.v*D1.v)
+            sqr2.v    = sqrt(v4r4_2.v*bRctgz0.v+v4r4_4.v*beta.v*d.v)
+            trm1.v    = dnEps.v*sqr.v*ctgz0.v*exp1.v 
+            prob1     = prob_integral_xmm4r4(sqr1)
+            prob2     = prob_integral_xmm4r4(sqr2)
+            trm2.v    = prob1.v-prob2.v 
+            L02.v     = trm1.v*trm2.v  
+      end function analytic_sol_L03_hi_ionosphere_f424_xmm4r4
 
 end module atmos_refraction_xmm4r4
