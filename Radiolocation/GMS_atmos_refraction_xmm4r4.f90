@@ -1805,9 +1805,63 @@ module atmos_refraction_xmm4r4
              !dir$ attributes align : 16 :: L1 
              !dir$ attributes align : 16 :: L2 
 #endif 
-             L1.v = analytic_sol_L1_lo_ionosphere_f418_xmm4r4(fc,Nmf,z0,d,R0)
-             L2.v = analytic_sol_L2_hi_ionosphere_f420_xmm4r4(fc,Nmf,beta,d,R0,z0,D1)
+             L1 = analytic_sol_L1_lo_ionosphere_f418_xmm4r4(fc,Nmf,z0,d,R0)
+             L2 = analytic_sol_L2_hi_ionosphere_f420_xmm4r4(fc,Nmf,beta,d,R0,z0,D1)
              L.v  = L1.v+L2.v           
       end function refraction_angle_in_ionosphere_f415_xmm4r4
+
+       ! частные случаи общей формулы (4.10).
+      ! 1. m<t 1 и z0 <60°.
+      ! formula: 4.25, page: 79
+      pure function refraction_angle_ionosphere_z0le60_f425_xmm4r4(fc,Nmf,d,R0,z0) result(alpha)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  refraction_angle_ionosphere_z0le60_f425_xmm4r4
+            !dir$ attributes forceinline ::  refraction_angle_ionosphere_z0le60_f425_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  refraction_angle_ionosphere_z0le60_f425_xmm4r4
+#endif  
+            use mod_vecconsts, only : v4r4_1over2
+            type(XMM4r4_t),      intent(in) :: fc 
+            type(XMM4r4_t),      intent(in) :: Nmf 
+            type(XMM4r4_t),      intent(in) :: d 
+            type(XMM4r4_t),      intent(in) :: R0 
+            type(XMM4r4_t),      intent(in) :: z0 
+            type(XMM4r4_t)                  :: alpha 
+            type(XMM4r4_t),      parameter  :: C0666666666666666666666666666667 =  & 
+                                                  XMM4r4_t(0.666666666666666666666666666667_sp)
+            type(XMM4r4_t),      automatic :: delnM, dR0
+            type(XMM4r4_t),      automatic :: tgz0, scosz0
+            type(XMM4r4_t),      automatic :: trm1, trm2, t0
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)   
+             !dir$ attributes align : 16 :: C0666666666666666666666666666667
+             !dir$ attributes align : 16 :: delnM 
+             !dir$ attributes align : 16 :: dR0 
+             !dir$ attributes align : 16 :: tgz0 
+             !dir$ attributes align : 16 :: scosz0 
+             !dir$ attributes align : 16 :: trm1 
+             !dir$ attributes align : 16 :: trm2 
+             !dir$ attributes align : 16 :: t0
+#endif     
+             integer(kind=i4)            :: j 
+             delnM  = compute_delnM_f414_r4(fc,Nmf) 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#elif defined(__GNUC__) && !defined(__INTEL_COMPILER)
+             !$omp simd simdlen(4) linear(j:1)
+#endif
+                 do j=0,3
+                    dR0.v(j)    = d.v(j)/R0.v(j) 
+                    tgz0.v(j)   = tan(z0.v(j)) 
+                    t0.v(j)     = cos(z0.v(j))
+                    scosz0.v(j) = t0.v(j)*t0.v(j) 
+                    trm2.v(j)   = tgz0.v(j)/scosz0.v(j)
+                    t0.v(j)     = delNm.v(j)*v4r4_1over2.v(j) 
+                    trm1.v(j)   = C0666666666666666666666666666667.v(j)*delnM.v(j)*dR0.v(j) 
+                    alpha.v(j)  = (trm1.v(j)+t0.v(j))*trm2.v(j)
+                 end do                  
+      end function refraction_angle_ionosphere_z0le60_f425_xmm4r4
       
 end module atmos_refraction_xmm4r4
