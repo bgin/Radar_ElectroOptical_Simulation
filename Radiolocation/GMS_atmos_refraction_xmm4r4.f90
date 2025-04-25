@@ -1976,15 +1976,15 @@ module atmos_refraction_xmm4r4
             type(XMM4r4_t), automatic  :: trm2, t0
             type(XMM4r4_t), automatic  :: t1
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__) 
-              !dir$ attributes align :L 16 :: delNm
-              !dir$ attributes align :L 16 :: rat1 
-              !dir$ attributes align :L 16 :: sqr1 
-              !dir$ attributes align :L 16 :: sqr2 
-              !dir$ attributes align :L 16 :: rat2 
-              !dir$ attributes align :L 16 :: trm1 
-              !dir$ attributes align :L 16 :: trm2 
-              !dir$ attributes align :L 16 :: t0 
-              !dir$ attributes align :L 16 :: t1
+              !dir$ attributes align : 16 :: delNm
+              !dir$ attributes align : 16 :: rat1 
+              !dir$ attributes align : 16 :: sqr1 
+              !dir$ attributes align : 16 :: sqr2 
+              !dir$ attributes align : 16 :: rat2 
+              !dir$ attributes align : 16 :: trm1 
+              !dir$ attributes align : 16 :: trm2 
+              !dir$ attributes align : 16 :: t0 
+              !dir$ attributes align : 16 :: t1
 #endif 
             integer(kind=i4)               :: j
             delnNm  =  compute_delnM_f414_xmm4r4(fc,Nmf)
@@ -2006,5 +2006,49 @@ module atmos_refraction_xmm4r4
                     n.v(j)    = trm1.v(j)*trm2.v(j)
                  end do                       
       end function n_avg_H1_h_H2_f430_xmm4r4
+
+      ! усредненный
+      ! показатель преломления атмосферы меняется.
+      ! H2<=h<=H3
+      ! formula: 4.31, page: 80
+      pure function n_avg_H2_h_H3_f431_xmm4r4(fc,Nmf,h,H1,H2) result(n)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  n_avg_H2_h_H3_f431_xmm4r4
+            !dir$ attributes forceinline ::  n_avg_H2_h_H3_f431_xmm4r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: n_avg_H2_h_H3_f431_xmm4r4
+#endif
+            use mod_vecconsts, only : v4r4_1
+            type(XMM4r4_t), intent(in) :: fc 
+            type(XMM4r4_t), intent(in) :: Nmf 
+            type(XMM4r4_t), intent(in) :: h 
+            type(XMM4r4_t), intent(in) :: H1 
+            type(XMM4r4_t), intent(in) :: H2 
+            type(XMM4r4_t)             :: n 
+            type(XMM4r4_t), automatic  :: hH2,  earg
+            type(XMM4r4_t), automatic  :: exp1, delnM
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__) 
+              !dir$ attributes align : 16 :: hH2
+              !dir$ attributes align : 16 :: earg
+              !dir$ attributes align : 16 :: exp1 
+              !dir$ attributes align : 16 :: delnM
+#endif
+            integer(kind=i4)               :: j
+            delnNm  =  compute_delnM_f414_xmm4r4(fc,Nmf)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#elif defined(__GNUC__) && !defined(__INTEL_COMPILER)
+             !$omp simd simdlen(4) linear(j:1)
+#endif
+                 do j=0,3 
+                     hH2.v(j)  =  h.v(j)-H2.v(j) 
+                     earg.v(j) = -beta.v(j)*hH2.v(j)
+                     exp1.v(j) =  exp(earg.v(j))
+                     n.v(j)    =  v4r4_1.v(j)-delnM.v(j)*exp1.v(j)
+                 end do 
+      end function n_avg_H2_h_H3_f431_xmm4r4
       
 end module atmos_refraction_xmm4r4
