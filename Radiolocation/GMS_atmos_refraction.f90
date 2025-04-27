@@ -2315,7 +2315,7 @@ module atmos_refraction
             real(kind=sp) :: L21 
             real(kind=sp),   automatic :: delnM, ctgz0, stgz0, issinz0 
             real(kind=sp),   automatic :: sqrtrm1, sqrtrm2, t0, t1, athrd 
-            real(kind=sp),   automatic :: trm1, trm2, trm3, trm4, trm5, stgz0 
+            real(kind=sp),   automatic :: trm1, trm2, trm3, trm4, trm5
             ctgz0  = 1.0_sp/tan(z0)
             t0     = sin(z0)
             issinz0= 1.0_sp/(t0*t0)
@@ -2325,8 +2325,8 @@ module atmos_refraction
             delnM  = compute_delnM_f414_r4(fc,Nmf)
             t0     = 1.0_sp/((H2-H1)*(H2-H1))
             trm1   = 2.0_sp*delnM*a*t0*ctgz0*issinz0
-            sqrtrm1= stgz0*(H1)/a
-            sqrtrm2= stgz0*(H2)/a 
+            sqrtrm1= (stgz0*H1)*0.00015678896205707118218877391_sp
+            sqrtrm2= (stgz0*H2)*0.00015678896205707118218877391_sp
             t0     = sqrt(1.0_sp+2.0_sp*sqrtrm2)
             t1     = sqrt(1.0_sp+2.0_sp*sqrtrm1)
             trm2   = H2*(t0-t1)
