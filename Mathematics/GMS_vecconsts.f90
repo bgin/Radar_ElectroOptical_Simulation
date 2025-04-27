@@ -141,13 +141,33 @@ module mod_vecconsts
     
     type(XMM4r4_t), parameter, public  :: v4r4_1over8     = XMM4r4_t(0.125E+00_sp)
 
+    type(XMM4r4_t), parameter, public  :: v4r4_24         = XMM4r4_t(24.0E+00_sp)
+
+    type(XMM4r4_t), parameter, public  :: v4r4_20         = XMM4r4_t(20.0E+00_sp)
+
+    type(XMM4r4_t), parameter, public  :: v4r4_19         = XMM4r4_t(19.0E+00_sp)
+
+    type(XMM4r4_t), parameter, public  :: v4r4_12         = XMM4r4_t(12.0E+00_sp)
+
+    type(XMM4r4_t), parameter, public  :: v4r4_10         = XMM4r4_t(10.0E+00_sp)
+
+    type(XMM4r4_t), parameter, public  :: v4r4_8          = XMM4r4_t(8.0E+00_sp)
+
+     type(XMM4r4_t), parameter, public  :: v4r4_6         = XMM4r4_t(6.0E+00_sp)
+
+     type(XMM4r4_t), parameter, public  :: v4r4_5         = XMM4r4_t(5.0E+00_sp)
+
     type(XMM4r4_t), parameter, public  :: v4r4_4         = XMM4r4_t(4.0E+00_sp)
+
+     type(XMM4r4_t), parameter, public  :: v4r4_3         = XMM4r4_t(3.0E+00_sp)
     
     type(XMM4r4_t), parameter, public  :: v4r4_2         = XMM4r4_t(2.0E+00_sp)
     
     type(XMM4r4_t), parameter, public  :: v4r4_1         = XMM4r4_t(1.0E+00_sp)
     
     type(XMM4r4_t), parameter, public  :: v4r4_n1         = XMM4r4_t(-1.0E+00_sp)
+
+    type(XMM4r4_t), parameter, public  :: v4r4_n2         = XMM4r4_t(-2.0E+00_sp)
     
     !/////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
