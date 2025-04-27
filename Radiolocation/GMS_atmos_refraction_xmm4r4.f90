@@ -2572,7 +2572,7 @@ module atmos_refraction_xmm4r4
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L32_up_ionosphere_f447_xmm4r4
-            !dir$ attributes forceinline :: analytic_sol_L33_up_ionosphere_f447_xmm4r4
+            !dir$ attributes forceinline :: analytic_sol_L32_up_ionosphere_f447_xmm4r4
 #endif 
             use mod_vecconsts, only : v4r4_1, v4r4_2, v4r4_1over2
             type(XMM4r4_t),   intent(in) :: fc 
@@ -2622,5 +2622,63 @@ module atmos_refraction_xmm4r4
             trm2.v    = exp1.v*(prob1.v-prob2.v)
             L32.v     = trm1.v*trm2.v  
       end function analytic_sol_L32_up_ionosphere_f447_xmm4r4
+
+       ! Formula: 4.48, page: 83
+      pure function analytic_sol_L33_up_ionosphere_f448_xmm4r4(fc,Nmf,H2,H3,beta,z0) result(L32)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L33_up_ionosphere_f448_xmm4r4
+            !dir$ attributes forceinline :: analytic_sol_L33_up_ionosphere_f448_xmm4r4
+#endif 
+            use mod_vecconsts, only : v4r4_1, v4r4_2, v4r4_4 
+            type(XMM4r4_t),   intent(in) :: fc 
+            type(XMM4r4_t),   intent(in) :: Nmf 
+            type(XMM4r4_t),   intent(in) :: H2 
+            type(XMM4r4_t),   intent(in) :: H3 
+            type(XMM4r4_t),   intent(in) :: beta
+            type(XMM4r4_t),   intent(in) :: z0 
+            type(XMM4r4_t)               :: L32 
+            type(XMM4r4_t),   parameter  :: a = XMM4r4_t(6378.0_sp)
+            type(XMM4r4_t),   parameter  :: C314159265358979323846264338328 = & 
+                                               XMM4r4_t(3.14159265358979323846264338328_sp)
+            type(XMM4r4_t),   automatic  :: delNm, piba
+            type(XMM4r4_t),   automatic  :: earg, bactgz 
+            type(XMM4r4_t),   automatic  :: prob1, prob2
+            type(XMM4r4_t),   automatic  :: trm1, trm2 
+            type(XMM4r4_t),   automatic  :: ctgz0, sctgz0
+            type(XMM4r4_t),   automatic  :: exp1, t0, t1
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)   
+              !dir$ attributes align : 16 :: delNm
+              !dir$ attributes align : 16 :: piba
+              !dir$ attributes align : 16 :: earg 
+              !dir$ attributes align : 16 :: bactgz
+              !dir$ attributes align : 16 :: prob1
+              !dir$ attributes align : 16 :: prob2
+              !dir$ attributes align : 16 :: trm1
+              !dir$ attributes align : 16 :: trm2
+              !dir$ attributes align : 16 :: ctgz0
+              !dir$ attributes align : 16 :: sctgz0
+              !dir$ attributes align : 16 :: exp1
+              !dir$ attributes align : 16 :: t0
+              !dir$ attributes align : 16 :: t1
+#endif
+            piba.v    = C314159265358979323846264338328.v*beta.v*(a.v*v4r4_1over2.v)
+            t0.v      = tan(z0.v)
+            ctgz0.v   = v4r4_1.v/t0.v 
+            sctgz0.v  = ctgz0.v*ctgz0.v 
+            delNm     = compute_delnM_f414_xmm4r4(fc,Nmf)
+            bactgz0.v = beta.v*a.v*sctgz0.v
+            trm1.v    = -delnM.v*sqrt(piba.v)*ctgz0.v 
+            earg.v    = beta.v*(H2.v+a.v*sctgz0.v)
+            exp1.v    = exp(earg.v)
+            t0.v      = sqrt(v4r4_2.v*bactgz0.v+v4r4_4.v*beta.v*H3.v)
+            t1.v      = sqrt(v4r4_2.v*bactgz0.v+v4r4_4.v*beta.v*H2.v)
+            prob1     = prob_integral_xmm4r4(t0)
+            prob2     = prob_integral_xmm4r4(t1)
+            trm2.v    = exp1.v*(prob1.v-prob2.v)
+            L32.v     = trm1.v*trm2.v  
+      end function analytic_sol_L33_up_ionosphere_f448_xmm4r4
+
+
 
 end module atmos_refraction_xmm4r4
