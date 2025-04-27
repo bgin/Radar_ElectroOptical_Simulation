@@ -2781,7 +2781,7 @@ module atmos_refraction
             t0     = sqrt(sqrtrm1)
             t1     = sqrt(sqrtrm2)
             trm2   = t0-exp1*t1 
-            L31    = trm1*trm2 
+            L34    = trm1*trm2 
         end function analytic_sol_L34_up_ionosphere_f449_r4
 
          elemental function analytic_sol_L34_up_ionosphere_f449_r8(deln0,fc,Nmf,H2,H3,beta,a,z0) result(L34)
