@@ -2310,7 +2310,7 @@ module atmos_refraction_xmm4r4
             type(XMM4r4_t),       automatic :: trm3, trm4
             type(XMM4r4_t),       automatic :: trm5, t2  
             integer(kind=i4)                :: j 
- #if defined(__INTEL_COMPILER) && !defined(__GNUC__) 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__) 
               !dir$ attributes align : 16 :: a 
               !dir$ attributes align : 16 :: C033333333333333333333333333333
               !dir$ attributes align : 16 :: delnM 
@@ -2362,5 +2362,114 @@ module atmos_refraction_xmm4r4
                      L12.v(j)    = trm1.v(j)*trm2.v(j)+trm5.v(j)
                  end do                     
       end function analytic_sol_L21_med_ionosphere_f443_xmm4r4
+
+       ! formula: 4.44, page: 82
+      pure function analytic_sol_L22_med_ionosphere_f444_xmm4r4(deln0,fc,Nmf,H1,H2,z0) result(L22)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L22_med_ionosphere_f444_xmm4r4
+            !dir$ attributes forceinline :: analytic_sol_L22_med_ionosphere_f444_xmm4r4
+#endif 
+            use mod_vecconsts, only : v4r4_1,  v4r4_2, v4r4_1over2, v4r4_3, &
+                                      v4r4_10, v4r4_20, v4r4_5 
+            type(XMM4r4_t),       intent(in) :: deln0 
+            type(XMM4r4_t),       intent(in) :: fc 
+            type(XMM4r4_t),       intent(in) :: Nmf 
+            type(XMM4r4_t),       intent(in) :: H1 
+            type(XMM4r4_t),       intent(in) :: H2 
+            type(XMM4r4_t),       intent(in) :: z0 
+            type(XMM4r4_t)                   :: L22 
+            type(XMM4r4_t),       parameter  :: a = XMM4r4_t(6378.0_SP)
+            type(XMM4r4_t),       automatic :: stgz0, delnM,
+            type(XMM4r4_t),       automatic :: scosz0, b4, tgz0  
+            type(XMM4r4_t),       automatic :: b2, b3
+            type(XMM4r4_t),       automatic :: H1s, H2s 
+            type(XMM4r4_t),       automatic :: p, q
+            type(XMM4r4_t),       automatic :: g, b, H2H1p4 
+            type(XMM4r4_t),       automatic :: trm1, trm2
+            type(XMM4r4_t),       automatic :: lrat, rrat 
+            type(XMM4r4_t),       automatic :: t0, t1
+            type(XMM4r4_t),       automatic :: t2, t3, cosz 
+            type(XMM4r4_t),       automatic :: c0, c1
+            type(XMM4r4_t),       automatic :: c2, c3 
+            integer(kind=i4)                :: j 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__) 
+              !dir$ attributes align : 16 :: a 
+              !dir$ attributes align : 16 :: stgz0 
+              !dir$ attributes align : 16 :: delnM
+              !dir$ attributes align : 16 :: scosz0
+              !dir$ attributes align : 16 :: b4
+              !dir$ attributes align : 16 :: tgz0 
+              !dir$ attributes align : 16 :: b2
+              !dir$ attributes align : 16 :: b3
+              !dir$ attributes align : 16 :: H1s 
+              !dir$ attributes align : 16 :: H2s 
+              !dir$ attributes align : 16 :: p
+              !dir$ attributes align : 16 :: q
+              !dir$ attributes align : 16 :: g
+              !dir$ attributes align : 16 :: b
+              !dir$ attributes align : 16 :: H2H1p4
+              !dir$ attributes align : 16 :: trm1
+              !dir$ attributes align : 16 :: trm2
+              !dir$ attributes align : 16 :: lrat
+              !dir$ attributes align : 16 :: rrat
+              !dir$ attributes align : 16 :: t0
+              !dir$ attributes align : 16 :: t1
+              !dir$ attributes align : 16 :: t2
+              !dir$ attributes align : 16 :: t3
+              !dir$ attributes align : 16 :: cosz
+              !dir$ attributes align : 16 :: c0 
+              !dir$ attributes align : 16 :: c1 
+              !dir$ attributes align : 16 :: c2 
+              !dir$ attributes align : 16 :: c3 
+#endif
+              delnM.v  = compute_delnM_f414_xmm4r4(fc,Nmf)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#elif defined(__GNUC__) && !defined(__INTEL_COMPILER)
+             !$omp simd simdlen(4) linear(j:1)
+#endif
+                 do j=0,3 
+                     tgz.v(j)     = tan(z0.v(j))
+                     stgz0.v(j)   = tgz0.v(j)*tgz0.v(j) 
+                     b.v(j)       = (v4r4_2.v(j)*stgz0.v(j))/a.v(j)
+                     H2s.v(j)     = H2.v(j)*H2.v(j) 
+                     b4.v(j)      = b.v(j)*b.v(j)*b.v(j)*b.v(j) 
+                     H1s.v(j)     = H1.v(j)*H1.v(j) 
+                     t1.v(j)      = (H2.v(j)-H1.v(j))*(H2.v(j)-H1.v(j))
+                     H2H1p4.v(j)  = t1.v(j)*t1.v(j) 
+                     g.v(j)       = H2s.v(j)-t1.v(j)*(v4r4_1.v(j)+deln0.v(j)/delnM.v(j))
+                     b2.v(j)      = b.v(j)*b.v(j) 
+                     b3.v(j)      = b2.v(j)*b.v(j) 
+                     t0.v(j)      = v4r4_8.v(j)+v4r4_24.v(j)*b.v(j)*H2.v(j)
+                     t1.v(j)      = v4r4_19.v(j)*b2.v(j)*H2s.v(j) 
+                     t2.v(j)      = v4r4_3.v(j)*b3.v(j)*H2s.v(j)*H2.v(j) 
+                     cosz.v(j)    = cos(z0.v(j)) 
+                     t3.v(j)      = v4r4_5.v(j)*b2.v(j)*g.v(j) 
+                     t4.v(j)      = v4r4_1.v(j)+b.v(j)*H2.v(j) 
+                     p.v(j)       = t0.v(j)+t1.v(j)+t2.v(j)+t3.v(j)+t4.v(j) 
+                     c0.v(j)      = H1.v(j)-b2.v(j)*H2s.v(j)  
+                     t0.v(j)      = v4r4_8.v(j)+v4r4_4.v(j)*b.v(j)*c0.v(j)
+                     c1.v(j)      = v4r4_1over2.v(j)+v4r4_20.v(j)*b.v(j)*H2.v(j)
+                     t1.v(j)      = b3.v(j)*(H2s.v(j)*H2.v(j))*c1.v(j)
+                     c2.v(j)      = v4r4_10.v(j)*b2.v(j)*H1.v(j)*H2.v(j) 
+                     t2.v(j)      = 10.0_sp*b2*H2s+c2.v(j)
+                     c3.v(j)      = v4r4_5.v(j)*b3.v(j)*H1.v(j)*H2s.v(j) 
+                     t3.v(j)      = v4r4_5.v(j)*b3.v(j)*H1s.v(j)*H2.v(j)*v4r4_1over2.v(j)+c3.v(j)
+                     c0.v(j)      = v4r4_5.v(j)*b3.v(j)*g.v(j)*(H1.v(j)+H2.v(j))*v4r4_1over2.v(j) 
+                     t4.v(j)      = 5.0_sp*b2*g+c0.v(j)
+                     q.v(j)       = t0.v(j)+t1.v(j)+t2.v(j)-t3.v(j)+t4.v(j) 
+                     lrat.v(j)    = p.v(j)/sqrt(v4r4_1.v(j)+b.v(j)*H2.v(j))
+                     rrat.v(j)    = q.v(j)/sqrt(v4r4_1.v(j)+b.v(j)*H1.v(j))
+                     trm2.v(j)    = lrat.v(j)-rrat.v(j) 
+                     t0.v(j)      = v4r4_8.v(j)*tgz0.v(j)*delnM.v(j)*delnM.v(j) 
+                     t1.v(j)      = v4r4_5.v(j)*cosz.v(j)*cosz.v(j)*b4.v(j)*H2H1p4.v(j) 
+                     trm1.v(j)    = t0.v(j)/t1.v(j) 
+                     L22.v(j)     = trm1.v(j)*trm2.v(j) 
+                 end do  
+      end function analytic_sol_L22_med_ionosphere_f444_xmm4r4
 
 end module atmos_refraction_xmm4r4
