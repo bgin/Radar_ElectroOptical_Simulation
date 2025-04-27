@@ -2624,7 +2624,7 @@ module atmos_refraction_xmm4r4
       end function analytic_sol_L32_up_ionosphere_f447_xmm4r4
 
        ! Formula: 4.48, page: 83
-      pure function analytic_sol_L33_up_ionosphere_f448_xmm4r4(fc,Nmf,H2,H3,beta,z0) result(L32)
+      pure function analytic_sol_L33_up_ionosphere_f448_xmm4r4(fc,Nmf,H2,H3,beta,z0) result(L33)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: analytic_sol_L33_up_ionosphere_f448_xmm4r4
@@ -2637,7 +2637,7 @@ module atmos_refraction_xmm4r4
             type(XMM4r4_t),   intent(in) :: H3 
             type(XMM4r4_t),   intent(in) :: beta
             type(XMM4r4_t),   intent(in) :: z0 
-            type(XMM4r4_t)               :: L32 
+            type(XMM4r4_t)               :: L33 
             type(XMM4r4_t),   parameter  :: a = XMM4r4_t(6378.0_sp)
             type(XMM4r4_t),   parameter  :: C314159265358979323846264338328 = & 
                                                XMM4r4_t(3.14159265358979323846264338328_sp)
@@ -2676,8 +2676,77 @@ module atmos_refraction_xmm4r4
             prob1     = prob_integral_xmm4r4(t0)
             prob2     = prob_integral_xmm4r4(t1)
             trm2.v    = exp1.v*(prob1.v-prob2.v)
-            L32.v     = trm1.v*trm2.v  
+            L33.v     = trm1.v*trm2.v  
       end function analytic_sol_L33_up_ionosphere_f448_xmm4r4
+
+       ! Formula: 4.49, page: 83
+      pure function analytic_sol_L34_up_ionosphere_f449_xmm4r4(deln0,fc,Nmf,H2,H3,beta,z0) result(L34)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L34_up_ionosphere_f449_xmm4r4
+            !dir$ attributes forceinline :: analytic_sol_L34_up_ionosphere_f449_xmm4r4
+#endif 
+            use mod_vecconsts, only : v4r4_1, v4r4_2
+            type(XMM4r4_t),   intent(in) :: deln0 
+            type(XMM4r4_t),   intent(in) :: fc 
+            type(XMM4r4_t),   intent(in) :: Nmf 
+            type(XMM4r4_t),   intent(in) :: H2 
+            type(XMM4r4_t),   intent(in) :: H3 
+            type(XMM4r4_t),   intent(in) :: beta
+            type(XMM4r4_t),   intent(in) :: z0 
+            type(XMM4r4_t)               :: L34 
+            type(XMM4r4_t),   parameter  :: C000015678896205707118218877391 = & 
+                                                   XMM4r4_t(0.00015678896205707118218877391_sp)
+            type(XMM4r4_t),   automatic :: delNm, stgz0
+            type(XMM4r4_t),   automatic :: ctgz0, earg 
+            type(XMM4r4_t),   automatic :: trm1, trm2
+            type(XMM4r4_t),   automatic :: exp1, ssecz0 
+            type(XMM4r4_t),   automatic :: sqrtrm1, sqrtrm2
+            type(XMM4r4_t),   automatic :: t0, t1 
+            integer(kind=i4)            :: j
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)   
+              !dir$ attributes align : 16 :: C000015678896205707118218877391
+              !dir$ attributes align : 16 :: stgz0 
+              !dir$ attributes align : 16 :: ctgz0 
+              !dir$ attributes align : 16 :: earg 
+              !dir$ attributes align : 16 :: trm1 
+              !dir$ attributes align : 16 :: trm2 
+              !dir$ attributes align : 16 :: exp1 
+              !dir$ attributes align : 16 :: ssecz0
+              !dir$ attributes align : 16 :: sqrtrm1 
+              !dir$ attributes align : 16 :: sqrtrm2 
+              !dir$ attributes align : 16 :: t0
+              !dir$ attributes align : 16 :: t1 
+#endif
+               delNm.v = compute_delnM_f414_xmm4r4(fc,Nmf);
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#elif defined(__GNUC__) && !defined(__INTEL_COMPILER)
+             !$omp simd simdlen(4) linear(j:1)
+#endif
+                 do j=0,3 
+                    earg.v(j)   = beta.v(j)*(H3.v(j)-H2.v(j))
+                    t0.v(j)     = tan(z0.v(j))
+                    stgz0.v(j)  = t0.v(j)*t0.v(j) 
+                    ctgz0.v(j)  = v4r4_1.v(j)/t0.v(j) 
+                    t0.v(j)     = cos(z0.v(j))
+                    t1.v(j)     = v4r4_1.v(j)/t0.v(j) 
+                    ssecz0.v(j) = t1.v(j)*t1.v(j) 
+                    exp1.v(j)   = exp(earg.v(j))
+                    trm1.v(j)   = -deln0.v(j)*delNm.v(j)*beta.v(j)*ctgz0.v(j)*ssecz0.v(j) 
+                    sqrtrm1.v(j)= v4r4_1.v(j)+v4r4_2.v(j)*stgz0.v(j)*H2.v(j)* &
+                                  C000015678896205707118218877391.v(j)
+                    sqrtrm2.v(j)= v4r4_1.v(j)+v4r4_2.v(j)*stgz0.v(j)*H3.v(j)* &
+                                  C000015678896205707118218877391.v(j)
+                    t0.v(j)     = sqrt(sqrtrm1.v(j))
+                    t1.v(j)     = sqrt(sqrtrm2.v(j))
+                    trm2.v(j)   = t0.v(j)-exp1.v(j)*t1.v(j) 
+                    L34.v(j)    = trm1.v(j)*trm2.v(j) 
+                 end do 
+      end function analytic_sol_L34_up_ionosphere_f449_xmm4r4
 
 
 
