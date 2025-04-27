@@ -1628,7 +1628,7 @@ module atmos_refraction
             real(kind=sp),  intent(in) :: R0 
             real(kind=sp),  intent(in) :: z0 
             real(kind=sp),  intent(in) :: D1 
-            real(kind=sp) :: L02
+            real(kind=sp) :: L03
             real(kind=sp), parameter :: C314159265358979323846264338328 = 3.14159265358979323846264338328_sp
             real(kind=sp), automatic :: dnEps, ctgz0, sctgz0, sqr
             real(kind=sp), automatic :: bRctgz0, sqr1, sqr2, exp1 
@@ -2019,7 +2019,7 @@ module atmos_refraction
             earg = -beta*hH2
             delnM=  compute_delnM_f414_r4(fc,Nmf)
             exp1 =  exp(earg)
-            n    - 1.0_sp-delnM*exp1
+            n    = 1.0_sp-delnM*exp1
       end function n_avg_H2_h_H3_f431_r4
 
       elemental function n_avg_H2_h_H3_f431_r8(fc,Nmf,h,H2) result(n)
@@ -2039,10 +2039,10 @@ module atmos_refraction
             earg = -beta*hH2
             delnM=  compute_delnM_f414_r8(fc,Nmf)
             exp1 =  exp(earg)
-            n    - 1.0_dp-delnM*exp1
+            n    = 1.0_dp-delnM*exp1
       end function n_avg_H2_h_H3_f431_r8
 
-      !Так к-ак усредненная зависимость показателя 
+      !усредненная зависимость показателя 
       !преломления атмосферы определяется тремя 
       !соотношениями (4.29), (4.30) и (4.31), то (4.33) целесообразно 
       !разбить на три слагаемых
@@ -2240,7 +2240,7 @@ module atmos_refraction
 
       ! refraction angle whole atmosphere (lower part).
       ! formula: 4.38, page: 82
-      elemental function refraction_angle_atmos_L1_lo_f438_r4(deln0,beta,a,z0,H1) resilt(L1)
+      elemental function refraction_angle_atmos_L1_lo_f438_r4(deln0,beta,a,z0,H1) result(L1)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: refraction_angle_atmos_L1_lo_f438_r4
