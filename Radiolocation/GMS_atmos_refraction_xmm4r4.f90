@@ -2472,4 +2472,29 @@ module atmos_refraction_xmm4r4
                  end do  
       end function analytic_sol_L22_med_ionosphere_f444_xmm4r4
 
+       ! refraction angle whole atmosphere (medium part).
+      ! formula: 4.42, page: 82
+      pure function refraction_angle_atmos_L2_med_f442_xmm4r4(deln0,fc,Nmf,H1,H2,z0) result(L2)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_L2_med_f442_xmm4r4
+            !dir$ attributes forceinline :: refraction_angle_atmos_L2_med_f442_xmm4r4
+#endif 
+            type(XMM4r4_t),       intent(in) :: deln0 
+            type(XMM4r4_t),       intent(in) :: fc 
+            type(XMM4r4_t),       intent(in) :: Nmf 
+            type(XMM4r4_t),       intent(in) :: H1 
+            type(XMM4r4_t),       intent(in) :: H2 
+            type(XMM4r4_t),       intent(in) :: z0 
+            type(XMM4r4_t)                   :: L2
+            type(XMM4r4_t),       automatic  :: L21, L22 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__) 
+              !dir$ attributes align : 16 :: L21 
+              !dir$ attributes align : 16 :: L22 
+#endif 
+              L21  = analytic_sol_L21_med_ionosphere_f443_xmm4r4(fc,Nmf,H1,H2,z0)
+              L22  = analytic_sol_L22_med_ionosphere_f444_xmm4r4(deln0,fc,Nmf,H1,H2,z0)
+              L2.v = L21.v+L22.v              
+      end function refraction_angle_atmos_L2_med_f442_xmm4r4
+
 end module atmos_refraction_xmm4r4
