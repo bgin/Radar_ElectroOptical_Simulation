@@ -2816,6 +2816,91 @@ module atmos_refraction_xmm4r4
                  end do            
       end function refraction_angle_atmos_L3_upper_f445_xmm4r4
 
-
+       !характеризующего величину угла 
+       !радиорефракции в земной атмосфере.
+       ! 2*tg^2(z0)*H2/a«1, z0<60°.
+       ! Formula: 4.50, page: 84
+      pure function refraction_angle_z0le60_med_atmos_f450_xmm4r4(fc,Nmf,z0,deln0,g,H1,H2) result(alpha)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_z0le60_med_atmos_f450_xmm4r4
+            !dir$ attributes forceinline :: refraction_angle_z0le60_med_atmos_f450_xmm4r4
+#endif
+            use mod_vecconsts, only : v4r4_1over2, v4r4_2, v4r4_3, &
+                                      v4r4_1over4
+            type(XMM4r4_t),  intent(in) :: fc 
+            type(XMM4r4_t),  intent(in) :: Nmf 
+            type(XMM4r4_t),  intent(in) :: z0 
+            type(XMM4r4_t),  intent(in) :: deln0 
+            type(XMM4r4_t),  intent(in) :: g 
+            type(XMM4r4_t),  intent(in) :: H1 
+            type(XMM4r4_t),  intent(in) :: H2 
+            type(XMM4r4_t)              :: alpha 
+            type(XMM4r4_t),  parameter  :: inva = XMM4r4_t(0.000156985871271585557299843014_sp)
+            type(XMM4r4_t),  automatic  :: delnNm, tgz0
+            type(XMM4r4_t),  automatic  :: scosz0, rat1
+            type(XMM4r4_t),  automatic  :: H1s, H2s
+            type(XMM4r4_t),  automatic  :: rat2, rat3 
+            type(XMM4r4_t),  automatic  :: ghlf, trm1
+            type(XMM4r4_t),  automatic  :: trm2, trm3 
+            type(XMM4r4_t),  automatic  :: t0, t1
+            type(XMM4r4_t),  automatic  :: t2, t3 
+            type(XMM4r4_t),  automatic  :: c0, c1 
+            integer(kind=i4)            :: j 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)   
+              !dir$ attributes align : 16 :: inva
+              !dir$ attributes align : 16 :: delNm 
+              !dir$ attributes align : 16 :: tgz0 
+              !dir$ attributes align : 16 ::  scosz0 
+              !dir$ attributes align : 16 ::  rat1 
+              !dir$ attributes align : 16 ::  H1s 
+              !dir$ attributes align : 16 ::  H2s 
+              !dir$ attributes align : 16 ::  rat2 
+              !dir$ attributes align : 16 ::  rat3 
+              !dir$ attributes align : 16 ::  ghlf 
+              !dir$ attributes align : 16 ::  trm1 
+              !dir$ attributes align : 16 ::  trm2 
+              !dir$ attributes align : 16 ::  t0 
+              !dir$ attributes align : 16 ::  t1 
+              !dir$ attributes align : 16 ::  t2 
+              !dir$ attributes align : 16 ::  t3 
+              !dir$ attributes align : 16 :: c0 
+              !dir$ attributes align : 16 :: c1 
+#endif
+              delnNm  = compute_delnM_f414_xmm4r4(fc,Nmf)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#elif defined(__GNUC__) && !defined(__INTEL_COMPILER)
+             !$omp simd simdlen(4) linear(j:1)
+#endif
+                 do j=0,3 
+                     H1s.v(j)    = H1.v(j)*H1.v(j) 
+                     H2s.v(j)    = H2.v(j)*H2.v(j) 
+                     tgz0.v(j)   = tan(z0.v(j))
+                     ghlf.v(j)   = g.v(j)*v4r4_1over2.v(j) 
+                     t0.v(j)     = cos(z0.v(j))
+                     scosz0.v(j) = t0.v(j)*t0.v(j) 
+                     rat1.v(j)   = tgz0.v(j)/scosz0.v(j)
+                     trm1.v(j)   = deln0.v(j)*tgz0.v(j)+delnNm.v(j)*rat1.v(j)*inva.v(j) 
+                     c0.v(j)     = H2.v(j)*H1.v(j)-H2s.v(j) 
+                     t1.v(j)     = v4r4_2.v(j)*H2s.v(j)+v4r4_2.v(j)*c0.v(j)
+                     t0.v(j)     = v4r4_3.v(j)*(H2.v(j)-H1.v(j))
+                     rat2.v(j)   = H2.v(j)-(t1.v(j)/t0.v(j))
+                     t2.v(j)     = (H2.v(j)-H1.v(j))
+                     t3.v(j)     = t2.v(j)*t2.v(j)*t2.v(j)*t2.v(j) 
+                     trm1.v(j)   = trm1.v(j)*rat2.v(j) 
+                     t0.v(j)     = v4r4_2.v(j)*(delnNm.v(j)*delNm.v(j))
+                     trm2.v(j)   = t0.v(j)/t3.v(j)*rat1.v(j) 
+                     t1.v(j)     = (H2s.v(j)*H2s.v(j))*v4r4_1over4.v(j)-ghlf.v(j)*H2s.v(j) 
+                     c1.v(j)     = H2.v(j)*H1s.v(j)*H1.v(j)+H2s.v(j)*H1s.v(j)
+                     t2.v(j)     = (H2s.v(j)*H2s.v(j))*v4r4_1over2.v(j)-c1.v(j)
+                     t3.v(j)     = ghlf.v(j)*H1s.v(j)-g.v(j)*H2.v(j)*H1.v(j) 
+                     trm3.v(j)   = t1.v(j)-t2.v(j)+t3.v(j) 
+                     alpha.v(j)  = trm1.v(j)+trm2.v(j)*trm3.v(j)
+                 end do 
+      end function refraction_angle_z0le60_med_atmos_f450_xmm4r4
 
 end module atmos_refraction_xmm4r4
