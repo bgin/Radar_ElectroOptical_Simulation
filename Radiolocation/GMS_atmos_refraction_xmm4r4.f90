@@ -2911,8 +2911,8 @@ module atmos_refraction_xmm4r4
        pure function refraction_angle_z0eq90_med_atmos_f451_xmm4r4(fc,Nmf,z0,deln0,g,H1,H2) result(alpha)
 #if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_z0eq90_med_atmos_f451_x
-            !dir$ attributes forceinline :: refraction_angle_z0eq90_med_atmos_f451_x
+            !dir$ attributes code_align : 32 :: refraction_angle_z0eq90_med_atmos_f451_xmm4r4
+            !dir$ attributes forceinline :: refraction_angle_z0eq90_med_atmos_f451_xmm4r4
 #endif
             use mod_vecconsts, only : v4r4_1over2, v4r4_2, v4r4_1
                                      
@@ -3008,5 +3008,67 @@ module atmos_refraction_xmm4r4
                      alpha.v(j)= trm1.v(j)+trm2.v(j) 
                  end do 
        end function refraction_angle_z0eq90_med_atmos_f451_xmm4r4
+
+       !Рефракция электромагнитных волн (gamma (wavelength) < 5 см)
+       !в земной атмосфере при различных высотах
+       !излучателя и приемника.
+       ! Formula: 5.4, page: 93
+       pure function analytic_sol_L1_troposph_wvle5cm_f54_xmm4r4(beta,R0,delnA,z0,Hc0) result(L1)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_L1_troposph_wvle5cm_f54_xmm4r4
+            !dir$ attributes forceinline :: analytic_sol_L1_troposph_wvle5cm_f54_xmm4r4
+#endif
+             use mod_vecconsts, only : v4r4_1, v4r4_2, v4r4_n2 
+             type(XMM4r4_t),    intent(in) :: beta 
+             type(XMM4r4_t),    intent(in) :: R0 
+             type(XMM4r4_t),    intent(in) :: delnA 
+             type(XMM4r4_t),    intent(in) :: z0 
+             type(XMM4r4_t),    intent(in) :: Hc0 
+             type(XMM4r4_t)                :: L1 
+             type(XMM4r4_t),     parameter :: a = XMM4r4_t(6370.0_sp) 
+             type(XMM4r4_t),     automatic :: stgz0, ctgz0
+             type(XMM4r4_t),     automatic :: btHc0, scosz0 
+             type(XMM4r4_t),     automatic :: rat1, rat2
+             type(XMM4r4_t),     automatic :: exp1, exp2 
+             type(XMM4r4_t),     automatic :: t0, t1
+             integer(kind=i4)              :: j 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__) 
+               !dir$ attributes align : 16 :: a
+               !dir$ attributes align : 16 :: stgz0 
+               !dir$ attributes align : 16 :: ctgz0
+               !dir$ attributes align : 16 :: btHc0 
+               !dir$ attributes align : 16 :: scosz0 
+               !dir$ attributes align : 16 :: rat1 
+               !dir$ attributes align : 16 :: rat2 
+               !dir$ attributes align : 16 :: exp1
+               !dir$ attributes align : 16 :: exp2 
+               !dir$ attributes align : 16 :: t0 
+               !dir$ attributes align : 16 :: t1
+#endif
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#elif defined(__GNUC__) && !defined(__INTEL_COMPILER)
+             !$omp simd simdlen(4) linear(j:1)
+#endif
+                 do j=0,3 
+                    t0.v(j)     = tan(z0.v(j))
+                    t1.v(j)     = cos(z0.v(j))
+                    ctgz0.v(j)  = v4r4_1.v(j)/t0.v(j) 
+                    scosz0.v(j) = t1.v(j)*t1.v(j) 
+                    stgz0.v(j)  = t0.v(j)*t0.v(j) 
+                    btHc0.v(j)  = beta.v(j)*Hc0.v(j) 
+                    exp1.v(j)   = exp(v4r4_n2.v(j)*btHc0.v(j)) 
+                    rat1.v(j)   = (beta.v(j)*R0.v(j)*(delnA.v(j)*delnA.v(j))*ctgz0.v(j))/scosz0.v(j)
+                    exp2.v(j)   = exp(-btHc0.v(j))
+                    t0.v(j)     = (v4r4_1.v(j)+v4r4_2.v(j)*stgz0.v(j)*Hc0.v(j))/R0.v(j)
+                    t1.v(j)     = sqrt(t0.v(j))
+                    rat2.v(j)   = (exp1.v(j)-exp2.v(j))/t1.v(j) 
+                    L1.v(j)     = rat1.v(j)*rat2.v(j) 
+                 end do                
+       end function analytic_sol_L1_troposph_wvle5cm_f54_xmm4r4
 
 end module atmos_refraction_xmm4r4
