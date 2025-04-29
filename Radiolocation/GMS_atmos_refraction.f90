@@ -3169,7 +3169,7 @@ module atmos_refraction
              real(kind=sp),    intent(in) :: delnA 
              real(kind=sp),    intent(in) :: z0 
              real(kind=sp),    intent(in) :: Hc0 
-             real(kind=sp)   :: L1 
+             real(kind=sp)                :: L2 
              real(kind=sp),    parameter :: C157079632679489661923132169164 = 1.57079632679489661923132169164_sp
              real(kind=sp),    automatic :: tgz0, stgz0, sctgz0, btR0 
              real(kind=sp),    automatic :: prob1, prob2, exp1, bRctgz0 
