@@ -3015,14 +3015,14 @@ module atmos_refraction
             real(kind=sp), automatic :: H2s, H1s, piba, sH2H1
             real(kind=sp), automatic :: sqrH1, sqrH2, t0, t1
             real(kind=sp), automatic :: t2, t3, trm1, trm2 
-            
+            real(kind=sp), automatic :: delNm 
             H1s  = H1*H1 
             piba = sqrt((C314159265358979323846264338328*beta*a)*0.5_sp)
             H2s  = H2*H2 
             sqrH1= sqrt(H1)
             delNm= compute_delnM_f414_r4(fc,Nmf)
             sqrH2= sqrt(H2)
-            trm1 = deln0*piba*(1.0_sp*(C141421356237309504880168872421-1)*deln0*beta*a)
+            trm1 = deln0*piba*(1.0_sp*(C141421356237309504880168872421-1.0_sp)*deln0*beta*a)
             sH2H1= (H2-H1)*(H2-H1)
             t0   = 2.0_sp*delNm*C112871608476179695133132585224253/ &
                    sH2H1
@@ -3034,7 +3034,7 @@ module atmos_refraction
             t3   = 1.0_sp/sqrH2*(1.2_sp*H2s*H2+2.0_sp*g*H2)
             t0   = 1.0_sp/sqrH1*((H1s*H1)*0.2_sp-H2*H1s+ &
                    2.0_sp*H2s*H1+g*H1+g*H2)
-            t1   = delNm*sqrt(a/(2.0_sp*H2)
+            t1   = delNm*sqrt(a/(2.0_sp*H2))
             trm2 = t2*t3-t1 
             alpha= trm1+trm2 
        end function refraction_angle_z0eq90_med_atmos_f451_r4
