@@ -3247,7 +3247,7 @@ module atmos_refraction
              stgz0  = tgz0*tgz0 
              t0     = 1.0_sp/tgz0 
              sctgz0 = t0*t0 
-             exp1   = (btR0/stgz0)
+             exp1   = btR0/stgz0
              t1     = delnA*sqrt((2.0_sp*btR0)/tgz0)   
              bRctgz0= btR0*sctgz0  
              trm1   = t1*exp1*C157079632679489661923132169164
