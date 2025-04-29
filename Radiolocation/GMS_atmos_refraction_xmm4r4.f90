@@ -2748,6 +2748,74 @@ module atmos_refraction_xmm4r4
                  end do 
       end function analytic_sol_L34_up_ionosphere_f449_xmm4r4
 
+       ! refraction angle whole atmosphere (upper part).
+       ! formula: 4.49, page: 83
+      pure function refraction_angle_atmos_L3_upper_f445_xmm4r4(deln0,fc,Nmf,H2,H3,beta,a,z0) result(L3)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_atmos_L3_upper_f445_xmm4r4
+            !dir$ attributes forceinline :: refraction_angle_atmos_L3_upper_f445_xmm4r4
+#endif 
+            use mod_vecconsts, only : v4r4_1
+            type(XMM4r4_t),   intent(in) :: deln0 
+            type(XMM4r4_t),   intent(in) :: fc 
+            type(XMM4r4_t),   intent(in) :: Nmf 
+            type(XMM4r4_t),   intent(in) :: H2 
+            type(XMM4r4_t),   intent(in) :: H3 
+            type(XMM4r4_t),   intent(in) :: beta
+            type(XMM4r4_t),   intent(in) :: z0 
+            type(XMM4r4_t)               :: L3 
+            type(XMM4r4_t),   parameter  :: a = XMM4r4_t(6378.0_sp)
+            type(XMM4r4_t),    automatic :: L31, L32
+            type(XMM4r4_t),    automatic :: L33, L34 
+            type(XMM4r4_t),    automatic :: delNm, ctgz0
+            type(XMM4r4_t),    automatic :: ssecz0, exp1 
+            type(XMM4r4_t),    automatic :: t0, t1, t2 
+            type(XMM4r4_t),    automatic :: trm1, trm2, trm3  
+            integer(kind=i4)             :: j
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)   
+            !dir$ attributes align : 16 :: a 
+            !dir$ attributes align : 16 :: L31 
+            !dir$ attributes align : 16 :: L32 
+            !dir$ attributes align : 16 :: L33 
+            !dir$ attributes align : 16 :: L34 
+            !dir$ attributes align : 16 :: delNm 
+            !dir$ attributes align : 16 :: ctgz0 
+            !dir$ attributes align : 16 :: ssecz0 
+            !dir$ attributes align : 16 :: exp1 
+            !dir$ attributes align : 16 :: t0 
+            !dir$ attributes align : 16 :: t1 
+            !dir$ attributes align : 16 :: trm1 
+            !dir$ attributes align : 16 :: trm2 
+            !dir$ attributes align : 16 :: trm3 
+#endif
+            L31   = analytic_sol_L31_up_ionosphere_f446_xmm4r4(fc,Nmf,H2,H3,beta,z0) 
+            L32   = analytic_sol_L32_up_ionosphere_f447_xmm4r4(fc,Nmf,H2,H3,beta,z0) 
+            L33   = analytic_sol_L33_up_ionosphere_f448_xmm4r4(fc,Nmf,H2,H3,beta,z0) 
+            L34   = analytic_sol_L34_up_ionosphere_f449_xmm4r4(deln0,fc,Nmf,H2,H3,beta,z0)
+            delNm = compute_delnM_f414_xmm4r4(fc,Nmf)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#elif defined(__GNUC__) && !defined(__INTEL_COMPILER)
+             !$omp simd simdlen(4) linear(j:1)
+#endif
+                 do j=0,3 
+                     exp1.v(j)  =  exp(beta.v(j)*H2.v(j))
+                     t0.v(j)    =  tan(z0.v(j))
+                     ctgz0.v(j) =  v4r4_1.v(j)/t0.v(j) 
+                     t1.v(j)    =  v4r4_1.v(j)/cos(z0.v(j))
+                     ssecz0.v(j)= t1.v(j)*t1.v(j) 
+                     trm2.v(j)  = delNm.v(j)*beta.v(j)*a.v(j)*exp1.v(j) 
+                     t2.v(j)    = ctgz0.v(j)*ssecz0.v(j)*L32.v(j) 
+                     trm1.v(j)  = L31.v(j)+(v4r4_1.v(j)-deln0.v(j)*beta.v(j)*a.v(j))*t2.v(j)
+                     trm3.v(j)  = ctgz0.v(j)*ssecz0.v(j)*L33.v(j)+L34.v(j) 
+                     L3.v(j)    = trm1.v(j)-trm2.v(j)*trm3.v(j) 
+                 end do            
+      end function refraction_angle_atmos_L3_upper_f445_xmm4r4
+
 
 
 end module atmos_refraction_xmm4r4
