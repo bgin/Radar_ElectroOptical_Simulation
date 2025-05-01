@@ -3240,4 +3240,51 @@ module atmos_refraction_xmm4r4
                  end do               
        end function refraction_angle_tropo_wvle5cm_f53_xmm4r4
 
+       !Представим (5.15) в виде двух слагаемых, учитывая,
+        !что: 1/n~1, z=z0-theta+alpha=z-gamma, (gamm<<1)
+        !i.e. formula: 5.16, page: 95
+        !рассчитать угол истинной атмосферной рёф-;
+        !ракции б в диапазоне видимых зенитных угловч 0° <•
+        !<г0<88° при условии, что показатель преломлений
+        !атмосферы меняется с высотой по закону (1.45)
+
+        ! formula: 5.22, page: 96
+       pure function analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_xmm4r4(delnA,z0,beta,Hc0) result(del1)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_xmm4r4
+            !dir$ attributes forceinline :: analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_xmm4r4
+#endif
+             use mod_vecconsts, only : v4r4_1
+             type(XMM4r4_t),        intent(in) :: delnA 
+             type(XMM4r4_t),        intent(in) :: z0 
+             type(XMM4r4_t),        intent(in) :: beta 
+             type(XMM4r4_t),        intent(in) :: Hc0 
+             type(XMM4r4_t)                    :: del1 
+             type(XMM4r4_t),        automatic  :: tgz0, btHc0
+             type(XMM4r4_t),        automatic  :: exp1, rat
+             integer(kind=i4)                  :: j 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__) 
+                !dir$ attributes align : 16 :: tgz0 
+                !dir$ attributes align : 16 :: btHc0 
+                !dir$ attributes align : 16 :: exp1 
+                !dir$ attributes align : 16 :: rat 
+#endif 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#elif defined(__GNUC__) && !defined(__INTEL_COMPILER)
+             !$omp simd simdlen(4) linear(j:1)
+#endif
+                 do j=0,3 
+                     btHc0.v(j)  = beta.v(j)*Hc0.v(j) 
+                     tgz0.v(j)   = tan(z0.v(j))
+                     exp1.v(j)   = exp(-btHc0.v(j))
+                     rat.v(j)    = (v4r4_1.v(j)-exp1.v(j))/btHc0.v(j)
+                     del1.v(j)   = delnA.v(j)*tgz0.v(j)*(v4r4_1.v(j)-rat.v(j))
+                 end do               
+       end function analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_xmm4r4
+
 end module atmos_refraction_xmm4r4
