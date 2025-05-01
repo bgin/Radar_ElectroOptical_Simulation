@@ -3469,4 +3469,68 @@ module atmos_refraction_xmm4r4
                del231.v  = trm1.v-trm2.v*trm3.v  
        end function analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_xmm4r4
 
+       ! formula: 5.28, page: 97
+        pure function analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_xmm4r4(delnA,z0,beta,Hc0,R0) result(del231)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_xmm4r4
+            !dir$ attributes forceinline :: analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_xmm4r4
+#endif
+             use mod_vecconsts, only : v4r4_1, v4r4_2, v4r4_1over2, v4r4_4
+             type(XMM4r4_t),        intent(in) :: delnA 
+             type(XMM4r4_t),        intent(in) :: z0 
+             type(XMM4r4_t),        intent(in) :: beta 
+             type(XMM4r4_t),        intent(in) :: Hc0 
+             type(XMM4r4_t),        intent(in) :: R0 
+             type(XMM4r4_t)                    :: del231 
+             type(XMM4r4_t),        parameter  :: C1253314137315500251207882642406 = & 
+                                                   XMM4r4_t(1.253314137315500251207882642406_sp)
+             type(XMM4r4_t),        automatic  :: stgz0, btHc0
+             type(XMM4r4_t),        automatic  :: exp1, sqr2q 
+             type(XMM4r4_t),        automatic  :: prob1, prob2
+             type(XMM4r4_t),        automatic  :: trm1, trm2 
+             type(XMM4r4_t),        automatic  :: t0, t1
+             type(XMM4r4_t),        automatic  :: ps2, q
+             type(XMM4r4_t),        automatic  :: exp2, trm3 
+             type(XMM4r4_t),        automatic  :: c0,c1 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)   
+              !dir$ attributes align : 16 :: C125331413731550025120
+              !dir$ attributes align : 16 :: stgz0 
+              !dir$ attributes align : 16 :: btHc0 
+              !dir$ attributes align : 16 :: exp1 
+              !dir$ attributes align : 16 :: sqr2q 
+              !dir$ attributes align : 16 :: prob1 
+              !dir$ attributes align : 16 :: prob2 
+              !dir$ attributes align : 16 :: trm1 
+              !dir$ attributes align : 16 :: trm2 
+              !dir$ attributes align : 16 :: t0 
+              !dir$ attributes align : 16 :: t1 
+              !dir$ attributes align : 16 :: ps2 
+              !dir$ attributes align : 16 :: q 
+              !dir$ attributes align : 16 :: exp2
+              !dir$ attributes align : 16 :: trm3
+              !dir$ attributes align : 16 :: c0 
+              !dir$ attributes align : 16 :: c1 
+#endif 
+               btHc0.v   = beta.v*Hc0.v 
+               t0.v      = tan(z0.v)
+               stgz0.v   = t0.v*t0.v 
+               ps.v      = v4r4_1.v+v4r4_2.v*stgz0.v*(Hc0.v/R0.v)
+               q.v       = (beta.v*R0.v*v4r4_1over2.v)*stgz0.v 
+               exp1.v    = exp(v4r4_2.v*q.v-v4r4_2.v*q.v*ps.v)
+               t0.v      = v4r4_1.v+(q.v/btHc0.v)
+               trm1.v    = t0.v*(v4r4_1.v-exp1.v/p.v) 
+               sqr2q.v   = sqrt(v4r4_4.v*q.v)
+               c0.v      = p.v*sqr2q.v
+               prob1     = prob_integral_xmm4r4(c0)
+               prob2     = prob_integral_xmm4r4(sqr2q)
+               exp2.v    = exp(q.v)
+               c1.v      = (v4r4_4.v*q.v*q.v)/btHc0.v
+               t0.v      = v4r4_4.v*q.v+q.v/btHc0.v+c1.v 
+               t1.v      = exp2.v/(sqr2q.v*C1253314137315500251207882642406.v)
+               trm2.v    = t0.v*t1.v 
+               trm3.v    = prob1.v-prob2.v 
+               del231.v  = trm1.v-trm2.v*trm3.v  
+       end function analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_xmm4r4
+
 end module atmos_refraction_xmm4r4
