@@ -3177,4 +3177,67 @@ module atmos_refraction_xmm4r4
                 L2.v     = trm1.v*trm2.v  
        end function analytic_sol_L3_troposph_wvle5cm_f56_xmm4r4
 
+        ! Formula 5.3, page: 93
+        ! An angle of atmospheric (troposheric) refraction for wavelength <= 5cm (different TX,RX height)
+       pure function refraction_angle_tropo_wvle5cm_f53_xmm4r4(na,nc,beta,R0,delnA,z0,Hc0) result(alpha)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: refraction_angle_tropo_wvle5cm_f53_xmm4r4
+            !dir$ attributes forceinline :: refraction_angle_tropo_wvle5cm_f53_xmm4r4
+#endif
+             use mod_vecconsts, only : v4r4_1
+             type(XMM4r4_t),    intent(in) :: na 
+             type(XMM4r4_t),    intent(in) :: nc 
+             type(XMM4r4_t),    intent(in) :: beta 
+             type(XMM4r4_t),    intent(in) :: R0 
+             type(XMM4r4_t),    intent(in) :: delnA 
+             type(XMM4r4_t),    intent(in) :: z0 
+             type(XMM4r4_t),    intent(in) :: Hc0
+             type(XMM4r4_t)                :: alpha 
+             type(XMM4r4_t),    automatic  :: lnanc, ctgz0
+             type(XMM4r4_t),    automatic  :: L1 
+             type(XMM4r4_t),    automatic  :: scosz0, btRdna
+             type(XMM4r4_t),    automatic  :: rat1, L2 
+             type(XMM4r4_t),    automatic  :: t0, t1
+             type(XMM4r4_t),    automatic  :: L3, trm1, trm2  
+             integer(kind=i4)              :: j 
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__) 
+              !dir$ attributes align : 16 :: lnanc 
+              !dir$ attributes align : 16 :: ctgz0 
+              !dir$ attributes align : 16 :: L1 
+              !dir$ attributes align : 16 :: scosz0 
+              !dir$ attributes align : 16 :: btRdna
+              !dir$ attributes align : 16 :: rat1 
+              !dir$ attributes align : 16 :: L2 
+              !dir$ attributes align : 16 :: t0 
+              !dir$ attributes align : 16 :: t1 
+              !dir$ attributes align : 16 :: L3 
+              !dir$ attributes align : 16 :: trm1 
+              !dir$ attributes align : 16 :: trm2 
+#endif
+              L1  = analytic_sol_L1_troposph_wvle5cm_f54_xmm4r4(beta,R0,delnA,z0,Hc0)
+              L2  = analytic_sol_L2_troposph_wvle5cm_f56_xmm4r4(beta,R0,delnA,z0,Hc0)
+              L3  = analytic_sol_L3_troposph_wvle5cm_f56_xmm4r4(beta,R0,delnA,z0,Hc0)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#elif defined(__GNUC__) && !defined(__INTEL_COMPILER)
+             !$omp simd simdlen(4) linear(j:1)
+#endif
+                 do j=0,3 
+                     t0.v(j)     = cos(z0.v(j))
+                     scosz0.v(j) = t0.v(j)*t0.v(j) 
+                     btRdna.v(j) = beta.v(j)*R0.v(j)*delnA.v(j) 
+                     t1.v(j)     = tan(z0.v(j))
+                     ctgz0.v(j)  = v4r4_1.v(j)/t1.v(j) 
+                     lnanc.v(j)  = -log(na.v(j)/nc.v(j))
+                     rat1.v(j)   = ctgz0.v(j)/scosz0.v(j)
+                     trm1.v(j)   = lnanc.v(j)*ctgz0.v(j)+L1.v(j)+rat1.v(j) 
+                     trm2.v(j)   = btRdna.v(j)*rat1.v(j)*(L3.v(j)-L2.v(j))
+                     alpha.v(j)  = trm1.v(j)+trm2.v(j) 
+                 end do               
+       end function refraction_angle_tropo_wvle5cm_f53_xmm4r4
+
 end module atmos_refraction_xmm4r4
