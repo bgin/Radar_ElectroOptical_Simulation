@@ -3576,7 +3576,7 @@ module atmos_refraction
             prob2   = prob_integral_r4(sqr2q)
             exp2    = exp(q)
             t0      = 2.0_sp*q+q/btHc0+(2.0_sp*q*q)/btHc0
-            t1      = exp2/sqr2q*C1253314137315500251207882642406
+            t1      = exp2/(sqr2q*C1253314137315500251207882642406)
             trm2    = t0*t1 
             trm3    = prob1-prob2 
             del231  = trm1-trm2*trm3 
