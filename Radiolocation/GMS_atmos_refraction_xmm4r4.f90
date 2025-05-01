@@ -3287,4 +3287,50 @@ module atmos_refraction_xmm4r4
                  end do               
        end function analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_xmm4r4
 
+        !formula: 5.24, page: 97
+       pure function analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_xmm4r4(delnA,z0,beta,Hc0) result(del21)
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_xmm4r4
+            !dir$ attributes forceinline :: analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_xmm4r4
+#endif
+             use mod_vecconsts, only : v4r4_1
+             type(XMM4r4_t),        intent(in) :: delnA 
+             type(XMM4r4_t),        intent(in) :: z0 
+             type(XMM4r4_t),        intent(in) :: beta 
+             type(XMM4r4_t),        intent(in) :: Hc0 
+             type(XMM4r4_t)                    :: del21 
+             type(XMM4r4_t),        automatic  :: ctgz0, scosz0
+             type(XMM4r4_t),        automatic  :: btHc0, exp1
+             type(XMM4r4_t),        automatic  :: t0, rat 
+             integer(kind=i4)                  :: j 
+ #if defined(__INTEL_COMPILER) && !defined(__GNUC__) 
+              !dir$ attributes align : 16 :: ctgz0 
+              !dir$ attributes align : 16 :: scosz0 
+              !dir$ attributes align : 16 :: btHc0 
+              !dir$ attributes align : 16 :: exp1 
+              !dir$ attributes align : 16 :: t0 
+              !dir$ attributes align : 16 :: rat 
+#endif     
+#if defined(__INTEL_COMPILER) && !defined(__GNUC__)                  
+             !dir$ loop_count(4)
+             !dir$ vector aligned
+             !dir$ vector vectorlength(4)
+             !dir$ vector always
+#elif defined(__GNUC__) && !defined(__INTEL_COMPILER)
+             !$omp simd simdlen(4) linear(j:1)
+#endif
+                 do j=0,3 
+                    btHc0.v(j)  = beta.v(j)*Hc0.v(j) 
+                    t0.v(j)     = tan(z0.v(j))
+                    ctgz0.v(j)  = v4r4_1.v(j)/t0.v(j) 
+                    exp1.v(j)   = exp(-btHc0.v(j))
+                    t0.v(j)     = cos(z0.v(j))
+                    scosz0.v(j) = t0.v(j)*t0.v(j) 
+                    rat.v(j)    = (v4r4_1.v(j)-exp1.v(j))/btHc0.v(j)
+                    t0.v(j)     = v4r4_1.v(j)-rat.v(j)
+                    del21.v(j)  = -delnA.v(j)*(tgz0.v(j)/scosz0.v(j))*t0.v(j)
+                 end do                      
+       end function analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_xmm4r4
+
 end module atmos_refraction_xmm4r4
