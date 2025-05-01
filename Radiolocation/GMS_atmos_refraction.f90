@@ -3310,7 +3310,7 @@ module atmos_refraction
              real(kind=sp),    intent(in) :: z0 
              real(kind=sp),    intent(in) :: Hc0 
              real(kind=sp)   :: alpha 
-             real(kind=sp),    automatic  :: lnanc, ctgz0, L1, ctgz0 
+             real(kind=sp),    automatic  :: lnanc, ctgz0, L1
              real(kind=sp),    automatic  :: scosz0, btRdna, rat1, L2 
              real(kind=sp),    automatic  :: t0, t1, L3, trm1, trm2  
              t0     = cos(z0)
