@@ -20,7 +20,7 @@
 !*/
 
 module atmos_refraction
-
+ !implicit none
 
 !===================================================================================85
  !---------------------------- DESCRIPTION ------------------------------------------85
@@ -62,9 +62,9 @@ module atmos_refraction
     ! Tab:10,11 col - Type , function and subroutine code blocks.
    
    use mod_kinds,    only : i4,sp,dp
-
+   implicit none 
    public
-   implicit none
+  
 
      ! Major version
      integer(kind=i4),  parameter :: ATMOS_REFRACTION_MAJOR = 1
@@ -78,7 +78,9 @@ module atmos_refraction
      ! Module creation date
      character(*),        parameter :: ATMOS_REFRACTION_CREATE_DATE = "29-12-2024 13:13 +00200 (SUN 29 DEC 2024 GMT+2)"
      ! Module build date
-     character(*),        parameter :: ATMOS_REFRACTION_BUILD_DATE  = __DATE__ " " __TIME__
+     character(*),        parameter :: ATMOS_REFRACTION_BUILD_DATE  = __DATE__ 
+
+     character(*),        parameter :: ATMOS_REFRACTION_BUILD_TIME  = __TIME__ 
      ! Module author info
      character(*),        parameter :: ATMOS_REFRACTION_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
      ! Short description
@@ -106,13 +108,15 @@ module atmos_refraction
      contains
 
      ! Formula 2.43, page 46
+
+   
      elemental function n_refract_tht_f243_r4(n,n0,z,z0,r,R0,phi,phi0) result(n_over_tht)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: n_refract_tht_f243_r4
-            !dir$ attributes forceinline :: n_refract_tht_f243_r4
+!!dir$ attributes forceinline :: n_refract_tht_f243_r4         
+            
            
-#endif
+            
+  
+
 !$omp declare simd(n_refract_tht_f243_r4)
             real(kind=sp),     intent(in) :: n    ! refractive index at dest (observation point)
             real(kind=sp),     intent(in) :: n0   ! refractive index at source
@@ -145,14 +149,13 @@ module atmos_refraction
             n_over_tht = rat_d-rat_s 
      end function n_refract_tht_f243_r4
     
-     
+
      elemental function n_refract_tht_f243_r8(n,n0,z,z0,r,R0,phi,phi0) result(n_over_tht)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: n_refract_tht_f243_r8
-            !dir$ attributes forceinline :: n_refract_tht_f243_r8
+!dir$ attributes forceinline :: n_refract_tht_f243_r8
             
-#endif
+           
+            
+
 !$omp declare simd(n_refract_tht_f243_r8)
             real(kind=dp),     intent(in) :: n    ! refractive index at dest (observation point)
             real(kind=dp),     intent(in) :: n0   ! refractive index at source
@@ -185,13 +188,14 @@ module atmos_refraction
             n_over_tht = rat_d-rat_s 
      end function n_refract_tht_f243_r8
 
+
      elemental function n_refract_phi_f243_r4(n,n0,z,z0,r,R0,phi,phi0) result(n_over_phi)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: n_refract_phi_f243_r4
-            !dir$ attributes forceinline :: n_refract_phi_f243_r4
+ !dir$ attributes forceinline :: n_refract_phi_f243_r4  
+      
           
-#endif
+          
+          
+
 !$omp declare simd(n_refract_phi_f243_r4)
             real(kind=sp),     intent(in) :: n    ! refractive index at dest (observation point)
             real(kind=sp),     intent(in) :: n0   ! refractive index at source
@@ -225,12 +229,12 @@ module atmos_refraction
      end function n_refract_phi_f243_r4
 
      elemental function n_refract_phi_f243_r8(n,n0,z,z0,r,R0,phi,phi0) result(n_over_phi)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: n_refract_phi_f243_r8
-            !dir$ attributes forceinline :: n_refract_phi_f243_r8
+ !dir$ attributes forceinline :: n_refract_phi_f243_r8
+            
+        
            
-#endif
+           
+
 !$omp declare simd(n_refract_phi_f243_r8)
             real(kind=dp),     intent(in) :: n    ! refractive index at dest (observation point)
             real(kind=dp),     intent(in) :: n0   ! refractive index at source
@@ -265,14 +269,14 @@ module atmos_refraction
 
 
      !Радиус кривизны траектории луча, formula 2.51, page: 47
-     
+   
      elemental function rad_ray_curvature_f251_r4(n,z,dndr) result(rho)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: rad_ray_curvature_f251_r4
-            !dir$ attributes forceinline :: rad_ray_curvature_f251_r4
+  !dir$ attributes forceinline :: rad_ray_curvature_f251_r4  
             
-#endif
+           
+          
+            
+
 !$omp declare simd(rad_ray_curvature_f251_r4)
             real(kind=sp),  intent(in) :: n ! refractive index
             real(kind=sp),  intent(in) :: z ! angle
@@ -286,12 +290,12 @@ module atmos_refraction
      end function rad_ray_curvature_f251_r4
 
      elemental function rad_ray_curvature_f251_r8(n,z,dndr) result(rho)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: rad_ray_curvature_f251_r8
-            !dir$ attributes forceinline :: rad_ray_curvature_f251_r8
+ !dir$ attributes forceinline :: rad_ray_curvature_f251_r8      
+            
+          
            
-#endif
+           
+
 !$omp declare simd(rad_ray_curvature_f251_r8)
             real(kind=dp),  intent(in) :: n ! refractive index
             real(kind=dp),  intent(in) :: z ! angle
@@ -306,14 +310,14 @@ module atmos_refraction
 
      !относителыную кривизну по-1
      !верхности Земли и траектории волны, formula: 2.54, page: 48
-     
+    
      elemental function k_relative_f254_r4(n,z,dndr) result(k_rel)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: k_relative_f254_r4
-            !dir$ attributes forceinline :: k_relative_f254_r4
+!dir$ attributes forceinline :: k_relative_f254_r4      
+            
           
-#endif   
+          
+          
+   
 !$omp declare simd(k_relative_f254_r4)
             real(kind=sp),  intent(in) :: n ! refractive index
             real(kind=sp),  intent(in) :: z ! angle
@@ -327,12 +331,12 @@ module atmos_refraction
      end function k_relative_f254_r4
  
      elemental function k_relative_f254_r8(n,z,dndr) result(k_rel)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: k_relative_f254_r8
-            !dir$ attributes forceinline :: k_relative_f254_r8
+ !dir$ attributes forceinline :: k_relative_f254_r8         
             
-#endif   
+           
+           
+            
+   
 !$omp declare simd(k_relative_f254_r8)
             real(kind=dp),  intent(in) :: n ! refractive index
             real(kind=dp),  intent(in) :: z ! angle
@@ -348,12 +352,12 @@ module atmos_refraction
      ! отношения радиуса кривизны траекторий
      ! луча к радиусу Земли:, formula 2.67, page: 52 
      elemental function rho_to_a_f267_r4(dndh) result(R)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: rho_to_a_f267_r4
+        
+            
+            
             !dir$ attributes forceinline :: rho_to_a_f267_r4
            
-#endif  
+  
 !$omp declare simd(rho_to_a_f267_r4)
             real(kind=sp),   intent(in) :: dndh ! derivative of refractive index
             real(kind=sp) :: R 
@@ -362,12 +366,12 @@ module atmos_refraction
      end function rho_to_a_f267_r4
 
        elemental function rho_to_a_f267_r8(dndh) result(R)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: rho_to_a_f267_r8
+        
+            
+            
             !dir$ attributes forceinline :: rho_to_a_f267_r8
           
-#endif  
+  
 !$omp declare simd(rho_to_a_f267_r8)
             real(kind=dp),   intent(in) :: dndh ! derivative of refractive index
             real(kind=dp) :: R 
@@ -379,12 +383,12 @@ module atmos_refraction
 !высоты, formula: 1.45, page 29
 
        elemental function n_avg_h_f145_r4(dn0,beta,h) result(nah)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: n_avg_h_f145_r4
+        
+            
+             
             !dir$ attributes forceinline :: n_avg_h_f145_r4
            
-#endif  
+  
 !$omp declare simd(n_avg_h_f145_r4)
             real(kind=sp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
             real(kind=sp),  intent(in) :: beta ! coefficient describing the diminishing of 'n' as function of height, i.e. 0.10->0.14 1/km
@@ -397,12 +401,12 @@ module atmos_refraction
        end function n_avg_h_f145_r4
 
        elemental function n_avg_h_f145_r8(dn0,beta,h) result(nah)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: n_avg_h_f145_r8
+        
+            
+            
             !dir$ attributes forceinline :: n_avg_h_f145_r8
             
-#endif 
+ 
 !$omp declare simd(n_avg_h_f145_r8)
             real(kind=dp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
             real(kind=dp),  intent(in) :: beta ! coefficient describing the diminishing of 'n' as function of height, i.e. 0.10->0.14 1/km
@@ -416,12 +420,12 @@ module atmos_refraction
 
        !связь между величинами dn0 , beta, formula 1.46, page: 29
        elemental function approx_beta_coeff_f146_r4(dn0) result(beta)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: approx_beta_coeff_f146_r4
+        
+            
+             
             !dir$ attributes forceinline :: approx_beta_coeff_f146_r4
             
-#endif 
+ 
 !$omp declare simd(approx_beta_coeff_f146_r4) 
             real(kind=sp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
             real(kind=sp) :: beta 
@@ -433,12 +437,12 @@ module atmos_refraction
 
     !связь между величинами dn0 , beta, formula 1.46, page: 29
        elemental function approx_beta_coeff_f146_r8(dn0) result(beta)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: approx_beta_coeff_f146_r8
+        
+            
+           
             !dir$ attributes forceinline :: approx_beta_coeff_f146_r8
            
-#endif 
+ 
 !$omp declare simd(approx_beta_coeff_f146_r8)  
             real(kind=dp),  intent(in) :: dn0  ! coefficient of refreaction near the Earth surface i.e. dn0 = (240*10e-6->380*10e-6)
             real(kind=dp) :: beta 
@@ -449,11 +453,11 @@ module atmos_refraction
        end function approx_beta_coeff_f146_r8
 
         elemental function prob_integral_r4(x) result(res)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: prob_integral_r4
+        
+            
+          
             !dir$ attributes forceinline :: prob_integral_r4
-#endif
+
 !$omp declare simd(prob_integral_r4)
              real(kind=sp), intent(in) :: x 
              real(kind=sp) :: res 
@@ -463,11 +467,11 @@ module atmos_refraction
        end function prob_integral_r4
 
        elemental function prob_integral_r8(x) result(res)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: prob_integral_r8
+        
+            
+             
             !dir$ attributes forceinline :: prob_integral_r8
-#endif
+
 !$omp declare simd(prob_integral_r8)
              real(kind=dp), intent(in) :: x 
              real(kind=dp) :: res 
@@ -480,11 +484,11 @@ module atmos_refraction
        !рефракции оптических волн в земной атмосфере.
        ! formula 3.37, page: 68
        elemental function analytic_sol_L1_f337_r4(beta,dn0,z0,H) result(L1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_f337_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L1_f337_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L1_f337_r4) 
             real(kind=sp),  intent(in) :: beta 
             real(kind=sp),  intent(in) :: dn0 
@@ -495,10 +499,12 @@ module atmos_refraction
             real(kind=sp), automatic :: cosz0,ctgz0,ea1
             real(kind=sp), automatic :: ea2,exp1,exp2,num2
             real(kind=sp), automatic :: den2,num1,den1,sdn0
-            real(kind=sp), automatic :: stgz0,rat1,rat2 
+            real(kind=sp), automatic :: stgz0,rat1,rat2
+            real(kind=sp), automatic :: tgz0 
             ea1   = -2.0_sp*beta*H 
             ea2   = -beta*H 
-            ctgz0 = 1.0_sp/tan(z0)
+            tgz0  = tan(z0)
+            ctgz0 = 1.0_sp/tgz0 
             sdn0  = dn0*dn0 
             exp1  = exp(ea1)
             num1  = beta*a*sdn0*ctgz0
@@ -514,11 +520,11 @@ module atmos_refraction
        end function analytic_sol_L1_f337_r4
 
        elemental function analytic_sol_L1_f337_r8(beta,dn0,z0,H) result(L1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_f337_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L1_f337_r8
-#endif  
+  
 !$omp declare simd(analytic_sol_L1_f337_r8) 
             real(kind=dp),  intent(in) :: beta 
             real(kind=dp),  intent(in) :: dn0 
@@ -529,10 +535,11 @@ module atmos_refraction
             real(kind=dp), automatic :: cosz0,ctgz0,ea1
             real(kind=dp), automatic :: ea2,exp1,exp2,num2
             real(kind=dp), automatic :: den2,num1,den1,sdn0
-            real(kind=dp), automatic :: stgz0,rat1,rat2 
+            real(kind=dp), automatic :: stgz0,rat1,rat2,tgz0  
             ea1   = -2.0_dp*beta*H 
             ea2   = -beta*H 
-            ctgz0 = 1.0_dp/tan(z0)
+            tgz0  = tan(z0)
+            ctgz0 = 1.0_dp/tgz0 
             sdn0 = dn0*dn0 
             exp1 = exp(ea1)
             num1 = beta*a*sdn0*ctgz0
@@ -551,11 +558,11 @@ module atmos_refraction
        !рефракции оптических волн в земной атмосфере.
        ! formula 3.41, page: 68
        elemental function analytic_sol_L2_f341_r4(dn0,beta,z0,H) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L2_f341_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L2_f341_r4
-#endif  
+  
 !$omp declare simd(analytic_sol_L2_f341_r4)
             real(kind=sp),  intent(in) :: dn0 
             real(kind=sp),  intent(in) :: beta 
@@ -564,7 +571,7 @@ module atmos_refraction
             real(kind=sp) :: L2 
             real(kind=sp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_sp
             real(kind=sp), parameter :: a = 6378.0_sp
-            real(kind=sp), automatic :: sba, ctgz0, ba 
+            real(kind=sp), automatic :: sba, ctgz0
             real(kind=sp), automatic :: sctgz0, tbh, phi1, phi2 
             real(kind=sp), automatic :: exp1, bactgz0, t0, t1  
             sba    = sqrt(beta*a)
@@ -582,11 +589,11 @@ module atmos_refraction
        end function analytic_sol_L2_f341_r4
 
        elemental function analytic_sol_L2_f341_r8(dn0,beta,z0,H) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L2_f341_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L2_f341_r8
-#endif  
+  
 !$omp declare simd(analytic_sol_L2_f341_r8)
             real(kind=dp),  intent(in) :: dn0 
             real(kind=dp),  intent(in) :: beta 
@@ -595,7 +602,7 @@ module atmos_refraction
             real(kind=dp) :: L2 
             real(kind=dp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_dp
             real(kind=dp), parameter :: a = 6378.0_dp
-            real(kind=dp), automatic :: sba, ctgz0, ba 
+            real(kind=dp), automatic :: sba, ctgz0
             real(kind=dp), automatic :: sctgz0, tbh, phi1, phi2 
             real(kind=dp), automatic :: exp1, bactgz0, t0, t1  
             sba    = sqrt(beta*a)
@@ -616,11 +623,11 @@ module atmos_refraction
        !рефракции оптических волн в земной атмосфере.
        ! formula 3.42, page: 68
        elemental function analytic_sol_L3_f342_r4(dn0,beta,z0,H) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L3_f342_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L3_f342_r4
-#endif  
+  
 !$omp declare simd(analytic_sol_L3_f342_r4)
             real(kind=sp),  intent(in) :: dn0   ! refractive index near to earth surface
             real(kind=sp),  intent(in) :: beta  ! beta coefficient
@@ -629,7 +636,7 @@ module atmos_refraction
             real(kind=sp) :: L2 
             real(kind=sp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_sp
             real(kind=sp), parameter :: a = 6378.0_sp
-            real(kind=sp), automatic :: sba, ctgz0, ba 
+            real(kind=sp), automatic :: sba, ctgz0
             real(kind=sp), automatic :: sctgz0, tbh, phi1, phi2 
             real(kind=sp), automatic :: exp1, bactgz0, t0, t1  
             sba    = sqrt(2.0_sp*beta*a)
@@ -650,11 +657,11 @@ module atmos_refraction
        !рефракции оптических волн в земной атмосфере.
        ! formula 3.42, page: 68
        elemental function analytic_sol_L3_f342_r8(dn0,beta,z0,H) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L3_f342_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L3_f342_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L3_f342_r8) 
             real(kind=dp),  intent(in) :: dn0   ! refractive index near to earth surface
             real(kind=dp),  intent(in) :: beta  ! beta coefficient
@@ -663,7 +670,7 @@ module atmos_refraction
             real(kind=dp) :: L2 
             real(kind=dp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_dp
             real(kind=dp), parameter :: a = 6378.0_dp
-            real(kind=dp), automatic :: sba, ctgz0, ba 
+            real(kind=dp), automatic :: sba, ctgz0
             real(kind=dp), automatic :: sctgz0, tbh, phi1, phi2 
             real(kind=dp), automatic :: exp1, bactgz0, t0, t1  
             sba    = sqrt(2.0_dp*beta*a)
@@ -680,16 +687,17 @@ module atmos_refraction
             L2     = t0*exp1*t1 
        end function analytic_sol_L3_f342_r8
 
+
        !Формула' (3.35) справедлива во всем диапазоне 
        !изменения зенитных углов (0 < z0 <90°) при любых 
        !зависимостях n(h).
        ! The angle of refraction.
        elemental function refraction_angle_f345_r4(n0,nh,z0,dn0,beta,H) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_f345_r4
+        
+            
+           
             !dir$ attributes forceinline :: refraction_angle_f345_r4
-#endif  
+  
 !$omp declare simd(refraction_angle_f345_r4)
             real(kind=sp),  intent(in) :: n0 
             real(kind=sp),  intent(in) :: nh 
@@ -721,11 +729,11 @@ module atmos_refraction
        end function refraction_angle_f345_r4
 
          elemental function refraction_angle_f345_r8(n0,nh,z0,dn0,beta,H) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_f345_r8
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_f345_r8
-#endif  
+  
 !$omp declare simd(refraction_angle_f345_r8)
             real(kind=dp),  intent(in) :: n0 
             real(kind=dp),  intent(in) :: nh 
@@ -763,11 +771,11 @@ module atmos_refraction
        ! formula 3.51, page: 70
        ! analytic solution L2 for angle near 90 (deg)
        elemental function analytic_sol_n90_L2_f351_r4(dn0,beta,z0) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_n90_L2_f351_r4
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_n90_L2_f351_r4
-#endif  
+  
 !$omp declare simd(analytic_sol_n90_L2_f351_r4)
             real(kind=sp), intent(in) :: dn0 
             real(kind=sp), intent(in) :: beta 
@@ -776,7 +784,7 @@ module atmos_refraction
             real(kind=sp), parameter :: a = 6378.0_sp
             real(kind=sp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_sp 
             real(kind=sp), parameter :: C0318309886183790671537767526745 = 0.318309886183790671537767526745_sp
-            real(kind=sp), automatic :: sba, tgz0, stgz0, ctgz0 
+            real(kind=sp), automatic :: sba, tgz0, ctgz0 
             real(kind=sp), automatic :: earg, exp1, t0, t1, strm 
             sba  = sqrt(beta*a)
             tgz0 = tan(z0)
@@ -791,11 +799,11 @@ module atmos_refraction
        end function analytic_sol_n90_L2_f351_r4
 
        elemental function analytic_sol_n90_L2_f351_r8(dn0,beta,z0) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_n90_L2_f351_r8
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_n90_L2_f351_r8
-#endif  
+  
 !$omp declare simd(analytic_sol_n90_L2_f351_r8)
             real(kind=dp), intent(in) :: dn0 
             real(kind=dp), intent(in) :: beta 
@@ -804,7 +812,7 @@ module atmos_refraction
             real(kind=dp), parameter :: a = 6378.0_dp
             real(kind=dp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_dp 
             real(kind=dp), parameter :: C0318309886183790671537767526745 = 0.318309886183790671537767526745_dp
-            real(kind=dp), automatic :: sba, tgz0, stgz0, ctgz0 
+            real(kind=dp), automatic :: sba, tgz0, ctgz0 
             real(kind=dp), automatic :: earg, exp1, t0, t1, strm 
             sba  = sqrt(beta*a)
             tgz0 = tan(z0)
@@ -823,11 +831,11 @@ module atmos_refraction
        ! formula 3.51, page: 70
        ! analytic solution L3 for angle near 90 (deg)
        elemental function analytic_sol_n90_L3_f351_r4(dn0,beta,z0) result(L3)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_n90_L3_f351_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_n90_L3_f351_r4
-#endif  
+  
 !$omp declare simd(analytic_sol_n90_L3_f351_r4)
             real(kind=sp), intent(in) :: dn0 
             real(kind=sp), intent(in) :: beta 
@@ -836,7 +844,7 @@ module atmos_refraction
             real(kind=sp), parameter :: a = 6378.0_sp
             real(kind=sp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_sp 
             real(kind=sp), parameter :: C0318309886183790671537767526745 = 0.318309886183790671537767526745_sp
-            real(kind=sp), automatic :: sba, tgz0, stgz0, ctgz0 
+            real(kind=sp), automatic :: sba, tgz0, ctgz0 
             real(kind=sp), automatic :: earg, exp1, t0, t1, strm 
             sba  = sqrt(2.0_sp*beta*a)
             tgz0 = tan(z0)
@@ -851,11 +859,11 @@ module atmos_refraction
        end function analytic_sol_n90_L3_f351_r4
 
        elemental function analytic_sol_n90_L3_f351_r8(dn0,beta,z0) result(L3)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_n90_L3_f351_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_n90_L3_f351_r8
-#endif  
+  
 !$omp declare simd(analytic_sol_n90_L3_f351_r8)
             real(kind=dp), intent(in) :: dn0 
             real(kind=dp), intent(in) :: beta 
@@ -864,7 +872,7 @@ module atmos_refraction
             real(kind=dp), parameter :: a = 6378.0_dp
             real(kind=dp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_dp 
             real(kind=dp), parameter :: C0318309886183790671537767526745 = 0.318309886183790671537767526745_dp
-            real(kind=dp), automatic :: sba, tgz0, stgz0, ctgz0 
+            real(kind=dp), automatic :: sba, tgz0, ctgz0 
             real(kind=dp), automatic :: earg, exp1, t0, t1, strm 
             sba  = sqrt(2.0_dp*beta*a)
             tgz0 = tan(z0)
@@ -883,11 +891,11 @@ module atmos_refraction
        ! formula 3.51, page: 70
        ! The whole solution for angle alpha near 90 (deg)
        elemental function refraction_angle_n90_f351_r4(dn0,beta,z0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_n90_f351_r4
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_n90_f351_r4
-#endif
+
 !$omp declare simd(refraction_angle_n90_f351_r4)  
             real(kind=sp), intent(in) :: dn0 
             real(kind=sp), intent(in) :: beta 
@@ -910,11 +918,11 @@ module atmos_refraction
        end function refraction_angle_n90_f351_r4
 
        elemental function refraction_angle_n90_f351_r8(dn0,beta,z0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_n90_f351_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_n90_f351_r8
-#endif  
+  
 !$omp declare simd(refraction_angle_n90_f351_r8) 
             real(kind=dp), intent(in) :: dn0 
             real(kind=dp), intent(in) :: beta 
@@ -939,11 +947,11 @@ module atmos_refraction
        !z0 = 90° формула (3.51) упрощается.
        ! formula: 3.52, page: 71
        elemental function refraction_angle_at90_f352_r4(dn0,beta) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_at90_f352_r4
+        
+            
+           
             !dir$ attributes forceinline :: refraction_angle_at90_f352_r4
-#endif
+
 !$omp declare simd(refraction_angle_at90_f352_r4)
             real(kind=sp), intent(in) :: dn0 
             real(kind=sp), intent(in) :: beta 
@@ -951,18 +959,18 @@ module atmos_refraction
             real(kind=sp), parameter :: a = 6378.0_sp
             real(kind=sp), parameter :: C041421356237309504880168872421 = 0.41421356237309504880168872421_sp 
             real(kind=sp), parameter :: C314159265358979323846264338328 = 3.14159265358979323846264338328_sp
-            real(kind=sp), automatic :: t0, t1, t2 
+            real(kind=sp), automatic :: t0, t1 
             t0 = dn0*sqrt((C314159265358979323846264338328*beta*a)*0.5_sp)
             t1 = 1.0_sp+C041421356237309504880168872421*beta*a*dn0 
             alpha = t0*t1 
        end function refraction_angle_at90_f352_r4
 
        elemental function refraction_angle_at90_f352_r8(dn0,beta) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_at90_f352_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_at90_f352_r8
-#endif
+
 !$omp declare simd(refraction_angle_at90_f352_r8)
             real(kind=dp), intent(in) :: dn0 
             real(kind=dp), intent(in) :: beta 
@@ -970,7 +978,7 @@ module atmos_refraction
             real(kind=dp), parameter :: a = 6378.0_dp
             real(kind=dp), parameter :: C041421356237309504880168872421 = 0.41421356237309504880168872421_dp 
             real(kind=dp), parameter :: C314159265358979323846264338328 = 3.14159265358979323846264338328_dp
-            real(kind=dp), automatic :: t0, t1, t2 
+            real(kind=dp), automatic :: t0, t1
             t0 = dn0*sqrt((C314159265358979323846264338328*beta*a)*0.5_dp)
             t1 = 1.0_dp+C041421356237309504880168872421*beta*a*dn0 
             alpha = t0*t1 
@@ -980,11 +988,11 @@ module atmos_refraction
        !земной атмосфере для длин волн, меньших 5 см
        ! formula: 4.2, page 73.
        elemental function analytic_sol_L1_gl5cm_f42_r4(dn0,beta,z0,H) result(L1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_gl5cm_f42_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L1_gl5cm_f42_r4
-#endif  
+  
 !$omp declare simd(analytic_sol_L1_gl5cm_f42_r4)
             real(kind=sp), intent(in) :: dn0 
             real(kind=sp), intent(in) :: beta 
@@ -993,7 +1001,7 @@ module atmos_refraction
             real(kind=sp) :: L1 
             real(kind=sp), parameter :: a = 6378.0_sp
             real(kind=sp), automatic :: ctgz0, secz0, tgz0, betaH 
-            real(kind=sp), automatic :: t0, t1, earg, exp1, exp2 
+            real(kind=sp), automatic :: t0, t1, exp1, exp2 
             real(kind=sp), automatic :: sdn0ba, trm1, trm2, trm3 
             betaH  = beta*H 
             ctgz0  = 1.0_sp/tan(z0)
@@ -1012,11 +1020,11 @@ module atmos_refraction
        end function analytic_sol_L1_gl5cm_f42_r4
 
        elemental function analytic_sol_L1_gl5cm_f42_r8(dn0,beta,z0,H) result(L1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_gl5cm_f42_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L1_gl5cm_f42_r8
-#endif  
+  
 !$omp declare simd(analytic_sol_L1_gl5cm_f42_r8)
             real(kind=dp), intent(in) :: dn0 
             real(kind=dp), intent(in) :: beta 
@@ -1025,7 +1033,7 @@ module atmos_refraction
             real(kind=dp) :: L1 
             real(kind=dp), parameter :: a = 6378.0_dp
             real(kind=dp), automatic :: ctgz0, secz0, tgz0, betaH 
-            real(kind=dp), automatic :: t0, t1, earg, exp1, exp2 
+            real(kind=dp), automatic :: t0, t1, exp1, exp2 
             real(kind=dp), automatic :: sdn0ba, trm1, trm2, trm3 
             betaH  = beta*H 
             ctgz0  = 1.0_dp/tan(z0)
@@ -1044,11 +1052,11 @@ module atmos_refraction
        end function analytic_sol_L1_gl5cm_f42_r8
 
        elemental function analytic_sol_L2_gl5cm_f43_r4(dn0,beta,z0,H) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L2_gl5cm_f43_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L2_gl5cm_f43_r4
-#endif  
+  
 !$omp declare simd(analytic_sol_L2_gl5cm_f43_r4)
             real(kind=sp), intent(in) :: dn0 
             real(kind=sp), intent(in) :: beta 
@@ -1072,11 +1080,11 @@ module atmos_refraction
        end function analytic_sol_L2_gl5cm_f43_r4
 
        elemental function analytic_sol_L2_gl5cm_f43_r8(dn0,beta,z0,H) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L2_gl5cm_f43_r8
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_L2_gl5cm_f43_r8
-#endif  
+  
 !$omp declare simd(analytic_sol_L2_gl5cm_f43_r8)
             real(kind=dp), intent(in) :: dn0 
             real(kind=dp), intent(in) :: beta 
@@ -1100,17 +1108,17 @@ module atmos_refraction
        end function analytic_sol_L2_gl5cm_f43_r8
 
        elemental function analytic_sol_L3_gl5cm_f43_r4(dn0,beta,z0,H) result(L3)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L3_gl5cm_f43_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L3_gl5cm_f43_r4
-#endif  
+  
 !$omp declare simd(analytic_sol_L3_gl5cm_f43_r4)
             real(kind=sp), intent(in) :: dn0 
             real(kind=sp), intent(in) :: beta 
             real(kind=sp), intent(in) :: z0 
             real(kind=sp), intent(in) :: H 
-            real(kind=sp) :: L2 
+            real(kind=sp) :: L3 
             real(kind=sp), parameter :: a = 6378.0_sp
             real(kind=sp), parameter :: C314159265358979323846264338328 = 3.14159265358979323846264338328_sp
             real(kind=sp), automatic :: piba, ctgz0, bactgz0, exp1 
@@ -1124,21 +1132,21 @@ module atmos_refraction
             t1     = prob_integral_r4(sqrt(2.0_sp*bactgz0))
             trm3   = t0-t1 
             trm2   = trm1*exp1 
-            L2     = trm2*trm3 
+            L3     = trm2*trm3 
        end function analytic_sol_L3_gl5cm_f43_r4
 
          elemental function analytic_sol_L3_gl5cm_f43_r8(dn0,beta,z0,H) result(L3)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L3_gl5cm_f43_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L3_gl5cm_f43_r8
-#endif  
+  
 !$omp declare simd(analytic_sol_L3_gl5cm_f43_r8)
             real(kind=dp), intent(in) :: dn0 
             real(kind=dp), intent(in) :: beta 
             real(kind=dp), intent(in) :: z0 
             real(kind=dp), intent(in) :: H 
-            real(kind=dp) :: L2 
+            real(kind=dp) :: L3  
             real(kind=dp), parameter :: a = 6378.0_dp
             real(kind=dp), parameter :: C314159265358979323846264338328 = 3.14159265358979323846264338328_dp
             real(kind=dp), automatic :: piba, ctgz0, bactgz0, exp1 
@@ -1152,15 +1160,17 @@ module atmos_refraction
             t1     = prob_integral_r8(sqrt(2.0_dp*bactgz0))
             trm3   = t0-t1 
             trm2   = trm1*exp1 
-            L2     = trm2*trm3 
+            L3     = trm2*trm3 
        end function analytic_sol_L3_gl5cm_f43_r8
 
+#if 0
+
        elemental function refraction_angle_for_gl5cm_f41_r4(n0,nh,z0,beta,dn0,H) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_for_gl5cm_f41_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_for_gl5cm_f41_r4
-#endif  
+  
 !$omp declare simd(refraction_angle_for_gl5cm_f41_r4)
              real(kind=sp),  intent(in) :: n0 
              real(kind=sp),  intent(in) :: nh 
@@ -1189,11 +1199,11 @@ module atmos_refraction
        end function refraction_angle_for_gl5cm_f41_r4
 
        elemental function refraction_angle_for_gl5cm_f41_r8(n0,nh,z0,beta,dn0,H) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_for_gl5cm_f41_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_for_gl5cm_f41_r8
-#endif  
+  
 !$omp declare simd(refraction_angle_for_gl5cm_f41_r8)
              real(kind=dp),  intent(in) :: n0 
              real(kind=dp),  intent(in) :: nh 
@@ -1223,11 +1233,11 @@ module atmos_refraction
 
        !показатель преломления ионосферы в среднем
        elemental function refractive_idx_lo_ionosphere_f412_r4(h,d,f,Nmf) result(n)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_f412_r4
+        
+            
+            
             !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_f412_r4
-#endif 
+ 
 !$omp declare simd(refractive_idx_lo_ionosphere_f412_r4) 
             real(kind=sp), intent(in) :: h     ! height 
             real(kind=sp), intent(in) :: d     ! height a maximum of layer F2
@@ -1243,11 +1253,11 @@ module atmos_refraction
        end function refractive_idx_lo_ionosphere_f412_r4
 
         elemental function refractive_idx_lo_ionosphere_f412_r8(h,d,f,Nmf) result(n)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_f412_r8
+        
+            
+            
             !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_f412_r8
-#endif  
+  
 !$omp declare simd(refractive_idx_lo_ionosphere_f412_r8) 
             real(kind=dp), intent(in) :: h     ! height 
             real(kind=dp), intent(in) :: d     ! height a maximum of layer F2
@@ -1263,11 +1273,11 @@ module atmos_refraction
        end function refractive_idx_lo_ionosphere_f412_r8
 
        elemental function refractive_idx_hi_ionosphere_f413_r4(h,d,f,Nmf,beta) result(n)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refractive_idx_hi_ionosphere_f413_r4
+        
+            
+            
             !dir$ attributes forceinline :: refractive_idx_hi_ionosphere_f413_r4
-#endif 
+ 
 !$omp declare simd(refractive_idx_hi_ionosphere_f413_r4) 
             real(kind=sp), intent(in) :: h     ! height 
             real(kind=sp), intent(in) :: d     ! height a maximum of layer F2
@@ -1284,11 +1294,11 @@ module atmos_refraction
        end function refractive_idx_hi_ionosphere_f413_r4
 
        elemental function refractive_idx_hi_ionosphere_f413_r8(h,d,f,Nmf,beta) result(n)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refractive_idx_hi_ionosphere_f413_r8
+        
+            
+            
             !dir$ attributes forceinline :: refractive_idx_hi_ionosphere_f413_r8
-#endif 
+ 
 !$omp declare simd(refractive_idx_hi_ionosphere_f413_r8)  
             real(kind=dp), intent(in) :: h     ! height 
             real(kind=dp), intent(in) :: d     ! height a maximum of layer F2
@@ -1306,11 +1316,11 @@ module atmos_refraction
 
        ! Compute `delta-nM` value, formula 4.14, page: 77
        elemental function compute_delnM_f414_r4(fc,Nmf) result(dnM)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: compute_delnM_f414_r4
+        
+            
+           
             !dir$ attributes forceinline :: compute_delnM_f414_r4
-#endif 
+ 
 !$omp declare simd(compute_delnM_f414_r4)
             real(kind=sp), intent(in) :: fc 
             real(kind=sp), intent(in) :: Nmf 
@@ -1322,11 +1332,11 @@ module atmos_refraction
        end function compute_delnM_f414_r4
 
        elemental function compute_delnM_f414_r8(fc,Nmf) result(dnM)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: compute_delnM_f414_r8
+        
+            
+            
             !dir$ attributes forceinline :: compute_delnM_f414_r8
-#endif 
+ 
 !$omp declare simd(compute_delnM_f414_r8)
             real(kind=dp), intent(in) :: fc 
             real(kind=dp), intent(in) :: Nmf 
@@ -1338,11 +1348,11 @@ module atmos_refraction
        end function compute_delnM_f414_r8
 
        elemental function compute_delnEps_f421_r4(fc,Nmf,beta,d) result(dnE)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: compute_delnEps_f421_r4
+        
+            
+            
             !dir$ attributes forceinline :: compute_delnEps_f421_r4
-#endif 
+ 
 !$omp declare simd(compute_delnEps_f421_r4)
             real(kind=sp), intent(in) :: fc 
             real(kind=sp), intent(in) :: Nmf 
@@ -1357,11 +1367,11 @@ module atmos_refraction
        end function compute_delnEps_f421_r4
 
        elemental function compute_delnEps_f421_r8(fc,Nmf,beta,d) result(dnE)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: compute_delnEps_f421_r8
+        
+            
+            
             !dir$ attributes forceinline :: compute_delnEps_f421_r8
-#endif 
+ 
 !$omp declare simd(compute_delnEps_f421_r8)
             real(kind=dp), intent(in) :: fc 
             real(kind=dp), intent(in) :: Nmf 
@@ -1377,11 +1387,11 @@ module atmos_refraction
 
       ! An analytic solution of `L1` component integral 
       elemental function analytic_sol_L1_lo_ionosphere_f418_r4(fc,Nmf,z0,d,R0) result(L1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_lo_ionosphere_f418_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L1_lo_ionosphere_f418_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L1_lo_ionosphere_f418_r4)
             real(kind=sp),  intent(in) :: fc 
             real(kind=sp),  intent(in) :: Nmf 
@@ -1421,11 +1431,11 @@ module atmos_refraction
       end function analytic_sol_L1_lo_ionosphere_f418_r4
 
        elemental function analytic_sol_L1_lo_ionosphere_f418_r8(fc,Nmf,z0,d,R0) result(L1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_lo_ionosphere_f418_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L1_lo_ionosphere_f418_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L1_lo_ionosphere_f418_r8)
             real(kind=dp),  intent(in) :: fc 
             real(kind=dp),  intent(in) :: Nmf 
@@ -1467,11 +1477,11 @@ module atmos_refraction
       ! formula: 4.22, page: 78
 
       elemental function analytic_sol_L01_hi_ionosphere_f422_r4(fc,Nmf,beta,d,R0,z0,D1) result(L01)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L01_hi_ionosphere_f422_r4
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_L01_hi_ionosphere_f422_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L01_hi_ionosphere_f422_r4)
             real(kind=sp),  intent(in) :: fc 
             real(kind=sp),  intent(in) :: Nmf 
@@ -1506,11 +1516,11 @@ module atmos_refraction
       end function analytic_sol_L01_hi_ionosphere_f422_r4
 
       elemental function analytic_sol_L01_hi_ionosphere_f422_r8(fc,Nmf,beta,d,R0,z0,D1) result(L01)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L01_hi_ionosphere_f422_r8
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_L01_hi_ionosphere_f422_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L01_hi_ionosphere_f422_r8)
             real(kind=dp),  intent(in) :: fc 
             real(kind=dp),  intent(in) :: Nmf 
@@ -1546,11 +1556,11 @@ module atmos_refraction
 
       ! formula 4.23, page: 78
       elemental function analytic_sol_L02_hi_ionosphere_f423_r4(fc,Nmf,beta,d,R0,z0,D1) result(L02)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L02_hi_ionosphere_f423_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L02_hi_ionosphere_f423_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L02_hi_ionosphere_f423_r4)
             real(kind=sp),  intent(in) :: fc 
             real(kind=sp),  intent(in) :: Nmf 
@@ -1580,11 +1590,11 @@ module atmos_refraction
       end function analytic_sol_L02_hi_ionosphere_f423_r4
 
       elemental function analytic_sol_L02_hi_ionosphere_f423_r8(fc,Nmf,beta,d,R0,z0,D1) result(L02)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L02_hi_ionosphere_f423_r8
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_L02_hi_ionosphere_f423_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L02_hi_ionosphere_f423_r8)
             real(kind=dp),  intent(in) :: fc 
             real(kind=dp),  intent(in) :: Nmf 
@@ -1615,11 +1625,9 @@ module atmos_refraction
 
       ! formula 4.24, page: 78
       elemental function analytic_sol_L03_hi_ionosphere_f424_r4(fc,Nmf,beta,d,R0,z0,D1) result(L03)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L03_hi_ionosphere_f424_r4
+     
             !dir$ attributes forceinline :: analytic_sol_L03_hi_ionosphere_f424_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L03_hi_ionosphere_f424_r4)
             real(kind=sp),  intent(in) :: fc 
             real(kind=sp),  intent(in) :: Nmf 
@@ -1648,12 +1656,10 @@ module atmos_refraction
             L03     = trm1*trm2 
       end function analytic_sol_L03_hi_ionosphere_f424_r4
 
-       elemental function analytic_sol_L03_hi_ionosphere_f424_r8(fc,Nmf,beta,d,R0,z0,D1) result(L03)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L03_hi_ionosphere_f424_r8
-            !dir$ attributes forceinline :: analytic_sol_L03_hi_ionosphere_f424_r8
-#endif 
+     elemental function analytic_sol_L03_hi_ionosphere_f424_r8(fc,Nmf,beta,d,R0,z0,D1) result(val)
+        
+       !dir$ attributes forceinline :: analytic_sol_L03_hi_ionosphere_f424_r8
+ 
 !$omp declare simd(analytic_sol_L03_hi_ionosphere_f424_r8)
             real(kind=dp),  intent(in) :: fc 
             real(kind=dp),  intent(in) :: Nmf 
@@ -1662,7 +1668,7 @@ module atmos_refraction
             real(kind=dp),  intent(in) :: R0 
             real(kind=dp),  intent(in) :: z0 
             real(kind=dp),  intent(in) :: D1 
-            real(kind=dp) :: L02
+            real(kind=dp) :: val
             real(kind=dp), parameter :: C314159265358979323846264338328 = 3.14159265358979323846264338328_dp
             real(kind=dp), automatic :: dnEps, ctgz0, sctgz0, sqr
             real(kind=dp), automatic :: bRctgz0, sqr1, sqr2, exp1 
@@ -1679,16 +1685,16 @@ module atmos_refraction
             prob1   = prob_integral_r8(sqr1)
             prob2   = prob_integral_r8(sqr2)
             trm2    = prob1-prob2 
-            L03     = trm1*trm2 
+            val     = trm1*trm2 
       end function analytic_sol_L03_hi_ionosphere_f424_r8
 
       ! formula: 4.20, page: 78
       elemental function analytic_sol_L2_hi_ionosphere_f420_r4(fc,Nmf,beta,d,R0,z0,D1) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L2_hi_ionosphere_f420_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L2_hi_ionosphere_f420_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L2_hi_ionosphere_f420_r4)
             real(kind=sp),  intent(in) :: fc 
             real(kind=sp),  intent(in) :: Nmf 
@@ -1717,11 +1723,11 @@ module atmos_refraction
       end function analytic_sol_L2_hi_ionosphere_f420_r4
 
       elemental function analytic_sol_L2_hi_ionosphere_f420_r8(fc,Nmf,beta,d,R0,z0,D1) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L2_hi_ionosphere_f420_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L2_hi_ionosphere_f420_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L2_hi_ionosphere_f420_r8)
             real(kind=dp),  intent(in) :: fc 
             real(kind=dp),  intent(in) :: Nmf 
@@ -1754,11 +1760,11 @@ module atmos_refraction
       ! ионосфере; L2 — величина угла рефракции в верхней ионосфере;
       ! formula: 4.15, page: 77
       elemental function refraction_angle_in_ionosphere_f415_r4(fc,Nmf,beta,d,R0,z0,D1) result(L)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_in_ionosphere_f415_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_in_ionosphere_f415_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_in_ionosphere_f415_r4)
             real(kind=sp),  intent(in) :: fc 
             real(kind=sp),  intent(in) :: Nmf 
@@ -1775,11 +1781,11 @@ module atmos_refraction
       end function refraction_angle_in_ionosphere_f415_r4
 
       elemental function refraction_angle_in_ionosphere_f415_r8(fc,Nmf,beta,d,R0,z0,D1) result(L)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_in_ionosphere_f415_r8
+        
+            
+           
             !dir$ attributes forceinline :: refraction_angle_in_ionosphere_f415_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_in_ionosphere_f415_r8)
             real(kind=dp),  intent(in) :: fc 
             real(kind=dp),  intent(in) :: Nmf 
@@ -1799,11 +1805,11 @@ module atmos_refraction
       ! 1. m<t 1 и z0 <60°.
       ! formula: 4.25, page: 79
       elemental function refraction_angle_ionosphere_z0le60_f425_r4(fc,Nmf,d,R0,z0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_ionosphere_z0le60_f425_r4
+        
+            
+          
             !dir$ attributes forceinline :: refraction_angle_ionosphere_z0le60_f425_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_ionosphere_z0le60_f425_r4)
              real(kind=sp),  intent(in) :: fc 
              real(kind=sp),  intent(in) :: Nmf 
@@ -1826,11 +1832,11 @@ module atmos_refraction
       end function refraction_angle_ionosphere_z0le60_f425_r4
 
        elemental function refraction_angle_ionosphere_z0le60_f425_r8(fc,Nmf,d,R0,z0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_ionosphere_z0le60_f425_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_ionosphere_z0le60_f425_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_ionosphere_z0le60_f425_r8)
              real(kind=dp),  intent(in) :: fc 
              real(kind=dp),  intent(in) :: Nmf 
@@ -1855,11 +1861,11 @@ module atmos_refraction
       ! m > 1 и z0=90°.
       ! formula: 4.28, page: 79
       elemental function refraction_angle_ionosphere_z0eq90_f428_r4(fc,Nmf,d,R0,z0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_ionosphere_z0eq90_f428_r4
+        
+            
+           
             !dir$ attributes forceinline :: refraction_angle_ionosphere_z0eq90_f428_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_ionosphere_z0eq90_f428_r4)
              real(kind=sp),  intent(in) :: fc 
              real(kind=sp),  intent(in) :: Nmf 
@@ -1877,15 +1883,15 @@ module atmos_refraction
              trm1   = C1666666666666666666666666666667*delnM*sqr 
              sqrp3  = sqr*sqr*sqr 
              trm2   = C48*delnM*delnM*sqrp3 
-             angle  = trm1+trm2 
+             alpha  = trm1+trm2 
       end function refraction_angle_ionosphere_z0eq90_f428_r4
 
        elemental function refraction_angle_ionosphere_z0eq90_f428_r8(fc,Nmf,d,R0,z0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_ionosphere_z0eq90_f428_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_ionosphere_z0eq90_f428_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_ionosphere_z0eq90_f428_r8)
              real(kind=dp),  intent(in) :: fc 
              real(kind=dp),  intent(in) :: Nmf 
@@ -1903,7 +1909,7 @@ module atmos_refraction
              trm1   = C1666666666666666666666666666667*delnM*sqr 
              sqrp3  = sqr*sqr*sqr 
              trm2   = C48*delnM*delnM*sqrp3 
-             angle  = trm1+trm2 
+             alpha  = trm1+trm2 
       end function refraction_angle_ionosphere_z0eq90_f428_r8
      
       ! усредненный
@@ -1911,11 +1917,11 @@ module atmos_refraction
       ! 0<=h<=H1
       ! formula: 4.29, page: 80
       elemental function n_avg_0_h_H1_f429_r4(deln0,beta,h) result(n)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: n_avg_0_h_H1_f429_r4
+        
+            
+           
             !dir$ attributes forceinline :: n_avg_0_h_H1_f429_r4
-#endif 
+ 
 !$omp declare simd(n_avg_0_h_H1_f429_r4)
             real(kind=sp), intent(in) :: deln0 
             real(kind=sp), intent(in) :: beta 
@@ -1928,11 +1934,11 @@ module atmos_refraction
       end function n_avg_0_h_H1_f429_r4
 
       elemental function n_avg_0_h_H1_f429_r8(deln0,beta,h) result(n)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: n_avg_0_h_H1_f429_r8
-            !dir$ attributes forceinline :: n_avg_0_h_H1_f429_r8
-#endif 
+        
+            
+            
+            !!dir$ attributes forceinline :: n_avg_0_h_H1_f429_r8
+ 
 !$omp declare simd(n_avg_0_h_H1_f429_r8)
             real(kind=dp), intent(in) :: deln0 
             real(kind=dp), intent(in) :: beta 
@@ -1949,18 +1955,18 @@ module atmos_refraction
       ! H1<=h<=H2
       ! formula: 4.30, page: 80
        elemental function n_avg_H1_h_H2_f430_r4(fc,Nmf,h,H1,H2) result(n)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: n_avg_H1_h_H2_f430_r4
+        
+            
+           
             !dir$ attributes forceinline :: n_avg_H1_h_H2_f430_r4
-#endif 
+ 
 !$omp declare simd(n_avg_H1_h_H2_f430_r4)
             real(kind=sp),  intent(in) :: fc 
             real(kind=sp),  intent(in) :: Nmf 
             real(kind=sp),  intent(in) :: h 
             real(kind=sp),  intent(in) :: H1 
             real(kind=sp),  intent(in) :: H2 
-            real(kind=sp),  :: n 
+            real(kind=sp)  :: n 
             real(kind=sp), automatic :: delNm, rat1, sqr1, sqr2
             real(kind=sp), automatic :: rat2, trm1, trm2, t0, t1  
             t0   = h-H1 
@@ -1974,18 +1980,18 @@ module atmos_refraction
        end function n_avg_H1_h_H2_f430_r4
 
        elemental function n_avg_H1_h_H2_f430_r8(fc,Nmf,h,H1,H2) result(n)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: n_avg_H1_h_H2_f430_r8
+        
+            
+            
             !dir$ attributes forceinline :: n_avg_H1_h_H2_f430_r8
-#endif 
+ 
 !$omp declare simd(n_avg_H1_h_H2_f430_r8)
             real(kind=dp),  intent(in) :: fc 
             real(kind=dp),  intent(in) :: Nmf 
             real(kind=dp),  intent(in) :: h 
             real(kind=dp),  intent(in) :: H1 
             real(kind=dp),  intent(in) :: H2 
-            real(kind=dp),  :: n 
+            real(kind=dp)  :: n 
             real(kind=dp), automatic :: delNm, rat1, sqr1, sqr2
             real(kind=dp), automatic :: rat2, trm1, trm2, t0, t1  
             t0   = h-H1 
@@ -2002,18 +2008,19 @@ module atmos_refraction
       ! показатель преломления атмосферы меняется.
       ! H2<=h<=H3
       ! formula: 4.31, page: 80
-      elemental function n_avg_H2_h_H3_f431_r4(fc,Nmf,h,H2) result(n)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: n_avg_H2_h_H3_f431_r4
+      elemental function n_avg_H2_h_H3_f431_r4(fc,Nmf,beta,h,H2) result(n)
+        
+            
+           
             !dir$ attributes forceinline :: n_avg_H2_h_H3_f431_r4
-#endif 
+ 
 !$omp declare simd(n_avg_H2_h_H3_f431_r4)
             real(kind=sp),  intent(in) :: fc 
             real(kind=sp),  intent(in) :: Nmf 
+            real(kind=sp),  intent(in) :: beta 
             real(kind=sp),  intent(in) :: h 
             real(kind=sp),  intent(in) :: H2 
-            real(kind=sp),  :: n 
+            real(kind=sp)  :: n 
             real(kind=sp), automatic :: hH2, earg, exp1, delnM
             hH2  =  h-H2 
             earg = -beta*hH2
@@ -2022,18 +2029,17 @@ module atmos_refraction
             n    = 1.0_sp-delnM*exp1
       end function n_avg_H2_h_H3_f431_r4
 
-      elemental function n_avg_H2_h_H3_f431_r8(fc,Nmf,h,H2) result(n)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: n_avg_H2_h_H3_f431_r8
-            !dir$ attributes forceinline :: n_avg_H2_h_H3_f431_r8
-#endif 
+      elemental function n_avg_H2_h_H3_f431_r8(fc,Nmf,beta,h,H2) result(n)
+      
+       !dir$ attributes forceinline :: n_avg_H2_h_H3_f431_r8
+ 
 !$omp declare simd(n_avg_H2_h_H3_f431_r8)
             real(kind=dp),  intent(in) :: fc 
             real(kind=dp),  intent(in) :: Nmf 
+            real(kind=dp),  intent(in) :: beta 
             real(kind=dp),  intent(in) :: h 
             real(kind=dp),  intent(in) :: H2 
-            real(kind=dp),  :: n 
+            real(kind=dp)  :: n 
             real(kind=dp), automatic :: hH2, earg, exp1, delnM
             hH2  =  h-H2 
             earg = -beta*hH2
@@ -2049,11 +2055,11 @@ module atmos_refraction
       !L=L1+L2+L3
 
       elemental function analytic_sol_L11_lo_ionosphere_f439_r4(deln0,beta,a,z0,H1) result(L11)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L11_lo_ionosphere_f439_r4
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_L11_lo_ionosphere_f439_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L11_lo_ionosphere_f439_r4)
             real(kind=sp),  intent(in) :: deln0 
             real(kind=sp),  intent(in) :: beta 
@@ -2074,7 +2080,7 @@ module atmos_refraction
             t1     = 1.0_sp/t0 
             ctgz0  = t1*t1 
             trm1   = delba*ctgz0*ssecz0 
-            exp2   = exp1(-2.0_sp*bH1)
+            exp2   = exp(-2.0_sp*bH1)
             sqrtrm = 1.0_sp+(2.0_sp*stgz0*H1)/a 
             sqr    = sqrt(sqrtrm)
             trm2   = (exp1-exp2)*sqr 
@@ -2082,11 +2088,11 @@ module atmos_refraction
       end function analytic_sol_L11_lo_ionosphere_f439_r4
 
       elemental function analytic_sol_L11_lo_ionosphere_f439_r8(deln0,beta,a,z0,H1) result(L11)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L11_lo_ionosphere_f439_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L11_lo_ionosphere_f439_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L11_lo_ionosphere_f439_r8)
             real(kind=dp),  intent(in) :: deln0 
             real(kind=dp),  intent(in) :: beta 
@@ -2107,7 +2113,7 @@ module atmos_refraction
             t1     = 1.0_dp/t0 
             ctgz0  = t1*t1 
             trm1   = delba*ctgz0*ssecz0 
-            exp2   = exp1(-2.0_dp*bH1)
+            exp2   = exp(-2.0_dp*bH1)
             sqrtrm = 1.0_dp+(2.0_dp*stgz0*H1)/a 
             sqr    = sqrt(sqrtrm)
             trm2   = (exp1-exp2)*sqr 
@@ -2115,11 +2121,11 @@ module atmos_refraction
       end function analytic_sol_L11_lo_ionosphere_f439_r8
 
       elemental function analytic_sol_L12_lo_ionosphere_f440_r4(deln0,beta,a,z0,H1) result(L12)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L12_lo_ionosphere_f440_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L12_lo_ionosphere_f440_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L12_lo_ionosphere_f440_r4)
             real(kind=sp),  intent(in) :: deln0 
             real(kind=sp),  intent(in) :: beta 
@@ -2128,7 +2134,7 @@ module atmos_refraction
             real(kind=sp),  intent(in) :: H1 
             real(kind=sp)              :: L12 
             real(kind=sp),  parameter  :: C314159265358979323846264338328 = 3.14159265358979323846264338328_sp
-            real(kind=sp),  automatic  :: deln0, ctgz0, piba, bactgz0, sctgz0  
+            real(kind=sp),  automatic  :: ctgz0, piba, bactgz0, sctgz0  
             real(kind=sp),  automatic  :: prob1, prob2, sqr1, sqr2 
             real(kind=sp),  automatic  :: trm1, trm2, exp1, earg, t0, t1 
             piba    = C314159265358979323846264338328*beta*a*0.5_sp 
@@ -2146,11 +2152,11 @@ module atmos_refraction
       end function analytic_sol_L12_lo_ionosphere_f440_r4
 
      elemental function analytic_sol_L12_lo_ionosphere_f440_r8(deln0,beta,a,z0,H1) result(L12)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L12_lo_ionosphere_f440_r8
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_L12_lo_ionosphere_f440_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L12_lo_ionosphere_f440_r8)
             real(kind=dp),  intent(in) :: deln0 
             real(kind=dp),  intent(in) :: beta 
@@ -2159,7 +2165,7 @@ module atmos_refraction
             real(kind=dp),  intent(in) :: H1 
             real(kind=dp)              :: L12 
             real(kind=dp),  parameter  :: C314159265358979323846264338328 = 3.14159265358979323846264338328_dp
-            real(kind=dp),  automatic  :: deln0, ctgz0, piba, bactgz0, sctgz0  
+            real(kind=dp),  automatic  ::  ctgz0, piba, bactgz0, sctgz0  
             real(kind=dp),  automatic  :: prob1, prob2, sqr1, sqr2 
             real(kind=dp),  automatic  :: trm1, trm2, exp1, earg, t0, t1 
             piba    = C314159265358979323846264338328*beta*a*0.5_dp 
@@ -2177,11 +2183,11 @@ module atmos_refraction
       end function analytic_sol_L12_lo_ionosphere_f440_r8
 
       elemental function analytic_sol_L13_lo_ionosphere_f441_r4(deln0,beta,a,z0,H1) result(L12)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L13_lo_ionosphere_f441_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L13_lo_ionosphere_f441_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L13_lo_ionosphere_f441_r4)
             real(kind=sp),  intent(in) :: deln0 
             real(kind=sp),  intent(in) :: beta 
@@ -2190,7 +2196,7 @@ module atmos_refraction
             real(kind=sp),  intent(in) :: H1 
             real(kind=sp)              :: L12 
             real(kind=sp),  parameter  :: C314159265358979323846264338328 = 3.14159265358979323846264338328_sp
-            real(kind=sp),  automatic  :: deln0, ctgz0, piba, bactgz0, sctgz0  
+            real(kind=sp),  automatic  :: ctgz0, piba, bactgz0, sctgz0  
             real(kind=sp),  automatic  :: prob1, prob2, sqr1, sqr2 
             real(kind=sp),  automatic  :: trm1, trm2, exp1, earg, t0, t1 
             piba    = C314159265358979323846264338328*beta*a
@@ -2208,11 +2214,11 @@ module atmos_refraction
       end function analytic_sol_L13_lo_ionosphere_f441_r4
 
       elemental function analytic_sol_L13_lo_ionosphere_f441_r8(deln0,beta,a,z0,H1) result(L12)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L13_lo_ionosphere_f441_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L13_lo_ionosphere_f441_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L13_lo_ionosphere_f441_r8)
             real(kind=dp),  intent(in) :: deln0 
             real(kind=dp),  intent(in) :: beta 
@@ -2221,7 +2227,7 @@ module atmos_refraction
             real(kind=dp),  intent(in) :: H1 
             real(kind=dp)              :: L12 
             real(kind=dp),  parameter  :: C314159265358979323846264338328 = 3.14159265358979323846264338328_dp
-            real(kind=dp),  automatic  :: deln0, ctgz0, piba, bactgz0, sctgz0  
+            real(kind=dp),  automatic  :: ctgz0, piba, bactgz0, sctgz0  
             real(kind=dp),  automatic  :: prob1, prob2, sqr1, sqr2 
             real(kind=dp),  automatic  :: trm1, trm2, exp1, earg, t0, t1 
             piba    = C314159265358979323846264338328*beta*a
@@ -2241,11 +2247,11 @@ module atmos_refraction
       ! refraction angle whole atmosphere (lower part).
       ! formula: 4.38, page: 82
       elemental function refraction_angle_atmos_L1_lo_f438_r4(deln0,beta,a,z0,H1) result(L1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_L1_lo_f438_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_atmos_L1_lo_f438_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_atmos_L1_lo_f438_r4)
             real(kind=sp),  intent(in) :: deln0 
             real(kind=sp),  intent(in) :: beta 
@@ -2269,12 +2275,12 @@ module atmos_refraction
             L1     = L11*L12+L13 
       end function refraction_angle_atmos_L1_lo_f438_r4
 
-      elemental function refraction_angle_atmos_L1_lo_f438_r8(deln0,beta,a,z0,H1) resilt(L1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_L1_lo_f438_r8
+      elemental function refraction_angle_atmos_L1_lo_f438_r8(deln0,beta,a,z0,H1) result(L1)
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_atmos_L1_lo_f438_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_atmos_L1_lo_f438_r8)
             real(kind=dp),  intent(in) :: deln0 
             real(kind=dp),  intent(in) :: beta 
@@ -2300,11 +2306,11 @@ module atmos_refraction
 
       ! formula: 4.43, page: 82
       elemental function analytic_sol_L21_med_ionosphere_f443_r4(fc,Nmf,H1,H2,a,z0) result(L21)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L21_med_ionosphere_f443_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L21_med_ionosphere_f443_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L21_med_ionosphere_f443_r4)
             real(kind=sp),   intent(in) :: fc 
             real(kind=sp),   intent(in) :: Nmf 
@@ -2333,15 +2339,15 @@ module atmos_refraction
             trm4   = 1.0_sp-sqrtrm1*t1 
             trm3   = 1.0_sp-sqrtrm2*t0 
             trm5   = ctgz0*ctgz0*(trm3-trm4)*athrd 
-            L12    = trm1*trm2+trm5
+            L21    = trm1*trm2+trm5
       end function analytic_sol_L21_med_ionosphere_f443_r4
 
        elemental function analytic_sol_L21_med_ionosphere_f443_r8(fc,Nmf,H1,H2,a,z0) result(L21)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L21_med_ionosphere_f443_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L21_med_ionosphere_f443_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L21_med_ionosphere_f443_r8)
             real(kind=dp),   intent(in) :: fc 
             real(kind=dp),   intent(in) :: Nmf 
@@ -2352,7 +2358,7 @@ module atmos_refraction
             real(kind=dp) :: L21 
             real(kind=dp),   automatic :: delnM, ctgz0, stgz0, issinz0 
             real(kind=dp),   automatic :: sqrtrm1, sqrtrm2, t0, t1, athrd 
-            real(kind=dp),   automatic :: trm1, trm2, trm3, trm4, trm5, stgz0 
+            real(kind=dp),   automatic :: trm1, trm2, trm3, trm4, trm5
             ctgz0  = 1.0_sp/tan(z0)
             t0     = sin(z0)
             issinz0= 1.0_sp/(t0*t0)
@@ -2370,16 +2376,16 @@ module atmos_refraction
             trm4   = 1.0_dp-sqrtrm1*t1 
             trm3   = 1.0_dp-sqrtrm2*t0 
             trm5   = ctgz0*ctgz0*(trm3-trm4)*athrd 
-            L12    = trm1*trm2+trm5
+            L21    = trm1*trm2+trm5
       end function analytic_sol_L21_med_ionosphere_f443_r8
 
       ! formula: 4.44, page: 82
       elemental function analytic_sol_L22_med_ionosphere_f444_r4(deln0,fc,Nmf,H1,H2,a,z0) result(L22)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L22_med_ionosphere_f444_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L22_med_ionosphere_f444_r4
-#endif 
+ 
 
             real(kind=sp),   intent(in) :: deln0
             real(kind=sp),   intent(in) :: fc 
@@ -2393,7 +2399,7 @@ module atmos_refraction
             real(kind=sp),   automatic :: b2, b3, H1s, H2s 
             real(kind=sp),   automatic :: p, q, g, b, H2H1p4 
             real(kind=sp),   automatic :: trm1, trm2, lrat, rrat 
-            real(kind=sp),   automatic :: t0, t1, t2, t3, cosz  
+            real(kind=sp),   automatic :: t0, t1, t2, t3, cosz, t4   
             tgz0    = tan(z0)
             stgz0   = tgz0*tgz0 
             delnM   = compute_delnM_f414_r4(fc,Nmf)
@@ -2429,11 +2435,11 @@ module atmos_refraction
       end function analytic_sol_L22_med_ionosphere_f444_r4
 
       elemental function analytic_sol_L22_med_ionosphere_f444_r8(deln0,fc,Nmf,H1,H2,a,z0) result(L22)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L22_med_ionosphere_f444_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L22_med_ionosphere_f444_r8
-#endif 
+ 
 
             real(kind=dp),   intent(in) :: deln0
             real(kind=dp),   intent(in) :: fc 
@@ -2447,7 +2453,7 @@ module atmos_refraction
             real(kind=dp),   automatic :: b2, b3, H1s, H2s 
             real(kind=dp),   automatic :: p, q, g, b, H2H1p4 
             real(kind=dp),   automatic :: trm1, trm2, lrat, rrat 
-            real(kind=dp),   automatic :: t0, t1, t2, t3, cosz  
+            real(kind=dp),   automatic :: t0, t1, t2, t3, cosz, t4   
             tgz0    = tan(z0)
             stgz0   = tgz0*tgz0 
             delnM   = compute_delnM_f414_r8(fc,Nmf)
@@ -2485,11 +2491,11 @@ module atmos_refraction
       ! refraction angle whole atmosphere (medium part).
       ! formula: 4.42, page: 82
       elemental function refraction_angle_atmos_L2_med_f442_r4(deln0,fc,Nmf,H1,H2,a,z0) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_L2_med_f442_r4
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_atmos_L2_med_f442_r4
-#endif 
+ 
 
             real(kind=sp),   intent(in) :: deln0
             real(kind=sp),   intent(in) :: fc 
@@ -2506,11 +2512,11 @@ module atmos_refraction
       end function refraction_angle_atmos_L2_med_f442_r4
 
       elemental function refraction_angle_atmos_L2_med_f442_r8(deln0,fc,Nmf,H1,H2,a,z0) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_L2_med_f442_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_atmos_L2_med_f442_r8
-#endif 
+ 
 
             real(kind=dp),   intent(in) :: deln0
             real(kind=dp),   intent(in) :: fc 
@@ -2529,11 +2535,11 @@ module atmos_refraction
       ! Analytic solution upper ionosphere.
       ! Formula: 4.46, page: 83
        elemental function analytic_sol_L31_up_ionosphere_f446_r4(fc,Nmf,H2,H3,beta,a,z0) result(L31)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L31_up_ionosphere_f446_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L31_up_ionosphere_f446_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L31_up_ionosphere_f446_r4)
             real(kind=sp),   intent(in) :: fc 
             real(kind=sp),   intent(in) :: Nmf 
@@ -2547,7 +2553,7 @@ module atmos_refraction
             real(kind=sp), automatic :: trm1, trm2, exp1, ssecz0 
             real(kind=sp), automatic :: sqrtrm1, sqrtrm2, t0, t1 
             earg   = -2.0_sp*beta*(H3-H2)
-            delnNm = compute_delnM_f414_r4(fc,Nmf)
+            delNm = compute_delnM_f414_r4(fc,Nmf)
             t0     = tan(z0)
             stgz0  = t0*t0 
             ctgz0  = 1.0_sp/t0 
@@ -2565,11 +2571,11 @@ module atmos_refraction
         end function analytic_sol_L31_up_ionosphere_f446_r4
 
         elemental function analytic_sol_L31_up_ionosphere_f446_r8(fc,Nmf,H2,H3,beta,a,z0) result(L31)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L31_up_ionosphere_f446_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L31_up_ionosphere_f446_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L31_up_ionosphere_f446_r8)
             real(kind=dp),   intent(in) :: fc 
             real(kind=dp),   intent(in) :: Nmf 
@@ -2583,7 +2589,7 @@ module atmos_refraction
             real(kind=dp), automatic :: trm1, trm2, exp1, ssecz0 
             real(kind=dp), automatic :: sqrtrm1, sqrtrm2, t0, t1 
             earg   = -2.0_dp*beta*(H3-H2)
-            delnNm = compute_delnM_f414_r8(fc,Nmf)
+            delNm = compute_delnM_f414_r8(fc,Nmf)
             t0     = tan(z0)
             stgz0  = t0*t0 
             ctgz0  = 1.0_dp/t0 
@@ -2602,11 +2608,11 @@ module atmos_refraction
 
         ! Formula: 4.47, page: 83
         elemental function analytic_sol_L32_up_ionosphere_f447_r4(fc,Nmf,H2,H3,beta,a,z0) result(L32)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L32_up_ionosphere_f447_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L32_up_ionosphere_f447_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L32_up_ionosphere_f447_r4)
             real(kind=sp),   intent(in) :: fc 
             real(kind=sp),   intent(in) :: Nmf 
@@ -2617,7 +2623,7 @@ module atmos_refraction
             real(kind=sp),   intent(in) :: z0 
             real(kind=sp) :: L32 
             real(kind=sp),  parameter  :: C314159265358979323846264338328 = 3.14159265358979323846264338328_sp
-            real(kind=sp),   automatic :: delNm, piba, earg, bactgz 
+            real(kind=sp),   automatic :: delNm, piba, earg, bactgz0 
             real(kind=sp),   automatic :: prob1, prob2, trm1, trm2 
             real(kind=sp),   automatic :: ctgz0, sctgz0, exp1, t0, t1
             piba  = C314159265358979323846264338328*beta*(a*0.5_sp)
@@ -2638,11 +2644,11 @@ module atmos_refraction
        end function analytic_sol_L32_up_ionosphere_f447_r4
 
        elemental function analytic_sol_L32_up_ionosphere_f447_r8(fc,Nmf,H2,H3,beta,a,z0) result(L32)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L32_up_ionosphere_f447_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L32_up_ionosphere_f447_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L32_up_ionosphere_f447_r8)
             real(kind=dp),   intent(in) :: fc 
             real(kind=dp),   intent(in) :: Nmf 
@@ -2653,7 +2659,7 @@ module atmos_refraction
             real(kind=dp),   intent(in) :: z0 
             real(kind=dp) :: L32 
             real(kind=dp),  parameter  :: C314159265358979323846264338328 = 3.14159265358979323846264338328_dp
-            real(kind=dp),   automatic :: delNm, piba, earg, bactgz 
+            real(kind=dp),   automatic :: delNm, piba, earg, bactgz0 
             real(kind=dp),   automatic :: prob1, prob2, trm1, trm2 
             real(kind=dp),   automatic :: ctgz0, sctgz0, exp1, t0, t1
             piba  = C314159265358979323846264338328*beta*(a*0.5_sp)
@@ -2675,11 +2681,11 @@ module atmos_refraction
 
        ! Formula: 4.48, page: 83
         elemental function analytic_sol_L33_up_ionosphere_f448_r4(fc,Nmf,H2,H3,beta,a,z0) result(L33)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L33_up_ionosphere_f448_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L33_up_ionosphere_f448_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L33_up_ionosphere_f448_r4)
             real(kind=sp),   intent(in) :: fc 
             real(kind=sp),   intent(in) :: Nmf 
@@ -2688,9 +2694,9 @@ module atmos_refraction
             real(kind=sp),   intent(in) :: beta
             real(kind=sp),   intent(in) :: a 
             real(kind=sp),   intent(in) :: z0 
-            real(kind=sp) :: L32 
+            real(kind=sp) :: L33  
             real(kind=sp),  parameter  :: C314159265358979323846264338328 = 3.14159265358979323846264338328_sp
-            real(kind=sp),   automatic :: delNm, piba, earg, bactgz 
+            real(kind=sp),   automatic :: delNm, piba, earg, bactgz0 
             real(kind=sp),   automatic :: prob1, prob2, trm1, trm2 
             real(kind=sp),   automatic :: ctgz0, sctgz0, exp1, t0, t1
             piba  = C314159265358979323846264338328*beta*a
@@ -2707,15 +2713,15 @@ module atmos_refraction
             prob1   = prob_integral_r4(t0)
             prob2   = prob_integral_r4(t1)
             trm2    = exp1*(prob1-prob2)
-            L32     = trm1*trm2 
+            L33     = trm1*trm2 
        end function analytic_sol_L33_up_ionosphere_f448_r4
 
        elemental function analytic_sol_L33_up_ionosphere_f448_r8(fc,Nmf,H2,H3,beta,a,z0) result(L33)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L33_up_ionosphere_f448_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L33_up_ionosphere_f448_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L33_up_ionosphere_f448_r8)
             real(kind=dp),   intent(in) :: fc 
             real(kind=dp),   intent(in) :: Nmf 
@@ -2726,7 +2732,7 @@ module atmos_refraction
             real(kind=dp),   intent(in) :: z0 
             real(kind=dp) :: L33 
             real(kind=dp),  parameter  :: C314159265358979323846264338328 = 3.14159265358979323846264338328_dp
-            real(kind=dp),   automatic :: delNm, piba, earg, bactgz 
+            real(kind=dp),   automatic :: delNm, piba, earg, bactgz0 
             real(kind=dp),   automatic :: prob1, prob2, trm1, trm2 
             real(kind=dp),   automatic :: ctgz0, sctgz0, exp1, t0, t1
             piba    = C314159265358979323846264338328*beta*a
@@ -2743,16 +2749,16 @@ module atmos_refraction
             prob1   = prob_integral_r8(t0)
             prob2   = prob_integral_r8(t1)
             trm2    = exp1*(prob1-prob2)
-            L32     = trm1*trm2 
+            L33     = trm1*trm2 
        end function analytic_sol_L33_up_ionosphere_f448_r8
 
        ! Formula: 4.49, page: 83
        elemental function analytic_sol_L34_up_ionosphere_f449_r4(deln0,fc,Nmf,H2,H3,beta,a,z0) result(L34)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L34_up_ionosphere_f449_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L34_up_ionosphere_f449_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L34_up_ionosphere_f449_r4)
             real(kind=sp),   intent(in) :: deln0 
             real(kind=sp),   intent(in) :: fc 
@@ -2767,7 +2773,7 @@ module atmos_refraction
             real(kind=sp), automatic :: trm1, trm2, exp1, ssecz0 
             real(kind=sp), automatic :: sqrtrm1, sqrtrm2, t0, t1 
             earg   = beta*(H3-H2)
-            delnNm = compute_delnM_f414_r4(fc,Nmf)
+            delNm  = compute_delnM_f414_r4(fc,Nmf)
             t0     = tan(z0)
             stgz0  = t0*t0 
             ctgz0  = 1.0_sp/t0 
@@ -2785,11 +2791,11 @@ module atmos_refraction
         end function analytic_sol_L34_up_ionosphere_f449_r4
 
          elemental function analytic_sol_L34_up_ionosphere_f449_r8(deln0,fc,Nmf,H2,H3,beta,a,z0) result(L34)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L34_up_ionosphere_f449_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L34_up_ionosphere_f449_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L34_up_ionosphere_f449_r8)
             real(kind=dp),   intent(in) :: deln0 
             real(kind=dp),   intent(in) :: fc 
@@ -2804,7 +2810,7 @@ module atmos_refraction
             real(kind=dp), automatic :: trm1, trm2, exp1, ssecz0 
             real(kind=dp), automatic :: sqrtrm1, sqrtrm2, t0, t1 
             earg   = beta*(H3-H2)
-            delnNm = compute_delnM_f414_r8(fc,Nmf)
+            delNm = compute_delnM_f414_r8(fc,Nmf)
             t0     = tan(z0)
             stgz0  = t0*t0 
             ctgz0  = 1.0_dp/t0 
@@ -2818,17 +2824,17 @@ module atmos_refraction
             t0     = sqrt(sqrtrm1)
             t1     = sqrt(sqrtrm2)
             trm2   = t0-exp1*t1 
-            L31    = trm1*trm2 
+            L34    = trm1*trm2 
         end function analytic_sol_L34_up_ionosphere_f449_r8
 
        ! refraction angle whole atmosphere (upper part).
        ! formula: 4.49, page: 83
       elemental function refraction_angle_atmos_L3_upper_f445_r4(deln0,fc,Nmf,H2,H3,beta,a,z0) result(L3)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_L3_upper_f445_r4
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_atmos_L3_upper_f445_r4
-#endif 
+ 
 
             real(kind=sp),   intent(in) :: deln0
             real(kind=sp),   intent(in) :: fc 
@@ -2859,11 +2865,11 @@ module atmos_refraction
        end function refraction_angle_atmos_L3_upper_f445_r4
 
        elemental function refraction_angle_atmos_L3_upper_f445_r8(deln0,fc,Nmf,H2,H3,beta,a,z0) result(L3)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_L3_upper_f445_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_atmos_L3_upper_f445_r8
-#endif 
+ 
 
             real(kind=dp),   intent(in) :: deln0
             real(kind=dp),   intent(in) :: fc 
@@ -2898,11 +2904,11 @@ module atmos_refraction
        ! 2*tg^2(z0)*H2/a«1, z0<60°.
        ! Formula: 4.50, page: 84
        elemental function refraction_angle_z0le60_med_atmos_f450_r4(fc,Nmf,z0,deln0,g,H1,H2) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_z0le60_med_atmos_f450_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_z0le60_med_atmos_f450_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_z0le60_med_atmos_f450_r4)
             real(kind=sp),  intent(in) :: fc 
             real(kind=sp),  intent(in) :: Nmf 
@@ -2913,7 +2919,7 @@ module atmos_refraction
             real(kind=sp),  intent(in) :: H2 
             real(kind=sp)  :: alpha 
             real(kind=sp), parameter  :: inva = 0.000156985871271585557299843014_sp
-            real(kind=sp),  automatic :: delnNm, tgz0, scosz0, rat1
+            real(kind=sp),  automatic :: delNm, tgz0, scosz0, rat1
             real(kind=sp),  automatic :: H1s, H2s, rat2, rat3 
             real(kind=sp),  automatic :: ghlf, trm1, trm2, trm3 
             real(kind=sp),  automatic :: t0, t1, t2, t3 
@@ -2923,16 +2929,16 @@ module atmos_refraction
             ghlf   = g*0.5_sp 
             t0     = cos(z0)
             scosz0 = t0*t0 
-            delnNm = compute_delnM_f414_r4(fc,Nmf)
+            delNm = compute_delnM_f414_r4(fc,Nmf)
             rat1   = tgz0/scosz0
-            trm1   = deln0*tgz0+delnNm*rat1*inva 
+            trm1   = deln0*tgz0+delNm*rat1*inva 
             t1     = 2.0_sp*H2s+2.0_sp*H2*H1-H2s 
             t0     = 3.0_sp*(H2-H1)
             rat2   = H2-(t1/t0)
             t2     = (H2-H1)
             t3     = t2*t2*t2*t2 
             trm1   = trm1*rat2 
-            t0     = 2.0_sp*(delnNm*delNm)
+            t0     = 2.0_sp*(delNm*delNm)
             trm2   = t0/t3*rat1 
             t1     = (H2s*H2s)*0.25_sp-ghlf*H2s 
             t2     = (H2s*H2s)*0.25_sp-H2*H1s*H1+H2s*H1s
@@ -2942,11 +2948,11 @@ module atmos_refraction
        end function refraction_angle_z0le60_med_atmos_f450_r4
 
        elemental function refraction_angle_z0le60_med_atmos_f450_r8(fc,Nmf,z0,deln0,g,H1,H2) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_z0le60_med_atmos_f450_r8
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_z0le60_med_atmos_f450_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_z0le60_med_atmos_f450_r8)
             real(kind=dp),  intent(in) :: fc 
             real(kind=dp),  intent(in) :: Nmf 
@@ -2957,7 +2963,7 @@ module atmos_refraction
             real(kind=dp),  intent(in) :: H2 
             real(kind=dp)  :: alpha 
             real(kind=dp), parameter  :: inva = 0.000156985871271585557299843014_dp
-            real(kind=dp),  automatic :: delnNm, tgz0, scosz0, rat1
+            real(kind=dp),  automatic :: delNm, tgz0, scosz0, rat1
             real(kind=dp),  automatic :: H1s, H2s, rat2, rat3 
             real(kind=dp),  automatic :: ghlf, trm1, trm2, trm3 
             real(kind=dp),  automatic :: t0, t1, t2, t3 
@@ -2967,16 +2973,16 @@ module atmos_refraction
             ghlf   = g*0.5_dp 
             t0     = cos(z0)
             scosz0 = t0*t0 
-            delnNm = compute_delnM_f414_r8(fc,Nmf)
+            delNm = compute_delnM_f414_r8(fc,Nmf)
             rat1   = tgz0/scosz0
-            trm1   = deln0*tgz0+delnNm*rat1*inva 
+            trm1   = deln0*tgz0+delNm*rat1*inva 
             t1     = 2.0_dp*H2s+2.0_dp*H2*H1-H2s 
             t0     = 3.0_dp*(H2-H1)
             rat2   = H2-(t1/t0)
             t2     = (H2-H1)
             t3     = t2*t2*t2*t2 
             trm1   = trm1*rat2 
-            t0     = 2.0_dp*(delnNm*delNm)
+            t0     = 2.0_dp*(delNm*delNm)
             trm2   = t0/t3*rat1 
             t1     = (H2s*H2s)*0.25_dp-ghlf*H2s 
             t2     = (H2s*H2s)*0.25_dp-H2*H1s*H1+H2s*H1s
@@ -2990,15 +2996,16 @@ module atmos_refraction
        ! 2*tgz^2(z0)*H2/a >> 1, z0~90°.
        ! 
        ! Formula: 4.51, page: 84
-       elemental function refraction_angle_z0eq90_med_atmos_f451_r4(fc,Nmf,z0,deln0,g,H1,H2) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_z0eq90_med_atmos_f451_r4
+       elemental function refraction_angle_z0eq90_med_atmos_f451_r4(fc,Nmf,beta,z0,deln0,g,H1,H2) result(alpha)
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_z0eq90_med_atmos_f451_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_z0eq90_med_atmos_f451_r4)
             real(kind=sp),  intent(in) :: fc 
             real(kind=sp),  intent(in) :: Nmf 
+            real(kind=sp),  intent(in) :: beta 
             real(kind=sp),  intent(in) :: z0 
             real(kind=sp),  intent(in) :: deln0 
             real(kind=sp),  intent(in) :: g 
@@ -3039,15 +3046,16 @@ module atmos_refraction
             alpha= trm1+trm2 
        end function refraction_angle_z0eq90_med_atmos_f451_r4
 
-        elemental function refraction_angle_z0eq90_med_atmos_f451_r8(fc,Nmf,z0,deln0,g,H1,H2) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_z0eq90_med_atmos_f451_r8
+        elemental function refraction_angle_z0eq90_med_atmos_f451_r8(fc,Nmf,beta,z0,deln0,g,H1,H2) result(alpha)
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_z0eq90_med_atmos_f451_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_z0eq90_med_atmos_f451_r8)
             real(kind=dp),  intent(in) :: fc 
             real(kind=dp),  intent(in) :: Nmf 
+            real(kind=dp),  intent(in) :: beta 
             real(kind=dp),  intent(in) :: z0 
             real(kind=dp),  intent(in) :: deln0 
             real(kind=dp),  intent(in) :: g 
@@ -3063,7 +3071,7 @@ module atmos_refraction
                                                                           508404.222051705624896764260500215822_dp
             real(kind=dp), automatic :: H2s, H1s, piba, sH2H1
             real(kind=dp), automatic :: sqrH1, sqrH2, t0, t1
-            real(kind=dp), automatic :: t2, t3, trm1, trm2 
+            real(kind=dp), automatic :: t2, t3, trm1, trm2, delNm  
             
             H1s  = H1*H1 
             piba = sqrt((C314159265358979323846264338328*beta*a)*0.5_dp)
@@ -3083,7 +3091,7 @@ module atmos_refraction
             t3   = 1.0_dp/sqrH2*(1.2_dp*H2s*H2+2.0_dp*g*H2)
             t0   = 1.0_dp/sqrH1*((H1s*H1)*0.2_dp-H2*H1s+ &
                    2.0_dp*H2s*H1+g*H1+g*H2)
-            t1   = delNm*sqrt(a/(2.0_dp*H2)
+            t1   = delNm*sqrt(a/(2.0_dp*H2))
             trm2 = t2*t3-t1 
             alpha= trm1+trm2 
        end function refraction_angle_z0eq90_med_atmos_f451_r8
@@ -3094,11 +3102,11 @@ module atmos_refraction
        ! Formula: 5.4, page: 93
      
        elemental function analytic_sol_L1_troposph_wvle5cm_f54_r4(beta,R0,delnA,z0,Hc0) result(L1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_troposph_wvle5cm_f54_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L1_troposph_wvle5cm_f54_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L1_troposph_wvle5cm_f54_r4)
              real(kind=sp),    intent(in) :: beta 
              real(kind=sp),    intent(in) :: R0 
@@ -3126,11 +3134,11 @@ module atmos_refraction
         end function analytic_sol_L1_troposph_wvle5cm_f54_r4
 
          elemental function analytic_sol_L1_troposph_wvle5cm_f54_r8(beta,R0,delnA,z0,Hc0) result(L1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_troposph_wvle5cm_f54_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L1_troposph_wvle5cm_f54_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L1_troposph_wvle5cm_f54_r8)
              real(kind=dp),    intent(in) :: beta 
              real(kind=dp),    intent(in) :: R0 
@@ -3158,11 +3166,11 @@ module atmos_refraction
         end function analytic_sol_L1_troposph_wvle5cm_f54_r8
 
         elemental function analytic_sol_L2_troposph_wvle5cm_f55_r4(beta,R0,delnA,z0,Hc0) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L2_troposph_wvle5cm_f55_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L2_troposph_wvle5cm_f55_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L2_troposph_wvle5cm_f55_r4)
              real(kind=sp),    intent(in) :: beta 
              real(kind=sp),    intent(in) :: R0 
@@ -3192,18 +3200,18 @@ module atmos_refraction
         end function analytic_sol_L2_troposph_wvle5cm_f55_r4
 
         elemental function analytic_sol_L2_troposph_wvle5cm_f55_r8(beta,R0,delnA,z0,Hc0) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L2_troposph_wvle5cm_f55_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L2_troposph_wvle5cm_f55_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L2_troposph_wvle5cm_f55_r8)
              real(kind=dp),    intent(in) :: beta 
              real(kind=dp),    intent(in) :: R0 
              real(kind=dp),    intent(in) :: delnA 
              real(kind=dp),    intent(in) :: z0 
              real(kind=dp),    intent(in) :: Hc0 
-             real(kind=dp)   :: L1 
+             real(kind=dp)   :: L2  
              real(kind=dp),    parameter :: C157079632679489661923132169164 = 1.57079632679489661923132169164_dp
              real(kind=dp),    automatic :: tgz0, stgz0, sctgz0, btR0 
              real(kind=dp),    automatic :: prob1, prob2, exp1, bRctgz0 
@@ -3226,18 +3234,18 @@ module atmos_refraction
         end function analytic_sol_L2_troposph_wvle5cm_f55_r8
 
         elemental function analytic_sol_L3_troposph_wvle5cm_f56_r4(beta,R0,delnA,z0,Hc0) result(L3)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L3_troposph_wvle5cm_f56_r4
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_L3_troposph_wvle5cm_f56_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L3_troposph_wvle5cm_f56_r4)
              real(kind=sp),    intent(in) :: beta 
              real(kind=sp),    intent(in) :: R0 
              real(kind=sp),    intent(in) :: delnA 
              real(kind=sp),    intent(in) :: z0 
              real(kind=sp),    intent(in) :: Hc0 
-             real(kind=sp)   :: L1 
+             real(kind=sp)   :: L3  
              real(kind=sp),    parameter :: C157079632679489661923132169164 = 1.57079632679489661923132169164_sp
              real(kind=sp),    automatic :: tgz0, stgz0, sctgz0, btR0 
              real(kind=sp),    automatic :: prob1, prob2, exp1, bRctgz0 
@@ -3256,22 +3264,22 @@ module atmos_refraction
              prob1  = prob_integral_r4(t0)
              prob2  = prob_integral_r4(t1)
              trm2   = prob1-prob2 
-             L2     = trm1*trm2 
+             L3     = trm1*trm2 
         end function analytic_sol_L3_troposph_wvle5cm_f56_r4
 
         elemental function analytic_sol_L3_troposph_wvle5cm_f56_r8(beta,R0,delnA,z0,Hc0) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L3_troposph_wvle5cm_f56_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L3_troposph_wvle5cm_f56_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L3_troposph_wvle5cm_f56_r8)
              real(kind=dp),    intent(in) :: beta 
              real(kind=dp),    intent(in) :: R0 
              real(kind=dp),    intent(in) :: delnA 
              real(kind=dp),    intent(in) :: z0 
              real(kind=dp),    intent(in) :: Hc0 
-             real(kind=dp)   :: L1 
+             real(kind=dp)   :: L2  
              real(kind=dp),    parameter :: C157079632679489661923132169164 = 1.57079632679489661923132169164_dp
              real(kind=dp),    automatic :: tgz0, stgz0, sctgz0, btR0 
              real(kind=dp),    automatic :: prob1, prob2, exp1, bRctgz0 
@@ -3296,11 +3304,11 @@ module atmos_refraction
         ! Formula 5.3, page: 93
         ! An angle of atmospheric (troposheric) refraction for wavelength <= 5cm (different TX,RX height)
         elemental function refraction_angle_tropo_wvle5cm_f53_r4(na,nc,beta,R0,delnA,z0,Hc0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_tropo_wvle5cm_f53_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_tropo_wvle5cm_f53_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_tropo_wvle5cm_f53_r4)
              real(kind=sp),    intent(in) :: na 
              real(kind=sp),    intent(in) :: nc 
@@ -3320,7 +3328,7 @@ module atmos_refraction
              t1     = tan(z0)
              ctgz0  = 1.0_sp/t1 
              lnanc  = -log(na/nc)
-             L2     = analytic_sol_L2_troposph_wvle5cm_f56_r4(beta,R0,delnA,z0,Hc0)
+             L2     = analytic_sol_L2_troposph_wvle5cm_f55_r4(beta,R0,delnA,z0,Hc0)
              rat1   = ctgz0/scosz0
              trm1   = lnanc*ctgz0+L1+rat1 
              L3     = analytic_sol_L3_troposph_wvle5cm_f56_r4(beta,R0,delnA,z0,Hc0)
@@ -3329,11 +3337,11 @@ module atmos_refraction
         end function refraction_angle_tropo_wvle5cm_f53_r4
 
         elemental function refraction_angle_tropo_wvle5cm_f53_r8(na,nc,beta,R0,delnA,z0,Hc0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_tropo_wvle5cm_f53_r8
+        
+            
+           
             !dir$ attributes forceinline :: refraction_angle_tropo_wvle5cm_f53_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_tropo_wvle5cm_f53_r8)
              real(kind=dp),    intent(in) :: na 
              real(kind=dp),    intent(in) :: nc 
@@ -3343,7 +3351,7 @@ module atmos_refraction
              real(kind=dp),    intent(in) :: z0 
              real(kind=dp),    intent(in) :: Hc0 
              real(kind=dp)   :: alpha 
-             real(kind=dp),    automatic  :: lnanc, ctgz0, L1, ctgz0 
+             real(kind=dp),    automatic  :: lnanc, ctgz0, L1
              real(kind=dp),    automatic  :: scosz0, btRdna, rat1, L2 
              real(kind=dp),    automatic  :: t0, t1, L3, trm1, trm2  
              t0     = cos(z0)
@@ -3353,13 +3361,13 @@ module atmos_refraction
              t1     = tan(z0)
              ctgz0  = 1.0_dp/t1 
              lnanc  = -log(na/nc)
-             L2     = analytic_sol_L2_troposph_wvle5cm_f56_r8(beta,R0,delnA,z0,Hc0)
+             L2     = analytic_sol_L2_troposph_wvle5cm_f55_r8(beta,R0,delnA,z0,Hc0)
              rat1   = ctgz0/scosz0
              trm1   = lnanc*ctgz0+L1+rat1 
              L3     = analytic_sol_L3_troposph_wvle5cm_f56_r8(beta,R0,delnA,z0,Hc0)
              trm2   = btRdna*rat1*(L3-L2)
              alpha  = trm1+trm2 
-        end function refraction_angle_tropo_wvle5cm_f53_r4
+        end function refraction_angle_tropo_wvle5cm_f53_r8
 
         !Представим (5.15) в виде двух слагаемых, учитывая,
         !что: 1/n~1, z=z0-theta+alpha=z-gamma, (gamm<<1)
@@ -3371,11 +3379,11 @@ module atmos_refraction
 
         ! formula: 5.22, page: 96
         elemental function analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r4(delnA,z0,beta,Hc0) result(del1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r4
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r4)
             real(kind=sp),    intent(in) :: delnA 
             real(kind=sp),    intent(in) :: z0 
@@ -3391,11 +3399,11 @@ module atmos_refraction
         end function analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r4
 
         elemental function analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r8(delnA,z0,beta,Hc0) result(del1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_tropo_del1_wvle5cm_deg0_80_f522_r8)
             real(kind=dp),    intent(in) :: delnA 
             real(kind=dp),    intent(in) :: z0 
@@ -3412,11 +3420,11 @@ module atmos_refraction
 
         !formula: 5.24, page: 97
         elemental function analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r4(delnA,z0,beta,Hc0) result(del21)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r4)
             real(kind=sp),    intent(in) :: delnA 
             real(kind=sp),    intent(in) :: z0 
@@ -3432,15 +3440,15 @@ module atmos_refraction
             t0     = cos(z0)
             scosz0 = t0*t0 
             rat    = (1.0_sp-exp1)/btHc0
-            del21   = -delnA*(tgz0/scosz0)*(1.0_sp-rat)
+            del21   = -delnA*(ctgz0/scosz0)*(1.0_sp-rat)
         end function analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r4
 
         elemental function analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r8(delnA,z0,beta,Hc0) result(del21)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r8
+        
+            
+             !analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r8
             !dir$ attributes forceinline :: analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r8)
             real(kind=dp),    intent(in) :: delnA 
             real(kind=dp),    intent(in) :: z0 
@@ -3456,16 +3464,16 @@ module atmos_refraction
             t0     = cos(z0)
             scosz0 = t0*t0 
             rat    = (1.0_dp-exp1)/btHc0
-            del21   = -delnA*(tgz0/scosz0)*(1.0_dp-rat)
+            del21   = -delnA*(ctgz0/scosz0)*(1.0_dp-rat)
         end function analytic_sol_tropo_del21_wvle5cm_deg0_80_f524_r8
 
         ! formula: 5.25, page: 97
         elemental function analytic_sol_tropo_del22_wvle5cm_deg0_80_f525_r4(delnA,z0,beta,Hc0,R0) result(del22)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del22_wvle5cm_deg0_80_f525_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_tropo_del22_wvle5cm_deg0_80_f525_r4
-#endif 
+ 
 
             real(kind=sp),    intent(in) :: delnA 
             real(kind=sp),    intent(in) :: z0 
@@ -3503,11 +3511,11 @@ module atmos_refraction
         end function analytic_sol_tropo_del22_wvle5cm_deg0_80_f525_r4
 
          elemental function analytic_sol_tropo_del22_wvle5cm_deg0_80_f525_r8(delnA,z0,beta,Hc0,R0) result(del22)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del22_wvle5cm_deg0_80_f525_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_tropo_del22_wvle5cm_deg0_80_f525_r8
-#endif 
+ 
 
             real(kind=dp),    intent(in) :: delnA 
             real(kind=dp),    intent(in) :: z0 
@@ -3546,11 +3554,11 @@ module atmos_refraction
 
           ! formula: 5.27, page: 97
         elemental function analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r4(delnA,z0,beta,Hc0,R0) result(del231)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r4)
             real(kind=sp),    intent(in) :: delnA 
             real(kind=sp),    intent(in) :: z0 
@@ -3561,7 +3569,7 @@ module atmos_refraction
             real(kind=sp),    parameter  :: C1253314137315500251207882642406 = & 
                                                    1.253314137315500251207882642406_sp
             real(kind=sp),    automatic  :: stgz0, btHc0, exp1, sqr2q 
-            real(kind=sp),    automatic  :: prob1, prob2, trm1, trm2 
+            real(kind=sp),    automatic  :: prob1, prob2, trm1, trm2,ps  
             real(kind=sp),    automatic  :: t0, t1, ps2, q, exp2, trm3    
             btHc0   = beta*Hc0 
             t0      = tan(z0)
@@ -3570,9 +3578,9 @@ module atmos_refraction
             q       = (beta*R0*0.5_sp)*stgz0 
             exp1    = exp(q-q*ps)
             t0      = 1.0_sp+(q/btHc0)
-            trm1    = t0*(1.0_sp-exp1/p) 
+            trm1    = t0*(1.0_sp-exp1/q) 
             sqr2q   = sqrt(q+q)
-            prob1   = prob_integral_r4(p*sqr2q)
+            prob1   = prob_integral_r4(q*sqr2q)
             prob2   = prob_integral_r4(sqr2q)
             exp2    = exp(q)
             t0      = 2.0_sp*q+q/btHc0+(2.0_sp*q*q)/btHc0
@@ -3583,11 +3591,11 @@ module atmos_refraction
         end function analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r4
 
          elemental function analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r8(delnA,z0,beta,Hc0,R0) result(del231)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r8
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_tropo_del231_wvle5cm_deg0_80_f527_r8)
             real(kind=dp),    intent(in) :: delnA 
             real(kind=dp),    intent(in) :: z0 
@@ -3603,13 +3611,13 @@ module atmos_refraction
             btHc0   = beta*Hc0 
             t0      = tan(z0)
             stgz0   = t0*t0 
-            ps      = 1.0_dp+2.0_dp*stgz0*(Hc0/R0)
+            ps2     = 1.0_dp+2.0_dp*stgz0*(Hc0/R0)
             q       = (beta*R0*0.5_dp)*stgz0 
-            exp1    = exp(q-q*ps)
+            exp1    = exp(q-q*ps2)
             t0      = 1.0_dp+(q/btHc0)
-            trm1    = t0*(1.0_dp-exp1/p) 
+            trm1    = t0*(1.0_dp-exp1/q) 
             sqr2q   = sqrt(q+q)
-            prob1   = prob_integral_r8(p*sqr2q)
+            prob1   = prob_integral_r8(q*sqr2q)
             prob2   = prob_integral_r8(sqr2q)
             exp2    = exp(q)
             t0      = 2.0_dp*q+q/btHc0+(2.0_dp*q*q)/btHc0
@@ -3621,18 +3629,18 @@ module atmos_refraction
 
         ! formula: 5.28, page: 97
         elemental function analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r4(delnA,z0,beta,Hc0,R0) result(del232)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r4)
             real(kind=sp),    intent(in) :: delnA 
             real(kind=sp),    intent(in) :: z0 
             real(kind=sp),    intent(in) :: beta 
             real(kind=sp),    intent(in) :: Hc0 
             real(kind=sp),    intent(in) :: R0 
-            real(kind=sp)                :: del231 
+            real(kind=sp)                :: del232 
             real(kind=sp),    parameter  :: C1253314137315500251207882642406 = & 
                                                    1.253314137315500251207882642406_sp
             real(kind=sp),    automatic  :: stgz0, btHc0, exp1, sqr2q 
@@ -3641,9 +3649,9 @@ module atmos_refraction
             btHc0   = beta*Hc0 
             t0      = tan(z0)
             stgz0   = t0*t0 
-            ps      = 1.0_sp+2.0_sp*stgz0*(Hc0/R0)
+            ps2      = 1.0_sp+2.0_sp*stgz0*(Hc0/R0)
             q       = (beta*R0*0.5_sp)*stgz0 
-            exp1    = exp(2.0_sp*q-2.0_sp*q*ps)
+            exp1    = exp(2.0_sp*q-2.0_sp*q*ps2)
             t0      = 1.0_sp+(q/btHc0)
             trm1    = t0*(1.0_sp-exp1/p) 
             sqr2q   = sqrt(4.0_sp*q)
@@ -3654,26 +3662,26 @@ module atmos_refraction
             t1      = exp2/(sqr2q*C1253314137315500251207882642406)
             trm2    = t0*t1 
             trm3    = prob1-prob2 
-            del231  = trm1-trm2*trm3 
+            del232  = trm1-trm2*trm3 
         end function analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r4
 
         elemental function analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r8(delnA,z0,beta,Hc0,R0) result(del232)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r8)
             real(kind=dp),    intent(in) :: delnA 
             real(kind=dp),    intent(in) :: z0 
             real(kind=dp),    intent(in) :: beta 
             real(kind=dp),    intent(in) :: Hc0 
             real(kind=dp),    intent(in) :: R0 
-            real(kind=dp)                :: del231 
+            real(kind=dp)                :: del232 
             real(kind=dp),    parameter  :: C1253314137315500251207882642406 = & 
                                                    1.253314137315500251207882642406_dp
             real(kind=dp),    automatic  :: stgz0, btHc0, exp1, sqr2q 
-            real(kind=dp),    automatic  :: prob1, prob2, trm1, trm2 
+            real(kind=dp),    automatic  :: prob1, prob2, trm1, trm2, ps  
             real(kind=dp),    automatic  :: t0, t1, ps2, q, exp2, trm3    
             btHc0   = beta*Hc0 
             t0      = tan(z0)
@@ -3691,16 +3699,16 @@ module atmos_refraction
             t1      = exp2/sqr2q*C1253314137315500251207882642406
             trm2    = t0*t1 
             trm3    = prob1-prob2 
-            del231  = trm1-trm2*trm3 
+            del232  = trm1-trm2*trm3 
         end function analytic_sol_tropo_del232_wvle5cm_deg0_80_f528_r8
 
         ! formula: 5.256, page: 97
         elemental function analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r4(delnA,z0,beta,Hc0,R0) result(del23)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r4
-#endif 
+ 
 
             real(kind=sp),    intent(in) :: delnA 
             real(kind=sp),    intent(in) :: z0 
@@ -3724,11 +3732,11 @@ module atmos_refraction
        end function analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r4
 
        elemental function analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r8(delnA,z0,beta,Hc0,R0) result(del23)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r8
-#endif 
+ 
 
             real(kind=dp),    intent(in) :: delnA 
             real(kind=dp),    intent(in) :: z0 
@@ -3753,11 +3761,11 @@ module atmos_refraction
 
         ! formula: 5.23, page: 96
         elemental function analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r4(delnA,z0,beta,Hc0,R0) result(del2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r4
-#endif 
+ 
 
             real(kind=sp),    intent(in) :: delnA 
             real(kind=sp),    intent(in) :: z0 
@@ -3772,12 +3780,12 @@ module atmos_refraction
             del2    = del21+del22+del23 
         end function analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r4
 
-        elemental function analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r48(delnA,z0,beta,Hc0,R0) result(del2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r8
+        elemental function analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r8(delnA,z0,beta,Hc0,R0) result(del2)
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f523_r8
-#endif 
+ 
 
             real(kind=dp),    intent(in) :: delnA 
             real(kind=dp),    intent(in) :: z0 
@@ -3795,11 +3803,11 @@ module atmos_refraction
         ! Final calculation of refractive angle.
         ! Formula 5.17, page: 95
         elemental function refraction_angle_tropo_wvle5cm_f517_r4(delnA,z0,beta,Hc0,R0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_tropo_wvle5cm_f517_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_tropo_wvle5cm_f517_r4
-#endif 
+ 
 
             real(kind=sp),    intent(in) :: delnA 
             real(kind=sp),    intent(in) :: z0 
@@ -3814,11 +3822,11 @@ module atmos_refraction
         end function refraction_angle_tropo_wvle5cm_f517_r4
 
         elemental function refraction_angle_tropo_wvle5cm_f517_r8(delnA,z0,beta,Hc0,R0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_tropo_wvle5cm_f517_r8
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_tropo_wvle5cm_f517_r8
-#endif 
+ 
 
             real(kind=dp),    intent(in) :: delnA 
             real(kind=dp),    intent(in) :: z0 
@@ -3835,11 +3843,11 @@ module atmos_refraction
         ! For: z0<=80(deg), p*sqrt(2*q) >= 1, sqrt(2*q) >= 1, ***can be used instead of 5.23***
         ! Formula: 5.29, page: 95
          elemental function analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r4(delnA,z0,beta,Hc0,R0) result(del2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r4)
             real(kind=sp),    intent(in) :: delnA 
             real(kind=sp),    intent(in) :: z0 
@@ -3869,11 +3877,11 @@ module atmos_refraction
          end function analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r4
 
          elemental function analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r8(delnA,z0,beta,Hc0,R0) result(del2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_tropo_del2_wvle5cm_deg0_80_f529_r8)
             real(kind=dp),    intent(in) :: delnA 
             real(kind=dp),    intent(in) :: z0 
@@ -3912,11 +3920,11 @@ module atmos_refraction
          ! радиусом-вектором 'r' и геоцентрическим углом 'theta'. С 
          ! учетом малости угла 'theta' эта зависимость имеет вид
          elemental function ray_traj_inhomogenous_atmos_f531_r4(n,na,R0,z0,tht) result(r)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: ray_traj_inhomogenous_atmos_f531_r4
+        
+            
+             
             !dir$ attributes forceinline :: ray_traj_inhomogenous_atmos_f531_r4
-#endif 
+ 
 !$omp declare simd(ray_traj_inhomogenous_atmos_f531_r4)
             real(kind=sp),   intent(in) :: n
             real(kind=sp),   intent(in) :: na 
@@ -3937,11 +3945,11 @@ module atmos_refraction
          end function ray_traj_inhomogenous_atmos_f531_r4
 
          elemental function ray_traj_inhomogenous_atmos_f531_r8(n,na,R0,z0,tht) result(r)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: ray_traj_inhomogenous_atmos_f531_r8
+        
+            
+            
             !dir$ attributes forceinline :: ray_traj_inhomogenous_atmos_f531_r8
-#endif 
+ 
 !$omp declare simd(ray_traj_inhomogenous_atmos_f531_r8)
             real(kind=dp),   intent(in) :: n
             real(kind=dp),   intent(in) :: na 
@@ -3966,11 +3974,11 @@ module atmos_refraction
          ! высотах излучателя и приемника.
          ! Formula: 5.34, page: 100
          elemental function analytic_sol_L_atmos_wvle5cm_f534_r4(z0,beta,R0,thtc) result(L)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L_atmos_wvle5cm_f534_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L_atmos_wvle5cm_f534_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L_atmos_wvle5cm_f534_r4)
             real(kind=sp),   intent(in) :: z0 
             real(kind=sp),   intent(in) :: beta 
@@ -4002,11 +4010,11 @@ module atmos_refraction
          end function analytic_sol_L_atmos_wvle5cm_f534_r4
 
          elemental function analytic_sol_L_atmos_wvle5cm_f534_r8(z0,beta,R0,thtc) result(L)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L_atmos_wvle5cm_f534_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L_atmos_wvle5cm_f534_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L_atmos_wvle5cm_f534_r8)
             real(kind=dp),   intent(in) :: z0 
             real(kind=dp),   intent(in) :: beta 
@@ -4046,11 +4054,11 @@ module atmos_refraction
        !Formula: 5.35, page: 101
        elemental function refraction_angle_atmos_wvle5cm_f535_r4(delnA,beta,R0,thtc,z0,  &
                                                                  Rc,nc,na) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_f535_r4
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_f535_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_atmos_wvle5cm_f535_r4)
             real(kind=sp),     intent(in) :: delnA 
             real(kind=sp),     intent(in) :: beta 
@@ -4081,11 +4089,11 @@ module atmos_refraction
 
        elemental function refraction_angle_atmos_wvle5cm_f535_r8(delnA,beta,R0,thtc,z0,  &
                                                                  Rc,nc,na) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_f535_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_f535_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_atmos_wvle5cm_f535_r8)
             real(kind=dp),     intent(in) :: delnA 
             real(kind=dp),     intent(in) :: beta 
@@ -4118,11 +4126,11 @@ module atmos_refraction
        !ри z0 = 90°
        !!Formula: 5.36, page: 101
        elemental function refraction_angle_atmos_wvle5cm_z0eq90_f536_r4(delnA,beta,R0,thtc) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_z0eq90_f536_r4
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_z0eq90_f536_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_atmos_wvle5cm_z0eq90_f536_r4) 
             real(kind=sp),     intent(in) :: delnA 
             real(kind=sp),     intent(in) :: beta 
@@ -4133,11 +4141,11 @@ module atmos_refraction
        end function refraction_angle_atmos_wvle5cm_z0eq90_f536_r4
 
        elemental function refraction_angle_atmos_wvle5cm_z0eq90_f536_r8(delnA,beta,R0,thtc) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_z0eq90_f536_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_z0eq90_f536_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_atmos_wvle5cm_z0eq90_f536_r8) 
             real(kind=dp),     intent(in) :: delnA 
             real(kind=dp),     intent(in) :: beta 
@@ -4152,11 +4160,11 @@ module atmos_refraction
        !u2 > 1 и и u1 > 1.
        !Formula: 5.37, page: 101
        elemental function refraction_angle_atmos_wvle5cm_f537_r4(delnA,z0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_f537_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_f537_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_atmos_wvle5cm_f537_r4) 
             real(kind=sp),     intent(in) :: delnA 
             real(kind=sp),     intent(in) :: z0 
@@ -4167,11 +4175,11 @@ module atmos_refraction
        end function refraction_angle_atmos_wvle5cm_f537_r4
 
        elemental function refraction_angle_atmos_wvle5cm_f537_r8(delnA,z0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_wvle5cm_f537_r8
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_atmos_wvle5cm_f537_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_atmos_wvle5cm_f537_r8) 
             real(kind=dp),     intent(in) :: delnA 
             real(kind=dp),     intent(in) :: z0 
@@ -4187,11 +4195,11 @@ module atmos_refraction
        !рефракция вблизи горизонта).
        !В этом случае имеют месте) соотношения u2 > 1, u1 < 1
        elemental function refraction_angle_astronomical_wvle5cm_f538_r4(delnA,beta,R0,z0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_astronomical_wvle5cm_f538_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_astronomical_wvle5cm_f538_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_astronomical_wvle5cm_f538_r4) 
             real(kind=sp),     intent(in) :: delnA 
             real(kind=sp),     intent(in) :: beta
@@ -4219,11 +4227,11 @@ module atmos_refraction
        end function refraction_angle_astronomical_wvle5cm_f538_r4
 
        elemental function refraction_angle_astronomical_wvle5cm_f538_r8(delnA,beta,R0,z0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_astronomical_wvle5cm_f538_r8
+        
+            
+           
             !dir$ attributes forceinline :: refraction_angle_astronomical_wvle5cm_f538_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_astronomical_wvle5cm_f538_r8) 
             real(kind=dp),     intent(in) :: delnA 
             real(kind=dp),     intent(in) :: beta
@@ -4252,11 +4260,11 @@ module atmos_refraction
 
        !Для астрономической рефракции на горизонте z0 == 90 deg.
        elemental function refraction_angle_astronomical_wvle5cm_z0eq90_f539_r4(delnA,beta,R0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_astronomical_wvle5cm_z0eq90_f539_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_astronomical_wvle5cm_z0eq90_f539_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_astronomical_wvle5cm_z0eq90_f539_r4) 
             real(kind=sp),     intent(in) :: delnA 
             real(kind=sp),     intent(in) :: beta
@@ -4273,11 +4281,11 @@ module atmos_refraction
        end function refraction_angle_astronomical_wvle5cm_z0eq90_f539_r4
 
        elemental function refraction_angle_astronomical_wvle5cm_z0eq90_f539_r8(delnA,beta,R0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_astronomical_wvle5cm_z0eq90_f539_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_astronomical_wvle5cm_z0eq90_f539_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_astronomical_wvle5cm_z0eq90_f539_r8) 
             real(kind=dp),     intent(in) :: delnA 
             real(kind=dp),     intent(in) :: beta
@@ -4304,11 +4312,11 @@ module atmos_refraction
 
        ! Formula: 5.41, page: 103
        elemental function refractive_idx_lo_ionosphere_wv5cm3m_f541_r4(delnA,beta,h) result(n) 
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_wv5cm3m_f541_r4
+        
+            
+            
             !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_wv5cm3m_f541_r4
-#endif 
+ 
 !$omp declare simd(refractive_idx_lo_ionosphere_wv5cm3m_f541_r4) 
             real(kind=sp),     intent(in) :: delnA ! refractive index at point `A`
             real(kind=sp),     intent(in) :: beta
@@ -4323,11 +4331,11 @@ module atmos_refraction
        end function refractive_idx_lo_ionosphere_wv5cm3m_f541_r4
 
        elemental function refractive_idx_lo_ionosphere_wv5cm3m_f541_r8(delnA,beta,h) result(n) 
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_wv5cm3m_f541_r8
+        
+            
+             
             !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_wv5cm3m_f541_r8
-#endif 
+ 
 !$omp declare simd(refractive_idx_lo_ionosphere_wv5cm3m_f541_r8) 
             real(kind=dp),     intent(in) :: delnA ! refractive index at point `A`
             real(kind=dp),     intent(in) :: beta
@@ -4343,11 +4351,11 @@ module atmos_refraction
 
        ! Formula 5.42, page: 103
        elemental function refractive_idx_lo_ionosphere_wv5cm3m_f542_r4(fc,Nmf,h,H10,H20) result(n) 
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_wv5cm3m_f542_r4
+        
+            
+            
             !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_wv5cm3m_f542_r4
-#endif 
+ 
 !$omp declare simd(refractive_idx_lo_ionosphere_wv5cm3m_f542_r4) 
             real(kind=sp),    intent(in) :: fc 
             real(kind=sp),    intent(in) :: Nmf 
@@ -4370,11 +4378,11 @@ module atmos_refraction
        end function refractive_idx_lo_ionosphere_wv5cm3m_f542_r4
 
        elemental function refractive_idx_lo_ionosphere_wv5cm3m_f542_r8(fc,Nmf,h,H10,H20) result(n) 
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refractive_idx_lo_ionosphere_wv5cm3m_f542_r8
+        
+            
+            
             !dir$ attributes forceinline :: refractive_idx_lo_ionosphere_wv5cm3m_f542_r8
-#endif 
+ 
 !$omp declare simd(refractive_idx_lo_ionosphere_wv5cm3m_f542_r8) 
             real(kind=dp),    intent(in) :: fc 
             real(kind=dp),    intent(in) :: Nmf 
@@ -4400,11 +4408,11 @@ module atmos_refraction
        ! рефракции а определяется соотношением
        ! Formula: 5.49, page: 105 
        elemental function analytic_sol_L11_whole_atmosphere_f549_r4(beta,R0,delnA,z0,H10) result(L11)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L11_whole_atmosphere_f549_r4
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_L11_whole_atmosphere_f549_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L11_whole_atmosphere_f549_r4) 
             real(kind=sp),    intent(in) :: beta 
             real(kind=sp),    intent(in) :: R0 
@@ -4416,7 +4424,8 @@ module atmos_refraction
             real(kind=sp),    automatic  :: exp2,  siz0 
             real(kind=sp),    automatic  :: cosz0, stgz0 
             real(kind=sp),    automatic  :: trm1, trm2 
-            real(kind=sp),    automatic  :: t0,   t1 
+            real(kind=sp),    automatic  :: t0,   t1
+            real(kind=sp),    automatic  :: rat1, rat2  
             t0    = beta*R0*delnA*delnA 
             btH10 = beta*H10 
             siz0  = sin(z0) 
@@ -4434,11 +4443,11 @@ module atmos_refraction
        end function analytic_sol_L11_whole_atmosphere_f549_r4
 
        elemental function analytic_sol_L11_whole_atmosphere_f549_r8(beta,R0,delnA,z0,H10) result(L11)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L11_whole_atmosphere_f549_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L11_whole_atmosphere_f549_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L11_whole_atmosphere_f549_r8) 
             real(kind=dp),    intent(in) :: beta 
             real(kind=dp),    intent(in) :: R0 
@@ -4450,7 +4459,8 @@ module atmos_refraction
             real(kind=dp),    automatic  :: exp2,  siz0 
             real(kind=dp),    automatic  :: cosz0, stgz0 
             real(kind=dp),    automatic  :: trm1, trm2 
-            real(kind=dp),    automatic  :: t0,   t1 
+            real(kind=dp),    automatic  :: t0,   t1
+            real(kind=dp),    automatic  :: rat1, rat2   
             t0    = beta*R0*delnA*delnA 
             btH10 = beta*H10 
             siz0  = sin(z0) 
@@ -4471,11 +4481,11 @@ module atmos_refraction
        ! рефракции а определяется соотношением
        ! Formula: 5.50, page: 105 
        elemental function analytic_sol_L12_whole_atmosphere_f550_r4(beta,R0,delnA,z0,H10) result(L12)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L12_whole_atmosphere_f550_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L12_whole_atmosphere_f550_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L12_whole_atmosphere_f550_r4) 
             real(kind=sp),    intent(in) :: beta 
             real(kind=sp),    intent(in) :: R0 
@@ -4510,11 +4520,11 @@ module atmos_refraction
        end function analytic_sol_L12_whole_atmosphere_f550_r4
 
        elemental function analytic_sol_L12_whole_atmosphere_f550_r8(beta,R0,delnA,z0,H10) result(L12)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L12_whole_atmosphere_f550_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L12_whole_atmosphere_f550_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L12_whole_atmosphere_f550_r8) 
             real(kind=dp),    intent(in) :: beta 
             real(kind=dp),    intent(in) :: R0 
@@ -4552,11 +4562,11 @@ module atmos_refraction
        ! рефракции а определяется соотношением
        ! Formula: 5.51, page: 105 
        elemental function analytic_sol_L13_whole_atmosphere_f551_r4(beta,R0,delnA,z0,H10) result(L13)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L13_whole_atmosphere_f551_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L13_whole_atmosphere_f551_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L13_whole_atmosphere_f551_r4) 
             real(kind=sp),    intent(in) :: beta 
             real(kind=sp),    intent(in) :: R0 
@@ -4587,15 +4597,15 @@ module atmos_refraction
             t1       = sqrt(2.0_sp*btR0scz0)
             prob2    = prob_integral_r4(t1)
             trm2     = prob1-prob2 
-            L12      = trm1*trm2 
+            L13      = trm1*trm2 
        end function analytic_sol_L13_whole_atmosphere_f551_r4
 
        elemental function analytic_sol_L13_whole_atmosphere_f551_r8(beta,R0,delnA,z0,H10) result(L13)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L13_whole_atmosphere_f551_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L13_whole_atmosphere_f551_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L13_whole_atmosphere_f551_r8) 
             real(kind=dp),    intent(in) :: beta 
             real(kind=dp),    intent(in) :: R0 
@@ -4626,16 +4636,16 @@ module atmos_refraction
             t1       = sqrt(2.0_dp*btR0scz0)
             prob2    = prob_integral_r8(t1)
             trm2     = prob1-prob2 
-            L12      = trm1*trm2 
+            L13      = trm1*trm2 
        end function analytic_sol_L13_whole_atmosphere_f551_r8
 
        !Formula: 5.48, page: 104
        elemental function analytic_sol_L1_whole_atmosphere_f548_r4(beta,R0,delnA,z0,H10) result(L1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_whole_atmosphere_f548_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L1_whole_atmosphere_f548_r4
-#endif 
+ 
             real(kind=sp),    intent(in) :: beta 
             real(kind=sp),    intent(in) :: R0 
             real(kind=sp),    intent(in) :: delnA 
@@ -4661,11 +4671,11 @@ module atmos_refraction
        end function analytic_sol_L1_whole_atmosphere_f548_r4
 
        elemental function analytic_sol_L1_whole_atmosphere_f548_r8(beta,R0,delnA,z0,H10) result(L1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_whole_atmosphere_f548_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L1_whole_atmosphere_f548_r8
-#endif 
+ 
             real(kind=dp),    intent(in) :: beta 
             real(kind=dp),    intent(in) :: R0 
             real(kind=dp),    intent(in) :: delnA 
@@ -4693,11 +4703,11 @@ module atmos_refraction
        ! Formula: 5.53, page: 105
        elemental function analytic_sol_L21_whole_atmosphere_f553_r4(fc,Nmf,beta,R0,delnA,        &
                                                                     z0,H0,H1,H2,Hc) result(L21)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L21_whole_atmosphere_f553_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L21_whole_atmosphere_f553_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L21_whole_atmosphere_f553_r4) 
             real(kind=sp),    intent(in) :: fc
             real(kind=sp),    intent(in) :: Nmf 
@@ -4718,7 +4728,7 @@ module atmos_refraction
             real(kind=sp),    automatic  :: t0, t1 
             real(kind=sp),    automatic  :: trm1, trm2 
             real(kind=sp),    automatic  :: trm3, sqr3 
-            real(kind=sp),    automatic  ::  t2
+            real(kind=sp),    automatic  ::  t2, t3 
             Hc0   = Hc-H0 
             H20   = H2-H0 
             H10   = H1-H0 
@@ -4744,11 +4754,11 @@ module atmos_refraction
 
         elemental function analytic_sol_L21_whole_atmosphere_f553_r8(fc,Nmf,beta,R0,delnA,        &
                                                                     z0,H0,H1,H2,Hc) result(L21)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L21_whole_atmosphere_f553_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L21_whole_atmosphere_f553_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L21_whole_atmosphere_f553_r8) 
             real(kind=dp),    intent(in) :: fc
             real(kind=dp),    intent(in) :: Nmf 
@@ -4769,7 +4779,7 @@ module atmos_refraction
             real(kind=dp),    automatic  :: t0, t1 
             real(kind=dp),    automatic  :: trm1, trm2 
             real(kind=dp),    automatic  :: trm3, sqr3 
-            real(kind=dp),    automatic  ::  t2
+            real(kind=dp),    automatic  :: t2, t3 
             Hc0   = Hc-H0 
             H20   = H2-H0 
             H10   = H1-H0 
@@ -4778,7 +4788,7 @@ module atmos_refraction
             t0    = tan(z0)
             ctgz0 = 1.0_dp/t0 
             stgz0 = t0*t0 
-            delnNm= compute_delnM_f414_r8(fc,Nmf)
+            delnM= compute_delnM_f414_r8(fc,Nmf)
             t0    = 1.0_dp+2.0_dp*stgz0*(H10/R0)
             sqr1  = sqrt(t0)
             t1    = 1.0_dp+2.0_dp*stgz0*(Hc0/R0)
@@ -4796,11 +4806,11 @@ module atmos_refraction
        ! Formula: 5.53a, page: 105 
        elemental function analytic_sol_L22_whole_atmosphere_f553a_r4(fc,Nmf,beta,R0,delnA,        &
                                                                     z0,H0,H1,H2,Hc) result(L22)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L22_whole_atmosphere_f553a_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L22_whole_atmosphere_f553a_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L22_whole_atmosphere_f553a_r4) 
             real(kind=sp),    intent(in) :: fc
             real(kind=sp),    intent(in) :: Nmf 
@@ -4825,10 +4835,10 @@ module atmos_refraction
             real(kind=sp),    automatic  :: t3, trm1 
             real(kind=sp),    automatic  :: trm2, trm3 
             real(kind=sp),    automatic  :: m1p3, m1p2 
-            real(kind=sp),    automatic  :: m2p3, m1p2 
+            real(kind=sp),    automatic  :: m2p3 
             real(kind=sp),    automatic  :: bp3, stgz0 
             real(kind=sp),    automatic  :: bp2, c0 
-            real(kind=sp),    automatic  :: c1  
+            real(kind=sp),    automatic  :: c1,m2p2  
             Hc0   = Hc-H0 
             delnM = compute_delnM_f414_r4(fc,Nmf)
             H10   = H1-H0 
@@ -4871,11 +4881,11 @@ module atmos_refraction
 
        elemental function analytic_sol_L22_whole_atmosphere_f553a_r8(fc,Nmf,beta,R0,delnA,        &
                                                                     z0,H0,H1,H2,Hc) result(L22)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L22_whole_atmosphere_f553a_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L22_whole_atmosphere_f553a_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L22_whole_atmosphere_f553a_r8) 
             real(kind=dp),    intent(in) :: fc
             real(kind=dp),    intent(in) :: Nmf 
@@ -4900,7 +4910,7 @@ module atmos_refraction
             real(kind=dp),    automatic  :: t3, trm1 
             real(kind=dp),    automatic  :: trm2, trm3 
             real(kind=dp),    automatic  :: m1p3, m1p2 
-            real(kind=dp),    automatic  :: m2p3, m1p2 
+            real(kind=dp),    automatic  :: m2p3, m2p2  
             real(kind=dp),    automatic  :: bp3, stgz0 
             real(kind=dp),    automatic  :: bp2, c0 
             real(kind=dp),    automatic  :: c1  
@@ -4947,11 +4957,11 @@ module atmos_refraction
        !Formula: 5.52, page: 105
        elemental function analytic_sol_L2_whole_atmosphere_f552_r4(fc,Nmf,beta,R0,delnA,        &
                                                                     z0,H0,H1,H2,Hc) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L2_whole_atmosphere_f552_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L2_whole_atmosphere_f552_r4
-#endif 
+ 
 
             real(kind=sp),    intent(in) :: fc
             real(kind=sp),    intent(in) :: Nmf 
@@ -4974,11 +4984,11 @@ module atmos_refraction
 
        elemental function analytic_sol_L2_whole_atmosphere_f552_r8(fc,Nmf,beta,R0,delnA,        &
                                                                     z0,H0,H1,H2,Hc) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L2_whole_atmosphere_f552_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L2_whole_atmosphere_f552_r8
-#endif 
+ 
 
             real(kind=dp),    intent(in) :: fc
             real(kind=dp),    intent(in) :: Nmf 
@@ -5002,11 +5012,11 @@ module atmos_refraction
        ! Formula: 5.43, page: 104
        elemental function refraction_angle_whole_atmos_vw5cm3m_f543_r4(na,nc,fc,Nmf,beta,R0,delnA,        &
                                                               z0,H0,H1,H2,Hc) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vw5cm3m_f543_r4
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_vw5cm3m_f543_r4
-#endif 
+ 
             real(kind=sp),    intent(in) :: na 
             real(kind=sp),    intent(in) :: nc 
             real(kind=sp),    intent(in) :: fc
@@ -5034,11 +5044,11 @@ module atmos_refraction
 
        elemental function refraction_angle_whole_atmos_vw5cm3m_f543_r8(na,nc,fc,Nmf,beta,R0,delnA,        &
                                                               z0,H0,H1,H2,Hc) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vw5cm3m_f543_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_vw5cm3m_f543_r8
-#endif 
+ 
             real(kind=dp),    intent(in) :: na 
             real(kind=dp),    intent(in) :: nc 
             real(kind=dp),    intent(in) :: fc
@@ -5066,11 +5076,11 @@ module atmos_refraction
 
        ! Formula: 5.59, page: 106
        elemental function analytic_sol_del11_whole_atmos_f559_r4(delnA,z0,H10,Hc0,beta) result(del11)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del11_whole_atmos_f559_r4
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_del11_whole_atmos_f559_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_del11_whole_atmos_f559_r4) 
             real(kind=sp),   intent(in) :: delnA 
             real(kind=sp),   intent(in) :: z0 
@@ -5096,11 +5106,11 @@ module atmos_refraction
        end function analytic_sol_del11_whole_atmos_f559_r4
  
        elemental function analytic_sol_del11_whole_atmos_f559_r8(delnA,z0,H10,Hc0,beta) result(del11)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del11_whole_atmos_f559_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_del11_whole_atmos_f559_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_del11_whole_atmos_f559_r8) 
             real(kind=dp),   intent(in) :: delnA 
             real(kind=dp),   intent(in) :: z0 
@@ -5127,11 +5137,11 @@ module atmos_refraction
 
        !Formula: 5.60, page: 107
        elemental function analytic_sol_del12_whole_atmos_f560_r4(fc,Nmf,z0,H10,Hc0,beta,d) result(del12)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del12_whole_atmos_f560_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_del12_whole_atmos_f560_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_del12_whole_atmos_f560_r4) 
             real(kind=sp),   intent(in) :: fc 
             real(kind=sp),   intent(in) :: Nmf 
@@ -5166,11 +5176,11 @@ module atmos_refraction
        end function analytic_sol_del12_whole_atmos_f560_r4
 
        elemental function analytic_sol_del12_whole_atmos_f560_r8(fc,Nmf,z0,H10,Hc0,beta,d) result(del12)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del12_whole_atmos_f560_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_del12_whole_atmos_f560_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_del12_whole_atmos_f560_r8) 
             real(kind=dp),   intent(in) :: fc 
             real(kind=dp),   intent(in) :: Nmf 
@@ -5206,11 +5216,11 @@ module atmos_refraction
 
        !Formula: 5.55, page: 106
        elemental function analytic_sol_del1_whole_atmos_f555_r4(fc,Nmf,delnA,z0,H10,Hc0,beta,d) result(del1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del1_whole_atmos_f555_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_del1_whole_atmos_f555_r4
-#endif 
+ 
 
             real(kind=sp),   intent(in) :: fc 
             real(kind=sp),   intent(in) :: Nmf 
@@ -5228,11 +5238,11 @@ module atmos_refraction
        end function analytic_sol_del1_whole_atmos_f555_r4
 
        elemental function analytic_sol_del1_whole_atmos_f555_r8(fc,Nmf,delnA,z0,H10,Hc0,beta,d) result(del1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del1_whole_atmos_f555_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_del1_whole_atmos_f555_r8
-#endif 
+ 
 
             real(kind=dp),   intent(in) :: fc 
             real(kind=dp),   intent(in) :: Nmf 
@@ -5251,11 +5261,11 @@ module atmos_refraction
 
        !Formula: 5.69, page: 108
        elemental function analytic_sol_del221_whole_atmos_f569_r4(fc,Nmf,z0,H10,Hc0,beta,d) result(del221)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del221_whole_atmos_f569_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_del221_whole_atmos_f569_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_del221_whole_atmos_f569_r4) 
             real(kind=sp),   intent(in) :: fc 
             real(kind=sp),   intent(in) :: Nmf 
@@ -5264,7 +5274,7 @@ module atmos_refraction
             real(kind=sp),   intent(in) :: Hc0 
             real(kind=sp),   intent(in) :: beta 
             real(kind=sp),   intent(in) :: d 
-            real(kind=sp)               :: del12 
+            real(kind=sp)               :: del221  
             real(kind=sp),   automatic  :: delnM, HHc0
             real(kind=sp),   automatic  :: HH10, ctgz0, scosz0 
             real(kind=sp),   automatic  :: rat1, rat2 
@@ -5288,15 +5298,13 @@ module atmos_refraction
             trm2  = 2.0_sp*rat1 
             trm3  = rat3*rat4 
             trm4  = t1*t0 
-            del12 = trm1*trm2-trm3+trm4 
+            del221 = trm1*trm2-trm3+trm4 
        end function analytic_sol_del221_whole_atmos_f569_r4
 
-        elemental function analytic_sol_del221_whole_atmos_f569_r8(fc,Nmf,z0,H10,Hc0,beta,d) result(del221)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del221_whole_atmos_f569_r8
-            !dir$ attributes forceinline :: analytic_sol_del221_whole_atmos_f569_r8
-#endif 
+       elemental function analytic_sol_del221_whole_atmos_f569_r8(fc,Nmf,z0,H10,Hc0,beta,d) result(del221)
+        
+      !dir$ attributes forceinline :: analytic_sol_del221_whole_atmos_f569_r8
+ 
 !$omp declare simd(analytic_sol_del221_whole_atmos_f569_r8) 
             real(kind=dp),   intent(in) :: fc 
             real(kind=dp),   intent(in) :: Nmf 
@@ -5305,7 +5313,7 @@ module atmos_refraction
             real(kind=dp),   intent(in) :: Hc0 
             real(kind=dp),   intent(in) :: beta 
             real(kind=dp),   intent(in) :: d 
-            real(kind=dp)               :: del12 
+            real(kind=dp)               :: del221 
             real(kind=dp),   automatic  :: delnM, HHc0
             real(kind=dp),   automatic  :: HH10, ctgz0, scosz0 
             real(kind=dp),   automatic  :: rat1, rat2 
@@ -5329,16 +5337,15 @@ module atmos_refraction
             trm2  = 2.0_dp*rat1 
             trm3  = rat3*rat4 
             trm4  = t1*t0 
-            del12 = trm1*trm2-trm3+trm4 
+            del221 = trm1*trm2-trm3+trm4 
        end function analytic_sol_del221_whole_atmos_f569_r8
 
        !Function: 5.70, page: 108
        elemental function analytic_sol_del222_whole_atmos_f570_r4(fc,Nmf,z0,H10,Hc0,beta,d,h,R0) result(del222)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del222_whole_atmos_f570_r4
+        
+            
             !dir$ attributes forceinline :: analytic_sol_del222_whole_atmos_f570_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_del222_whole_atmos_f570_r4) 
             real(kind=sp),   intent(in) :: fc 
             real(kind=sp),   intent(in) :: Nmf 
@@ -5362,7 +5369,7 @@ module atmos_refraction
             real(kind=sp),   automatic  :: c2, c3 
             real(kind=sp),   automatic  :: sqrx 
             c0     = tan(z0)
-            delN   = compute_delnM_f414_r4(fc,Nmf)
+            delnM  = compute_delnM_f414_r4(fc,Nmf)
             ctgz0  = 1.0_sp/c0
             stgz0  = c0*c0 
             b      = 2.0_sp*(stgz0/R0)
@@ -5391,11 +5398,11 @@ module atmos_refraction
        end function analytic_sol_del222_whole_atmos_f570_r4
 
         elemental function analytic_sol_del222_whole_atmos_f570_r8(fc,Nmf,z0,H10,Hc0,beta,d,h,R0) result(del222)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del222_whole_atmos_f570_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_del222_whole_atmos_f570_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_del222_whole_atmos_f570_r8) 
             real(kind=dp),   intent(in) :: fc 
             real(kind=dp),   intent(in) :: Nmf 
@@ -5419,7 +5426,7 @@ module atmos_refraction
             real(kind=dp),   automatic  :: c2, c3 
             real(kind=dp),   automatic  :: sqrx 
             c0     = tan(z0)
-            delN   = compute_delnM_f414_r8(fc,Nmf)
+            delnM  = compute_delnM_f414_r8(fc,Nmf)
             ctgz0  = 1.0_dp/c0
             stgz0  = c0*c0 
             b      = 2.0_dp*(stgz0/R0)
@@ -5449,11 +5456,11 @@ module atmos_refraction
 
         !Function: 5.71, page: 108
        elemental function analytic_sol_del223_whole_atmos_f571_r4(delnA,fc,Nmf,z0,H10,Hc0,beta,d,h,R0) result(del223)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del223_whole_atmos_f571_r4
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_del223_whole_atmos_f571_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_del223_whole_atmos_f571_r4) 
             real(kind=sp),   intent(in) :: delnA 
             real(kind=sp),   intent(in) :: fc 
@@ -5468,7 +5475,7 @@ module atmos_refraction
             real(kind=sp)               :: del223 
             real(kind=sp),   automatic  :: tgz0, scosz0 
             real(kind=sp),   automatic  :: isqrx, tb
-            real(kind=sp),   automatic  :: tbb, tbbb 
+            real(kind=sp),   automatic  :: tbb, tbbb, tbbbb, tbbbbb 
             real(kind=sp),   automatic  :: delnM, x 
             real(kind=sp),   automatic  :: b, v1
             real(kind=sp),   automatic  :: u1, u2 
@@ -5483,7 +5490,7 @@ module atmos_refraction
             real(kind=sp),   automatic  :: c0, c1
             real(kind=sp),   automatic  :: c2, c3 
             real(kind=sp),   automatic  :: xx, xxx 
-            real(kind=sp),   automatic  :: xxxx 
+            real(kind=sp),   automatic  :: xxxx , stgz0 
             real(kind=sp),   automatic  :: trm1, trm2 
             real(kind=sp),   automatic  :: trm3, trm4 
             tgz0    = tan(z0)
@@ -5538,11 +5545,11 @@ module atmos_refraction
        end function analytic_sol_del223_whole_atmos_f571_r4
 
         elemental function analytic_sol_del223_whole_atmos_f571_r8(delnA,fc,Nmf,z0,H10,Hc0,beta,d,h,R0) result(del223)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del223_whole_atmos_f571_r8
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_del223_whole_atmos_f571_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_del223_whole_atmos_f571_r8) 
             real(kind=dp),   intent(in) :: delnA 
             real(kind=dp),   intent(in) :: fc 
@@ -5557,9 +5564,10 @@ module atmos_refraction
             real(kind=dp)               :: del223 
             real(kind=dp),   automatic  :: tgz0, scosz0 
             real(kind=dp),   automatic  :: isqrx, tb
-            real(kind=dp),   automatic  :: tbb, tbbb 
+            real(kind=dp),   automatic  :: tbb, tbbb
+            real(kind=dp),   automatic  :: tbbbb, tbbbbb  
             real(kind=dp),   automatic  :: delnM, x 
-            real(kind=d),   automatic  :: b, v1
+            real(kind=dp),   automatic  :: b, v1
             real(kind=dp),   automatic  :: u1, u2 
             real(kind=dp),   automatic  :: u3, u4 
             real(kind=dp),   automatic  :: f0, f1 
@@ -5572,7 +5580,7 @@ module atmos_refraction
             real(kind=dp),   automatic  :: c0, c1
             real(kind=dp),   automatic  :: c2, c3 
             real(kind=dp),   automatic  :: xx, xxx 
-            real(kind=dp),   automatic  :: xxxx 
+            real(kind=dp),   automatic  :: xxxx, stgz0  
             real(kind=dp),   automatic  :: trm1, trm2 
             real(kind=dp),   automatic  :: trm3, trm4 
             tgz0    = tan(z0)
@@ -5629,11 +5637,11 @@ module atmos_refraction
        !Formula: 5.65, page: 108
        elemental function analytic_sol_del22_whole_atmos_f565_r4(delnA,fc,Nmf,z0,H10,          &
                                                                  Hc0,beta,d,h,R0) result(del22)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del22_whole_atmos_f565_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_del22_whole_atmos_f565_r4
-#endif 
+ 
  
             real(kind=sp),   intent(in) :: delnA 
             real(kind=sp),   intent(in) :: fc 
@@ -5655,11 +5663,11 @@ module atmos_refraction
 
        elemental function analytic_sol_del22_whole_atmos_f565_r8(delnA,fc,Nmf,z0,H10,          &
                                                                  Hc0,beta,d,h,R0) result(del22)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del22_whole_atmos_f565_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_del22_whole_atmos_f565_r8
-#endif 
+ 
  
             real(kind=dp),   intent(in) :: delnA 
             real(kind=dp),   intent(in) :: fc 
@@ -5681,11 +5689,11 @@ module atmos_refraction
 
         ! Formula: 5.62, page: 107
        elemental function analytic_sol_del211_whole_atmos_f562_r4(delnA,z0,H10,Hc0,beta) result(del11)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del211_whole_atmos_f562_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_del211_whole_atmos_f562_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_del211_whole_atmos_f562_r4) 
             real(kind=sp),   intent(in) :: delnA 
             real(kind=sp),   intent(in) :: z0 
@@ -5716,11 +5724,11 @@ module atmos_refraction
        end function analytic_sol_del211_whole_atmos_f562_r4
 
        elemental function analytic_sol_del211_whole_atmos_f562_r8(delnA,z0,H10,Hc0,beta) result(del11)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del211_whole_atmos_f562_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_del211_whole_atmos_f562_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_del211_whole_atmos_f562_r8) 
             real(kind=dp),   intent(in) :: delnA 
             real(kind=dp),   intent(in) :: z0 
@@ -5752,11 +5760,11 @@ module atmos_refraction
 
        ! Formula: 5.63, page: 107
         elemental function analytic_sol_del212_whole_atmos_f563_r4(delnA,z0,beta,H10,R0) result(del212)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del212_whole_atmos_f563_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_del212_whole_atmos_f563_r4
-#endif 
+ 
             
             real(kind=sp),    intent(in) :: delnA 
             real(kind=sp),    intent(in) :: z0 
@@ -5768,11 +5776,11 @@ module atmos_refraction
         end function analytic_sol_del212_whole_atmos_f563_r4
 
         elemental function analytic_sol_del212_whole_atmos_f563_r8(delnA,z0,beta,H10,R0) result(del212)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del212_whole_atmos_f563_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_del212_whole_atmos_f563_r8
-#endif 
+ 
             
             real(kind=dp),    intent(in) :: delnA 
             real(kind=dp),    intent(in) :: z0 
@@ -5785,11 +5793,11 @@ module atmos_refraction
 
         !Formula: 5.64, pagr: 107
        elemental function analytic_sol_del213_whole_atmos_f564_r4(delnA,z0,beta,H10,R0) result(del213)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del213_whole_atmos_f564_r4
+        
+            
+          
             !dir$ attributes forceinline :: analytic_sol_del213_whole_atmos_f564_r4
-#endif 
+ 
             
             real(kind=sp),    intent(in) :: delnA 
             real(kind=sp),    intent(in) :: z0 
@@ -5801,11 +5809,11 @@ module atmos_refraction
         end function analytic_sol_del213_whole_atmos_f564_r4
 
        elemental function analytic_sol_del213_whole_atmos_f564_r8(delnA,z0,beta,H10,R0) result(del213)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del213_whole_atmos_f564_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_del213_whole_atmos_f564_r8
-#endif 
+ 
             
             real(kind=dp),    intent(in) :: delnA 
             real(kind=dp),    intent(in) :: z0 
@@ -5813,21 +5821,22 @@ module atmos_refraction
             real(kind=dp),    intent(in) :: H10 
             real(kind=dp),    intent(in) :: R0 
             real(kind=dp)                :: del213 
-            del213   = analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r8(delnA,z0,bta,H10,R0)
+            del213   = analytic_sol_tropo_del23_wvle5cm_deg0_80_f526_r8(delnA,z0,beta,H10,R0)
         end function analytic_sol_del213_whole_atmos_f564_r8
 
        ! Formula: 5.65, page: 108
-       elemental function analytic_sol_del21_whole_atmos_f565_r4(delnA,z0,beta,H10,R0) result(del21)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del21_whole_atmos_f565_r4
+       elemental function analytic_sol_del21_whole_atmos_f565_r4(delnA,z0,beta,H10,Hc0,R0) result(del21)
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_del21_whole_atmos_f565_r4
-#endif 
+ 
             
             real(kind=sp),    intent(in) :: delnA 
             real(kind=sp),    intent(in) :: z0 
             real(kind=sp),    intent(in) :: beta 
             real(kind=sp),    intent(in) :: H10 
+            real(kind=sp),    intent(in) :: Hc0 
             real(kind=sp),    intent(in) :: R0 
             real(kind=sp)                :: del21 
             real(kind=sp),    automatic  :: del211, del212, del213 
@@ -5837,17 +5846,18 @@ module atmos_refraction
             del21   = del211+del212+del213 
        end function analytic_sol_del21_whole_atmos_f565_r4
 
-       elemental function analytic_sol_del21_whole_atmos_f565_r8(delnA,z0,beta,H10,R0) result(del21)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del21_whole_atmos_f565_r8
+       elemental function analytic_sol_del21_whole_atmos_f565_r8(delnA,z0,beta,H10,Hc0,R0) result(del21)
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_del21_whole_atmos_f565_r8
-#endif 
+ 
             
             real(kind=dp),    intent(in) :: delnA 
             real(kind=dp),    intent(in) :: z0 
             real(kind=dp),    intent(in) :: beta 
             real(kind=dp),    intent(in) :: H10 
+            real(kind=dp),    intent(in) :: Hc0 
             real(kind=dp),    intent(in) :: R0 
             real(kind=dp)                :: del21 
             real(kind=dp),    automatic  :: del211, del212, del213 
@@ -5860,11 +5870,11 @@ module atmos_refraction
         !Formula: 5.58, page: 106
        elemental function analytic_sol_del2_whole_atmos_wv5cm3m_f558_r4(fc,Nmf,delnA,z0,H10,           &
                                                                         Hc0,beta,d,h,R0) result(del2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del2_whole_atmos_wv5cm3m_f558_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_del2_whole_atmos_wv5cm3m_f558_r4
-#endif 
+ 
             real(kind=sp),    intent(in) :: fc 
             real(kind=sp),    intent(in) :: Nmf 
             real(kind=sp),    intent(in) :: delnA 
@@ -5877,18 +5887,18 @@ module atmos_refraction
             real(kind=sp),    intent(in) :: R0 
             real(kind=sp)                :: del2 
             real(kind=sp),    automatic  :: del21, del22 
-            del21   = analytic_sol_del21_whole_atmos_f565_r4(delnA,z0,beta,H10,R0)
+            del21   = analytic_sol_del21_whole_atmos_f565_r4(delnA,z0,beta,H10,Hc0,R0)
             del22   = analytic_sol_del22_whole_atmos_f565_r4(delnA,fc,Nmf,z0,H10,          &
                                                                  Hc0,beta,d,h,R0)
        end function analytic_sol_del2_whole_atmos_wv5cm3m_f558_r4
 
        elemental function analytic_sol_del2_whole_atmos_wv5cm3m_f558_r8(fc,Nmf,delnA,z0,H10,           &
                                                                         Hc0,beta,d,h,R0) result(del2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_del2_whole_atmos_wv5cm3m_f558_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_del2_whole_atmos_wv5cm3m_f558_r8
-#endif 
+ 
             real(kind=dp),    intent(in) :: fc 
             real(kind=dp),    intent(in) :: Nmf 
             real(kind=dp),    intent(in) :: delnA 
@@ -5901,7 +5911,7 @@ module atmos_refraction
             real(kind=dp),    intent(in) :: R0 
             real(kind=dp)                :: del2 
             real(kind=dp),    automatic  :: del21, del22 
-            del21   = analytic_sol_del21_whole_atmos_f565_r8(delnA,z0,beta,H10,R0)
+            del21   = analytic_sol_del21_whole_atmos_f565_r8(delnA,z0,beta,H10,Hc0,R0)
             del22   = analytic_sol_del22_whole_atmos_f565_r8(delnA,fc,Nmf,z0,H10,          &
                                                                  Hc0,beta,d,h,R0)
        end function analytic_sol_del2_whole_atmos_wv5cm3m_f558_r8
@@ -5909,11 +5919,11 @@ module atmos_refraction
        ! Formule: 5.54, page: 106
        elemental function refraction_angle_whole_atmos_vw5cm3m_f554_r4(fc,Nmf,delnA,z0,H10,           &
                                                                         Hc0,beta,d,h,R0)   result(angle)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vw5cm3m_f554_r4
+        
+            
+          
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_vw5cm3m_f554_r4
-#endif 
+ 
             real(kind=sp),    intent(in) :: fc 
             real(kind=sp),    intent(in) :: Nmf 
             real(kind=sp),    intent(in) :: delnA 
@@ -5934,11 +5944,11 @@ module atmos_refraction
 
        elemental function refraction_angle_whole_atmos_vw5cm3m_f554_r8(fc,Nmf,delnA,z0,H10,           &
                                                                         Hc0,beta,d,h,R0)   result(angle)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vw5cm3m_f554_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_vw5cm3m_f554_r8
-#endif 
+ 
             real(kind=dp),    intent(in) :: fc 
             real(kind=dp),    intent(in) :: Nmf 
             real(kind=dp),    intent(in) :: delnA 
@@ -5961,11 +5971,11 @@ module atmos_refraction
        ! верхней ионосфере имеет вид
        ! Formula: 5.72, page: 110
        elemental function refractive_idx_hi_ionosphere_approx_f572_r4(fc,Nmf,beta,h,H20) result(n)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refractive_idx_hi_ionosphere_approx_f572_r4
+        
+            
+             
             !dir$ attributes forceinline :: refractive_idx_hi_ionosphere_approx_f572_r4
-#endif 
+ 
 !$omp declare simd(refractive_idx_hi_ionosphere_approx_f572_r4) 
             real(kind=sp),      intent(in) :: fc 
             real(kind=sp),      intent(in) :: Nmf 
@@ -5982,11 +5992,11 @@ module atmos_refraction
        end function refractive_idx_hi_ionosphere_approx_f572_r4
 
        elemental function refractive_idx_hi_ionosphere_approx_f572_r8(fc,Nmf,beta,h,H20) result(n)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refractive_idx_hi_ionosphere_approx_f572_r8
+        
+            
+             
             !dir$ attributes forceinline :: refractive_idx_hi_ionosphere_approx_f572_r8
-#endif 
+ 
 !$omp declare simd(refractive_idx_hi_ionosphere_approx_f572_r8) 
             real(kind=dp),      intent(in) :: fc 
             real(kind=dp),      intent(in) :: Nmf 
@@ -6007,11 +6017,11 @@ module atmos_refraction
       !на высоте Нс над поверхностью Земли. 
       !Formula for 'L31' sub-component: 5.76, page: 111
       elemental function analytic_sol_L31_whole_atmos_wv5cm3m_f576_r4(fc,Nmf,beta,R0,z0,H20,Hc0,Hc,H2) result(L31)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L31_whole_atmos_wv5cm3m_f576_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L31_whole_atmos_wv5cm3m_f576_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L31_whole_atmos_wv5cm3m_f576_r4) 
             real(kind=sp),      intent(in) :: fc 
             real(kind=sp),      intent(in) :: Nmf 
@@ -6047,15 +6057,15 @@ module atmos_refraction
             t0    = Hc0/R0
             sqr2  = sqrt(1.0_sp+t1*t0) 
             trm3  = exp1/sqr2 
-            L13   = trm1*(trm2-trm3)
+            L31   = trm1*(trm2-trm3)
       end function analytic_sol_L31_whole_atmos_wv5cm3m_f576_r4
 
       elemental function analytic_sol_L31_whole_atmos_wv5cm3m_f576_r8(fc,Nmf,beta,R0,z0,H20,Hc0,Hc,H2) result(L31)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L31_whole_atmos_wv5cm3m_f576_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L31_whole_atmos_wv5cm3m_f576_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L31_whole_atmos_wv5cm3m_f576_r8) 
             real(kind=dp),      intent(in) :: fc 
             real(kind=dp),      intent(in) :: Nmf 
@@ -6091,16 +6101,16 @@ module atmos_refraction
             t0    = Hc0/R0
             sqr2  = sqrt(1.0_dp+t1*t0) 
             trm3  = exp1/sqr2 
-            L13   = trm1*(trm2-trm3)
+            L31   = trm1*(trm2-trm3)
       end function analytic_sol_L31_whole_atmos_wv5cm3m_f576_r8
 
       !Formula: 5.77, page: 111
       elemental function analytic_sol_L32_whole_atmos_wv5cm3m_f577_r4(fc,Nmf,beta,R0,z0,H20,Hc0) result(L32)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L32_whole_atmos_wv5cm3m_f577_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L32_whole_atmos_wv5cm3m_f577_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L32_whole_atmos_wv5cm3m_f577_r4) 
             real(kind=sp),      intent(in) :: fc 
             real(kind=sp),      intent(in) :: Nmf 
@@ -6141,11 +6151,11 @@ module atmos_refraction
        end function analytic_sol_L32_whole_atmos_wv5cm3m_f577_r4
 
        elemental function analytic_sol_L32_whole_atmos_wv5cm3m_f577_r8(fc,Nmf,beta,R0,z0,H20,Hc0) result(L32)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L32_whole_atmos_wv5cm3m_f577_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L32_whole_atmos_wv5cm3m_f577_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L32_whole_atmos_wv5cm3m_f577_r8) 
             real(kind=dp),      intent(in) :: fc 
             real(kind=dp),      intent(in) :: Nmf 
@@ -6187,11 +6197,11 @@ module atmos_refraction
 
        !Formula: 5.78, page: 111
        elemental function analytic_sol_L33_whole_atmos_wv5cm3m_f578_r4(fc,Nmf,beta,R0,z0,H20,Hc0) result(L33)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L33_whole_atmos_wv5cm3m_f578_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L33_whole_atmos_wv5cm3m_f578_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L33_whole_atmos_wv5cm3m_f578_r4) 
             real(kind=sp),      intent(in) :: fc 
             real(kind=sp),      intent(in) :: Nmf 
@@ -6200,7 +6210,7 @@ module atmos_refraction
             real(kind=sp),      intent(in) :: z0 
             real(kind=sp),      intent(in) :: H20 
             real(kind=sp),      intent(in) :: Hc0 
-            real(kind=sp)                  :: L32 
+            real(kind=sp)                  :: L33  
             real(kind=sp),      parameter  :: C1253314137315500251207882642406 = & 
                                                   1.253314137315500251207882642406_sp
             real(kind=sp),      automatic  :: delNm, rat1 
@@ -6228,15 +6238,15 @@ module atmos_refraction
             prob2  = prob_integral_r4(p2arg)
             trm2   = C1253314137315500251207882642406* &
                      (prob1-prob2)
-            L32    = trm1*trm2 
+            L33    = trm1*trm2 
        end function analytic_sol_L33_whole_atmos_wv5cm3m_f578_r4
 
        elemental function analytic_sol_L33_whole_atmos_wv5cm3m_f578_r8(fc,Nmf,beta,R0,z0,H20,Hc0) result(L33)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L33_whole_atmos_wv5cm3m_f578_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L33_whole_atmos_wv5cm3m_f578_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L33_whole_atmos_wv5cm3m_f578_r8) 
             real(kind=dp),      intent(in) :: fc 
             real(kind=dp),      intent(in) :: Nmf 
@@ -6278,11 +6288,11 @@ module atmos_refraction
 
        !Formula: 5.79, page: 111
        elemental function analytic_sol_L34_whole_atmos_wv5cm3m_f579_r4(delnA,fc,Nmf,beta,R0,z0,H20,Hc0,Hc,H2) result(L31)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L34_whole_atmos_wv5cm3m_f579_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L34_whole_atmos_wv5cm3m_f579_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L34_whole_atmos_wv5cm3m_f579_r4) 
             real(kind=sp),      intent(in) :: delnA 
             real(kind=sp),      intent(in) :: fc 
@@ -6318,16 +6328,16 @@ module atmos_refraction
             t0    = Hc0/R0
             sqr2  = sqrt(1.0_sp+t1*t0) 
             trm3  = exp1/sqr2 
-            L13   = trm1*(trm2-trm3)
+            L31   = trm1*(trm2-trm3)
       end function analytic_sol_L34_whole_atmos_wv5cm3m_f579_r4
 
       elemental function analytic_sol_L34_whole_atmos_wv5cm3m_f579_r8(delnA,fc,Nmf,beta,R0,z0,H20,Hc0,Hc,H2) result(L31)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L34_whole_atmos_wv5cm3m_f579_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L34_whole_atmos_wv5cm3m_f579_r4
-#endif 
-!$omp declare simd(analytic_sol_L34_whole_atmos_wv5cm3m_f579_r4) 
+ 
+!$omp declare simd(analytic_sol_L34_whole_atmos_wv5cm3m_f579_r8) 
             real(kind=dp),      intent(in) :: delnA 
             real(kind=dp),      intent(in) :: fc 
             real(kind=dp),      intent(in) :: Nmf 
@@ -6374,11 +6384,11 @@ module atmos_refraction
       !(4.30).
       !Formula: 5.90, page: 115
       elemental function refraction_angle_lo_ionospere_wv5cm3m_f590_r4(fc,Nmf,R0,thtc,z0,H2,H1) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f590_r4
+        
+            
+           
             !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f590_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f590_r4)
             real(kind=sp),     intent(in)  :: fc 
             real(kind=sp),     intent(in)  :: Nmf 
@@ -6390,7 +6400,7 @@ module atmos_refraction
             real(kind=sp)                  :: alpha 
             real(kind=sp),     automatic   :: delNm, sH2H1
             real(kind=sp),     automatic   :: thtc2, thtc4 
-            real(kind=sp),     automatic   :: t0, t1. t2  
+            real(kind=sp),     automatic   :: t0, t1, t2  
             real(kind=sp),     automatic   :: ctgz0, sctgz0
             real(kind=sp),     automatic   :: sctgz0h, trm1 
             real(kind=sp),     automatic   :: trm2, trm3 
@@ -6400,7 +6410,7 @@ module atmos_refraction
             t1     = tan(z0)
             R2     = 6397.0_sp+H2 
             ctgz0  = 1.0_sp/t1 
-            thtc2  = tht*tht 
+            thtc2  = thtc*thtc 
             sctgz0 = ctgz0*ctgz0 
             thtc4  = thtc2*thtc2 
             t0     = compute_delnM_f414_r4(fc,Nmf)
@@ -6415,16 +6425,16 @@ module atmos_refraction
             t1     = (sctgz0+0.333333333333333333333333_sp)*thtc2
             t0     = sctgz0+sctgz0*sctgz0h 
             trm2   = t2+t1+t0 
-            trm3   = trm2+(sctgz0h*sctgz0h)*(tht4*0.2_sp)
+            trm3   = trm2+(sctgz0h*sctgz0h)*(thtc4*0.2_sp)
             alpha  = R2*trm3  
       end function refraction_angle_lo_ionospere_wv5cm3m_f590_r4
 
   elemental function refraction_angle_lo_ionospere_wv5cm3m_f590_r8(fc,Nmf,R0,thtc,z0,H2,H1) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f590_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f590_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f590_r8)
             real(kind=dp),     intent(in)  :: fc 
             real(kind=dp),     intent(in)  :: Nmf 
@@ -6436,7 +6446,7 @@ module atmos_refraction
             real(kind=dp)                  :: alpha 
             real(kind=dp),     automatic   :: delNm, sH2H1
             real(kind=dp),     automatic   :: thtc2, thtc4 
-            real(kind=dp),     automatic   :: t0, t1. t2  
+            real(kind=dp),     automatic   :: t0, t1, t2  
             real(kind=dp),     automatic   :: ctgz0, sctgz0
             real(kind=dp),     automatic   :: sctgz0h, trm1 
             real(kind=dp),     automatic   :: trm2, trm3 
@@ -6446,7 +6456,7 @@ module atmos_refraction
             t1     = tan(z0)
             R2     = 6397.0_dp+H2 
             ctgz0  = 1.0_dp/t1 
-            thtc2  = tht*tht 
+            thtc2  = thtc*thtc 
             sctgz0 = ctgz0*ctgz0 
             thtc4  = thtc2*thtc2 
             t0     = compute_delnM_f414_r8(fc,Nmf)
@@ -6461,7 +6471,7 @@ module atmos_refraction
             t1     = (sctgz0+0.333333333333333333333333_dp)*thtc2
             t0     = sctgz0+sctgz0*sctgz0h 
             trm2   = t2+t1+t0 
-            trm3   = trm2+(sctgz0h*sctgz0h)*(tht4*0.2_dp)
+            trm3   = trm2+(sctgz0h*sctgz0h)*(thtc4*0.2_dp)
             alpha  = R2*trm3  
       end function refraction_angle_lo_ionospere_wv5cm3m_f590_r8
 
@@ -6471,11 +6481,11 @@ module atmos_refraction
       !соотношением
       !Formula: 5.91, page: 115
       elemental function refraction_angle_lo_ionospere_wv5cm3m_f591_r4(fc,Nmf,H2,H1,thtc,R0,R2) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f591_r4
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f591_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f591_r4)
             real(kind=sp),     intent(in)  :: fc 
             real(kind=sp),     intent(in)  :: Nmf 
@@ -6499,11 +6509,11 @@ module atmos_refraction
       end function refraction_angle_lo_ionospere_wv5cm3m_f591_r4
 
        elemental function refraction_angle_lo_ionospere_wv5cm3m_f591_r8(fc,Nmf,H2,H1,thtc,R0,R2) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f591_r8
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f591_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f591_r8)
             real(kind=dp),     intent(in)  :: fc 
             real(kind=dp),     intent(in)  :: Nmf 
@@ -6532,11 +6542,11 @@ module atmos_refraction
       !экспоненциально возрастает с высотой по закону (4.31).
       !Formula 5.93, page: 116
       elemental function refraction_angle_lo_ionospere_wv5cm3m_f593_r4(fc,Nmf,beta,R2,R0,z0,thtc) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f593_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f593_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f593_r4)
             real(kind=sp),     intent(in)  :: fc 
             real(kind=sp),     intent(in)  :: Nmf 
@@ -6566,7 +6576,7 @@ module atmos_refraction
             ctgz0    = 1.0_sp/t1 
             sctgz0   = ctgz0*ctgz0 
             sqr1      = sqrt(0.5_sp+sctgz0)
-            q        = sqr 
+            q        = sqr1  
             p        = ctgz0/(sqr1+sqr1)
             btR0p    = beta*R0*p*p 
             t0       = (delNma*beta*R0)/q
@@ -6591,11 +6601,11 @@ module atmos_refraction
       end function refraction_angle_lo_ionospere_wv5cm3m_f593_r4 
 
         elemental function refraction_angle_lo_ionospere_wv5cm3m_f593_r8(fc,Nmf,beta,R2,R0,z0,thtc) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f593_r8
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f593_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f593_r8)
             real(kind=dp),     intent(in)  :: fc 
             real(kind=dp),     intent(in)  :: Nmf 
@@ -6625,7 +6635,7 @@ module atmos_refraction
             ctgz0    = 1.0_dp/t1 
             sctgz0   = ctgz0*ctgz0 
             sqr1      = sqrt(0.5_dp+sctgz0)
-            q        = sqr 
+            q        = sqr1 
             p        = ctgz0/(sqr1+sqr1)
             btR0p    = beta*R0*p*p 
             t0       = (delNma*beta*R0)/q
@@ -6653,11 +6663,11 @@ module atmos_refraction
       !ношение (5.93) упрощается (см. § 5.2) и принимает:
       !Formula: 5.95, page: 116
       elemental function refraction_angle_lo_ionospere_wv5cm3m_f595_r4(delnA,beta,R0,thtc) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f595_r4
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f595_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f595_r4)
             real(kind=sp),     intent(in)  :: delnA 
             real(kind=sp),     intent(in)  :: beta 
@@ -6671,11 +6681,11 @@ module atmos_refraction
       end function refraction_angle_lo_ionospere_wv5cm3m_f595_r4
 
       elemental function refraction_angle_lo_ionospere_wv5cm3m_f595_r8(delnA,beta,R0,thtc) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_lo_ionospere_wv5cm3m_f595_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_lo_ionospere_wv5cm3m_f595_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_lo_ionospere_wv5cm3m_f595_r8)
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
@@ -6693,11 +6703,11 @@ module atmos_refraction
       !< 5 см.
       !Formula: 6.3, page: 119
       elemental function analytic_sol_LB1_whole_atmos_wvl5cm_f63_r4(delnA,beta,R0,HB,H0) result(LB1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_LB1_whole_atmos_wvl5cm_f63_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_LB1_whole_atmos_wvl5cm_f63_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_LB1_whole_atmos_wvl5cm_f63_r4)
             real(kind=sp),     intent(in)  :: delnA 
             real(kind=sp),     intent(in)  :: beta 
@@ -6714,7 +6724,7 @@ module atmos_refraction
             sdelnA = delnA*delnA 
             t0     = HB0+HB0 
             t1     = R0/t0 
-            btHb0  = bt*HB0 
+            btHb0  = beta*HB0 
             sqr    = sqrt(t1)
             trm1   = -sdelnA*beta*R0 
             exp1   = exp(-btHb0)
@@ -6724,11 +6734,11 @@ module atmos_refraction
       end function analytic_sol_LB1_whole_atmos_wvl5cm_f63_r4
 
       elemental function analytic_sol_LB1_whole_atmos_wvl5cm_f63_r8(delnA,beta,R0,HB,H0) result(LB1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_LB1_whole_atmos_wvl5cm_f63_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_LB1_whole_atmos_wvl5cm_f63_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_LB1_whole_atmos_wvl5cm_f63_r8)
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
@@ -6745,7 +6755,7 @@ module atmos_refraction
             sdelnA = delnA*delnA 
             t0     = HB0+HB0 
             t1     = R0/t0 
-            btHb0  = bt*HB0 
+            btHb0  = beta*HB0 
             sqr    = sqrt(t1)
             trm1   = -sdelnA*beta*R0 
             exp1   = exp(-btHb0)
@@ -6756,11 +6766,11 @@ module atmos_refraction
 
       !Formula: 6.4, page: 120
        elemental function analytic_sol_LB2_whole_atmos_wvl5cm_f64_r4(delnA,beta,R0,HB,H0) result(LB2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_LB2_whole_atmos_wvl5cm_f64_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_LB2_whole_atmos_wvl5cm_f64_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_LB2_whole_atmos_wvl5cm_f64_r4)
             real(kind=sp),     intent(in)  :: delnA 
             real(kind=sp),     intent(in)  :: beta 
@@ -6773,21 +6783,23 @@ module atmos_refraction
             real(kind=sp),     automatic   :: btR0, HBH0 
             real(kind=sp),     automatic   :: sqr,  prob 
             real(kind=sp),     automatic   :: t0,   t1 
+            real(kind=sp),     automatic   :: arg1 
             HBH0  = HB-H0 
             btR0  = beta*R0 
             t0    = beta+HBH0 
             t1    = 0.5_sp*(C314159265358979323846264338328*btR0)
             sqr   = sqrt(t1)
-            prob  = prob_integral_r4(sqrt(t0+t0))
+            arg1  = sqrt(t0+t0)
+            prob  = prob_integral_r4(arg1)
             LB2   = delnA*sqr*prob 
        end function analytic_sol_LB2_whole_atmos_wvl5cm_f64_r4
 
        elemental function analytic_sol_LB2_whole_atmos_wvl5cm_f64_r8(delnA,beta,R0,HB,H0) result(LB2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_LB2_whole_atmos_wvl5cm_f64_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_LB2_whole_atmos_wvl5cm_f64_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_LB2_whole_atmos_wvl5cm_f64_r8)
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
@@ -6800,22 +6812,24 @@ module atmos_refraction
             real(kind=dp),     automatic   :: btR0, HBH0 
             real(kind=dp),     automatic   :: sqr,  prob 
             real(kind=dp),     automatic   :: t0,   t1 
+            real(kind=dp),     automatic   :: arg1 
             HBH0  = HB-H0 
             btR0  = beta*R0 
             t0    = beta+HBH0 
             t1    = 0.5_dp*(C314159265358979323846264338328*btR0)
             sqr   = sqrt(t1)
-            prob  = prob_integral_r4(sqrt(t0+t0))
+            arg1  = sqrt(t0+t0)
+            prob  = prob_integral_r8(arg1)
             LB2   = delnA*sqr*prob 
        end function analytic_sol_LB2_whole_atmos_wvl5cm_f64_r8
 
        !Formula: 6.5, page: 120
        elemental function analytic_sol_LB3_whole_atmos_wvl5cm_f65_r4(delnA,beta,R0,HB,H0) result(LB3)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_LB3_whole_atmos_wvl5cm_f65_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_LB3_whole_atmos_wvl5cm_f65_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_LB3_whole_atmos_wvl5cm_f65_r4)
             real(kind=sp),     intent(in)  :: delnA 
             real(kind=sp),     intent(in)  :: beta 
@@ -6847,11 +6861,11 @@ module atmos_refraction
        end function analytic_sol_LB3_whole_atmos_wvl5cm_f65_r4
 
         elemental function analytic_sol_LB3_whole_atmos_wvl5cm_f65_r8(delnA,beta,R0,HB,H0) result(LB3)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_LB3_whole_atmos_wvl5cm_f65_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_LB3_whole_atmos_wvl5cm_f65_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_LB3_whole_atmos_wvl5cm_f65_r8)
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
@@ -6884,11 +6898,11 @@ module atmos_refraction
 
        !Formula: 6.2, page: 119
        elemental function refraction_angle_B_whole_atmos_vwl5cm_f62_r4(delnA,beta,R0,HB,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_B_whole_atmos_vwl5cm_f62_r4
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_B_whole_atmos_vwl5cm_f62_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_B_whole_atmos_vwl5cm_f62_r4)
             real(kind=sp),     intent(in)  :: delnA 
             real(kind=sp),     intent(in)  :: beta 
@@ -6904,11 +6918,11 @@ module atmos_refraction
        end function refraction_angle_B_whole_atmos_vwl5cm_f62_r4
 
        elemental function refraction_angle_B_whole_atmos_vwl5cm_f62_r8(delnA,beta,R0,HB,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_B_whole_atmos_vwl5cm_f62_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_B_whole_atmos_vwl5cm_f62_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_B_whole_atmos_vwl5cm_f62_r8)
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
@@ -6925,12 +6939,12 @@ module atmos_refraction
 
        !Formula: 6.7, page: 120
         elemental function analytic_sol_LC1_whole_atmos_wvl5cm_f67_r4(delnA,beta,R0,HC,H0) result(LC1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_LC1_whole_atmos_wvl5cm_f67_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_LC1_whole_atmos_wvl5cm_f67_r4
-#endif 
-!$omp declare simd(analytic_sol_LC1_whole_atmos_wvl5cm_f63_r4)
+ 
+!$omp declare simd(analytic_sol_LC1_whole_atmos_wvl5cm_f67_r4)
             real(kind=sp),     intent(in)  :: delnA 
             real(kind=sp),     intent(in)  :: beta 
             real(kind=sp),     intent(in)  :: R0 
@@ -6946,7 +6960,7 @@ module atmos_refraction
             sdelnA = delnA*delnA 
             t0     = HCH0+HCH0 
             t1     = R0/t0 
-            btHb0  = bt*HB0 
+            btHb0  = beta*HCH0  
             sqr    = sqrt(t1)
             trm1   = -sdelnA*beta*R0 
             exp1   = exp(-btHb0)
@@ -6956,12 +6970,12 @@ module atmos_refraction
       end function analytic_sol_LC1_whole_atmos_wvl5cm_f67_r4
 
        elemental function analytic_sol_LC1_whole_atmos_wvl5cm_f67_r8(delnA,beta,R0,HC,H0) result(LC1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_LC1_whole_atmos_wvl5cm_f67_r8
-            !dir$ attributes forceinline :: analytic_sol_LC1_whole_atmos_wvl5cm_f67_r8
-#endif 
-!$omp declare simd(analytic_sol_LC1_whole_atmos_wvl5cm_f63_r8)
+        
+            
+            
+!dir$ attributes forceinline :: analytic_sol_LC1_whole_atmos_wvl5cm_f67_r8
+ 
+!$omp declare simd(analytic_sol_LC1_whole_atmos_wvl5cm_f67_r8)
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
             real(kind=dp),     intent(in)  :: R0 
@@ -6988,11 +7002,11 @@ module atmos_refraction
 
       !Formula: 6.8, page: 120
         elemental function analytic_sol_LC2_whole_atmos_wvl5cm_f68_r4(delnA,beta,R0,HC,H0) result(LC2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_LC2_whole_atmos_wvl5cm_f68_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_LC2_whole_atmos_wvl5cm_f68_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_LC2_whole_atmos_wvl5cm_f68_r4)
             real(kind=sp),     intent(in)  :: delnA 
             real(kind=sp),     intent(in)  :: beta 
@@ -7004,22 +7018,23 @@ module atmos_refraction
                                                  3.14159265358979323846264338328_sp
             real(kind=sp),     automatic   :: btR0, HCH0 
             real(kind=sp),     automatic   :: sqr,  prob 
-            real(kind=sp),     automatic   :: t0,   t1 
+            real(kind=sp),     automatic   :: t0,   t1, arg1 
             HCH0  = HC-H0 
             btR0  = beta*R0 
             t0    = beta+HCH0 
             t1    = 0.5_sp*(C314159265358979323846264338328*btR0)
             sqr   = sqrt(t1)
-            prob  = prob_integral_r4(sqrt(t0+t0))
-            LB2   = delnA*sqr*prob 
+            arg1  = sqrt(t0+t0)
+            prob  = prob_integral_r4(arg1)
+            LC2   = delnA*sqr*prob 
        end function analytic_sol_LC2_whole_atmos_wvl5cm_f68_r4
 
        elemental function analytic_sol_LC2_whole_atmos_wvl5cm_f68_r8(delnA,beta,R0,HC,H0) result(LC2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_LC2_whole_atmos_wvl5cm_f68_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_LC2_whole_atmos_wvl5cm_f68_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_LC2_whole_atmos_wvl5cm_f68_r8)
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
@@ -7031,30 +7046,31 @@ module atmos_refraction
                                                  3.14159265358979323846264338328_dp
             real(kind=dp),     automatic   :: btR0, HCH0 
             real(kind=dp),     automatic   :: sqr,  prob 
-            real(kind=dp),     automatic   :: t0,   t1 
+            real(kind=dp),     automatic   :: t0,   t1, arg1  
             HCH0  = HC-H0 
             btR0  = beta*R0 
             t0    = beta+HCH0 
             t1    = 0.5_dp*(C314159265358979323846264338328*btR0)
             sqr   = sqrt(t1)
-            prob  = prob_integral_r8(sqrt(t0+t0))
-            LB2   = delnA*sqr*prob 
+            arg1  = sqrt(t0+t0)
+            prob  = prob_integral_r8(arg1)
+            LC2   = delnA*sqr*prob 
        end function analytic_sol_LC2_whole_atmos_wvl5cm_f68_r8
 
        !Formula: 6.9, page: 120
        elemental function analytic_sol_LC3_whole_atmos_wvl5cm_f69_r4(delnA,beta,R0,HC,H0) result(LC3)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_LC3_whole_atmos_wvl5cm_f69_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_LC3_whole_atmos_wvl5cm_f69_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_LC3_whole_atmos_wvl5cm_f69_r4)
             real(kind=sp),     intent(in)  :: delnA 
             real(kind=sp),     intent(in)  :: beta 
             real(kind=sp),     intent(in)  :: R0 
             real(kind=sp),     intent(in)  :: HC 
             real(kind=sp),     intent(in)  :: H0 
-            real(kind=sp)                  :: LB3 
+            real(kind=sp)                  :: LC3 
             real(kind=sp),     parameter   :: C314159265358979323846264338328 = &
                                                  3.14159265358979323846264338328_sp
             real(kind=sp),     parameter   :: C141421356237309504880168872421 = &
@@ -7075,22 +7091,22 @@ module atmos_refraction
             prob1 = prob_integral_r4(t0)
             prob2 = prob_integral_r4(t1)
             trm2  = C141421356237309504880168872421*(prob1-prob2)
-            LB3   = trm1*trm2 
+            LC3   = trm1*trm2 
        end function analytic_sol_LC3_whole_atmos_wvl5cm_f69_r4
 
-        elemental function analytic_sol_LC3_whole_atmos_wvl5cm_f69_r8(delnA,beta,R0,HC,H0) result(LC3)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_LC3_whole_atmos_wvl5cm_f69_r8
+       elemental function analytic_sol_LC3_whole_atmos_wvl5cm_f69_r8(delnA,beta,R0,HC,H0) result(LC3)
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_LC3_whole_atmos_wvl5cm_f69_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_LC3_whole_atmos_wvl5cm_f69_r8)
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
             real(kind=dp),     intent(in)  :: R0 
             real(kind=dp),     intent(in)  :: HC 
             real(kind=dp),     intent(in)  :: H0 
-            real(kind=dp)                  :: LB3 
+            real(kind=dp)                  :: LC3 
             real(kind=dp),     parameter   :: C314159265358979323846264338328 = &
                                                  3.14159265358979323846264338328_dp
             real(kind=dp),     parameter   :: C141421356237309504880168872421 = &
@@ -7111,16 +7127,16 @@ module atmos_refraction
             prob1 = prob_integral_r8(t0)
             prob2 = prob_integral_r8(t1)
             trm2  = C141421356237309504880168872421*(prob1-prob2)
-            LB3   = trm1*trm2 
+            LC3   = trm1*trm2 
        end function analytic_sol_LC3_whole_atmos_wvl5cm_f69_r8
 
        !Formula: 6.6, page: 120
         elemental function refraction_angle_C_whole_atmos_vwl5cm_f66_r4(delnA,beta,R0,HC,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_whole_atmos_vwl5cm_f66_r4
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_C_whole_atmos_vwl5cm_f66_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_whole_atmos_vwl5cm_f66_r4)
             real(kind=sp),     intent(in)  :: delnA 
             real(kind=sp),     intent(in)  :: beta 
@@ -7129,18 +7145,18 @@ module atmos_refraction
             real(kind=sp),     intent(in)  :: H0 
             real(kind=sp)                  :: alpha 
             real(kind=sp),     automatic   :: LC1, LC2, LC3 
-            LC1  = analytic_sol_LC1_whole_atmos_wvl5cm_f63_r4(delnA,beta,R0,HC,H0)
-            LC2  = analytic_sol_LC2_whole_atmos_wvl5cm_f64_r4(delnA,beta,R0,HC,H0)
-            LC3  = analytic_sol_LC3_whole_atmos_wvl5cm_f65_r4(delnA,beta,R0,HC,H0)
+            LC1  = analytic_sol_LC1_whole_atmos_wvl5cm_f67_r4(delnA,beta,R0,HC,H0)
+            LC2  = analytic_sol_LC2_whole_atmos_wvl5cm_f68_r4(delnA,beta,R0,HC,H0)
+            LC3  = analytic_sol_LC3_whole_atmos_wvl5cm_f69_r4(delnA,beta,R0,HC,H0)
             alpha= LC1+LC2+LC3 
        end function refraction_angle_C_whole_atmos_vwl5cm_f66_r4
 
        elemental function refraction_angle_C_whole_atmos_vwl5cm_f66_r8(delnA,beta,R0,HC,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_whole_atmos_vwl5cm_f66_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_C_whole_atmos_vwl5cm_f66_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_whole_atmos_vwl5cm_f66_r8)
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
@@ -7149,19 +7165,19 @@ module atmos_refraction
             real(kind=dp),     intent(in)  :: H0 
             real(kind=dp)                  :: alpha 
             real(kind=dp),     automatic   :: LC1, LC2, LC3 
-            LC1  = analytic_sol_LC1_whole_atmos_wvl5cm_f63_r8(delnA,beta,R0,HC,H0)
-            LC2  = analytic_sol_LC2_whole_atmos_wvl5cm_f64_r8(delnA,beta,R0,HC,H0)
-            LC3  = analytic_sol_LC3_whole_atmos_wvl5cm_f65_r8(delnA,beta,R0,HC,H0)
+            LC1  = analytic_sol_LC1_whole_atmos_wvl5cm_f67_r8(delnA,beta,R0,HC,H0)
+            LC2  = analytic_sol_LC2_whole_atmos_wvl5cm_f68_r8(delnA,beta,R0,HC,H0)
+            LC3  = analytic_sol_LC3_whole_atmos_wvl5cm_f69_r8(delnA,beta,R0,HC,H0)
             alpha= LC1+LC2+LC3 
        end function refraction_angle_C_whole_atmos_vwl5cm_f66_r8
 
        !Formula 6.1, page: 119
        elemental function refraction_angle_whole_atmos_vwl5cm_f61_r4(delnA,beta,R0,HB,HC,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vwl5cm_f61_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_vwl5cm_f61_r4
-#endif 
+ 
             real(kind=sp),     intent(in)  :: delnA 
             real(kind=sp),     intent(in)  :: beta 
             real(kind=sp),     intent(in)  :: R0 
@@ -7176,11 +7192,11 @@ module atmos_refraction
        end function refraction_angle_whole_atmos_vwl5cm_f61_r4
 
          elemental function refraction_angle_whole_atmos_vwl5cm_f61_r8(delnA,beta,R0,HB,HC,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vwl5cm_f61_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_vwl5cm_f61_r8
-#endif 
+ 
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
             real(kind=dp),     intent(in)  :: R0 
@@ -7199,11 +7215,11 @@ module atmos_refraction
        !SQRT(2*beta*HB0) and SQRT(2*beta*HC0) <= 1
        !Formula: 6.10, page: 120 
        elemental function refraction_angle_B_whole_atmos_vwl5cm_f610_r4(delnA,beta,R0,HB,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_B_whole_atmos_vwl5cm_f610_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_B_whole_atmos_vwl5cm_f610_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_B_whole_atmos_vwl5cm_f610_r4)
             real(kind=sp),     intent(in)  :: delnA 
             real(kind=sp),     intent(in)  :: beta 
@@ -7229,11 +7245,11 @@ module atmos_refraction
        end function refraction_angle_B_whole_atmos_vwl5cm_f610_r4
 
          elemental function refraction_angle_B_whole_atmos_vwl5cm_f610_r8(delnA,beta,R0,HB,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_B_whole_atmos_vwl5cm_f610_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_B_whole_atmos_vwl5cm_f610_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_B_whole_atmos_vwl5cm_f610_r8)
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
@@ -7260,11 +7276,11 @@ module atmos_refraction
 
        !Formula: 6.11, page: 120
         elemental function refraction_angle_C_whole_atmos_vwl5cm_f611_r4(delnA,beta,R0,HC,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_whole_atmos_vwl5cm_f611_r4
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_C_whole_atmos_vwl5cm_f611_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_whole_atmos_vwl5cm_f611_r4)
             real(kind=sp),     intent(in)  :: delnA 
             real(kind=sp),     intent(in)  :: beta 
@@ -7290,11 +7306,11 @@ module atmos_refraction
        end function refraction_angle_C_whole_atmos_vwl5cm_f611_r4
 
        elemental function refraction_angle_C_whole_atmos_vwl5cm_f611_r8(delnA,beta,R0,HC,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_whole_atmos_vwl5cm_f611_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_C_whole_atmos_vwl5cm_f611_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_whole_atmos_vwl5cm_f611_r8)
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
@@ -7321,11 +7337,11 @@ module atmos_refraction
 
        !Formula: 6.1b, page: 119
        elemental function refraction_angle_whole_atmos_vwl5cm_f61b_r4(delnA,beta,R0,HB,HC,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vwl5cm_f61b_r4
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_vwl5cm_f61b_r4
-#endif 
+ 
             real(kind=sp),     intent(in)  :: delnA 
             real(kind=sp),     intent(in)  :: beta 
             real(kind=sp),     intent(in)  :: R0 
@@ -7340,11 +7356,11 @@ module atmos_refraction
        end function refraction_angle_whole_atmos_vwl5cm_f61b_r4
 
        elemental function refraction_angle_whole_atmos_vwl5cm_f61b_r8(delnA,beta,R0,HB,HC,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_vwl5cm_f61b_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_vwl5cm_f61b_r8
-#endif 
+ 
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
             real(kind=dp),     intent(in)  :: R0 
@@ -7362,11 +7378,11 @@ module atmos_refraction
        !   на такое расстояние, что выполняются неравенства) SQRT(2*beta*HB0) >> 1 , SQRT(2*beta*HC0) >> 1
        !Formula: 6.12, page: 121
         elemental function refraction_angle_B_whole_atmos_vwl5cm_f612_r4(delnA,beta,R0,HB,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_B_whole_atmos_vwl5cm_f612_r4
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_B_whole_atmos_vwl5cm_f612_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_B_whole_atmos_vwl5cm_f612_r4)
             real(kind=sp),     intent(in)  :: delnA 
             real(kind=sp),     intent(in)  :: beta 
@@ -7399,11 +7415,11 @@ module atmos_refraction
         end function refraction_angle_B_whole_atmos_vwl5cm_f612_r4
 
        elemental function refraction_angle_B_whole_atmos_vwl5cm_f612_r8(delnA,beta,R0,HB,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_B_whole_atmos_vwl5cm_f612_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_B_whole_atmos_vwl5cm_f612_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_B_whole_atmos_vwl5cm_f612_r8)
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
@@ -7437,11 +7453,11 @@ module atmos_refraction
 
         !Formula: 6.13, page: 121
        elemental function refraction_angle_C_whole_atmos_vwl5cm_f613_r4(delnA,beta,R0,HC,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_whole_atmos_vwl5cm_f613_r4
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_C_whole_atmos_vwl5cm_f613_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_whole_atmos_vwl5cm_f613_r4)
             real(kind=sp),     intent(in)  :: delnA 
             real(kind=sp),     intent(in)  :: beta 
@@ -7474,11 +7490,11 @@ module atmos_refraction
         end function refraction_angle_C_whole_atmos_vwl5cm_f613_r4
 
          elemental function refraction_angle_C_whole_atmos_vwl5cm_f613_r8(delnA,beta,R0,HC,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_whole_atmos_vwl5cm_f613_r8
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_C_whole_atmos_vwl5cm_f613_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_whole_atmos_vwl5cm_f613_r8)
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
@@ -7512,11 +7528,11 @@ module atmos_refraction
 
        !Formula: 6.1b, page: 119
        elemental function refraction_angle_whole_atmos_case_B_vwl5cm_f61b_r4(delnA,beta,R0,HB,HC,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_case_B_vwl5cm_f61b_r4
+        
+            
+         
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_case_B_vwl5cm_f61b_r4
-#endif 
+ 
             real(kind=sp),     intent(in)  :: delnA 
             real(kind=sp),     intent(in)  :: beta 
             real(kind=sp),     intent(in)  :: R0 
@@ -7531,11 +7547,11 @@ module atmos_refraction
        end function refraction_angle_whole_atmos_case_B_vwl5cm_f61b_r4
 
        elemental function refraction_angle_whole_atmos_case_B_vwl5cm_f61b_r8(delnA,beta,R0,HB,HC,H0) result(alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_whole_atmos_case_B_vwl5cm_f61b_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_whole_atmos_case_B_vwl5cm_f61b_r8
-#endif 
+ 
             real(kind=dp),     intent(in)  :: delnA 
             real(kind=dp),     intent(in)  :: beta 
             real(kind=dp),     intent(in)  :: R0 
@@ -7551,11 +7567,11 @@ module atmos_refraction
 
        !Formula: 6.19, page: 122
        elemental function deriv_alpha_over_R0_f619_r4(deln0,beta,R0) result(dadR0)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: deriv_alpha_over_R0_f619_r4
+        
+            
+           
             !dir$ attributes forceinline :: deriv_alpha_over_R0_f619_r4
-#endif 
+ 
 !$omp declare simd(deriv_alpha_over_R0_f619_r4)
             real(kind=sp),     intent(in)  :: deln0 
             real(kind=sp),     intent(in)  :: beta 
@@ -7590,11 +7606,11 @@ module atmos_refraction
        end function deriv_alpha_over_R0_f619_r4
 
         elemental function deriv_alpha_over_R0_f619_r8(deln0,beta,R0) result(dadR0)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: deriv_alpha_over_R0_f619_r8
+        
+            
+            
             !dir$ attributes forceinline :: deriv_alpha_over_R0_f619_r8
-#endif 
+ 
 !$omp declare simd(deriv_alpha_over_R0_f619_r8)
             real(kind=dp),     intent(in)  :: deln0 
             real(kind=dp),     intent(in)  :: beta 
@@ -7630,11 +7646,11 @@ module atmos_refraction
 
        !Formula: 6.18, page: 122
        elemental function refracted_signal_weakening_Vp_f618_r4(deln0,beta,R0,gamma,Lc,Lb) result(Vp)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refracted_signal_weakening_Vp_f618_r4
+        
+            
+             
             !dir$ attributes forceinline :: refracted_signal_weakening_Vp_f618_r4
-#endif 
+ 
 !$omp declare simd(refracted_signal_weakening_Vp_f618_r4)
             real(kind=sp),     intent(in)  :: deln0 
             real(kind=sp),     intent(in)  :: beta 
@@ -7659,11 +7675,11 @@ module atmos_refraction
        end function refracted_signal_weakening_Vp_f618_r4
         
        elemental function refracted_signal_weakening_Vp_f618_r8(deln0,beta,R0,gamma,Lc,Lb) result(Vp)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refracted_signal_weakening_Vp_f618_r8
+        
+            
+            
             !dir$ attributes forceinline :: refracted_signal_weakening_Vp_f618_r8
-#endif 
+ 
 !$omp declare simd(refracted_signal_weakening_Vp_f618_r8)
             real(kind=dp),     intent(in)  :: deln0 
             real(kind=dp),     intent(in)  :: beta 
@@ -7690,11 +7706,11 @@ module atmos_refraction
        ! Lc >> Lb, что соответствует cos(gamma)~1.
        !Formula: 6.20, page: 122
        elemental function refracted_signal_weakening_case_1_Vp_f620_r4(deln0,beta,R0,Lb) result(Vp)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refracted_signal_weakening_case_1_Vp_f620_r4
+        
+            
+           
             !dir$ attributes forceinline :: refracted_signal_weakening_case_1_Vp_f620_r4
-#endif 
+ 
 !$omp declare simd(refracted_signal_weakening_case_1_Vp_f620_r4)
             real(kind=sp),     intent(in)  :: deln0 
             real(kind=sp),     intent(in)  :: beta 
@@ -7708,11 +7724,11 @@ module atmos_refraction
        end function refracted_signal_weakening_case_1_Vp_f620_r4
 
         elemental function refracted_signal_weakening_case_1_Vp_f620_r8(deln0,beta,R0,Lb) result(Vp)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refracted_signal_weakening_case_1_Vp_f620_r8
+        
+            
+           
             !dir$ attributes forceinline :: refracted_signal_weakening_case_1_Vp_f620_r8
-#endif 
+ 
 !$omp declare simd(refracted_signal_weakening_case_1_Vp_f620_r8)
             real(kind=dp),     intent(in)  :: deln0 
             real(kind=dp),     intent(in)  :: beta 
@@ -7728,11 +7744,11 @@ module atmos_refraction
        ! Lb>>Lc; Lc>>a; cos(gamma)~1.
        !Formula: 6.21, page: 123
        elemental function refracted_signal_weakening_case_2_Vp_f621_r4(deln0,beta,R0,Lc) result(Vp)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refracted_signal_weakening_case_2_Vp_f621_r4
+        
+            
+            
             !dir$ attributes forceinline :: refracted_signal_weakening_case_2_Vp_f621_r4
-#endif 
+ 
 !$omp declare simd(refracted_signal_weakening_case_2_Vp_f621_r4)
             real(kind=sp),     intent(in)  :: deln0 
             real(kind=sp),     intent(in)  :: beta 
@@ -7746,11 +7762,11 @@ module atmos_refraction
        end function refracted_signal_weakening_case_2_Vp_f621_r4
 
         elemental function refracted_signal_weakening_case_2_Vp_f621_r8(deln0,beta,R0,Lc) result(Vp)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refracted_signal_weakening_case_2_Vp_f621_r8
+        
+            
+            
             !dir$ attributes forceinline :: refracted_signal_weakening_case_2_Vp_f621_r8
-#endif 
+ 
 !$omp declare simd(refracted_signal_weakening_case_2_Vp_f621_r8)
             real(kind=dp),     intent(in)  :: deln0 
             real(kind=dp),     intent(in)  :: beta 
@@ -7766,11 +7782,11 @@ module atmos_refraction
        ! Lb > Lc, Lc > а, cos(gamma) < 1
        !Formula: 6.22, page: 123
        elemental function refracted_signal_weakening_case_3_Vp_f622_r4(deln0,beta,R0,Lc,hc) result(Vp)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refracted_signal_weakening_case_3_Vp_f622_r4
+        
+            
+           
             !dir$ attributes forceinline :: refracted_signal_weakening_case_3_Vp_f622_r4
-#endif 
+ 
 !$omp declare simd(refracted_signal_weakening_case_3_Vp_f622_r4)
             real(kind=sp),     intent(in)  :: deln0 
             real(kind=sp),     intent(in)  :: beta 
@@ -7797,11 +7813,11 @@ module atmos_refraction
        end function refracted_signal_weakening_case_3_Vp_f622_r4
 
        elemental function refracted_signal_weakening_case_3_Vp_f622_r8(deln0,beta,R0,Lc,hc) result(Vp)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refracted_signal_weakening_case_3_Vp_f622_r8
+        
+            
+           
             !dir$ attributes forceinline :: refracted_signal_weakening_case_3_Vp_f622_r8
-#endif 
+ 
 !$omp declare simd(refracted_signal_weakening_case_3_Vp_f622_r8)
             real(kind=dp),     intent(in)  :: deln0 
             real(kind=dp),     intent(in)  :: beta 
@@ -7832,11 +7848,11 @@ module atmos_refraction
       !Formula: 6.23, page: 126
       elemental function refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r4(fc,Nmf,delna,beta,           &
                                                                      R0,H3,H2,H1,H0) result(alpha_c)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r4)
             real(kind=sp),         intent(in) :: fc 
             real(kind=sp),         intent(in) :: Nmf 
@@ -7895,11 +7911,11 @@ module atmos_refraction
 
        elemental function refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r8(fc,Nmf,delna,beta,           &
                                                                      R0,H3,H2,H1,H0) result(alpha_c)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r8
+        
+            
+        
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_earth_atmos_case_1_wv5cm3m_f623_r8)
             real(kind=dp),         intent(in) :: fc 
             real(kind=dp),         intent(in) :: Nmf 
@@ -7961,11 +7977,11 @@ module atmos_refraction
       !Formula: 6.25, page: 126
       elemental function refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r4(fc,Nmf,delna,beta,           &
                                                                                R0,H3,H2,H1,H0) result(alpha_c)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r4
+        
+            
+         
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r4)
             real(kind=sp),         intent(in) :: fc 
             real(kind=sp),         intent(in) :: Nmf 
@@ -7974,6 +7990,7 @@ module atmos_refraction
             real(kind=sp),         intent(in) :: R0 
             real(kind=sp),         intent(in) :: H3 
             real(kind=sp),         intent(in) :: H2 
+            real(kind=sp),         intent(in) :: H1 
             real(kind=sp),         intent(in) :: H0 
             real(kind=sp)                     :: alpha_c 
             real(kind=sp),         parameter  :: C314159265358979323846264338328 = &
@@ -8010,11 +8027,11 @@ module atmos_refraction
 
       elemental function refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r8(fc,Nmf,delna,beta,           &
                                                                                R0,H3,H2,H1,H0) result(alpha_c)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r8
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_earth_atmos_case_2_wv5cm3m_f625_r8)
             real(kind=dp),         intent(in) :: fc 
             real(kind=dp),         intent(in) :: Nmf 
@@ -8023,6 +8040,7 @@ module atmos_refraction
             real(kind=dp),         intent(in) :: R0 
             real(kind=dp),         intent(in) :: H3 
             real(kind=dp),         intent(in) :: H2 
+            real(kind=dp),         intent(in) :: H1 
             real(kind=dp),         intent(in) :: H0 
             real(kind=dp)                     :: alpha_c 
             real(kind=dp),         parameter  :: C314159265358979323846264338328 = &
@@ -8062,11 +8080,11 @@ module atmos_refraction
       !Formula: 6.27, page: 127
        elemental function refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r4(fc,Nmf,delna,beta,           &
                                                                                R0,H3,H2,H1,H0) result(alpha_c)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r4)
             real(kind=sp),         intent(in) :: fc 
             real(kind=sp),         intent(in) :: Nmf 
@@ -8100,11 +8118,11 @@ module atmos_refraction
 
         elemental function refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r8(fc,Nmf,delna,beta,           &
                                                                                R0,H3,H2,H1,H0) result(alpha_c)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r8)
             real(kind=dp),         intent(in) :: fc 
             real(kind=dp),         intent(in) :: Nmf 
@@ -8144,11 +8162,11 @@ module atmos_refraction
        !Formula: 7.2, page: 132
         elemental function refraction_angle_C_earth_atmos_stratified_f72_r4(beta,z0,deln0,nc,           &
                                                                          nb,nh,Hb,Hc,Hh) result(alpha_c)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_stratified_f72_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_stratified_f72_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_earth_atmos_stratified_f72_r4)
              real(kind=sp),         intent(in) :: beta 
              real(kind=sp),         intent(in) :: z0 
@@ -8182,7 +8200,7 @@ module atmos_refraction
              ctgz0   = 1.0_sp/tgz0 
              t0      = cos(z0)
              scosz0  = t0*t0 
-             btctgz0 = beta*6378.0_sp*sctgz0 
+             btctgz0 = beta*6378.0_sp*stgz0 
              exp1    = exp(0.5_sp*btctgz0)
              t1      = 2.0_sp*btHb 
              sqr3    = sqrt(btctgz0+t1)
@@ -8215,11 +8233,11 @@ module atmos_refraction
 
          elemental function refraction_angle_C_earth_atmos_stratified_f72_r8(beta,z0,deln0,nc,           &
                                                                          nb,nh,Hb,Hc,Hh) result(alpha_c)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_stratified_f72_r8
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_stratified_f72_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_earth_atmos_stratified_f72_r8)
              real(kind=dp),         intent(in) :: beta 
              real(kind=dp),         intent(in) :: z0 
@@ -8288,11 +8306,11 @@ module atmos_refraction
       !Formula: 7.4, page: 132
        elemental function refraction_angle_C_earth_atmos_stratified_case_1_f74_r4(beta,z0,deln0,delnc,           &
                                                                          delnb,delnh,Hb,Hh,Hc) result(alpha_c)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_stratified_case_1_f74_r4
+        
+            
+           
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_stratified_case_1_f74_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_earth_atmos_stratified_case_1_f74_r4)
              real(kind=sp),         intent(in) :: beta 
              real(kind=sp),         intent(in) :: z0 
@@ -8325,11 +8343,11 @@ module atmos_refraction
 
        elemental function refraction_angle_C_earth_atmos_stratified_case_1_f74_r8(beta,z0,deln0,delnc,           &
                                                                          delnb,delnh,Hb,Hh,Hc) result(alpha_c)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_stratified_case_1_f74_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_stratified_case_1_f74_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_earth_atmos_stratified_case_1_f74_r8)
              real(kind=dp),         intent(in) :: beta 
              real(kind=dp),         intent(in) :: z0 
@@ -8364,11 +8382,11 @@ module atmos_refraction
        !Formula: 7.5, page: 133
        elemental function refraction_angle_C_earth_atmos_stratified_case_2_f75_r4(z0,deln0,delnc,Hb,Hh,Hc)  &
                                                                          result(alpha_c)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_stratified_case_2_f75_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_stratified_case_2_f75_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_earth_atmos_stratified_case_2_f75_r4)
              real(kind=sp),         intent(in) :: z0 
              real(kind=sp),         intent(in) :: delnc 
@@ -8395,7 +8413,7 @@ module atmos_refraction
              sctgz0= t1*t1 
              HbHc  = Hb-Hc
              trm1  = (delnc*6378.0_sp)/ssinz0
-             HcHc  = Hc-Hh 
+             HcHh  = Hc-Hh 
              t0    = sctgz0+Hca 
              sqr1  = sqrt(t0)
              t1    = sctgz0+Hha 
@@ -8410,11 +8428,11 @@ module atmos_refraction
 
         elemental function refraction_angle_C_earth_atmos_stratified_case_2_f75_r8(z0,deln0,delnc,Hb,Hh,Hc)  &
                                                                          result(alpha_c)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_C_earth_atmos_stratified_case_2_f75_r8
+        
+            
+           
             !dir$ attributes forceinline :: refraction_angle_C_earth_atmos_stratified_case_2_f75_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_C_earth_atmos_stratified_case_2_f75_r8)
              real(kind=dp),         intent(in) :: z0 
              real(kind=dp),         intent(in) :: delnc 
@@ -8441,7 +8459,7 @@ module atmos_refraction
              sctgz0= t1*t1 
              HbHc  = Hb-Hc
              trm1  = (delnc*6378.0_dp)/ssinz0
-             HcHc  = Hc-Hh 
+             HcHh  = Hc-Hh 
              t0    = sctgz0+Hca 
              sqr1  = sqrt(t0)
              t1    = sctgz0+Hha 
@@ -8459,11 +8477,11 @@ module atmos_refraction
        !Formula: 7.14, page: 137
        elemental function refraction_angle_delta_ionosphere_strata_f714_r4(fc,Nmf,z0,Hb,Hh,Hc,  &
                                                                            H2,H1,nc,nh,nb) result(del_alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_delta_ionosphere_strata_f714_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_delta_ionosphere_strata_f714_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_delta_ionosphere_strata_f714_r4)
              real(kind=sp),         intent(in) :: fc 
              real(kind=sp),         intent(in) :: Nmf 
@@ -8535,11 +8553,11 @@ module atmos_refraction
 
         elemental function refraction_angle_delta_ionosphere_strata_f714_r8(fc,Nmf,z0,Hb,Hh,Hc,  &
                                                                            H2,H1,nc,nh,nb) result(del_alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_delta_ionosphere_strata_f714_r8
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_delta_ionosphere_strata_f714_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_delta_ionosphere_strata_f714_r8)
              real(kind=dp),         intent(in) :: fc 
              real(kind=dp),         intent(in) :: Nmf 
@@ -8613,11 +8631,11 @@ module atmos_refraction
        !имеет место при z0 << 70°.
        elemental function refraction_angle_delta_ionosphere_strata_case_1_f714_r4(fc,Nmf,z0,Hb,Hh,Hc,  &
                                                                            nc,nh,H2,H1) result(del_alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_delta_ionosphere_strata_case_1_f714_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_delta_ionosphere_strata_case_1_f714_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_delta_ionosphere_strata_case_1_f714_r4)
              real(kind=sp),         intent(in) :: fc 
              real(kind=sp),         intent(in) :: Nmf 
@@ -8661,11 +8679,11 @@ module atmos_refraction
 
         elemental function refraction_angle_delta_ionosphere_strata_case_1_f714_r8(fc,Nmf,z0,Hb,Hh,Hc,  &
                                                                            nc,nh,H2,H1) result(del_alpha)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_delta_ionosphere_strata_case_1_f714_r8
+        
+            
+           
             !dir$ attributes forceinline :: refraction_angle_delta_ionosphere_strata_case_1_f714_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_delta_ionosphere_strata_case_1_f714_r8)
              real(kind=dp),         intent(in) :: fc 
              real(kind=dp),         intent(in) :: Nmf 
@@ -8712,11 +8730,11 @@ module atmos_refraction
        !на рефракцию электромагнитных волн 
        !Formula: 7.33, page: 142
        elemental function analytic_sol_L2_horizontal_grad_atmos_f733_r4(deln0,beta,z0,H) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L2_horizontal_grad_atmos_f733_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L2_horizontal_grad_atmos_f733_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L2_horizontal_grad_atmos_f733_r4)
         
             real(kind=sp),        intent(in) :: deln0 
@@ -8753,11 +8771,11 @@ module atmos_refraction
        end function analytic_sol_L2_horizontal_grad_atmos_f733_r4
        
        elemental function analytic_sol_L2_horizontal_grad_atmos_f733_r8(deln0,beta,z0,H) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L2_horizontal_grad_atmos_f733_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L2_horizontal_grad_atmos_f733_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L2_horizontal_grad_atmos_f733_r8)
         
             real(kind=dp),        intent(in) :: deln0 
@@ -8794,12 +8812,10 @@ module atmos_refraction
        end function analytic_sol_L2_horizontal_grad_atmos_f733_r8
 
        !Formula: 7.32, page: 142
-       elemental function analytic_sol_I_horizontal_grad_atmos_f732_r4(gdeln0,beta,z0,H) result(I)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_I_horizontal_grad_atmos_f732_r4
-            !dir$ attributes forceinline :: analytic_sol_I_horizontal_grad_atmos_f732_r4
-#endif 
+       elemental function analytic_sol_I_horizontal_grad_atmos_f732_r4(g,deln0,beta,z0,H) result(I)
+
+      !dir$ attributes forceinline :: analytic_sol_I_horizontal_grad_atmos_f732_r4
+ 
 !$omp declare simd(analytic_sol_I_horizontal_grad_atmos_f732_r4)
             real(kind=sp),        intent(in) :: g
             real(kind=sp),        intent(in) :: deln0 
@@ -8813,12 +8829,12 @@ module atmos_refraction
             I     = g*L2/beta*cosz0  
        end function analytic_sol_I_horizontal_grad_atmos_f732_r4
 
-       elemental function analytic_sol_I_horizontal_grad_atmos_f732_r8(g,deln0,beta,z0,) result(I)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_I_horizontal_grad_atmos_f732_r8
+       elemental function analytic_sol_I_horizontal_grad_atmos_f732_r8(g,deln0,beta,z0,H) result(I)
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_I_horizontal_grad_atmos_f732_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_I_horizontal_grad_atmos_f732_r8)
             real(kind=dp),        intent(in) :: g 
             real(kind=dp),        intent(in) :: deln0 
@@ -8836,11 +8852,11 @@ module atmos_refraction
        !электромагнитных волн в двумерно-неоднородной среде.
        !Formula: 7.36, page:142
        elemental function analytic_sol_M_horizontal_grad_atmos_f736_r4(g,deln0,beta,z0,H,n0) result(M)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_M_horizontal_grad_atmos_f736_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_M_horizontal_grad_atmos_f736_r4
-#endif 
+ 
             real(kind=sp),        intent(in) :: g 
             real(kind=sp),        intent(in) :: deln0 
             real(kind=sp),        intent(in) :: beta 
@@ -8861,11 +8877,11 @@ module atmos_refraction
        end function analytic_sol_M_horizontal_grad_atmos_f736_r4
 
         elemental function analytic_sol_M_horizontal_grad_atmos_f736_r8(g,deln0,beta,z0,H,n0) result(M)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_M_horizontal_grad_atmos_f736_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_M_horizontal_grad_atmos_f736_r8
-#endif 
+ 
             real(kind=dp),        intent(in) :: g 
             real(kind=dp),        intent(in) :: deln0 
             real(kind=dp),        intent(in) :: beta 
@@ -8889,11 +8905,11 @@ module atmos_refraction
        !электромагнитных волн в двумерно-неоднородной среде.
        !Formula: 7.37, page: 142
        elemental function refraction_angle_atmos_2D_stratified_f737_r4(g,deln0,beta,z0,H,n0,h1) result(gamma)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f737_r4
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f737_r4
-#endif 
+ 
             real(kind=sp),        intent(in) :: g 
             real(kind=sp),        intent(in) :: deln0 
             real(kind=sp),        intent(in) :: beta 
@@ -8917,11 +8933,11 @@ module atmos_refraction
        end function refraction_angle_atmos_2D_stratified_f737_r4
 
         elemental function refraction_angle_atmos_2D_stratified_f737_r8(g,deln0,beta,z0,H,n0,h1) result(gamma)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f737_r8
+        
+            
+           
             !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f737_r8
-#endif 
+ 
             real(kind=dp),        intent(in) :: g 
             real(kind=dp),        intent(in) :: deln0 
             real(kind=dp),        intent(in) :: beta 
@@ -8946,11 +8962,11 @@ module atmos_refraction
 
        !Formula: 7.39, page: 143
        elemental function a_gamma_coeff_f739_r4(g,deln0,beta,z0,H,n0) result(a_gamm)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: a_gamma_coeff_f739_r4
+        
+            
+            
             !dir$ attributes forceinline :: a_gamma_coeff_f739_r4
-#endif 
+ 
             real(kind=sp),        intent(in) :: g 
             real(kind=sp),        intent(in) :: deln0 
             real(kind=sp),        intent(in) :: beta 
@@ -8970,11 +8986,11 @@ module atmos_refraction
        end function a_gamma_coeff_f739_r4
 
         elemental function a_gamma_coeff_f739_r8(g,deln0,beta,z0,H,n0) result(a_gamm)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: a_gamma_coeff_f739_r8
+        
+            
+           
             !dir$ attributes forceinline :: a_gamma_coeff_f739_r8
-#endif 
+ 
             real(kind=dp),        intent(in) :: g 
             real(kind=dp),        intent(in) :: deln0 
             real(kind=dp),        intent(in) :: beta 
@@ -8997,11 +9013,11 @@ module atmos_refraction
        !атмосфере.
        !Formula: 7.41, page: 143
         elemental function analytic_sol_Lgamm_horizontal_grad_atmos_f741_r4(g,deln0,beta,z0,H,n0) result(Lgamm)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_Lgamm_horizontal_grad_atmos_f741_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_Lgamm_horizontal_grad_atmos_f741_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_Lgamm_horizontal_grad_atmos_f741_r4)
             real(kind=sp),        intent(in) :: g 
             real(kind=sp),        intent(in) :: deln0 
@@ -9042,11 +9058,11 @@ module atmos_refraction
        end function analytic_sol_Lgamm_horizontal_grad_atmos_f741_r4
 
         elemental function analytic_sol_Lgamm_horizontal_grad_atmos_f741_r8(g,deln0,beta,z0,H,n0) result(Lgamm)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_Lgamm_horizontal_grad_atmos_f741_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_Lgamm_horizontal_grad_atmos_f741_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_Lgamm_horizontal_grad_atmos_f741_r8)
             real(kind=dp),        intent(in) :: g 
             real(kind=dp),        intent(in) :: deln0 
@@ -9088,11 +9104,11 @@ module atmos_refraction
 
        !Formula: 7.41, page: 143 (The main formula which "uses" the above-stated code)
        elemental function refraction_angle_atmos_2D_stratified_f741_r4(g,deln0,beta,z0,H,n0) result(alpha_g)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f741_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f741_r4
-#endif 
+ 
 
             real(kind=sp),        intent(in) :: g 
             real(kind=sp),        intent(in) :: deln0 
@@ -9122,11 +9138,11 @@ module atmos_refraction
        end function refraction_angle_atmos_2D_stratified_f741_r4
 
        elemental function refraction_angle_atmos_2D_stratified_f741_r8(g,deln0,beta,z0,H,n0) result(alpha_g)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f741_r8
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f741_r8
-#endif 
+ 
 
             real(kind=dp),        intent(in) :: g 
             real(kind=dp),        intent(in) :: deln0 
@@ -9141,7 +9157,7 @@ module atmos_refraction
             real(kind=dp),        automatic  :: sqr,    rat2 
             real(kind=dp),        automatic  :: t0,     t1  
             tgz0    = tan(z0)
-            Lg      = analytic_sol_Lgamm_horizontal_grad_atmos_f741_r48g,deln0,beta,z0,H,n0) 
+            Lg      = analytic_sol_Lgamm_horizontal_grad_atmos_f741_r8(g,deln0,beta,z0,H,n0) 
             ctgz0   = 1.0_sp/tgz0 
             t0      = cos(z0)
             scosz0  = t0*t0 
@@ -9158,11 +9174,11 @@ module atmos_refraction
        !For: SQRT(beta*ag*ctg^2(z0)) >> 1 and z0 << 70(deg)
        !Formula: 7.43, page: 144
        elemental function refraction_angle_atmos_2D_stratified_f743_r4(deln0,z0,beta) result(alpha_g)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f743_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f743_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_atmos_2D_stratified_f743_r4)
             real(kind=sp),          intent(in) :: deln0 
             real(kind=sp),          intent(in) :: z0 
@@ -9181,11 +9197,11 @@ module atmos_refraction
        end function refraction_angle_atmos_2D_stratified_f743_r4
 
        elemental function refraction_angle_atmos_2D_stratified_f743_r8(deln0,z0,beta) result(alpha_g)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f743_r8
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f743_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_atmos_2D_stratified_f743_r8)
             real(kind=dp),          intent(in) :: deln0 
             real(kind=dp),          intent(in) :: z0 
@@ -9206,11 +9222,11 @@ module atmos_refraction
        !For: z0 = 90(deg)
        !Formula: 7.44, page: 144
         elemental function refraction_angle_atmos_2D_stratified_f744_r4(g,deln0,beta) result(alpha_g)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f744_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f744_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_atmos_2D_stratified_f744_r4)
             real(kind=sp),          intent(in) :: g
             real(kind=sp),          intent(in) :: deln0 
@@ -9222,11 +9238,11 @@ module atmos_refraction
         end function refraction_angle_atmos_2D_stratified_f744_r4
 
         elemental function refraction_angle_atmos_2D_stratified_f744_r8(g,deln0,beta) result(alpha_g)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f744_r8
+        
+            
+             
             !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f744_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_atmos_2D_stratified_f744_r8)
             real(kind=dp),          intent(in) :: g
             real(kind=dp),          intent(in) :: deln0 
@@ -9240,11 +9256,11 @@ module atmos_refraction
         !For: SQRT(beta*ag*ctg^2(z0)) << 1 and z0 ~ 90(deg)
         !Formula: 7.47, page: 144
         elemental function refraction_angle_atmos_2D_stratified_f747_r4(g,deln0,beta) result(alpha_g)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f747_r4
+        
+            
+            
             !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f747_r4
-#endif 
+ 
 !$omp declare simd(refraction_angle_atmos_2D_stratified_f747_r4)
             real(kind=sp),          intent(in) :: g
             real(kind=sp),          intent(in) :: deln0 
@@ -9269,11 +9285,11 @@ module atmos_refraction
         end function refraction_angle_atmos_2D_stratified_f747_r4
 
          elemental function refraction_angle_atmos_2D_stratified_f747_r8(g,deln0,beta) result(alpha_g)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: refraction_angle_atmos_2D_stratified_f747_r8
+        
+            
+           
             !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f747_r8
-#endif 
+ 
 !$omp declare simd(refraction_angle_atmos_2D_stratified_f747_r8)
             real(kind=dp),          intent(in) :: g
             real(kind=dp),          intent(in) :: deln0 
@@ -9302,11 +9318,11 @@ module atmos_refraction
         !между источником излучения и приемником!
         !Formula: 9.7, page: 153
         elemental function analytic_sol_L1_refractive_error_f97_r4(deln0,z0,beta,Hc) result(L1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_refractive_error_f97_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L1_refractive_error_f97_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L1_refractive_error_f97_r4)
              real(kind=sp),        intent(in) :: deln0 
              real(kind=sp),        intent(in) :: z0 
@@ -9338,11 +9354,11 @@ module atmos_refraction
         end function analytic_sol_L1_refractive_error_f97_r4
 
         elemental function analytic_sol_L1_refractive_error_f97_r8(deln0,z0,beta,Hc) result(L1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L1_refractive_error_f97_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L1_refractive_error_f97_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L1_refractive_error_f97_r8)
              real(kind=dp),        intent(in) :: deln0 
              real(kind=dp),        intent(in) :: z0 
@@ -9375,11 +9391,11 @@ module atmos_refraction
 
         !Formula: 9.8, page: 153
         elemental function analytic_sol_L2_refractive_error_f98_r4(deln0,z0,beta,Hc) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L2_refractive_error_f98_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L2_refractive_error_f98_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L2_refractive_error_f98_r4)
              real(kind=sp),        intent(in) :: deln0 
              real(kind=sp),        intent(in) :: z0 
@@ -9415,11 +9431,11 @@ module atmos_refraction
         end function analytic_sol_L2_refractive_error_f98_r4
 
         elemental function analytic_sol_L2_refractive_error_f98_r8(deln0,z0,beta,Hc) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L2_refractive_error_f98_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L2_refractive_error_f98_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L2_refractive_error_f98_r8)
              real(kind=dp),        intent(in) :: deln0 
              real(kind=dp),        intent(in) :: z0 
@@ -9456,17 +9472,17 @@ module atmos_refraction
 
         !Formula: 9.9, page: 153
        elemental function analytic_sol_L3_refractive_error_f99_r4(deln0,z0,beta,Hc) result(L3)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L3_refractive_error_f99_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L3_refractive_error_f99_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L3_refractive_error_f99_r4)
              real(kind=sp),        intent(in) :: deln0 
              real(kind=sp),        intent(in) :: z0 
              real(kind=sp),        intent(in) :: beta 
              real(kind=sp),        intent(in) :: Hc 
-             real(kind=sp)                    :: L2 
+             real(kind=sp)                    :: L3  
              real(kind=sp),        parameter  :: C157079632679489661923132169164 = &
                                                    1.57079632679489661923132169164_sp 
              real(kind=sp),        automatic  :: bta,   tgz0 
@@ -9492,21 +9508,21 @@ module atmos_refraction
              sqr2 = sqrt(2.0_sp*bsctg)
              prob2= prob_integral_r4(sqr2)
              trm2 = trm1-trm2 
-             L2   = trm1*trm2 
+             L3   = trm1*trm2 
         end function analytic_sol_L3_refractive_error_f99_r4
 
          elemental function analytic_sol_L3_refractive_error_f99_r8(deln0,z0,beta,Hc) result(L3)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L3_refractive_error_f99_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L3_refractive_error_f99_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L3_refractive_error_f99_r8)
              real(kind=dp),        intent(in) :: deln0 
              real(kind=dp),        intent(in) :: z0 
              real(kind=dp),        intent(in) :: beta 
              real(kind=dp),        intent(in) :: Hc 
-             real(kind=dp)                    :: L2 
+             real(kind=dp)                    :: L3  
              real(kind=dp),        parameter  :: C157079632679489661923132169164 = &
                                                    1.57079632679489661923132169164_sp 
              real(kind=dp),        automatic  :: bta,   tgz0 
@@ -9539,11 +9555,11 @@ module atmos_refraction
         ! для
         !разности между фазовым путем Ьф и геометрическим
         elemental function analytic_sol_phase_to_geo_path_f96_r4(deln0,z0,beta,Hc) result(delLf)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_phase_to_geo_path_f96_r4
+        
+            
+           
             !dir$ attributes forceinline :: analytic_sol_phase_to_geo_path_f96_r4
-#endif 
+ 
 
              real(kind=sp),        intent(in) :: deln0 
              real(kind=sp),        intent(in) :: z0 
@@ -9568,11 +9584,11 @@ module atmos_refraction
         end function analytic_sol_phase_to_geo_path_f96_r4
 
          elemental function analytic_sol_phase_to_geo_path_f96_r8(deln0,z0,beta,Hc) result(delLf)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_phase_to_geo_path_f96_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_phase_to_geo_path_f96_r8
-#endif 
+ 
 
              real(kind=dp),        intent(in) :: deln0 
              real(kind=dp),        intent(in) :: z0 
@@ -9599,11 +9615,11 @@ module atmos_refraction
         !For: beta*ctg^2(z0) >> 1 and z0 << 70(deg)
         !Formula: 9.10, page: 153
         elemental function analytic_sol_phase_to_geo_path_case_1_f910_r4(deln0,z0,beta,Hc) result(delLf)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_phase_to_geo_path_case_1_f910_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_phase_to_geo_path_case_1_f910_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_phase_to_geo_path_case_1_f910_r4)
              real(kind=sp),        intent(in) :: deln0 
              real(kind=sp),        intent(in) :: z0 
@@ -9632,11 +9648,11 @@ module atmos_refraction
         end function analytic_sol_phase_to_geo_path_case_1_f910_r4
 
          elemental function analytic_sol_phase_to_geo_path_case_1_f910_r8(deln0,z0,beta,Hc) result(delLf)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_phase_to_geo_path_case_1_f910_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_phase_to_geo_path_case_1_f910_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_phase_to_geo_path_case_1_f910_r8)
              real(kind=dp),        intent(in) :: deln0 
              real(kind=dp),        intent(in) :: z0 
@@ -9667,11 +9683,11 @@ module atmos_refraction
         !For: beta*ctg^2(z0) << 1 and z0~90(deg) and 2*beta*Hc >> 1
         !Formula: 9.11, page: 154
         elemental function analytic_sol_L2_refractive_error_f911_r4(deln0,z0,beta,Hc) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L2_refractive_error_f911_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L2_refractive_error_f911_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L2_refractive_error_f911_r4)
              real(kind=sp),        intent(in) :: deln0 
              real(kind=sp),        intent(in) :: z0 
@@ -9682,7 +9698,7 @@ module atmos_refraction
                                                    1.57079632679489661923132169164_sp
              real(kind=sp),        parameter  :: C063661977236758134307553505349 = &
                                                     0.63661977236758134307553505349_sp
-             real(kind=sp),        automatic  :: bta,  sctgz0,
+             real(kind=sp),        automatic  :: bta,  sctgz0
              real(kind=sp),        automatic  :: basctg, exp1 
              real(kind=sp),        automatic  :: sqr1,   t0 
              real(kind=sp),        automatic  :: trm1,   trm2 
@@ -9701,11 +9717,11 @@ module atmos_refraction
         end function analytic_sol_L2_refractive_error_f911_r4
 
         elemental function analytic_sol_L2_refractive_error_f911_r8(deln0,z0,beta,Hc) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L2_refractive_error_f911_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L2_refractive_error_f911_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L2_refractive_error_f911_r8)
              real(kind=dp),        intent(in) :: deln0 
              real(kind=dp),        intent(in) :: z0 
@@ -9716,7 +9732,7 @@ module atmos_refraction
                                                    1.57079632679489661923132169164_dp
              real(kind=dp),        parameter  :: C063661977236758134307553505349 = &
                                                     0.63661977236758134307553505349_dp
-             real(kind=dp),        automatic  :: bta,  sctgz0,
+             real(kind=dp),        automatic  :: bta,  sctgz0
              real(kind=dp),        automatic  :: basctg, exp1 
              real(kind=dp),        automatic  :: sqr1,   t0 
              real(kind=dp),        automatic  :: trm1,   trm2 
@@ -9736,22 +9752,22 @@ module atmos_refraction
 
         !Formula: 9.12, page: 154
         elemental function analytic_sol_L3_refractive_error_f912_r4(deln0,z0,beta,Hc) result(L3)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L3_refractive_error_f912_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_L3_refractive_error_f912_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_L3_refractive_error_f912_r4)
              real(kind=sp),        intent(in) :: deln0 
              real(kind=sp),        intent(in) :: z0 
              real(kind=sp),        intent(in) :: beta 
              real(kind=sp),        intent(in) :: Hc 
-             real(kind=sp)                    :: L2 
+             real(kind=sp)                    :: L3  
              real(kind=sp),        parameter  :: C157079632679489661923132169164 = &
                                                    1.57079632679489661923132169164_sp
              real(kind=sp),        parameter  :: C063661977236758134307553505349 = &
                                                     0.63661977236758134307553505349_sp
-             real(kind=sp),        automatic  :: bta,  sctgz0,
+             real(kind=sp),        automatic  :: bta,  sctgz0
              real(kind=sp),        automatic  :: basctg, exp1 
              real(kind=sp),        automatic  :: sqr1,   t0 
              real(kind=sp),        automatic  :: trm1,   trm2 
@@ -9766,26 +9782,26 @@ module atmos_refraction
                       sqr*ctgz0
              t0     = deln0*sqr 
              trm1   = t0*exp1*C157079632679489661923132169164 
-             L2     = trm1*trm2 
+             L3     = trm1*trm2 
         end function analytic_sol_L3_refractive_error_f912_r4
 
         elemental function analytic_sol_L3_refractive_error_f912_r8(deln0,z0,beta,Hc) result(L3)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_L3_refractive_error_f912_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_L3_refractive_error_f912_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_L3_refractive_error_f912_r8)
              real(kind=dp),        intent(in) :: deln0 
              real(kind=dp),        intent(in) :: z0 
              real(kind=dp),        intent(in) :: beta 
              real(kind=dp),        intent(in) :: Hc 
-             real(kind=dp)                    :: L2 
+             real(kind=dp)                    :: L3  
              real(kind=dp),        parameter  :: C157079632679489661923132169164 = &
                                                    1.57079632679489661923132169164_dp
              real(kind=dp),        parameter  :: C063661977236758134307553505349 = &
                                                     0.63661977236758134307553505349_dp
-             real(kind=dp),        automatic  :: bta,  sctgz0,
+             real(kind=dp),        automatic  :: bta,  sctgz0
              real(kind=dp),        automatic  :: basctg, exp1 
              real(kind=dp),        automatic  :: sqr1,   t0 
              real(kind=dp),        automatic  :: trm1,   trm2 
@@ -9807,11 +9823,11 @@ module atmos_refraction
         ! для
         !разности между фазовым путем Ьф и геометрическим
         elemental function analytic_sol_phase_to_geo_path_case_2_f96_r4(deln0,z0,beta,Hc) result(delLf)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_phase_to_geo_path_case_2_f96_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_phase_to_geo_path_case_2_f96_r4
-#endif 
+ 
 
              real(kind=sp),        intent(in) :: deln0 
              real(kind=sp),        intent(in) :: z0 
@@ -9836,11 +9852,11 @@ module atmos_refraction
         end function analytic_sol_phase_to_geo_path_case_2_f96_r4
 
         elemental function analytic_sol_phase_to_geo_path_case_2_f96_r8(deln0,z0,beta,Hc) result(delLf)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_phase_to_geo_path_case_2_f96_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_phase_to_geo_path_case_2_f96_r8
-#endif 
+ 
 
              real(kind=dp),        intent(in) :: deln0 
              real(kind=dp),        intent(in) :: z0 
@@ -9854,7 +9870,7 @@ module atmos_refraction
              real(kind=dp),        automatic  :: trm1, trm2 
              cosz0 = cos(z0)
              t0    = 1.0_dp-deln0*beta*6378.0_dp 
-             L1    = analytic_sol_L1_refractive_error_f97_r8deln0,z0,beta,Hc)
+             L1    = analytic_sol_L1_refractive_error_f97_r8(deln0,z0,beta,Hc)
              rat1  = t0/(beta*cosz0) 
              L2    = analytic_sol_L2_refractive_error_f911_r8(deln0,z0,beta,Hc)
              rat2  = (deln0*beta)/cosz0 
@@ -9867,11 +9883,11 @@ module atmos_refraction
         !For: z0 == 90(deg)
         !Formula: 9.13, page: 154
         elemental function analytic_sol_phase_to_geo_path_case_3_f913_r4(deln0,beta) result(delLf)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_phase_to_geo_path_case_3_f913_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_phase_to_geo_path_case_3_f913_r4
-#endif 
+ 
 
              real(kind=sp),        intent(in) :: deln0 
              real(kind=sp),        intent(in) :: beta 
@@ -9893,11 +9909,11 @@ module atmos_refraction
         end function analytic_sol_phase_to_geo_path_case_3_f913_r4
 
         elemental function analytic_sol_phase_to_geo_path_case_3_f913_r8(deln0,beta) result(delLf)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_phase_to_geo_path_case_3_f913_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_phase_to_geo_path_case_3_f913_r8
-#endif 
+ 
 
              real(kind=dp),        intent(in) :: deln0 
              real(kind=dp),        intent(in) :: beta 
@@ -9924,11 +9940,11 @@ module atmos_refraction
         !Phase shift between ionospheric emitter and earth receiver.
         !Formula: 9.17, page: 155
         elemental function analytic_sol_phase_shift_ionosphere_to_earth_f917_r4(fc,Nmf,H2,H1,z0) result(L1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_phase_shift_ionosphere_to_earth_f917_r4
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_phase_shift_ionosphere_to_earth_f917_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_phase_shift_ionosphere_to_earth_f917_r4)
             real(kind=sp),         intent(in) :: fc
             real(kind=sp),         intent(in) :: Nmf 
@@ -9993,11 +10009,11 @@ module atmos_refraction
         end function analytic_sol_phase_shift_ionosphere_to_earth_f917_r4
         
         elemental function analytic_sol_phase_shift_ionosphere_to_earth_f917_r8(fc,Nmf,H2,H1,z0) result(L1)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_phase_shift_ionosphere_to_earth_f917_r8
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_phase_shift_ionosphere_to_earth_f917_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_phase_shift_ionosphere_to_earth_f917_r8)
             real(kind=dp),         intent(in) :: fc
             real(kind=dp),         intent(in) :: Nmf 
@@ -10064,11 +10080,11 @@ module atmos_refraction
         !Formula: 9.18, page: 155 
         !Phase shift between ionospheric emitter and earth receiver.
         elemental function analytic_sol_phase_shift_ionosphere_to_earth_f918_r4(fc,Nmf,beta,H2,Hc,z0) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_phase_shift_ionosphere_to_earth_f918_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_phase_shift_ionosphere_to_earth_f918_r4
-#endif 
+ 
 !$omp declare simd(analytic_sol_phase_shift_ionosphere_to_earth_f918_r4)
             real(kind=sp),         intent(in) :: fc
             real(kind=sp),         intent(in) :: Nmf 
@@ -10111,11 +10127,11 @@ module atmos_refraction
        end function analytic_sol_phase_shift_ionosphere_to_earth_f918_r4
 
        elemental function analytic_sol_phase_shift_ionosphere_to_earth_f918_r8(fc,Nmf,beta,H2,Hc,z0) result(L2)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_phase_shift_ionosphere_to_earth_f918_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_phase_shift_ionosphere_to_earth_f918_r8
-#endif 
+ 
 !$omp declare simd(analytic_sol_phase_shift_ionosphere_to_earth_f918_r8)
             real(kind=dp),         intent(in) :: fc
             real(kind=dp),         intent(in) :: Nmf 
@@ -10160,11 +10176,11 @@ module atmos_refraction
        !Formula: 9.14, page: 154
        !Phase shift between ionospheric emitter and earth receiver.
        elemental function analytic_sol_phase_shift_ionosphere_to_earth_f914_r4(fc,Nmf,beta,H2,H1,z0) result(delLf)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_phase_shift_ionosphere_to_earth_f914_r4
+        
+            
+            
             !dir$ attributes forceinline :: analytic_sol_phase_shift_ionosphere_to_earth_f914_r4
-#endif 
+ 
 
             real(kind=sp),         intent(in) :: fc
             real(kind=sp),         intent(in) :: Nmf 
@@ -10180,11 +10196,11 @@ module atmos_refraction
        end function analytic_sol_phase_shift_ionosphere_to_earth_f914_r4
 
         elemental function analytic_sol_phase_shift_ionosphere_to_earth_f914_r8(fc,Nmf,beta,H2,H1,z0) result(delLf)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: analytic_sol_phase_shift_ionosphere_to_earth_f914_r8
+        
+            
+             
             !dir$ attributes forceinline :: analytic_sol_phase_shift_ionosphere_to_earth_f914_r8
-#endif 
+ 
 
             real(kind=dp),         intent(in) :: fc
             real(kind=dp),         intent(in) :: Nmf 
@@ -10205,11 +10221,11 @@ module atmos_refraction
        ! the known emitter height (absolute)
        ! Formula: 9.21, page: 157
        elemental function emitter_known_height_f921_r4(z0,L) result(Hc)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: emitter_known_height_f921_r4
+        
+            
+            
             !dir$ attributes forceinline :: emitter_known_height_f921_r4
-#endif 
+ 
 !$omp declare simd(emitter_known_height_f921_r4)
             real(kind=sp),         intent(in) :: z0 
             real(kind=sp),         intent(in) :: L 
@@ -10227,11 +10243,11 @@ module atmos_refraction
        end function emitter_known_height_f921_r4
 
         elemental function emitter_known_height_f921_r8(z0,L) result(Hc)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: emitter_known_height_f921_r8
+        
+            
+            
             !dir$ attributes forceinline :: emitter_known_height_f921_r8
-#endif 
+
 !$omp declare simd(emitter_known_height_f921_r8)
             real(kind=dp),         intent(in) :: z0 
             real(kind=dp),         intent(in) :: L 
@@ -10251,11 +10267,9 @@ module atmos_refraction
        !Height delta due to earth atmos refraction
        !Formula: 9.24, page: 157
        elemental function emitter_height_delta_atmos_refraction_f924_r4(del,z0,L) result(dHc)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: emitter_height_delta_atmos_refraction_f924_r4
-            !dir$ attributes forceinline :: emitter_height_delta_atmos_refraction_f924_r4
-#endif 
+!dir$ attributes forceinline :: emitter_height_delta_atmos_refraction_f924_r4
+            
+
 !$omp declare simd(emitter_height_delta_atmos_refraction_f924_r4)
             real(kind=sp),         intent(in) :: del 
             real(kind=sp),         intent(in) :: z0 
@@ -10277,11 +10291,11 @@ module atmos_refraction
        end function emitter_height_delta_atmos_refraction_f924_r4
 
        elemental function emitter_height_delta_atmos_refraction_f924_r8(del,z0,L) result(dHc)
-#if defined(__INTEL_COMPILER) && !defined(__GNUC__)           
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: emitter_height_delta_atmos_refraction_f924_r8
-            !dir$ attributes forceinline :: emitter_height_delta_atmos_refraction_f924_r8
-#endif 
+  !dir$ attributes forceinline :: emitter_height_delta_atmos_refraction_f924_r8   
+            
+          
+          
+
 !$omp declare simd(emitter_height_delta_atmos_refraction_f924_r8)
             real(kind=dp),         intent(in) :: del 
             real(kind=dp),         intent(in) :: z0 
@@ -10301,7 +10315,7 @@ module atmos_refraction
             t0     = 6378.0_dp-cosz0 
             dHc    = del*sinz0*sqr-t0 
        end function emitter_height_delta_atmos_refraction_f924_r8
-
-       !This is the End.
+#endif 
+       
 
 end module atmos_refraction
