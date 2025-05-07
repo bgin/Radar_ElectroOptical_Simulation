@@ -1163,7 +1163,7 @@ module atmos_refraction
             L3     = trm2*trm3 
        end function analytic_sol_L3_gl5cm_f43_r8
 
-#if 0
+
 
        elemental function refraction_angle_for_gl5cm_f41_r4(n0,nh,z0,beta,dn0,H) result(alpha)
         
@@ -1876,7 +1876,7 @@ module atmos_refraction
              real(kind=sp), parameter :: C1666666666666666666666666666667 = 1.666666666666666666666666666667_sp
              real(kind=sp), parameter :: C48                              = 4.8_sp 
              real(kind=sp), automatic :: delnM, R02d, sqr, sqrp3
-             real(kind=sp), automatic :: t0, trm1, trm2 
+             real(kind=sp), automatic ::  trm1, trm2 
              R02d   = R0/(d+d)
              delnM  = compute_delnM_f414_r4(fc,Nmf)
              sqr    = sqrt(R02d)
@@ -1902,7 +1902,7 @@ module atmos_refraction
              real(kind=dp), parameter :: C1666666666666666666666666666667 = 1.666666666666666666666666666667_dp
              real(kind=dp), parameter :: C48                              = 4.8_dp 
              real(kind=dp), automatic :: delnM, R02d, sqr, sqrp3
-             real(kind=dp), automatic :: t0, trm1, trm2 
+             real(kind=dp), automatic ::  trm1, trm2 
              R02d   = R0/(d+d)
              delnM  = compute_delnM_f414_r8(fc,Nmf)
              sqr    = sqrt(R02d)
@@ -1967,7 +1967,7 @@ module atmos_refraction
             real(kind=sp),  intent(in) :: H1 
             real(kind=sp),  intent(in) :: H2 
             real(kind=sp)  :: n 
-            real(kind=sp), automatic :: delNm, rat1, sqr1, sqr2
+            real(kind=sp), automatic :: delNm, rat1
             real(kind=sp), automatic :: rat2, trm1, trm2, t0, t1  
             t0   = h-H1 
             t1   = H2-H1 
@@ -1992,7 +1992,7 @@ module atmos_refraction
             real(kind=dp),  intent(in) :: H1 
             real(kind=dp),  intent(in) :: H2 
             real(kind=dp)  :: n 
-            real(kind=dp), automatic :: delNm, rat1, sqr1, sqr2
+            real(kind=dp), automatic :: delNm, rat1
             real(kind=dp), automatic :: rat2, trm1, trm2, t0, t1  
             t0   = h-H1 
             t1   = H2-H1 
@@ -2135,8 +2135,8 @@ module atmos_refraction
             real(kind=sp)              :: L12 
             real(kind=sp),  parameter  :: C314159265358979323846264338328 = 3.14159265358979323846264338328_sp
             real(kind=sp),  automatic  :: ctgz0, piba, bactgz0, sctgz0  
-            real(kind=sp),  automatic  :: prob1, prob2, sqr1, sqr2 
-            real(kind=sp),  automatic  :: trm1, trm2, exp1, earg, t0, t1 
+            real(kind=sp),  automatic  :: prob1, prob2 
+            real(kind=sp),  automatic  :: trm1, trm2, exp1, t0, t1 
             piba    = C314159265358979323846264338328*beta*a*0.5_sp 
             ctgz0   = 1.0_sp/tan(z0)
             sctgz0  = ctgz0*ctgz0 
@@ -2166,8 +2166,8 @@ module atmos_refraction
             real(kind=dp)              :: L12 
             real(kind=dp),  parameter  :: C314159265358979323846264338328 = 3.14159265358979323846264338328_dp
             real(kind=dp),  automatic  ::  ctgz0, piba, bactgz0, sctgz0  
-            real(kind=dp),  automatic  :: prob1, prob2, sqr1, sqr2 
-            real(kind=dp),  automatic  :: trm1, trm2, exp1, earg, t0, t1 
+            real(kind=dp),  automatic  :: prob1, prob2
+            real(kind=dp),  automatic  :: trm1, trm2, exp1, t0, t1 
             piba    = C314159265358979323846264338328*beta*a*0.5_dp 
             ctgz0   = 1.0_dp/tan(z0)
             sctgz0  = ctgz0*ctgz0 
@@ -2197,8 +2197,8 @@ module atmos_refraction
             real(kind=sp)              :: L12 
             real(kind=sp),  parameter  :: C314159265358979323846264338328 = 3.14159265358979323846264338328_sp
             real(kind=sp),  automatic  :: ctgz0, piba, bactgz0, sctgz0  
-            real(kind=sp),  automatic  :: prob1, prob2, sqr1, sqr2 
-            real(kind=sp),  automatic  :: trm1, trm2, exp1, earg, t0, t1 
+            real(kind=sp),  automatic  :: prob1, prob2
+            real(kind=sp),  automatic  :: trm1, trm2, exp1, t0, t1 
             piba    = C314159265358979323846264338328*beta*a
             ctgz0   = 1.0_sp/tan(z0)
             sctgz0  = ctgz0*ctgz0 
@@ -2228,8 +2228,8 @@ module atmos_refraction
             real(kind=dp)              :: L12 
             real(kind=dp),  parameter  :: C314159265358979323846264338328 = 3.14159265358979323846264338328_dp
             real(kind=dp),  automatic  :: ctgz0, piba, bactgz0, sctgz0  
-            real(kind=dp),  automatic  :: prob1, prob2, sqr1, sqr2 
-            real(kind=dp),  automatic  :: trm1, trm2, exp1, earg, t0, t1 
+            real(kind=dp),  automatic  :: prob1, prob2 
+            real(kind=dp),  automatic  :: trm1, trm2, exp1, t0, t1 
             piba    = C314159265358979323846264338328*beta*a
             ctgz0   = 1.0_dp/tan(z0)
             sctgz0  = ctgz0*ctgz0 
@@ -2395,7 +2395,7 @@ module atmos_refraction
             real(kind=sp),   intent(in) :: a 
             real(kind=sp),   intent(in) :: z0 
             real(kind=sp) :: L22 
-            real(kind=sp),   automatic :: stgz0, delnM, scosz0, b4, tgz0  
+            real(kind=sp),   automatic :: stgz0, delnM, b4, tgz0  
             real(kind=sp),   automatic :: b2, b3, H1s, H2s 
             real(kind=sp),   automatic :: p, q, g, b, H2H1p4 
             real(kind=sp),   automatic :: trm1, trm2, lrat, rrat 
@@ -2449,7 +2449,7 @@ module atmos_refraction
             real(kind=dp),   intent(in) :: a 
             real(kind=dp),   intent(in) :: z0 
             real(kind=dp) :: L22 
-            real(kind=dp),   automatic :: stgz0, delnM, scosz0, b4, tgz0  
+            real(kind=dp),   automatic :: stgz0, delnM, b4, tgz0  
             real(kind=dp),   automatic :: b2, b3, H1s, H2s 
             real(kind=dp),   automatic :: p, q, g, b, H2H1p4 
             real(kind=dp),   automatic :: trm1, trm2, lrat, rrat 
@@ -3036,7 +3036,7 @@ module atmos_refraction
             t1   = H2*(sqrH2-sqrH1)-0.3333333333333333333333_sp* &
                    (H2*sqrH2-H1*sqrH1)
             trm1 = t0*t1 
-            t2   = C141421356237309504880168872421*delnNm*delNm* &
+            t2   = C141421356237309504880168872421*delNm*delNm* &
                    C508404222051705624896764260500215822/(sH2H1*sH2H1)
             t3   = 1.0_sp/sqrH2*(1.2_sp*H2s*H2+2.0_sp*g*H2)
             t0   = 1.0_sp/sqrH1*((H1s*H1)*0.2_sp-H2*H1s+ &
@@ -3086,7 +3086,7 @@ module atmos_refraction
             t1   = H2*(sqrH2-sqrH1)-0.3333333333333333333333_dp* &
                    (H2*sqrH2-H1*sqrH1)
             trm1 = t0*t1 
-            t2   = C141421356237309504880168872421*delnNm*delNm* &
+            t2   = C141421356237309504880168872421*delNm*delNm* &
                    C508404222051705624896764260500215822/(sH2H1*sH2H1)
             t3   = 1.0_dp/sqrH2*(1.2_dp*H2s*H2+2.0_dp*g*H2)
             t0   = 1.0_dp/sqrH1*((H1s*H1)*0.2_dp-H2*H1s+ &
@@ -3653,9 +3653,9 @@ module atmos_refraction
             q       = (beta*R0*0.5_sp)*stgz0 
             exp1    = exp(2.0_sp*q-2.0_sp*q*ps2)
             t0      = 1.0_sp+(q/btHc0)
-            trm1    = t0*(1.0_sp-exp1/p) 
+            trm1    = t0*(1.0_sp-exp1/q) 
             sqr2q   = sqrt(4.0_sp*q)
-            prob1   = prob_integral_r4(p*sqr2q)
+            prob1   = prob_integral_r4(q*sqr2q)
             prob2   = prob_integral_r4(sqr2q)
             exp2    = exp(q)
             t0      = 4.0_sp*q+q/btHc0+(4.0_sp*q*q)/btHc0
@@ -3690,9 +3690,9 @@ module atmos_refraction
             q       = (beta*R0*0.5_dp)*stgz0 
             exp1    = exp(2.0_dp*q-2.0_dp*q*ps)
             t0      = 1.0_dp+(q/btHc0)
-            trm1    = t0*(1.0_dp-exp1/p) 
+            trm1    = t0*(1.0_dp-exp1/q) 
             sqr2q   = sqrt(4.0_dp*q)
-            prob1   = prob_integral_r8(p*sqr2q)
+            prob1   = prob_integral_r8(q*sqr2q)
             prob2   = prob_integral_r8(sqr2q)
             exp2    = exp(q)
             t0      = 4.0_dp*q+q/btHc0+(4.0_sp*q*q)/btHc0
@@ -4720,7 +4720,7 @@ module atmos_refraction
             real(kind=sp),    intent(in) :: H2 
             real(kind=sp),    intent(in) :: Hc 
             real(kind=sp)                :: L21 
-            real(kind=sp),    automatic  :: delnM, ctgz0 
+            real(kind=sp),    automatic  :: delNm, ctgz0 
             real(kind=sp),    automatic  :: ssinz0,H10 
             real(kind=sp),    automatic  :: H20,Hc0 
             real(kind=sp),    automatic  :: stgz0, Hc0R0
@@ -4737,7 +4737,7 @@ module atmos_refraction
             t0    = tan(z0)
             ctgz0 = 1.0_sp/t0 
             stgz0 = t0*t0 
-            delnNm= compute_delnM_f414_r4(fc,Nmf)
+            delNm= compute_delnM_f414_r4(fc,Nmf)
             t0    = 1.0_sp+2.0_sp*stgz0*(H10/R0)
             sqr1  = sqrt(t0)
             t1    = 1.0_sp+2.0_sp*stgz0*(Hc0/R0)
@@ -4802,7 +4802,7 @@ module atmos_refraction
             trm3  = sqr3*sqr2-sqr3*sqr2 
             L21   = trm1*trm2*trm3 
        end function 
-       
+    
        ! Formula: 5.53a, page: 105 
        elemental function analytic_sol_L22_whole_atmosphere_f553a_r4(fc,Nmf,beta,R0,delnA,        &
                                                                     z0,H0,H1,H2,Hc) result(L22)
@@ -5890,6 +5890,7 @@ module atmos_refraction
             del21   = analytic_sol_del21_whole_atmos_f565_r4(delnA,z0,beta,H10,Hc0,R0)
             del22   = analytic_sol_del22_whole_atmos_f565_r4(delnA,fc,Nmf,z0,H10,          &
                                                                  Hc0,beta,d,h,R0)
+            del2    = del21+del22 
        end function analytic_sol_del2_whole_atmos_wv5cm3m_f558_r4
 
        elemental function analytic_sol_del2_whole_atmos_wv5cm3m_f558_r8(fc,Nmf,delnA,z0,H10,           &
@@ -5914,6 +5915,7 @@ module atmos_refraction
             del21   = analytic_sol_del21_whole_atmos_f565_r8(delnA,z0,beta,H10,Hc0,R0)
             del22   = analytic_sol_del22_whole_atmos_f565_r8(delnA,fc,Nmf,z0,H10,          &
                                                                  Hc0,beta,d,h,R0)
+            del2    = del21+del22 
        end function analytic_sol_del2_whole_atmos_wv5cm3m_f558_r8
 
        ! Formule: 5.54, page: 106
@@ -6134,7 +6136,7 @@ module atmos_refraction
             stgz0  = tgz0*tgz0 
             t0     = 1.0_sp/tgz0 
             sctgz0 = t0*t0 
-            delnNm = compute_delnM_f414_r4(fc,Nmf)
+            delNm = compute_delnM_f414_r4(fc,Nmf)
             t1     = R0/(stgz0+stgz0) 
             earg   = beta*(t1+H20)
             exp1   = exp(earg)
@@ -6179,7 +6181,7 @@ module atmos_refraction
             stgz0  = tgz0*tgz0 
             t0     = 1.0_dp/tgz0 
             sctgz0 = t0*t0 
-            delnNm = compute_delnM_f414_r8(fc,Nmf)
+            delNm = compute_delnM_f414_r8(fc,Nmf)
             t1     = R0/(stgz0+stgz0) 
             earg   = beta*(t1+H20)
             exp1   = exp(earg)
@@ -6225,7 +6227,7 @@ module atmos_refraction
             stgz0  = tgz0*tgz0 
             t0     = 1.0_sp/tgz0 
             sctgz0 = t0*t0 
-            delnNm = compute_delnM_f414_r4(fc,Nmf)
+            delNm = compute_delnM_f414_r4(fc,Nmf)
             t1     = R0/stgz0 
             earg   = beta*(t1+H20)
             exp1   = exp(earg)
@@ -6270,7 +6272,7 @@ module atmos_refraction
             stgz0  = tgz0*tgz0 
             t0     = 1.0_dp/tgz0 
             sctgz0 = t0*t0 
-            delnNm = compute_delnM_f414_r8(fc,Nmf)
+            delNm = compute_delnM_f414_r8(fc,Nmf)
             t1     = R0/stgz0 
             earg   = beta*(t1+H20)
             exp1   = exp(earg)
@@ -6372,7 +6374,7 @@ module atmos_refraction
             t0    = Hc0/R0
             sqr2  = sqrt(1.0_dp+t1*t0) 
             trm3  = exp1/sqr2 
-            L13   = trm1*(trm2-trm3)
+            L31   = trm1*(trm2-trm3)
       end function analytic_sol_L34_whole_atmos_wv5cm3m_f579_r8
 
       !Рефракция радиоволн (5 см < X < 3 м)
@@ -6991,7 +6993,7 @@ module atmos_refraction
             sdelnA = delnA*delnA 
             t0     = HCH0+HCH0 
             t1     = R0/t0 
-            btHb0  = bt*HCH0 
+            btHb0  = beta*HCH0 
             sqr    = sqrt(t1)
             trm1   = -sdelnA*beta*R0 
             exp1   = exp(-btHb0)
@@ -7237,7 +7239,7 @@ module atmos_refraction
             RHB0  = R0*HBH0 
             sqr2  = sqrt(0.5_sp*RHB0)
             sdelnA= delnA*delnA 
-            t0    = sdelnA*bt*R0 
+            t0    = sdelnA*beta*R0 
             trm2  = t0*sqr2 
             sqr1  = sqrt(RHB0+RHB0)
             trm1  = delnA*beta*sqr1 
@@ -7267,7 +7269,7 @@ module atmos_refraction
             RHB0  = R0*HBH0 
             sqr2  = sqrt(0.5_dp*RHB0)
             sdelnA= delnA*delnA 
-            t0    = sdelnA*bt*R0 
+            t0    = sdelnA*beta*R0 
             trm2  = t0*sqr2 
             sqr1  = sqrt(RHB0+RHB0)
             trm1  = delnA*beta*sqr1 
@@ -7298,7 +7300,7 @@ module atmos_refraction
             RHC0  = R0*HCH0 
             sqr2  = sqrt(0.5_sp*RHC0)
             sdelnA= delnA*delnA 
-            t0    = sdelnA*bt*R0 
+            t0    = sdelnA*beta*R0 
             trm2  = t0*sqr2 
             sqr1  = sqrt(RHC0+RHC0)
             trm1  = delnA*beta*sqr1 
@@ -7328,7 +7330,7 @@ module atmos_refraction
             RHC0  = R0*HCH0 
             sqr2  = sqrt(0.5_dp*RHC0)
             sdelnA= delnA*delnA 
-            t0    = sdelnA*bt*R0 
+            t0    = sdelnA*beta*R0 
             trm2  = t0*sqr2 
             sqr1  = sqrt(RHC0+RHC0)
             trm1  = delnA*beta*sqr1 
@@ -7877,7 +7879,7 @@ module atmos_refraction
             real(kind=sp),         automatic  :: t1,    t2 
             real(kind=sp),         automatic  :: t3,    trm1 
             real(kind=sp),         automatic  :: trm2,  trm3 
-            btR0   = bt*R0 
+            btR0   = beta*R0 
             H10    = H1-H0 
             t0     = 0.5_sp*(C314159265358979323846264338328*btR0)
             sqr1   = sqrt(t0)
@@ -7940,7 +7942,7 @@ module atmos_refraction
             real(kind=dp),         automatic  :: t1,    t2 
             real(kind=dp),         automatic  :: t3,    trm1 
             real(kind=dp),         automatic  :: trm2,  trm3 
-            btR0   = bt*R0 
+            btR0   = beta*R0 
             H10    = H1-H0 
             t0     = 0.5_dp*(C314159265358979323846264338328*btR0)
             sqr1   = sqrt(t0)
@@ -8009,7 +8011,7 @@ module atmos_refraction
             sH2H1   = t0*t0 
             H30     = H3-H0 
             btH20   = beta*H20 
-            pibtR0  = 0.5_sp*(C314159265358979323846264338328*bt*R0) 
+            pibtR0  = 0.5_sp*(C314159265358979323846264338328*beta*R0) 
             exp1    = exp(btH20)
             t0      = H20/sH2H1
             t1      = 1.333333333333333333333333333333_sp*delnM 
@@ -8059,7 +8061,7 @@ module atmos_refraction
             sH2H1   = t0*t0 
             H30     = H3-H0 
             btH20   = beta*H20 
-            pibtR0  = 0.5_dp*(C314159265358979323846264338328*bt*R0) 
+            pibtR0  = 0.5_dp*(C314159265358979323846264338328*beta*R0) 
             exp1    = exp(btH20)
             t0      = H20/sH2H1
             t1      = 1.333333333333333333333333333333_dp*delnM 
@@ -8093,6 +8095,7 @@ module atmos_refraction
             real(kind=sp),         intent(in) :: R0 
             real(kind=sp),         intent(in) :: H3 
             real(kind=sp),         intent(in) :: H2 
+            real(kind=sp),         intent(in) :: H1 
             real(kind=sp),         intent(in) :: H0 
             real(kind=sp)                     :: alpha_c 
             real(kind=sp),         parameter  :: C314159265358979323846264338328 = &
@@ -8104,7 +8107,7 @@ module atmos_refraction
             real(kind=sp),         automatic  :: t0,    trm1 
           
             H20     = H2-H0 
-            pibtR0  = 0.5_sp*(C314159265358979323846264338328*bt*R0) 
+            pibtR0  = 0.5_sp*(C314159265358979323846264338328*beta*R0) 
             delnM   = compute_delnM_f414_r4(fc,Nmf)
             H30     = H3-H0 
             exp1    = exp(beta*H20)
@@ -8112,7 +8115,7 @@ module atmos_refraction
             trm1    = -delnM*sqr1*exp1 
             t0      = 2.0_sp*beta*H30 
             sqr2    = sqrt(t0)
-            prob1   = prob(sqr2)
+            prob1   = prob_integral_r4(sqr2)
             alpha_c = trm1*prob1 
        end function refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r4
 
@@ -8131,6 +8134,7 @@ module atmos_refraction
             real(kind=dp),         intent(in) :: R0 
             real(kind=dp),         intent(in) :: H3 
             real(kind=dp),         intent(in) :: H2 
+            real(kind=dp),         intent(in) :: H1 
             real(kind=dp),         intent(in) :: H0 
             real(kind=dp)                     :: alpha_c 
             real(kind=dp),         parameter  :: C314159265358979323846264338328 = &
@@ -8142,7 +8146,7 @@ module atmos_refraction
             real(kind=dp),         automatic  :: t0,    trm1 
           
             H20     = H2-H0 
-            pibtR0  = 0.5_dp*(C314159265358979323846264338328*bt*R0) 
+            pibtR0  = 0.5_dp*(C314159265358979323846264338328*beta*R0) 
             delnM   = compute_delnM_f414_r8(fc,Nmf)
             H30     = H3-H0 
             exp1    = exp(beta*H20)
@@ -8150,7 +8154,7 @@ module atmos_refraction
             trm1    = -delnM*sqr1*exp1 
             t0      = 2.0_dp*beta*H30 
             sqr2    = sqrt(t0)
-            prob1   = prob(sqr2)
+            prob1   = prob_integral_r8(sqr2)
             alpha_c = trm1*prob1 
        end function refraction_angle_C_earth_atmos_case_3_wv5cm3m_f627_r8
 
@@ -8271,7 +8275,7 @@ module atmos_refraction
              ctgz0   = 1.0_dp/tgz0 
              t0      = cos(z0)
              scosz0  = t0*t0 
-             btctgz0 = beta*6378.0_dp*sctgz0 
+             btctgz0 = beta*6378.0_dp*stgz0 
              exp1    = exp(0.5_dp*btctgz0)
              t1      = 2.0_dp*btHb 
              sqr3    = sqrt(btctgz0+t1)
@@ -8304,7 +8308,7 @@ module atmos_refraction
 
       !For z0 << 80(deg)
       !Formula: 7.4, page: 132
-       elemental function refraction_angle_C_earth_atmos_stratified_case_1_f74_r4(beta,z0,deln0,delnc,           &
+       elemental function refraction_angle_C_earth_atmos_stratified_case_1_f74_r4(beta,z0,delnc,           &
                                                                          delnb,delnh,Hb,Hh,Hc) result(alpha_c)
         
             
@@ -8314,7 +8318,6 @@ module atmos_refraction
 !$omp declare simd(refraction_angle_C_earth_atmos_stratified_case_1_f74_r4)
              real(kind=sp),         intent(in) :: beta 
              real(kind=sp),         intent(in) :: z0 
-             real(kind=sp),         intent(in) :: deln0 
              real(kind=sp),         intent(in) :: delnc 
              real(kind=sp),         intent(in) :: delnb 
              real(kind=sp),         intent(in) :: delnh 
@@ -8341,7 +8344,7 @@ module atmos_refraction
              alpha_c= trm1+trm2 
        end function refraction_angle_C_earth_atmos_stratified_case_1_f74_r4
 
-       elemental function refraction_angle_C_earth_atmos_stratified_case_1_f74_r8(beta,z0,deln0,delnc,           &
+       elemental function refraction_angle_C_earth_atmos_stratified_case_1_f74_r8(beta,z0,delnc,           &
                                                                          delnb,delnh,Hb,Hh,Hc) result(alpha_c)
         
             
@@ -8351,7 +8354,6 @@ module atmos_refraction
 !$omp declare simd(refraction_angle_C_earth_atmos_stratified_case_1_f74_r8)
              real(kind=dp),         intent(in) :: beta 
              real(kind=dp),         intent(in) :: z0 
-             real(kind=dp),         intent(in) :: deln0 
              real(kind=dp),         intent(in) :: delnc 
              real(kind=dp),         intent(in) :: delnb 
              real(kind=dp),         intent(in) :: delnh 
@@ -8380,7 +8382,7 @@ module atmos_refraction
 
        !For: 80(deg) << z0 << 90(deg)
        !Formula: 7.5, page: 133
-       elemental function refraction_angle_C_earth_atmos_stratified_case_2_f75_r4(z0,deln0,delnc,Hb,Hh,Hc)  &
+       elemental function refraction_angle_C_earth_atmos_stratified_case_2_f75_r4(z0,deln0,Hb,Hh,Hc)  &
                                                                          result(alpha_c)
         
             
@@ -8389,7 +8391,7 @@ module atmos_refraction
  
 !$omp declare simd(refraction_angle_C_earth_atmos_stratified_case_2_f75_r4)
              real(kind=sp),         intent(in) :: z0 
-             real(kind=sp),         intent(in) :: delnc 
+             real(kind=sp),         intent(in) :: deln0 
              real(kind=sp),         intent(in) :: Hb 
              real(kind=sp),         intent(in) :: Hh 
              real(kind=sp),         intent(in) :: Hc
@@ -8412,7 +8414,7 @@ module atmos_refraction
              Hha   = (Hh+Hh)*C000015678896205707118218877391
              sctgz0= t1*t1 
              HbHc  = Hb-Hc
-             trm1  = (delnc*6378.0_sp)/ssinz0
+             trm1  = (deln0*6378.0_sp)/ssinz0
              HcHh  = Hc-Hh 
              t0    = sctgz0+Hca 
              sqr1  = sqrt(t0)
@@ -8426,7 +8428,7 @@ module atmos_refraction
              alpha_c = trm1*trm2 
        end function refraction_angle_C_earth_atmos_stratified_case_2_f75_r4
 
-        elemental function refraction_angle_C_earth_atmos_stratified_case_2_f75_r8(z0,deln0,delnc,Hb,Hh,Hc)  &
+        elemental function refraction_angle_C_earth_atmos_stratified_case_2_f75_r8(z0,deln0,Hb,Hh,Hc)  &
                                                                          result(alpha_c)
         
             
@@ -8435,7 +8437,7 @@ module atmos_refraction
  
 !$omp declare simd(refraction_angle_C_earth_atmos_stratified_case_2_f75_r8)
              real(kind=dp),         intent(in) :: z0 
-             real(kind=dp),         intent(in) :: delnc 
+             real(kind=dp),         intent(in) :: deln0 
              real(kind=dp),         intent(in) :: Hb 
              real(kind=dp),         intent(in) :: Hh 
              real(kind=dp),         intent(in) :: Hc
@@ -8458,7 +8460,7 @@ module atmos_refraction
              Hha   = (Hh+Hh)*C000015678896205707118218877391
              sctgz0= t1*t1 
              HbHc  = Hb-Hc
-             trm1  = (delnc*6378.0_dp)/ssinz0
+             trm1  = (deln0*6378.0_dp)/ssinz0
              HcHh  = Hc-Hh 
              t0    = sctgz0+Hca 
              sqr1  = sqrt(t0)
@@ -8750,7 +8752,7 @@ module atmos_refraction
             real(kind=sp),        automatic  :: prob2,   sqr1 
             real(kind=sp),        automatic  :: sqr2,    sqr3 
             real(kind=sp),        automatic  :: t0,      t1 
-            real(kind=sp),        automatic  :: trm1,    trm2 
+            real(kind=sp),        automatic  :: trm1,    trm2, cosz0  
             tgz0    = tan(z0)
             t0      = 1.0_sp/tgz0 
             sctgz0  = t0*t0 
@@ -8791,7 +8793,7 @@ module atmos_refraction
             real(kind=dp),        automatic  :: prob2,   sqr1 
             real(kind=dp),        automatic  :: sqr2,    sqr3 
             real(kind=dp),        automatic  :: t0,      t1 
-            real(kind=dp),        automatic  :: trm1,    trm2 
+            real(kind=dp),        automatic  :: trm1,    trm2, cosz0  
             tgz0    = tan(z0)
             t0      = 1.0_dp/tgz0 
             sctgz0  = t0*t0 
@@ -8866,7 +8868,7 @@ module atmos_refraction
             real(kind=sp)                    :: M 
             real(kind=sp),        automatic  :: L2,   sinz0 
             real(kind=sp),        automatic  :: cosz, num 
-            real(kind=sp),        automatic  :: denom, t0 
+            real(kind=sp),        automatic  :: denom, t0, cosz0  
             t0    = beta*6378.0_sp*n0 
             sinz0 = sin(z0) 
             L2    = analytic_sol_L2_horizontal_grad_atmos_f733_r4(deln0,beta,z0,H)
@@ -8891,7 +8893,7 @@ module atmos_refraction
             real(kind=dp)                    :: M 
             real(kind=dp),        automatic  :: L2,   sinz0 
             real(kind=dp),        automatic  :: cosz, num 
-            real(kind=dp),        automatic  :: denom, t0 
+            real(kind=dp),        automatic  :: denom, t0, cosz0  
             t0    = beta*6378.0_dp*n0 
             sinz0 = sin(z0) 
             L2    = analytic_sol_L2_horizontal_grad_atmos_f733_r8(deln0,beta,z0,H)
@@ -9035,7 +9037,7 @@ module atmos_refraction
             real(kind=sp),        automatic  :: sqr2,    sqr3 
             real(kind=sp),        automatic  :: t0,      t1 
             real(kind=sp),        automatic  :: trm1,    trm2 
-            real(kind=sp),        automatic  :: a_gamm,  btag  
+            real(kind=sp),        automatic  :: a_gamm,  btag, cosz0   
             tgz0    = tan(z0)
             t0      = 1.0_sp/tgz0 
             a_gamm  = a_gamma_coeff_f739_r4(g,deln0,beta,z0,H,n0)
@@ -9054,7 +9056,7 @@ module atmos_refraction
             sqr3    = sqrt(bactgz0)
             prob2   = prob_integral_r4(sqr3)
             trm2    = prob1-prob2 
-            L2      = trm1*trm2 
+            Lgamm   = trm1*trm2 
        end function analytic_sol_Lgamm_horizontal_grad_atmos_f741_r4
 
         elemental function analytic_sol_Lgamm_horizontal_grad_atmos_f741_r8(g,deln0,beta,z0,H,n0) result(Lgamm)
@@ -9080,7 +9082,7 @@ module atmos_refraction
             real(kind=dp),        automatic  :: sqr2,    sqr3 
             real(kind=dp),        automatic  :: t0,      t1 
             real(kind=dp),        automatic  :: trm1,    trm2 
-            real(kind=dp),        automatic  :: a_gamm,  btag  
+            real(kind=dp),        automatic  :: a_gamm,  btag, cosz0   
             tgz0    = tan(z0)
             t0      = 1.0_dp/tgz0 
             a_gamm  = a_gamma_coeff_f739_r8(g,deln0,beta,z0,H,n0)
@@ -9099,7 +9101,7 @@ module atmos_refraction
             sqr3    = sqrt(bactgz0)
             prob2   = prob_integral_r8(sqr3)
             trm2    = prob1-prob2 
-            L2      = trm1*trm2 
+            Lgamm       = trm1*trm2 
        end function analytic_sol_Lgamm_horizontal_grad_atmos_f741_r8
 
        !Formula: 7.41, page: 143 (The main formula which "uses" the above-stated code)
@@ -9173,13 +9175,14 @@ module atmos_refraction
 
        !For: SQRT(beta*ag*ctg^2(z0)) >> 1 and z0 << 70(deg)
        !Formula: 7.43, page: 144
-       elemental function refraction_angle_atmos_2D_stratified_f743_r4(deln0,z0,beta) result(alpha_g)
+       elemental function refraction_angle_atmos_2D_stratified_f743_r4(g,deln0,z0,beta) result(alpha_g)
         
             
             
             !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f743_r4
  
 !$omp declare simd(refraction_angle_atmos_2D_stratified_f743_r4)
+            real(kind=sp),          intent(in) :: g 
             real(kind=sp),          intent(in) :: deln0 
             real(kind=sp),          intent(in) :: z0 
             real(kind=sp),          intent(in) :: beta 
@@ -9196,13 +9199,14 @@ module atmos_refraction
             alpha_g= trm1+trm2 
        end function refraction_angle_atmos_2D_stratified_f743_r4
 
-       elemental function refraction_angle_atmos_2D_stratified_f743_r8(deln0,z0,beta) result(alpha_g)
+       elemental function refraction_angle_atmos_2D_stratified_f743_r8(g,deln0,z0,beta) result(alpha_g)
         
             
              
             !dir$ attributes forceinline :: refraction_angle_atmos_2D_stratified_f743_r8
  
 !$omp declare simd(refraction_angle_atmos_2D_stratified_f743_r8)
+            real(kind=dp),          intent(in) :: g 
             real(kind=dp),          intent(in) :: deln0 
             real(kind=dp),          intent(in) :: z0 
             real(kind=dp),          intent(in) :: beta 
@@ -9546,9 +9550,9 @@ module atmos_refraction
              sqr1 = sqrt(2.0_dp*bsctg+4.0_dp*btHc)
              prob1= prob_integral_r8(sqr1)
              sqr2 = sqrt(2.0_dp*bsctg)
-             prob2= prob_integral_r4(sqr2)
+             prob2= prob_integral_r8(sqr2)
              trm2 = trm1-trm2 
-             L2   = trm1*trm2 
+             L3   = trm1*trm2 
         end function analytic_sol_L3_refractive_error_f99_r8
 
         !Formula: 9.6, page: 153
@@ -9632,7 +9636,7 @@ module atmos_refraction
              real(kind=sp),        automatic  :: Hca,    exp1 
              real(kind=sp),        automatic  :: rat1,   sqr 
              real(kind=sp),        automatic  :: rat2,   stgz0 
-             real(kind=sp),        automatic  :: t0,     t1 
+             real(kind=sp),        automatic  :: t0,     t1, rat 
              btHc   = beta*Hc 
              cosz0  = cos(z0)
              Hca    = Hc*C000015678896205707118218877391
@@ -9665,7 +9669,7 @@ module atmos_refraction
              real(kind=dp),        automatic  :: Hca,    exp1 
              real(kind=dp),        automatic  :: rat1,   sqr 
              real(kind=dp),        automatic  :: rat2,   stgz0 
-             real(kind=dp),        automatic  :: t0,     t1 
+             real(kind=dp),        automatic  :: t0,     t1, rat  
              btHc   = beta*Hc 
              cosz0  = cos(z0)
              Hca    = Hc*C000015678896205707118218877391
@@ -9700,7 +9704,7 @@ module atmos_refraction
                                                     0.63661977236758134307553505349_sp
              real(kind=sp),        automatic  :: bta,  sctgz0
              real(kind=sp),        automatic  :: basctg, exp1 
-             real(kind=sp),        automatic  :: sqr1,   t0 
+             real(kind=sp),        automatic  :: sqr,   t0 
              real(kind=sp),        automatic  :: trm1,   trm2 
              real(kind=sp),        automatic  :: ctgz0 
              bta    = beta*6378.0_sp 
@@ -9734,7 +9738,7 @@ module atmos_refraction
                                                     0.63661977236758134307553505349_dp
              real(kind=dp),        automatic  :: bta,  sctgz0
              real(kind=dp),        automatic  :: basctg, exp1 
-             real(kind=dp),        automatic  :: sqr1,   t0 
+             real(kind=dp),        automatic  :: sqr,   t0 
              real(kind=dp),        automatic  :: trm1,   trm2 
              real(kind=dp),        automatic  :: ctgz0 
              bta    = beta*6378.0_dp 
@@ -9769,7 +9773,7 @@ module atmos_refraction
                                                     0.63661977236758134307553505349_sp
              real(kind=sp),        automatic  :: bta,  sctgz0
              real(kind=sp),        automatic  :: basctg, exp1 
-             real(kind=sp),        automatic  :: sqr1,   t0 
+             real(kind=sp),        automatic  :: sqr,   t0 
              real(kind=sp),        automatic  :: trm1,   trm2 
              real(kind=sp),        automatic  :: ctgz0 
              bta    = beta*6378.0_sp 
@@ -9803,7 +9807,7 @@ module atmos_refraction
                                                     0.63661977236758134307553505349_dp
              real(kind=dp),        automatic  :: bta,  sctgz0
              real(kind=dp),        automatic  :: basctg, exp1 
-             real(kind=dp),        automatic  :: sqr1,   t0 
+             real(kind=dp),        automatic  :: sqr,   t0 
              real(kind=dp),        automatic  :: trm1,   trm2 
              real(kind=dp),        automatic  :: ctgz0 
              bta    = beta*6378.0_dp 
@@ -9816,7 +9820,7 @@ module atmos_refraction
                       sqr*ctgz0
              t0     = deln0*sqr 
              trm1   = t0*exp1*C157079632679489661923132169164 
-             L2     = trm1*trm2 
+             L3     = trm1*trm2 
         end function analytic_sol_L3_refractive_error_f912_r8
 
         !Formula: 9.6, page: 153 (Case: 2)
@@ -9900,7 +9904,7 @@ module atmos_refraction
              real(kind=sp),        automatic  :: bta, t0  
              real(kind=sp),        automatic  :: deln0bt
              bta     = beta*6378.0_sp 
-             t0      = C314159265358979323846264338328*a 
+             t0      = C314159265358979323846264338328*6378.0_sp  
              tbt     = beta+beta 
              deln0bt = deln0*bta 
              sqr     = sqrt(t0/tbt)
@@ -9926,7 +9930,7 @@ module atmos_refraction
              real(kind=dp),        automatic  :: bta, t0  
              real(kind=dp),        automatic  :: deln0bt
              bta     = beta*6378.0_dp 
-             t0      = C314159265358979323846264338328*a 
+             t0      = C314159265358979323846264338328*6378.0_dp  
              tbt     = beta+beta 
              deln0bt = deln0*bta 
              sqr     = sqrt(t0/tbt)
@@ -10002,7 +10006,7 @@ module atmos_refraction
             rat2  = C0000000024582778622933706834239/(20.0_sp*qtgz0)
             tgtrm5= tant1**2.5_sp 
             tgtrm6= tant2**2.5_sp 
-            trm5  = ratr2*(tgtrm5-tgtrm6)
+            trm5  = rat2*(tgtrm5-tgtrm6)
             t0    = trm1*trm2
             t1    = trm3*trm4*trm5
             L1    = t0*t1  
@@ -10071,7 +10075,7 @@ module atmos_refraction
             rat2  = C0000000024582778622933706834239/(20.0_dp*qtgz0)
             tgtrm5= tant1**2.5_dp 
             tgtrm6= tant2**2.5_dp 
-            trm5  = ratr2*(tgtrm5-tgtrm6)
+            trm5  = rat2*(tgtrm5-tgtrm6)
             t0    = trm1*trm2
             t1    = trm3*trm4*trm5
             L1    = t0*t1  
@@ -10095,7 +10099,7 @@ module atmos_refraction
             real(kind=sp)                     :: L2
             real(kind=sp),         parameter  :: C20037077944595701274914739498556669 = &
                                                     20037.077944595701274914739498556669_sp
-            real(kind=sp),         automatic  :: delnM,   sqr 
+            real(kind=sp),         automatic  :: delnM,   sqr1 
             real(kind=sp),         automatic  :: isinz0,  exp1 
             real(kind=sp),         automatic  :: sctgz0,  btHc 
             real(kind=sp),         automatic  :: btactgz0, t0 
@@ -10142,7 +10146,7 @@ module atmos_refraction
             real(kind=dp)                     :: L2
             real(kind=dp),         parameter  :: C20037077944595701274914739498556669 = &
                                                     20037.077944595701274914739498556669_dp
-            real(kind=dp),         automatic  :: delnM,   sqr 
+            real(kind=dp),         automatic  :: delnM,   sqr1  
             real(kind=dp),         automatic  :: isinz0,  exp1 
             real(kind=dp),         automatic  :: sctgz0,  btHc 
             real(kind=dp),         automatic  :: btactgz0, t0 
@@ -10175,7 +10179,7 @@ module atmos_refraction
 
        !Formula: 9.14, page: 154
        !Phase shift between ionospheric emitter and earth receiver.
-       elemental function analytic_sol_phase_shift_ionosphere_to_earth_f914_r4(fc,Nmf,beta,H2,H1,z0) result(delLf)
+       elemental function analytic_sol_phase_shift_ionosphere_to_earth_f914_r4(fc,Nmf,beta,H2,H1,Hc,z0) result(delLf)
         
             
             
@@ -10187,6 +10191,7 @@ module atmos_refraction
             real(kind=sp),         intent(in) :: beta 
             real(kind=sp),         intent(in) :: H2 !Height of F2 ionospheric layer
             real(kind=sp),         intent(in) :: H1 !Height of lower ionospheric boundary
+            real(kind=sp),         intent(in) :: Hc 
             real(kind=sp),         intent(in) :: z0 
             real(kind=sp)                     :: delLf 
             real(kind=sp),         automatic  :: L1, L2 
@@ -10195,7 +10200,7 @@ module atmos_refraction
             delLf= L1+L2 
        end function analytic_sol_phase_shift_ionosphere_to_earth_f914_r4
 
-        elemental function analytic_sol_phase_shift_ionosphere_to_earth_f914_r8(fc,Nmf,beta,H2,H1,z0) result(delLf)
+        elemental function analytic_sol_phase_shift_ionosphere_to_earth_f914_r8(fc,Nmf,beta,H2,H1,Hc,z0) result(delLf)
         
             
              
@@ -10207,6 +10212,7 @@ module atmos_refraction
             real(kind=dp),         intent(in) :: beta 
             real(kind=dp),         intent(in) :: H2 !Height of F2 ionospheric layer
             real(kind=dp),         intent(in) :: H1 !Height of lower ionospheric boundary
+            real(kind=dp),         intent(in) :: Hc 
             real(kind=dp),         intent(in) :: z0 
             real(kind=dp)                     :: delLf 
             real(kind=dp),         automatic  :: L1, L2 
@@ -10315,7 +10321,7 @@ module atmos_refraction
             t0     = 6378.0_dp-cosz0 
             dHc    = del*sinz0*sqr-t0 
        end function emitter_height_delta_atmos_refraction_f924_r8
-#endif 
+ 
        
 
 end module atmos_refraction
