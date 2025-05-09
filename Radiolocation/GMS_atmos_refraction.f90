@@ -394,10 +394,10 @@ module atmos_refraction
             real(kind=sp),  intent(in) :: beta ! coefficient describing the diminishing of 'n' as function of height, i.e. 0.10->0.14 1/km
             real(kind=sp),  intent(in) :: h    
             real(kind=sp) :: nah 
-            real(kind=sp), automatic :: earg,t0 
-            t0   = 1.0_sp+dn0 
-            earg = -beta*h 
-            nah  = t0*exp(earg) 
+            real(kind=sp), automatic :: earg
+            !t0   = 1.0_sp+dn0 
+            earg = beta*h 
+            nah  = 1.0_sp+dn0*exp(-earg) 
        end function n_avg_h_f145_r4
 
        elemental function n_avg_h_f145_r8(dn0,beta,h) result(nah)
@@ -412,10 +412,10 @@ module atmos_refraction
             real(kind=dp),  intent(in) :: beta ! coefficient describing the diminishing of 'n' as function of height, i.e. 0.10->0.14 1/km
             real(kind=dp),  intent(in) :: h    
             real(kind=dp) :: nah 
-            real(kind=dp), automatic :: earg,t0 
-            t0   = 1.0_dp+dn0 
-            earg = -beta*h 
-            nah  = t0*exp(earg) 
+            real(kind=dp), automatic :: earg
+            !t0   = 1.0_dp+dn0 
+            earg = beta*h 
+            nah  = 1.0_dp+dn0*exp(-earg) 
        end function n_avg_h_f145_r8
 
        !связь между величинами dn0 , beta, formula 1.46, page: 29
