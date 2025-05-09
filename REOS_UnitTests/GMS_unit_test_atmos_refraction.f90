@@ -228,6 +228,35 @@ subroutine unit_test_rad_ray_curvature_f251_r4()
               print*,  footer
 end subroutine unit_test_rad_ray_curvature_f251_r4
 
+subroutine unit_test_rad_ray_curvature_f251_r8()
+              character(len=128), automatic :: filename
+              real(kind=dp),      automatic :: n 
+              real(kind=dp),      automatic :: z
+              real(kind=dp),      automatic :: dndr 
+              real(kind=dp),      automatic :: rho 
+              integer(kind=i4),   automatic :: lstart, lend 
+              character(len=10)             :: t
+              character(len=8)              :: d
+              character(len=50), parameter  :: header = "[TEST #6: rad_ray_curvature_f251_r8 -- START]"
+              character(len=48), parameter  :: footer = "[TEST #6: rad_ray_curvature_f251_r8 -- END]"
+              call DATE_AND_TIME(date=d,time=t)
+              filename = __FILE__ 
+              lstart   = __LINE__ 
+              print*, d , ":" , t , filename , lstart
+              print*,  header
+              rho         = 0.0_dp
+              n           = 1.000271800_dp 
+              z           = 0.78_dp 
+              dndr        = -0.00000004_dp 
+              rho         = rad_ray_curvature_f251_r8(n,z,dndr)
+              print*,"[Input]:  n=",n,"z=",z,"dndr=",dndr 
+              print*,"[Output]: rho=",rho 
+              call DATE_AND_TIME(date=d,time=t)
+              lend = __LINE__
+              print*, d , " : " , t , filename , lend  
+              print*,  footer
+end subroutine unit_test_rad_ray_curvature_f251_r8
+
 
 
 end module unit_test_atmos_refraction 
@@ -244,4 +273,6 @@ use unit_test_atmos_refraction
     call unit_test_n_refract_phi_f243_r4()
     call unit_test_n_refract_phi_f243_r8()
     call unit_test_rad_ray_curvature_f251_r4()
+    call unit_test_rad_ray_curvature_f251_r8()
+    
 end program main 
