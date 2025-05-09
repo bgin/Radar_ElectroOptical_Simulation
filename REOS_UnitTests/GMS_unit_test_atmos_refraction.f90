@@ -365,6 +365,34 @@ subroutine unit_test_rho_to_a_f267_r8()
               print*,  footer
 end subroutine unit_test_rho_to_a_f267_r8
 
+subroutine unit_test_n_avg_h_f145_r4()
+              character(len=128), automatic :: filename
+              real(kind=sp),      automatic :: dn0 
+              real(kind=sp),      automatic :: beta 
+              real(kind=sp),      automatic :: h 
+              real(kind=sp),      automatic :: nah 
+              character(len=10)             :: t
+              character(len=8)              :: d
+              character(len=50), parameter  :: header = "[TEST #11: n_avg_h_f145_r4 -- START]"
+              character(len=48), parameter  :: footer = "[TEST #11: n_avg_h_f145_r4 -- END]"
+              call DATE_AND_TIME(date=d,time=t)
+              filename = __FILE__ 
+              lstart   = __LINE__ 
+              print*, d , ":" , t , filename , lstart
+              print*,  header
+              nah  = 0.0_sp 
+              dn0  = 0.000240_sp 
+              beta = 0.11_sp 
+              h    = 1505.0_sp 
+              nah  = n_avg_h_f145_r4(dn0,beta,h)
+              print*,"[Input]:  dn0=",dn0,"beta=",beta,"h=",h 
+              print*,"[Output]: nah=",nah 
+              call DATE_AND_TIME(date=d,time=t)
+              lend = __LINE__
+              print*, d , " : " , t , filename , lend  
+              print*,  footer
+end subroutine unit_test_n_avg_h_f145_r4
+
 
 end module unit_test_atmos_refraction 
 
@@ -385,4 +413,5 @@ use unit_test_atmos_refraction
     call unit_test_k_relative_f254_r8()
     call unit_test_rho_to_a_f267_r4()
     call unit_test_rho_to_a_f267_r8()
+    call unit_test_n_avg_h_f145_r4()
 end program main 
