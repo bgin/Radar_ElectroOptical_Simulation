@@ -340,6 +340,31 @@ subroutine unit_test_rho_to_a_f267_r4()
               print*,  footer
 end subroutine unit_test_rho_to_a_f267_r4
 
+subroutine unit_test_rho_to_a_f267_r8()
+              character(len=128), automatic :: filename
+              real(kind=dp),      automatic :: dndh
+              real(kind=dp),      automatic :: R 
+              integer(kind=i4),   automatic :: lstart, lend 
+              character(len=10)             :: t
+              character(len=8)              :: d
+              character(len=50), parameter  :: header = "[TEST #10: rho_to_a_f267_r8 -- START]"
+              character(len=48), parameter  :: footer = "[TEST #10: rho_to_a_f267_r8 -- END]"
+              call DATE_AND_TIME(date=d,time=t)
+              filename = __FILE__ 
+              lstart   = __LINE__ 
+              print*, d , ":" , t , filename , lstart
+              print*,  header
+              dndh = -0.00000004_dp 
+              R    = 0.0_dp 
+              R    = rho_to_a_f267_r8(dndh)
+              print*,"[Input]: dndh=",dndh 
+              print*,"[Output]: R=",R 
+              call DATE_AND_TIME(date=d,time=t)
+              lend = __LINE__
+              print*, d , " : " , t , filename , lend  
+              print*,  footer
+end subroutine unit_test_rho_to_a_f267_r8
+
 
 end module unit_test_atmos_refraction 
 
@@ -359,4 +384,5 @@ use unit_test_atmos_refraction
     call unit_test_k_relative_f254_r4()
     call unit_test_k_relative_f254_r8()
     call unit_test_rho_to_a_f267_r4()
+    call unit_test_rho_to_a_f267_r8()
 end program main 
