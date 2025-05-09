@@ -257,6 +257,64 @@ subroutine unit_test_rad_ray_curvature_f251_r8()
               print*,  footer
 end subroutine unit_test_rad_ray_curvature_f251_r8
 
+subroutine unit_test_k_relative_f254_r4()
+              character(len=128), automatic :: filename
+              real(kind=sp),      automatic :: n 
+              real(kind=sp),      automatic :: z
+              real(kind=sp),      automatic :: dndr 
+              real(kind=sp),      automatic :: k_rel 
+              integer(kind=i4),   automatic :: lstart, lend 
+              character(len=10)             :: t
+              character(len=8)              :: d
+              character(len=50), parameter  :: header = "[TEST #7: k_relative_f254_r4 -- START]"
+              character(len=48), parameter  :: footer = "[TEST #7: k_relative_f254_r4 -- END]"
+              call DATE_AND_TIME(date=d,time=t)
+              filename = __FILE__ 
+              lstart   = __LINE__ 
+              print*, d , ":" , t , filename , lstart
+              print*,  header
+              k_rel       = 0.0_sp
+              n           = 1.000271800_sp 
+              z           = 0.78_sp 
+              dndr        = -0.00000004_sp 
+              k_rel       = k_relative_f254_r4(n,z,dndr)
+              print*,"[Input]:  n=",n,"z=",z,"dndr=",dndr 
+              print*,"[Output]: k_rel=",k_rel  
+              call DATE_AND_TIME(date=d,time=t)
+              lend = __LINE__
+              print*, d , " : " , t , filename , lend  
+              print*,  footer
+end subroutine unit_test_k_relative_f254_r4
+
+subroutine unit_test_k_relative_f254_r8()
+              character(len=128), automatic :: filename
+              real(kind=dp),      automatic :: n 
+              real(kind=dp),      automatic :: z
+              real(kind=dp),      automatic :: dndr 
+              real(kind=dp),      automatic :: k_rel 
+              integer(kind=i4),   automatic :: lstart, lend 
+              character(len=10)             :: t
+              character(len=8)              :: d
+              character(len=50), parameter  :: header = "[TEST #8: k_relative_f254_r8 -- START]"
+              character(len=48), parameter  :: footer = "[TEST #8: k_relative_f254_r8 -- END]"
+              call DATE_AND_TIME(date=d,time=t)
+              filename = __FILE__ 
+              lstart   = __LINE__ 
+              print*, d , ":" , t , filename , lstart
+              print*,  header
+              k_rel       = 0.0_dp
+              n           = 1.000271800_dp 
+              z           = 0.78_dp 
+              dndr        = -0.00000004_dp 
+              k_rel       = k_relative_f254_r8(n,z,dndr)
+              print*,"[Input]:  n=",n,"z=",z,"dndr=",dndr 
+              print*,"[Output]: k_rel=",k_rel  
+              call DATE_AND_TIME(date=d,time=t)
+              lend = __LINE__
+              print*, d , " : " , t , filename , lend  
+              print*,  footer
+end subroutine unit_test_k_relative_f254_r8
+
 
 
 end module unit_test_atmos_refraction 
@@ -274,5 +332,6 @@ use unit_test_atmos_refraction
     call unit_test_n_refract_phi_f243_r8()
     call unit_test_rad_ray_curvature_f251_r4()
     call unit_test_rad_ray_curvature_f251_r8()
-    
+    call unit_test_k_relative_f254_r4()
+    call unit_test_k_relative_f254_r8()
 end program main 
