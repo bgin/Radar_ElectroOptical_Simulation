@@ -205,7 +205,7 @@ module atmos_refraction
      end type atmos_refraction_size_params_t
      
      ! IRI model output arrays
-     type, public :: ionosphere_state_t
+     type, public :: ionosphere_state_r4_t
            
            integer(kind=i4)                         :: n_elec_dens
            integer(kind=i4)                         :: n_neut_tmp
@@ -229,10 +229,36 @@ module atmos_refraction
            real(kind=sp), allocatable, dimension(:) :: NO_ion_d     ! NO+ ion density in % or in m-3
            real(kind=sp), allocatable, dimension(:) :: ion_dens     ! Cluster ion density in % or in m-3
            real(kind=sp), allocatable, dimension(:) :: N_ion_d      ! N+ ion density in % or in m-3 
-     end type ionosphere_state_t
+     end type ionosphere_state_r4_t
+
+     type, public :: ionosphere_state_r8_t
+           
+           integer(kind=i4)                         :: n_elec_dens
+           integer(kind=i4)                         :: n_neut_tmp
+           integer(kind=i4)                         :: n_ion_tmp 
+           integer(kind=i4)                         :: n_elec_tmp 
+           integer(kind=i4)                         :: n_0_ion_d 
+           integer(kind=i4)                         :: n_H_ion_d 
+           integer(kind=i4)                         :: n_He_ion_d 
+           integer(kind=i4)                         :: n_O2_ion_d 
+           integer(kind=i4)                         :: n_NO_ion_d
+           integer(kind=i4)                         :: n_ion_dens
+           integer(kind=i4)                         :: n_N_ion_d 
+           real(kind=dp), allocatable, dimension(:) :: elec_dens    ! electron density in m-3
+           real(kind=dp), allocatable, dimension(:) :: neut_tmp     ! neutral temperature in K
+           real(kind=dp), allocatable, dimension(:) :: ion_tmp      ! ion temperature in K
+           real(kind=dp), allocatable, dimension(:) :: elec_tmp     ! electron temperature in K
+           real(kind=dp), allocatable, dimension(:) :: O_ion_d      ! O+ ion density in % or in m-3 
+           real(kind=dp), allocatable, dimension(:) :: H_ion_d      ! H+ ion density in % or in m-3 
+           real(kind=dp), allocatable, dimension(:) :: He_ion_d     ! He+ ion density in % or in m-3
+           real(kind=dp), allocatable, dimension(:) :: O2_ion_d     ! O2+ ion density in % or in m-3 
+           real(kind=dp), allocatable, dimension(:) :: NO_ion_d     ! NO+ ion density in % or in m-3
+           real(kind=dp), allocatable, dimension(:) :: ion_dens     ! Cluster ion density in % or in m-3
+           real(kind=dp), allocatable, dimension(:) :: N_ion_d      ! N+ ion density in % or in m-3 
+     end type ionosphere_state_r8_t
 
      type, public :: atmos_refraction_state_r4_t
-           type(atmos_refraction_size_params_t) :: size_params 
+           type(atmos_refraction_size_params_t)     :: size_params 
            !dir$ attributes align : 64 :: data_nidx
            real(kind=sp), allocatable, dimension(:) :: data_nidx
            !dir$ attributes align : 64 :: data_n0idx
@@ -460,6 +486,237 @@ module atmos_refraction
             !dir$ attributes align : 64 :: data_f924
            real(kind=sp), allocatable, dimension(:) :: data_f924 
      end type atmos_refraction_state_r4_t
+
+      type, public :: atmos_refraction_state_r8_t
+           type(atmos_refraction_size_params_t)     :: size_params 
+           !dir$ attributes align : 64 :: data_nidx
+           real(kind=dp), allocatable, dimension(:) :: data_nidx
+           !dir$ attributes align : 64 :: data_n0idx
+           real(kind=dp), allocatable, dimension(:) :: data_n0idx 
+           !dir$ attributes align : 64 :: data_z
+           real(kind=dp), allocatable, dimension(:) :: data_z 
+           !dir$ attributes align : 64 :: data_z0
+           real(kind=dp), allocatable, dimension(:) :: data_z0 
+           !dir$ attributes align : 64 :: data_r
+           real(kind=dp), allocatable, dimension(:) :: data_r 
+           !dir$ attributes align : 64 :: data_R0
+           real(kind=dp), allocatable, dimension(:) :: data_R0 
+           !dir$ attributes align : 64 :: data_phi
+           real(kind=dp), allocatable, dimension(:) :: data_phi
+           !dir$ attributes align : 64 :: data_phi0
+           real(kind=dp), allocatable, dimension(:) :: data_phi0
+           !dir$ attributes align : 64 :: data_ntht
+           real(kind=dp), allocatable, dimension(:) :: data_ntht
+           !dir$ attributes align : 64 :: data_nphi
+           real(kind=dp), allocatable, dimension(:) :: data_nphi
+           !dir$ attributes align : 64 :: data_dndr
+           real(kind=dp), allocatable, dimension(:) :: data_dndr
+           !dir$ attributes align : 64 :: data_rho
+           real(kind=dp), allocatable, dimension(:) :: data_rho
+           !dir$ attributes align : 64 :: data_dn0
+           real(kind=dp), allocatable, dimension(:) :: data_dn0
+           !dir$ attributes align : 64 :: data_beta
+           real(kind=dp), allocatable, dimension(:) :: data_beta
+           !dir$ attributes align : 64 :: data_navgh
+           real(kind=dp), allocatable, dimension(:) :: data_navgh
+           !dir$ attributes align : 64 :: data_H
+           real(kind=dp), allocatable, dimension(:) :: data_H 
+           !dir$ attributes align : 64 :: data_f345
+           real(kind=dp), allocatable, dimension(:) :: data_f345 
+           !dir$ attributes align : 64 :: data_f351
+           real(kind=dp), allocatable, dimension(:) :: data_f351
+           !dir$ attributes align : 64 :: data_f352
+           real(kind=dp), allocatable, dimension(:) :: data_f352
+           !dir$ attributes align : 64 :: data_nh
+           real(kind=dp), allocatable, dimension(:) :: data_nh 
+           !dir$ attributes align : 64 :: data_f41
+           real(kind=dp), allocatable, dimension(:) :: data_f41 
+           !dir$ attributes align : 64 :: data_f
+           real(kind=dp), allocatable, dimension(:) :: data_f 
+           !dir$ attributes align : 64 :: data_d
+           real(kind=dp), allocatable, dimension(:) :: data_d 
+           !dir$ attributes align : 64 :: data_Nmf
+           real(kind=dp), allocatable, dimension(:) :: data_Nmf
+           !dir$ attributes align : 64 :: data_f412
+           real(kind=dp), allocatable, dimension(:) :: data_f412 
+           !dir$ attributes align : 64 :: data_f413
+           real(kind=dp), allocatable, dimension(:) :: data_f413 
+           !dir$ attributes align : 64 :: data_D1
+           real(kind=dp), allocatable, dimension(:) :: data_D1 
+           !dir$ attributes align : 64 :: data_f415
+           real(kind=dp), allocatable, dimension(:) :: data_f415
+           !dir$ attributes align : 64 :: data_f425
+           real(kind=dp), allocatable, dimension(:) :: data_f425
+           !dir$ attributes align : 64 :: data_f428
+           real(kind=dp), allocatable, dimension(:) :: data_f428 
+           !dir$ attributes align : 64 :: data_f429
+           real(kind=dp), allocatable, dimension(:) :: data_f429
+           !dir$ attributes align : 64 :: data_H1
+           real(kind=dp), allocatable, dimension(:) :: data_H1 
+           !dir$ attributes align : 64 :: data_H2
+           real(kind=dp), allocatable, dimension(:) :: data_H2 
+           !dir$ attributes align : 64 :: data_f430
+           real(kind=dp), allocatable, dimension(:) :: data_f430 
+           !dir$ attributes align : 64 :: data_H3
+           real(kind=dp), allocatable, dimension(:) :: data_H3
+           !dir$ attributes align : 64 :: data_deln0
+           real(kind=dp), allocatable, dimension(:) :: data_deln0
+           !dir$ attributes align : 64 :: data_f431
+           real(kind=dp), allocatable, dimension(:) :: data_f431 
+           !dir$ attributes align : 64 :: data_f438
+           real(kind=dp), allocatable, dimension(:) :: data_f438 
+           !dir$ attributes align : 64 :: data_f442
+           real(kind=dp), allocatable, dimension(:) :: data_f442
+           !dir$ attributes align : 64 :: data_f445
+           real(kind=dp), allocatable, dimension(:) :: data_f445
+           !dir$ attributes align : 64 :: data_g
+           real(kind=dp), allocatable, dimension(:) :: data_g 
+           !dir$ attributes align : 64 :: data_f450
+           real(kind=dp), allocatable, dimension(:) :: data_f450 
+           !dir$ attributes align : 64 :: data_f451
+           real(kind=dp), allocatable, dimension(:) :: data_f451 
+           !dir$ attributes align : 64 :: data_Hc0
+           real(kind=dp), allocatable, dimension(:) :: data_Hc0 
+           !dir$ attributes align : 64 :: data_delnA
+           real(kind=dp), allocatable, dimension(:) :: data_delnA 
+           !dir$ attributes align : 64 :: data_na
+           real(kind=dp), allocatable, dimension(:) :: data_na 
+           !dir$ attributes align : 64 :: data_nc
+           real(kind=dp), allocatable, dimension(:) :: data_nc
+           !dir$ attributes align : 64 :: data_f53
+           real(kind=dp), allocatable, dimension(:) :: data_f53 
+           !dir$ attributes align : 64 :: data_f517
+           real(kind=dp), allocatable, dimension(:) :: data_f517
+            !dir$ attributes align : 64 :: data_tht
+           real(kind=dp), allocatable, dimension(:) :: data_tht 
+            !dir$ attributes align : 64 :: data_f531
+           real(kind=dp), allocatable, dimension(:) :: data_f531 
+            !dir$ attributes align : 64 :: data_thtc
+           real(kind=dp), allocatable, dimension(:) :: data_thtc 
+            !dir$ attributes align : 64 :: data_f534
+           real(kind=dp), allocatable, dimension(:) :: data_f534 
+            !dir$ attributes align : 64 :: data_Rc
+           real(kind=dp), allocatable, dimension(:) :: data_Rc 
+            !dir$ attributes align : 64 :: data_f535
+           real(kind=dp), allocatable, dimension(:) :: data_f535 
+            !dir$ attributes align : 64 :: data_f538
+           real(kind=dp), allocatable, dimension(:) :: data_f538
+            !dir$ attributes align : 64 :: data_f539
+           real(kind=dp), allocatable, dimension(:) :: data_f539
+            !dir$ attributes align : 64 :: data_f541
+           real(kind=dp), allocatable, dimension(:) :: data_f541 
+            !dir$ attributes align : 64 :: data_H0
+           real(kind=dp), allocatable, dimension(:) :: data_H0 
+            !dir$ attributes align : 64 :: data_Hc
+           real(kind=dp), allocatable, dimension(:) :: data_Hc 
+            !dir$ attributes align : 64 :: data_f543
+           real(kind=dp), allocatable, dimension(:) :: data_f543
+            !dir$ attributes align : 64 :: data_H10
+           real(kind=dp), allocatable, dimension(:) :: data_H10 
+            !dir$ attributes align : 64 :: data_f554
+           real(kind=dp), allocatable, dimension(:) :: data_f554 
+            !dir$ attributes align : 64 :: data_H20
+           real(kind=dp), allocatable, dimension(:) :: data_H20 
+            !dir$ attributes align : 64 :: data_f572
+           real(kind=dp), allocatable, dimension(:) :: data_f572 
+            !dir$ attributes align : 64 :: data_f576
+           real(kind=dp), allocatable, dimension(:) :: data_f576
+            !dir$ attributes align : 64 :: data_f577
+           real(kind=dp), allocatable, dimension(:) :: data_f577 
+            !dir$ attributes align : 64 :: data_f578
+           real(kind=dp), allocatable, dimension(:) :: data_f578 
+            !dir$ attributes align : 64 :: data_f579
+           real(kind=dp), allocatable, dimension(:) :: data_f579 
+            !dir$ attributes align : 64 :: data_f590
+           real(kind=dp), allocatable, dimension(:) :: data_f590
+            !dir$ attributes align : 64 :: data_R2
+           real(kind=dp), allocatable, dimension(:) :: data_R2 
+            !dir$ attributes align : 64 :: data_f591
+           real(kind=dp), allocatable, dimension(:) :: data_f591 
+            !dir$ attributes align : 64 :: data_f593
+           real(kind=dp), allocatable, dimension(:) :: data_f593 
+            !dir$ attributes align : 64 :: data_f595
+           real(kind=dp), allocatable, dimension(:) :: data_f595 
+            !dir$ attributes align : 64 :: data_HB
+           real(kind=dp), allocatable, dimension(:) :: data_HB 
+            !dir$ attributes align : 64 :: data_f62
+           real(kind=dp), allocatable, dimension(:) :: data_f62 
+            !dir$ attributes align : 64 :: data_HC2
+           real(kind=dp), allocatable, dimension(:) :: data_HC2 
+            !dir$ attributes align : 64 :: data_f66
+           real(kind=dp), allocatable, dimension(:) :: data_f66 
+            !dir$ attributes align : 64 :: data_f61
+           real(kind=dp), allocatable, dimension(:) :: data_f61 
+            !dir$ attributes align : 64 :: data_f61b
+           real(kind=dp), allocatable, dimension(:) :: data_f61b 
+            !dir$ attributes align : 64 :: data_Bf61b
+           real(kind=dp), allocatable, dimension(:) :: data_Bf61b 
+            !dir$ attributes align : 64 :: data_f619
+           real(kind=dp), allocatable, dimension(:) :: data_f619
+            !dir$ attributes align : 64 :: data_Lc
+           real(kind=dp), allocatable, dimension(:) :: data_Lc 
+            !dir$ attributes align : 64 :: data_Lb
+           real(kind=dp), allocatable, dimension(:) :: data_Lb 
+            !dir$ attributes align : 64 :: data_gamma
+           real(kind=dp), allocatable, dimension(:) :: data_gamma 
+            !dir$ attributes align : 64 :: data_f618
+           real(kind=dp), allocatable, dimension(:) :: data_f618 
+            !dir$ attributes align : 64 :: data_f620
+           real(kind=dp), allocatable, dimension(:) :: data_f620 
+            !dir$ attributes align : 64 :: data_f621
+           real(kind=dp), allocatable, dimension(:) :: data_f621 
+            !dir$ attributes align : 64 :: data_Lh
+           real(kind=dp), allocatable, dimension(:) :: data_Lh 
+            !dir$ attributes align : 64 :: data_f622
+           real(kind=dp), allocatable, dimension(:) :: data_f622 
+            !dir$ attributes align : 64 :: data_f623
+           real(kind=dp), allocatable, dimension(:) :: data_f623 
+            !dir$ attributes align : 64 :: data_f625
+           real(kind=dp), allocatable, dimension(:) :: data_f625 
+            !dir$ attributes align : 64 :: data_f627
+           real(kind=dp), allocatable, dimension(:) :: data_f627 
+            !dir$ attributes align : 64 :: data_Hh
+           real(kind=dp), allocatable, dimension(:) :: data_Hh 
+            !dir$ attributes align : 64 :: data_f72
+           real(kind=dp), allocatable, dimension(:) :: data_f72 
+            !dir$ attributes align : 64 :: data_delnb
+           real(kind=dp), allocatable, dimension(:) :: data_delnb 
+            !dir$ attributes align : 64 :: data_delnc
+           real(kind=dp), allocatable, dimension(:) :: data_delnc 
+            !dir$ attributes align : 64 :: data_delnh
+           real(kind=dp), allocatable, dimension(:) :: data_delnh
+            !dir$ attributes align : 64 :: data_f74
+           real(kind=dp), allocatable, dimension(:) :: data_f74 
+            !dir$ attributes align : 64 :: data_f75
+           real(kind=dp), allocatable, dimension(:) :: data_f75 
+            !dir$ attributes align : 64 :: data_f714
+           real(kind=dp), allocatable, dimension(:) :: data_f714 
+           !dir$ attributes align : 64 :: data_1f714
+           real(kind=dp), allocatable, dimension(:) :: data_1f714 
+            !dir$ attributes align : 64 :: data_f739
+           real(kind=dp), allocatable, dimension(:) :: data_f739
+             !dir$ attributes align : 64 :: data_f741
+           real(kind=dp), allocatable, dimension(:) :: data_f741
+            !dir$ attributes align : 64 :: data_f743
+           real(kind=dp), allocatable, dimension(:) :: data_f743 
+            !dir$ attributes align : 64 :: data_f744
+           real(kind=dp), allocatable, dimension(:) :: data_f744 
+            !dir$ attributes align : 64 :: data_f747
+           real(kind=dp), allocatable, dimension(:) :: data_f747 
+           !dir$ attributes align : 64 :: data_f96
+           real(kind=dp), allocatable, dimension(:) :: data_f96 
+             !dir$ attributes align : 64 :: data_f910
+           real(kind=dp), allocatable, dimension(:) :: data_f910 
+            !dir$ attributes align : 64 :: data_f2f96
+           real(kind=dp), allocatable, dimension(:) :: data_f2f96 
+            !dir$ attributes align : 64 :: data_f914
+           real(kind=dp), allocatable, dimension(:) :: data_f914 
+            !dir$ attributes align : 64 :: data_L
+           real(kind=dp), allocatable, dimension(:) :: data_L 
+            !dir$ attributes align : 64 :: data_f924
+           real(kind=dp), allocatable, dimension(:) :: data_f924 
+     end type atmos_refraction_state_r8_t
+    
     
      
      contains
