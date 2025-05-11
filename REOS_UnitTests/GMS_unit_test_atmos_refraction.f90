@@ -421,6 +421,54 @@ subroutine unit_test_n_avg_h_f145_r8()
               print*,  footer
 end subroutine unit_test_n_avg_h_f145_r8
 
+subroutine unit_test_refraction_angle_f345_r4()
+#if 0
+              use iso_c_binding, only : c_int 
+              interface
+                  function raise(sig) bind(C,name="raise")
+                           use iso_c_binding, only : c_int 
+                           integer(c_int) :: raise 
+                           integer(c_int), value :: sig 
+                  end function raise 
+              end interface
+#endif
+              character(len=128), automatic :: filename
+              real(kind=sp),      automatic :: n0 
+              real(kind=sp),      automatic :: nh 
+              real(kind=sp),      automatic :: z0 
+              real(kind=sp),      automatic :: dn0 
+              real(kind=sp),      automatic :: beta 
+              real(kind=sp),      automatic :: H 
+              real(kind=sp),      automatic :: alpha 
+              integer(c_int),     parameter :: SIGTRAP = 5 
+              character(len=10)             :: t
+              character(len=8)              :: d
+              character(len=50), parameter  :: header = "[TEST #13: refraction_angle_f345_r4 -- START]"
+              character(len=48), parameter  :: footer = "[TEST #13: refraction_angle_f345_r4 -- END]"
+              call DATE_AND_TIME(date=d,time=t)
+              filename = __FILE__ 
+              lstart   = __LINE__ 
+              print*, d , ":" , t , filename , lstart
+              print*,  header
+              alpha = 0.0_sp  
+              dn0   = 0.000240_sp 
+              beta  = 0.10_sp 
+              H     = 1245.14_sp
+              nh    = n_avg_h_f145_r4(dn0,beta,H)
+              z0    = 0.745_sp 
+              n0    = 1.000271800_sp 
+#if 0
+              print*, raise(SIGTRAP)
+#endif
+              alpha = refraction_angle_f345_r4(n0,nh,z0,dn0,beta,H)
+              print*,"[Input]: dn0=",dn0,"beta=",beta,"H=",H,"nh=",nh,"z0=",z0,"n0=",n0 
+              print*,"[Output]: alpha=",alpha 
+              call DATE_AND_TIME(date=d,time=t)
+              lend = __LINE__
+              print*, d , " : " , t , filename , lend  
+              print*,  footer
+end subroutine unit_test_refraction_angle_f345_r4
+
 
 end module unit_test_atmos_refraction 
 
@@ -443,4 +491,5 @@ use unit_test_atmos_refraction
     call unit_test_rho_to_a_f267_r8()
     call unit_test_n_avg_h_f145_r4()
     call unit_test_n_avg_h_f145_r8()
+    call unit_test_refraction_angle_f345_r4()
 end program main 
