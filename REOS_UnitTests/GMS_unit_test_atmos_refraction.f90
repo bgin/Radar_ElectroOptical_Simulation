@@ -341,6 +341,17 @@ subroutine unit_test_rho_to_a_f267_r4()
 end subroutine unit_test_rho_to_a_f267_r4
 
 subroutine unit_test_rho_to_a_f267_r8()
+
+              use iso_c_binding, only : c_int 
+#if 0
+              interface
+                  function raise(sig) bind(C,name="raise")
+                           use iso_c_binding, only : c_int 
+                           integer(c_int) :: raise 
+                           integer(c_int), value :: sig 
+                  end function raise 
+              end interface
+#endif
               character(len=128), automatic :: filename
               real(kind=dp),      automatic :: dndh
               real(kind=dp),      automatic :: R 
@@ -356,6 +367,9 @@ subroutine unit_test_rho_to_a_f267_r8()
               print*,  header
               dndh = -0.00000004_dp 
               R    = 0.0_dp 
+#if 0
+              print*, raise(SIGTRAP)
+#endif
               R    = rho_to_a_f267_r8(dndh)
               print*,"[Input]: dndh=",dndh 
               print*,"[Output]: R=",R 
@@ -366,6 +380,17 @@ subroutine unit_test_rho_to_a_f267_r8()
 end subroutine unit_test_rho_to_a_f267_r8
 
 subroutine unit_test_n_avg_h_f145_r4()
+
+              use iso_c_binding, only : c_int 
+#if 0
+              interface
+                  function raise(sig) bind(C,name="raise")
+                           use iso_c_binding, only : c_int 
+                           integer(c_int) :: raise 
+                           integer(c_int), value :: sig 
+                  end function raise 
+              end interface
+#endif
               character(len=128), automatic :: filename
               real(kind=sp),      automatic :: dn0 
               real(kind=sp),      automatic :: beta 
@@ -384,6 +409,9 @@ subroutine unit_test_n_avg_h_f145_r4()
               dn0  = 0.000240_sp 
               beta = 0.11_sp 
               h    = 1505.0_sp 
+#if 0
+              print*, raise(SIGTRAP)
+#endif
               nah  = n_avg_h_f145_r4(dn0,beta,h)
               print*,"[Input]:  dn0=",dn0,"beta=",beta,"h=",h 
               print*,"[Output]: nah=",nah 
@@ -394,6 +422,17 @@ subroutine unit_test_n_avg_h_f145_r4()
 end subroutine unit_test_n_avg_h_f145_r4
 
 subroutine unit_test_n_avg_h_f145_r8()
+
+              use iso_c_binding, only : c_int 
+#if 0
+              interface
+                  function raise(sig) bind(C,name="raise")
+                           use iso_c_binding, only : c_int 
+                           integer(c_int) :: raise 
+                           integer(c_int), value :: sig 
+                  end function raise 
+              end interface
+#endif
               character(len=128), automatic :: filename
               real(kind=dp),      automatic :: dn0 
               real(kind=dp),      automatic :: beta 
@@ -412,6 +451,9 @@ subroutine unit_test_n_avg_h_f145_r8()
               dn0  = 0.000240_dp 
               beta = 0.11_dp 
               h    = 1505.0_dp 
+#if 0
+              print*, raise(SIGTRAP)
+#endif
               nah  = n_avg_h_f145_r8(dn0,beta,h)
               print*,"[Input]:  dn0=",dn0,"beta=",beta,"h=",h 
               print*,"[Output]: nah=",nah 
@@ -422,8 +464,9 @@ subroutine unit_test_n_avg_h_f145_r8()
 end subroutine unit_test_n_avg_h_f145_r8
 
 subroutine unit_test_refraction_angle_f345_r4()
-#if 0
+
               use iso_c_binding, only : c_int 
+#if 0
               interface
                   function raise(sig) bind(C,name="raise")
                            use iso_c_binding, only : c_int 
@@ -469,6 +512,55 @@ subroutine unit_test_refraction_angle_f345_r4()
               print*,  footer
 end subroutine unit_test_refraction_angle_f345_r4
 
+subroutine unit_test_refraction_angle_f345_r8()
+
+              use iso_c_binding, only : c_int 
+#if 0
+              interface
+                  function raise(sig) bind(C,name="raise")
+                           use iso_c_binding, only : c_int 
+                           integer(c_int) :: raise 
+                           integer(c_int), value :: sig 
+                  end function raise 
+              end interface
+#endif
+              character(len=128), automatic :: filename
+              real(kind=dp),      automatic :: n0 
+              real(kind=dp),      automatic :: nh 
+              real(kind=dp),      automatic :: z0 
+              real(kind=dp),      automatic :: dn0 
+              real(kind=dp),      automatic :: beta 
+              real(kind=dp),      automatic :: H 
+              real(kind=dp),      automatic :: alpha 
+              integer(c_int),     parameter :: SIGTRAP = 5 
+              character(len=10)             :: t
+              character(len=8)              :: d
+              character(len=50), parameter  :: header = "[TEST #14: refraction_angle_f345_r8 -- START]"
+              character(len=48), parameter  :: footer = "[TEST #14: refraction_angle_f345_r8 -- END]"
+              call DATE_AND_TIME(date=d,time=t)
+              filename = __FILE__ 
+              lstart   = __LINE__ 
+              print*, d , ":" , t , filename , lstart
+              print*,  header
+              alpha = 0.0_dp  
+              dn0   = 0.000240_dp 
+              beta  = 0.10_dp 
+              H     = 1245.14_dp
+              nh    = n_avg_h_f145_r8(dn0,beta,H)
+              z0    = 0.745_dp 
+              n0    = 1.000271800_dp 
+#if 0
+              print*, raise(SIGTRAP)
+#endif
+              alpha = refraction_angle_f345_r8(n0,nh,z0,dn0,beta,H)
+              print*,"[Input]: dn0=",dn0,"beta=",beta,"H=",H,"nh=",nh,"z0=",z0,"n0=",n0 
+              print*,"[Output]: alpha=",alpha 
+              call DATE_AND_TIME(date=d,time=t)
+              lend = __LINE__
+              print*, d , " : " , t , filename , lend  
+              print*,  footer
+end subroutine unit_test_refraction_angle_f345_r8
+
 
 end module unit_test_atmos_refraction 
 
@@ -492,4 +584,5 @@ use unit_test_atmos_refraction
     call unit_test_n_avg_h_f145_r4()
     call unit_test_n_avg_h_f145_r8()
     call unit_test_refraction_angle_f345_r4()
+    call unit_test_refraction_angle_f345_r8()
 end program main 
