@@ -87,6 +87,7 @@ module atmos_refraction
      character(*),        parameter :: ATMOS_REFRACTION_SYNOPSIS    = "Calculation of EM Wave atmospheric refraction."
 
 #define SAFE_ALLOC(mem,size) if(allocated(mem)) deallocate(mem); allocate(mem size)
+#define SAFE_DEALLOC(mem)    if(allocated(mem)) deallocate(mem)
 ! usage SAFE_ALLOC(ar.data_z (sp.n_z))
 
      !atmospheric_refraction_t data size  parameters
@@ -731,10 +732,13 @@ module atmos_refraction
                type(atmos_refraction_size_params_t),  intent(in)    :: sp 
                
                ! Begin long memory allocation calls 
-               
-!$OMP PARALLEL
+                print*, "Num-threads=",omp_get_num_threads()
+                print*, "Max-threads=",omp_get_max_threads()
+!$OMP PARALLEL 
+           
 !$OMP SECTIONS
 !$OMP SECTION
+               print*,"Executing-thread=",omp_get_thread_num()
                SAFE_ALLOC(ar_state.data_nidx,   (sp.n_nidx))
                SAFE_ALLOC(ar_state.data_n0idx,  (sp.n_n0idx))
                SAFE_ALLOC(ar_state.data_z,      (sp.n_z))
@@ -754,7 +758,8 @@ module atmos_refraction
                SAFE_ALLOC(ar_state.data_f345,   (sp.n_f345))
                SAFE_ALLOC(ar_state.data_f351,   (sp.n_f351))
                SAFE_ALLOC(ar_state.data_f352,   (sp.n_f352))
- !$OMP SECTION              
+ !$OMP SECTION     
+               print*, "Executing-thread=",omp_get_thread_num()         
                SAFE_ALLOC(ar_state.data_nh,     (sp.n_nh))
                SAFE_ALLOC(ar_state.data_f41,    (sp.n_f41))
                SAFE_ALLOC(ar_state.data_f,      (sp.n_f))
@@ -775,6 +780,7 @@ module atmos_refraction
                SAFE_ALLOC(ar_state.data_f431,   (sp.n_f431))
                SAFE_ALLOC(ar_state.data_f438,   (sp.n_f438))
 !$OMP SECTION
+               print*, "Executing-thread=",omp_get_thread_num()
                SAFE_ALLOC(ar_state.data_f442,   (sp.n_f442))
                SAFE_ALLOC(ar_state.data_f445,   (sp.n_f445))
                SAFE_ALLOC(ar_state.data_g,      (sp.n_g))
@@ -795,6 +801,7 @@ module atmos_refraction
                SAFE_ALLOC(ar_state.data_f538,   (sp.n_f538))
                SAFE_ALLOC(ar_state.data_f539,   (sp.n_f539))
 !$OMP SECTION
+               print*, "Executing-thread=",omp_get_thread_num()
                SAFE_ALLOC(ar_state.data_f541,   (sp.n_f541))
                SAFE_ALLOC(ar_state.data_H0,     (sp.n_H0))
                SAFE_ALLOC(ar_state.data_Hc,     (sp.n_Hc))
@@ -815,6 +822,7 @@ module atmos_refraction
                SAFE_ALLOC(ar_state.data_HB,     (sp.n_HB))
                SAFE_ALLOC(ar_state.data_f62,   (sp.n_f62))
 !$OMP SECTION
+               print*, "Executing-thread=",omp_get_thread_num()
                SAFE_ALLOC(ar_state.data_HC2,    (sp.n_HC2))
                SAFE_ALLOC(ar_state.data_f66,    (sp.n_f66))
                SAFE_ALLOC(ar_state.data_f61,    (sp.n_f61))
@@ -835,6 +843,7 @@ module atmos_refraction
                SAFE_ALLOC(ar_state.data_Hh,     (sp.n_Hh))
                SAFE_ALLOC(ar_state.data_f72,    (sp.n_f72))
 !$OMP SECTION
+               print*, "Executing-thread=",omp_get_thread_num()
                SAFE_ALLOC(ar_state.data_delnb,  (sp.n_delnb))
                SAFE_ALLOC(ar_state.data_delnc,  (sp.n_delnc))
                SAFE_ALLOC(ar_state.data_delnh,  (sp.n_delnh))
@@ -856,6 +865,145 @@ module atmos_refraction
 !$OMP END SECTIONS
 !$OMP END PARALLEL
      end subroutine alloc_atmos_refraction_state_r4_omp 
+
+     subroutine alloc_atmos_refraction_state_r8_omp(ar_state,sp)
+               use omp_lib
+               type(atmos_refraction_state_r8_t),     intent(inout) :: ar_state
+               type(atmos_refraction_size_params_t),  intent(in)    :: sp 
+               
+               ! Begin long memory allocation calls 
+               print*, "Num-threads=",omp_get_num_threads()
+               print*, "Max-threads=",omp_get_max_threads()
+!$OMP PARALLEL
+!$OMP SECTIONS
+!$OMP SECTION
+               print*, "Executing-thread=",omp_get_thread_num()
+               SAFE_ALLOC(ar_state.data_nidx,   (sp.n_nidx))
+               SAFE_ALLOC(ar_state.data_n0idx,  (sp.n_n0idx))
+               SAFE_ALLOC(ar_state.data_z,      (sp.n_z))
+               SAFE_ALLOC(ar_state.data_z0,     (sp.n_z0))
+               SAFE_ALLOC(ar_state.data_r,      (sp.n_r))
+               SAFE_ALLOC(ar_state.data_R0,     (sp.n_R0))
+               SAFE_ALLOC(ar_state.data_phi,    (sp.n_phi))
+               SAFE_ALLOC(ar_state.data_phi0,   (sp.n_phi0))
+               SAFE_ALLOC(ar_state.data_ntht,   (sp.n_ntht))
+               SAFE_ALLOC(ar_state.data_nphi,   (sp.n_nphi))
+               SAFE_ALLOC(ar_state.data_dndr,   (sp.n_dndr))
+               SAFE_ALLOC(ar_state.data_rho,    (sp.n_rho))
+               SAFE_ALLOC(ar_state.data_dn0,    (sp.n_dn0))
+               SAFE_ALLOC(ar_state.data_beta,   (sp.n_beta))
+               SAFE_ALLOC(ar_state.data_navgh,  (sp.n_navgh))
+               SAFE_ALLOC(ar_state.data_H,      (sp.n_H))
+               SAFE_ALLOC(ar_state.data_f345,   (sp.n_f345))
+               SAFE_ALLOC(ar_state.data_f351,   (sp.n_f351))
+               SAFE_ALLOC(ar_state.data_f352,   (sp.n_f352))
+ !$OMP SECTION       
+               print*, "Executing-thread=",omp_get_thread_num()     
+               SAFE_ALLOC(ar_state.data_nh,     (sp.n_nh))
+               SAFE_ALLOC(ar_state.data_f41,    (sp.n_f41))
+               SAFE_ALLOC(ar_state.data_f,      (sp.n_f))
+               SAFE_ALLOC(ar_state.data_d,      (sp.n_d))
+               SAFE_ALLOC(ar_state.data_Nmf,    (sp.n_Nmf))
+               SAFE_ALLOC(ar_state.data_f412,   (sp.n_f412))
+               SAFE_ALLOC(ar_state.data_f413,   (sp.n_f413))
+               SAFE_ALLOC(ar_state.data_D1,     (sp.n_D1))
+               SAFE_ALLOC(ar_state.data_f415,   (sp.n_f415))
+               SAFE_ALLOC(ar_state.data_f425,   (sp.n_f425))
+               SAFE_ALLOC(ar_state.data_f428,   (sp.n_f428))
+               SAFE_ALLOC(ar_state.data_f429,   (sp.n_f429))
+               SAFE_ALLOC(ar_state.data_H1,     (sp.n_H1))
+               SAFE_ALLOC(ar_state.data_H2,     (sp.n_H2))
+               SAFE_ALLOC(ar_state.data_f430,   (sp.n_f430))
+               SAFE_ALLOC(ar_state.data_H3,     (sp.n_H3))
+               SAFE_ALLOC(ar_state.data_deln0,  (sp.n_deln0))
+               SAFE_ALLOC(ar_state.data_f431,   (sp.n_f431))
+               SAFE_ALLOC(ar_state.data_f438,   (sp.n_f438))
+!$OMP SECTION
+               print*, "Executing-thread=",omp_get_thread_num()
+               SAFE_ALLOC(ar_state.data_f442,   (sp.n_f442))
+               SAFE_ALLOC(ar_state.data_f445,   (sp.n_f445))
+               SAFE_ALLOC(ar_state.data_g,      (sp.n_g))
+               SAFE_ALLOC(ar_state.data_f450,   (sp.n_f450))
+               SAFE_ALLOC(ar_state.data_f451,   (sp.n_f451))
+               SAFE_ALLOC(ar_state.data_Hc0,    (sp.n_Hc0))
+               SAFE_ALLOC(ar_state.data_delnA,  (sp.n_delnA))
+               SAFE_ALLOC(ar_state.data_na,     (sp.n_na))
+               SAFE_ALLOC(ar_state.data_nc,     (sp.n_nc))
+               SAFE_ALLOC(ar_state.data_f53,    (sp.n_f53))
+               SAFE_ALLOC(ar_state.data_f517,   (sp.n_f517))
+               SAFE_ALLOC(ar_state.data_tht,    (sp.n_tht))
+               SAFE_ALLOC(ar_state.data_f531,   (sp.n_f531))
+               SAFE_ALLOC(ar_state.data_thtc,   (sp.n_thtc))
+               SAFE_ALLOC(ar_state.data_f534,   (sp.n_f534))
+               SAFE_ALLOC(ar_state.data_Rc,     (sp.n_Rc))
+               SAFE_ALLOC(ar_state.data_f535,   (sp.n_f535))
+               SAFE_ALLOC(ar_state.data_f538,   (sp.n_f538))
+               SAFE_ALLOC(ar_state.data_f539,   (sp.n_f539))
+!$OMP SECTION
+               print*, "Executing-thread=",omp_get_thread_num()
+               SAFE_ALLOC(ar_state.data_f541,   (sp.n_f541))
+               SAFE_ALLOC(ar_state.data_H0,     (sp.n_H0))
+               SAFE_ALLOC(ar_state.data_Hc,     (sp.n_Hc))
+               SAFE_ALLOC(ar_state.data_f543,   (sp.n_f543))
+               SAFE_ALLOC(ar_state.data_H10,    (sp.n_H10))
+               SAFE_ALLOC(ar_state.data_f554,   (sp.n_f554))
+               SAFE_ALLOC(ar_state.data_H20,    (sp.n_H20))
+               SAFE_ALLOC(ar_state.data_f572,   (sp.n_f572))
+               SAFE_ALLOC(ar_state.data_f576,   (sp.n_f576))
+               SAFE_ALLOC(ar_state.data_f577,   (sp.n_f577))
+               SAFE_ALLOC(ar_state.data_f578,   (sp.n_f578))
+               SAFE_ALLOC(ar_state.data_f579,   (sp.n_f579))
+               SAFE_ALLOC(ar_state.data_f590,   (sp.n_f590))
+               SAFE_ALLOC(ar_state.data_R2,     (sp.n_R2))
+               SAFE_ALLOC(ar_state.data_f591,   (sp.n_f591))
+               SAFE_ALLOC(ar_state.data_f593,   (sp.n_f593))
+               SAFE_ALLOC(ar_state.data_f595,   (sp.n_f595))
+               SAFE_ALLOC(ar_state.data_HB,     (sp.n_HB))
+               SAFE_ALLOC(ar_state.data_f62,   (sp.n_f62))
+!$OMP SECTION
+               print*, "Executing-thread=",omp_get_thread_num()
+               SAFE_ALLOC(ar_state.data_HC2,    (sp.n_HC2))
+               SAFE_ALLOC(ar_state.data_f66,    (sp.n_f66))
+               SAFE_ALLOC(ar_state.data_f61,    (sp.n_f61))
+               SAFE_ALLOC(ar_state.data_f61b,   (sp.n_f61b))
+               SAFE_ALLOC(ar_state.data_Bf61b,  (sp.n_Bf61b))
+               SAFE_ALLOC(ar_state.data_f619,   (sp.n_f619))
+               SAFE_ALLOC(ar_state.data_Lc,     (sp.n_Lc))
+               SAFE_ALLOC(ar_state.data_Lb,     (sp.n_Lb))
+               SAFE_ALLOC(ar_state.data_gamma,  (sp.n_gamma))
+               SAFE_ALLOC(ar_state.data_f618,   (sp.n_f618))
+               SAFE_ALLOC(ar_state.data_f620,   (sp.n_f620))
+               SAFE_ALLOC(ar_state.data_f621,   (sp.n_f621))
+               SAFE_ALLOC(ar_state.data_Lh,     (sp.n_Lh))
+               SAFE_ALLOC(ar_state.data_f622,   (sp.n_f622))
+               SAFE_ALLOC(ar_state.data_f623,   (sp.n_f623))
+               SAFE_ALLOC(ar_state.data_f625,   (sp.n_f625))
+               SAFE_ALLOC(ar_state.data_f627,   (sp.n_f627))
+               SAFE_ALLOC(ar_state.data_Hh,     (sp.n_Hh))
+               SAFE_ALLOC(ar_state.data_f72,    (sp.n_f72))
+!$OMP SECTION
+               print*, "Executing-thread=",omp_get_thread_num()
+               SAFE_ALLOC(ar_state.data_delnb,  (sp.n_delnb))
+               SAFE_ALLOC(ar_state.data_delnc,  (sp.n_delnc))
+               SAFE_ALLOC(ar_state.data_delnh,  (sp.n_delnh))
+               SAFE_ALLOC(ar_state.data_f74,    (sp.n_f74))
+               SAFE_ALLOC(ar_state.data_f75,    (sp.n_f75))
+               SAFE_ALLOC(ar_state.data_f714,   (sp.n_f714))
+               SAFE_ALLOC(ar_state.data_1f714,  (sp.n_1f714))
+               SAFE_ALLOC(ar_state.data_f739,   (sp.n_f739))
+               SAFE_ALLOC(ar_state.data_f741,   (sp.n_f741))
+               SAFE_ALLOC(ar_state.data_f743,   (sp.n_f743))
+               SAFE_ALLOC(ar_state.data_f744,   (sp.n_f744))
+               SAFE_ALLOC(ar_state.data_f747,   (sp.n_f747))
+               SAFE_ALLOC(ar_state.data_f96,    (sp.n_f96))
+               SAFE_ALLOC(ar_state.data_f910,   (sp.n_f910))
+               SAFE_ALLOC(ar_state.data_f2f96,  (sp.n_2f96))
+               SAFE_ALLOC(ar_state.data_f914,   (sp.n_f914))
+               SAFE_ALLOC(ar_state.data_L,      (sp.n_L))
+               SAFE_ALLOC(ar_state.data_f924,   (sp.n_f924)) 
+!$OMP END SECTIONS
+!$OMP END PARALLEL
+     end subroutine alloc_atmos_refraction_state_r8_omp 
 
 
      ! Formula 2.43, page 46
