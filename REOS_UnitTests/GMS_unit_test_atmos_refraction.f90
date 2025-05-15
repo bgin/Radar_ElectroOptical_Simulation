@@ -577,11 +577,10 @@ subroutine unit_test_alloc_atmos_refraction_state_r4_omp()
               type(atmos_refraction_size_params_t), automatic :: size_params 
               character(len=128),                   automatic :: filename 
               integer(c_int),                       parameter :: SIGTRAP = 5 
-              integer(kind=i4),                     parameter :: def_mem_size = 4096
               character(len=10)                               :: t
               character(len=8)                                :: d
-              character(len=50),                    parameter  :: header = "[TEST #15: alloc_atmos_refraction_state_r4_omp -- START]"
-              character(len=48),                    parameter  :: footer = "[TEST #15: alloc_atmos_refraction_state_r4_omp -- END]"
+              character(len=64),                    parameter  :: header = "[TEST #15: alloc_atmos_refraction_state_r4_omp -- START]"
+              character(len=64),                    parameter  :: footer = "[TEST #15: alloc_atmos_refraction_state_r4_omp -- END]"
               call DATE_AND_TIME(date=d,time=t)
               filename = __FILE__ 
               lstart   = __LINE__ 
@@ -784,18 +783,18 @@ subroutine unit_test_alloc_atmos_refraction_state_r4_omp()
                        implicit none
                        real(kind=sp), allocatable, dimension(:), intent(in) :: array 
                        ! Locals
-                       !integer(kind=i8), automatic :: vaddr 
+                       integer(kind=i8), automatic :: vaddr 
                        integer(kind=i8), automatic :: size 
                        integer(kind=i4), automatic :: lo_bound
                        integer(kind=i4), automatic :: hi_bound 
                        logical(kind=i1), automatic :: is_allocated 
-                       !vaddr        = LOC(array)
+                       vaddr        = LOC(array)
                        size         = SIZEOF(array)
                        lo_bound     = LBOUND(array,DIM=1)
                        hi_bound     = UBOUND(array,DIM=1)
                        is_allocated = allocated(array)
                        print*,"======================INFO======================================"
-                       print*, "(z0)",LOC(array),"size=",size,"allocated=",is_allocated
+                       print*, "vaddr=",vaddr,"size=",size,"allocated=",is_allocated
                        print*, "lo_bound=",lo_bound,"hi_bound=",hi_bound 
                        print*,"======================INFO======================================"
               end subroutine check_allocation_stats
