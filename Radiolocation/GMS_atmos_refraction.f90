@@ -215,7 +215,7 @@ module atmos_refraction
            integer(kind=i4)                         :: n_neut_tmp
            integer(kind=i4)                         :: n_ion_tmp 
            integer(kind=i4)                         :: n_elec_tmp 
-           integer(kind=i4)                         :: n_0_ion_d 
+           integer(kind=i4)                         :: n_O_ion_d 
            integer(kind=i4)                         :: n_H_ion_d 
            integer(kind=i4)                         :: n_He_ion_d 
            integer(kind=i4)                         :: n_O2_ion_d 
@@ -241,7 +241,7 @@ module atmos_refraction
            integer(kind=i4)                         :: n_neut_tmp
            integer(kind=i4)                         :: n_ion_tmp 
            integer(kind=i4)                         :: n_elec_tmp 
-           integer(kind=i4)                         :: n_0_ion_d 
+           integer(kind=i4)                         :: n_O_ion_d 
            integer(kind=i4)                         :: n_H_ion_d 
            integer(kind=i4)                         :: n_He_ion_d 
            integer(kind=i4)                         :: n_O2_ion_d 
@@ -725,9 +725,102 @@ module atmos_refraction
      
      contains
 
+     subroutine alloc_ionosphere_state_r4(iono_state,sp)
+               type(ionosphere_state_r4_t),     intent(inout) :: iono_state 
+               integer(kind=i4), dimension(0:10), intent(in)    :: sp ! size parameters
+
+               ! Exec code:
+               iono_state.n_elec_dens  = sp(0)
+               iono_state.n_neut_tmp   = sp(1)
+               iono_state.n_ion_tmp    = sp(2)
+               iono_state.n_elec_tmp   = sp(3)
+               iono_state.n_O_ion_d    = sp(4)
+               iono_state.n_H_ion_d    = sp(5)
+               iono_state.n_He_ion_d   = sp(6)
+               iono_state.n_O2_ion_d   = sp(7)
+               iono_state.n_NO_ion_d   = sp(8)
+               iono_state.n_ion_dens   = sp(9)
+               iono_state.n_N_ion_d    = sp(10)
+               SAFE_ALLOC(iono_state.elec_dens, (iono_state.n_elec_dens))
+               SAFE_ALLOC(iono_state.neut_tmp,  (iono_state.n_neut_tmp))
+               SAFE_ALLOC(iono_state.ion_tmp,   (iono_state.n_ion_tmp))
+               SAFE_ALLOC(iono_state.elec_tmp,  (iono_state.n_elec_tmp))
+               SAFE_ALLOC(iono_state.O_ion_d,   (iono_state.n_O_ion_d))
+               SAFE_ALLOC(iono_state.H_ion_d,   (iono_state.n_H_ion_d))
+               SAFE_ALLOC(iono_state.He_ion_d,  (iono_state.n_He_ion_d))
+               SAFE_ALLOC(iono_state.O2_ion_d,  (iono_state.n_O2_ion_d))
+               SAFE_ALLOC(iono_state.NO_ion_d,  (iono_state.n_NO_ion_d))
+               SAFE_ALLOC(iono_state.ion_dens,  (iono_state.n_ion_dens))
+               SAFE_ALLOC(iono_state.N_ion_d,   (iono_state.n_N_ion_d))
+     end subroutine alloc_ionosphere_state_r4
+
+     subroutine alloc_ionosphere_state_r8(iono_state,sp)
+               type(ionosphere_state_r8_t),     intent(inout) :: iono_state 
+               integer(kind=i4), dimension(0:10), intent(in)    :: sp ! size parameters
+
+               ! Exec code:
+               iono_state.n_elec_dens  = sp(0)
+               iono_state.n_neut_tmp   = sp(1)
+               iono_state.n_ion_tmp    = sp(2)
+               iono_state.n_elec_tmp   = sp(3)
+               iono_state.n_O_ion_d    = sp(4)
+               iono_state.n_H_ion_d    = sp(5)
+               iono_state.n_He_ion_d   = sp(6)
+               iono_state.n_O2_ion_d   = sp(7)
+               iono_state.n_NO_ion_d   = sp(8)
+               iono_state.n_ion_dens   = sp(9)
+               iono_state.n_N_ion_d    = sp(10)
+               SAFE_ALLOC(iono_state.elec_dens, (iono_state.n_elec_dens))
+               SAFE_ALLOC(iono_state.neut_tmp,  (iono_state.n_neut_tmp))
+               SAFE_ALLOC(iono_state.ion_tmp,   (iono_state.n_ion_tmp))
+               SAFE_ALLOC(iono_state.elec_tmp,  (iono_state.n_elec_tmp))
+               SAFE_ALLOC(iono_state.O_ion_d,   (iono_state.n_O_ion_d))
+               SAFE_ALLOC(iono_state.H_ion_d,   (iono_state.n_H_ion_d))
+               SAFE_ALLOC(iono_state.He_ion_d,  (iono_state.n_He_ion_d))
+               SAFE_ALLOC(iono_state.O2_ion_d,  (iono_state.n_O2_ion_d))
+               SAFE_ALLOC(iono_state.NO_ion_d,  (iono_state.n_NO_ion_d))
+               SAFE_ALLOC(iono_state.ion_dens,  (iono_state.n_ion_dens))
+               SAFE_ALLOC(iono_state.N_ion_d,   (iono_state.n_N_ion_d))
+     end subroutine alloc_ionosphere_state_r8
+
+     subroutine dealloc_ionosphere_state_r4(iono_state)
+               implicit none 
+               type(ionosphere_state_r4_t),    intent(inout) :: iono_state
+               print*, "***WARNING*** -- Usage of this subroutine is optional -- implicit deallocation shall be preferred!!"
+               SAFE_DEALLOC(iono_state.elec_dens)
+               SAFE_DEALLOC(iono_state.neut_tmp)
+               SAFE_DEALLOC(iono_state.ion_tmp)
+               SAFE_DEALLOC(iono_state.elec_tmp)
+               SAFE_DEALLOC(iono_state.O_ion_d)
+               SAFE_DEALLOC(iono_state.H_ion_d)
+               SAFE_DEALLOC(iono_state.He_ion_d)
+               SAFE_DEALLOC(iono_state.O2_ion_d)
+               SAFE_DEALLOC(iono_state.NO_ion_d)
+               SAFE_DEALLOC(iono_state.ion_dens)
+               SAFE_DEALLOC(iono_state.N_ion_d)
+     end subroutine dealloc_ionosphere_state_r4
+
+     subroutine dealloc_ionosphere_state_r8(iono_state)
+               implicit none 
+               type(ionosphere_state_r8_t),    intent(inout) :: iono_state
+               print*, "***WARNING*** -- Usage of this subroutine is optional -- implicit deallocation shall be preferred!!"
+               SAFE_DEALLOC(iono_state.elec_dens)
+               SAFE_DEALLOC(iono_state.neut_tmp)
+               SAFE_DEALLOC(iono_state.ion_tmp)
+               SAFE_DEALLOC(iono_state.elec_tmp)
+               SAFE_DEALLOC(iono_state.O_ion_d)
+               SAFE_DEALLOC(iono_state.H_ion_d)
+               SAFE_DEALLOC(iono_state.He_ion_d)
+               SAFE_DEALLOC(iono_state.O2_ion_d)
+               SAFE_DEALLOC(iono_state.NO_ion_d)
+               SAFE_DEALLOC(iono_state.ion_dens)
+               SAFE_DEALLOC(iono_state.N_ion_d)
+     end subroutine dealloc_ionosphere_state_r8
+
 
      subroutine alloc_atmos_refraction_state_r4_omp(ar_state,sp)
                use omp_lib
+               implicit none 
                type(atmos_refraction_state_r4_t),     intent(inout) :: ar_state
                type(atmos_refraction_size_params_t),  intent(in)    :: sp 
                
@@ -868,6 +961,7 @@ module atmos_refraction
 
      subroutine alloc_atmos_refraction_state_r8_omp(ar_state,sp)
                use omp_lib
+               implicit none 
                type(atmos_refraction_state_r8_t),     intent(inout) :: ar_state
                type(atmos_refraction_size_params_t),  intent(in)    :: sp 
                
