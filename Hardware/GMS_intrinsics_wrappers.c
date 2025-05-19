@@ -25,14 +25,14 @@ void mm_clflushopt_wrap(void const * p)
 {
           _mm_clflushopt(p);
 }
-
+/*
 void  clui_wrap();
 
 void  clui_wrap()
 {
       _clui();
 }
-
+*/
 void  mm_clwb_wrap(void const *);
 
 void  mm_clwb_wrap(void const * p)
@@ -74,14 +74,14 @@ unsigned int mm_getcsr_wrap()
 {
       return _mm_getcsr();
 }
-
+/*
 void  hreset_wrap(int);
 
 void hreset_wrap(int eax)
 {
      _hreset(eax);
 }
-
+*/
 void  mm_lfence_wrap();
 
 void  mm_lfence_wrap()
@@ -225,7 +225,7 @@ void  mm_monitor_wrap(void const * p,
 {
       _mm_monitor(p,extensions,hints);
 }
-
+/*
 void  mm_wait_wrap(unsigned int,
                    unsigned int);
 
@@ -234,7 +234,7 @@ void  mm_wait_wrap(unsigned int extensions,
 {
       _mm_wait(extensions,hints);
 }
-
+*/
 void  mm_pause_wrap();
 
 void  mm_pause_wrap()
@@ -294,7 +294,7 @@ void  mm_prefetch_ET0(char const * p)
       _mm_prefetch(p,_MM_HINT_ET0);
 }
       
-
+/*
 void  mm_prefetchit0_wrap(const void *);
 
 void  mm_prefetchit0_wrap(const void * p)
@@ -308,7 +308,7 @@ void  mm_prefetchit1_wrap(const void * p)
 {
       _mm_prefetchit1(p);
 }
-
+*/
 unsigned int rdpid_u32_wrap();
 
 unsigned int rdpid_u32_wrap()
@@ -357,14 +357,14 @@ unsigned __int64 readgsbase_u64_wrap()
 {
       return _readgsbase_u64();
 }
-
+/*
 void  senduipi_wrap(unsigned __int64);
 
 void  senduipi_wrap(unsigned __int64 a)
 {
       _senduipi(a);
 }
-
+*/
 void  serialize_wrap();
 
 void serialioze_wrap()
@@ -399,14 +399,14 @@ void MM_SET_ROUNDING_MODE_WRAP(unsigned int a)
 {
       _MM_SET_ROUNDING_MODE(a);
 }
-
+/*
 void stui_wrap();
 
 void stui_wrap()
 {
      _stui();
 }
-
+*/
 void  cldemote_wrap(void const *);
 
 void  cldemote_wrap(void const * p)
