@@ -82,6 +82,7 @@ subroutine unit_test_rad_ray_curvature_f251_r4()
               tsc_cyc     = end_c-start_c 
               print*,"[Input]:  n=",n,"z=",z,"dndr=",dndr 
               print*,"[Output]: rho=",rho 
+              print*, "[WARNING]: Crude timing measurement!!"
               if(tsc_cyc<=ZERO) then
                  print*, "[INVALID-TSC]=", tsc_cyc
               else
@@ -135,6 +136,7 @@ subroutine unit_test_rad_ray_curvature_f251_r8()
               tsc_cyc     = end_c-start_c 
               print*,"[Input]:  n=",n,"z=",z,"dndr=",dndr 
               print*,"[Output]: rho=",rho 
+              print*, "[WARNING]: Crude timing measurement!!"
               if(tsc_cyc<=ZERO) then
                  print*, "[INVALID-TSC]=", tsc_cyc
               else
