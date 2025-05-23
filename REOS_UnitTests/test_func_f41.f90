@@ -36,7 +36,7 @@ module mod_test_func_f41
      -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_kinds.f90 GMS_atmos_refraction.f90 GMS_intrinsics_wrappers.o test_func_f41.f90
     -------------------------------------------------------------------------------------------------------------------------------------------------
     For assembly only:
-    ifort -S unit_test_func_f341 -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-avx512 \
+    ifort -S unit_test_func_f41 -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-avx512 \
      -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_kinds.f90 GMS_atmos_refraction.f90 GMS_intrinsics_wrappers.o test_func_f41.f90
 #endif
 
