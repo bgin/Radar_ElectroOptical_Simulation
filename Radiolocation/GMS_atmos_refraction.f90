@@ -85,7 +85,7 @@ module atmos_refraction
      character(*),        parameter :: ATMOS_REFRACTION_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
      ! Short description
      character(*),        parameter :: ATMOS_REFRACTION_SYNOPSIS    = "Calculation of EM Wave atmospheric refraction."
-#if 0
+
 #define SAFE_ALLOC(mem,size) if(allocated(mem)) deallocate(mem); allocate(mem size)
 #define SAFE_DEALLOC(mem)    if(allocated(mem)) deallocate(mem)
 ! usage SAFE_ALLOC(ar.data_z (sp.n_z))
@@ -1380,11 +1380,11 @@ module atmos_refraction
 !$OMP END SECTIONS
 !$OMP END PARALLEL
      end subroutine dealloc_atmos_refraction_state_r8_omp
-#endif 
+
 
      ! Formula 2.43, page 46
 
-     contains
+     
 
 
      elemental function n_refract_tht_f243_r4(n,n0,z,z0,r,R0,phi,phi0) result(n_over_tht)
