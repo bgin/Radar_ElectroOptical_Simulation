@@ -11512,7 +11512,7 @@ module atmos_refraction
        ! Height increment of emitter due to earth atmospheric refraction for
        ! the known emitter height (absolute)
        ! Formula: 9.21, page: 157
-       elemental function emitter_known_height_f921_r4(z0,L) result(Hc)
+     elemental function emitter_known_height_f921_r4(z0,L) result(Hc)
         
             
             
@@ -11525,16 +11525,16 @@ module atmos_refraction
             real(kind=sp),         automatic  :: cosz0, LLaa 
             real(kind=sp),         automatic  :: La,    sqr 
             real(kind=sp),         automatic  :: t0,    t1 
-            La     = L*6378.0_sp 
+            La     = L/6378.0_sp 
             cosz0  = cos(z0)
-            LLaa   = (L*L)*0.000000024582778622933706834239_sp
+            LLaa   = (L*L)/40678884.0_sp 
             t0     = 1.0_sp+LLaa 
-            t1     = (La+La)*cosz0-6378.0_sp 
+            t1     = (La+La)*cosz0 
             sqr    = sqrt(t0+t1)
-            Hc     = 6378.0_sp*sqr 
-       end function emitter_known_height_f921_r4
+            Hc     = 6378.0_sp*sqr-6378.0_sp 
+     end function emitter_known_height_f921_r4
 
-        elemental function emitter_known_height_f921_r8(z0,L) result(Hc)
+     elemental function emitter_known_height_f921_r8(z0,L) result(Hc)
         
             
             
@@ -11547,18 +11547,32 @@ module atmos_refraction
             real(kind=dp),         automatic  :: cosz0, LLaa 
             real(kind=dp),         automatic  :: La,    sqr 
             real(kind=dp),         automatic  :: t0,    t1 
-            La     = L*6378.0_dp 
+           
+            La     = L/6378.0_dp 
             cosz0  = cos(z0)
-            LLaa   = (L*L)*0.000000024582778622933706834239_dp
+            LLaa   = (L*L)/40678884.0_dp 
             t0     = 1.0_sp+LLaa 
-            t1     = (La+La)*cosz0-6378.0_dp 
+            t1     = (La+La)*cosz0
             sqr    = sqrt(t0+t1)
-            Hc     = 6378.0_dp*sqr 
-       end function emitter_known_height_f921_r8
+            Hc     = 6378.0_dp*sqr-6378.0_dp 
+     end function emitter_known_height_f921_r8
+
+#if 0
+Ifort causes a nan value due to weird optimization bug
+    (gdb) x/4i $pc
+    => 0x4a23a9 <atmos_refraction::emitter_height_delta_atmos_refraction_f924_r4+233>:	vsqrtss xmm16,xmm16,xmm16 <------------- HERE xmm16 is a negative value.
+=> 0x4a23af <atmos_refraction::emitter_height_delta_atmos_refraction_f924_r4+239>:	vmulss xmm20,xmm19,xmm16
+   0x4a23b5 <atmos_refraction::emitter_height_delta_atmos_refraction_f924_r4+245>:	vsubss xmm0,xmm20,xmm21
+   0x4a23bb <atmos_refraction::emitter_height_delta_atmos_refraction_f924_r4+251>:	add    rsp,0x20
+   0x4a23bf <atmos_refraction::emitter_height_delta_atmos_refraction_f924_r4+255>:	pop    rbx
+(gdb) p $xmm16
+$16 = ( v8_bfloat16 = (0, -nan(0x40), 0, 0, 0, 0, 0, 0), v8_half = (0, -nan(0x3c0), 0, 0, 0, 0, 0, 0), v4_float = (-nan(0x400000), 0, 0, 0), v2_double = (2.1199235294506578e-314, 0), v16_int8 = (0, 0, -64, -1, 0, <repeats 12 times>), v8_int16 = (0, -64, 0, 0, 0, 0, 0, 0), v4_int32 = (-4194304, 0, 0, 0), v2_int64 = (4290772992, 0), uint128 = 4290772992 )
+(gdb) 
+#endif
        
-       !Height delta due to earth atmos refraction
+       !Height delta due to earth atmoprivate(t0,t1,t2,t3) s refraction
        !Formula: 9.24, page: 157
-       elemental function emitter_height_delta_atmos_refraction_f924_r4(del,z0,L) result(dHc)
+     elemental function emitter_height_delta_atmos_refraction_f924_r4(del,z0,L) result(dHc)
 !dir$ attributes forceinline :: emitter_height_delta_atmos_refraction_f924_r4
             
 
@@ -11574,15 +11588,16 @@ module atmos_refraction
             sinz0  = sin(z0)
             cosz0  = cos(z0)
             Hc     = emitter_known_height_f921_r4(z0,L)
+            !print*, Hc 
             scosz0 = cosz0*cosz0 
             t0     = 40678884.0_sp*scosz0
             t1     = 12756.0_sp*Hc 
-            sqr    = t0+t1 
-            t0     = 6378.0_sp-cosz0 
+            sqr    = sqrt(t0+t1) !location of -NAN value
+            t0     = 6378.0_sp*cosz0 
             dHc    = del*sinz0*sqr-t0 
        end function emitter_height_delta_atmos_refraction_f924_r4
 
-       elemental function emitter_height_delta_atmos_refraction_f924_r8(del,z0,L) result(dHc)
+      elemental function emitter_height_delta_atmos_refraction_f924_r8(del,z0,L) result(dHc)
   !dir$ attributes forceinline :: emitter_height_delta_atmos_refraction_f924_r8   
             
           
@@ -11600,11 +11615,12 @@ module atmos_refraction
             sinz0  = sin(z0)
             cosz0  = cos(z0)
             Hc     = emitter_known_height_f921_r8(z0,L)
+            print*, Hc 
             scosz0 = cosz0*cosz0 
             t0     = 40678884.0_dp*scosz0
             t1     = 12756.0_dp*Hc 
-            sqr    = t0+t1 
-            t0     = 6378.0_dp-cosz0 
+            sqr    = sqrt(t0+t1) 
+            t0     = 6378.0_dp*cosz0 
             dHc    = del*sinz0*sqr-t0 
        end function emitter_height_delta_atmos_refraction_f924_r8
  
