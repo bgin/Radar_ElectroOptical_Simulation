@@ -46,8 +46,8 @@ module mod_print_error
    
     implicit none
     
-    !!public :: print_non_fatal_error
-   ! public :: print_fatal_error
+    public :: print_non_fatal_error
+    public :: print_fatal_error
     public :: handle_fatal_memory_error
     public :: handle_fatal_fileio_error
     !=====================================================59
@@ -65,7 +65,7 @@ module mod_print_error
     integer(kind=i4), parameter, public :: MOD_PRINT_ERROR_MICRO = 0
     
     ! Module full version
-    integer(kind=int4), parameter, public :: MOD_PRINT_ERROR_FULLVER = 1000*MOD_PRINT_ERROR_MAJOR + &
+    integer(kind=i4), parameter, public :: MOD_PRINT_ERROR_FULLVER = 1000*MOD_PRINT_ERROR_MAJOR + &
                                                                        100*MOD_PRINT_ERROR_MINOR  + &
                                                                        10*MOD_PRINT_ERROR_MICRO
     
@@ -73,7 +73,9 @@ module mod_print_error
     character(*),  parameter, public :: MOD_PRINT_ERROR_CREATE_DATE =  "18-02-2018 10:03 +00200 (SUN 18 FEB 2018 GMT+2)"
     
    
-    character(*),  parameter, public :: MOD_PRINT_ERROR_BUILD_DATE = __DATE__ " " __TIME__
+    character(*),  parameter, public :: MOD_PRINT_ERROR_BUILD_DATE = __DATE__ 
+    
+    character(*),  parameter, public :: MOD_PRINT_ERROR_BUILD_TIME = __TIME__
     
     ! Module author info
     character(*),  parameter, public :: MOD_PRINT_ERROR_AUTHOR = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
@@ -85,8 +87,7 @@ module mod_print_error
     
     !===================================
     !   Print non fatal error info
-    !==================================
-#if 0
+    !===================================
     subroutine print_non_fatal_error(header,msg,loc,fname,vaddr)
           
           character(len=*),       intent(in)                :: header, msg
@@ -115,11 +116,10 @@ module mod_print_error
           write(stderr,*) header
           
     end subroutine print_non_fatal_error
-#endif    
+    
     !====================================
     !  Print fatal error info
     !====================================
-#if 0
     subroutine print_fatal_error(header,msg,smsg,fname,loc,vaddr)
           
           
@@ -150,30 +150,36 @@ module mod_print_error
           write(stderr,*) header
           
     end subroutine
-#endif
     
     !=====================================
     !  Allocation/Deallocation fatal error
     !  handler
     !=====================================
-    subroutine handle_fatal_memory_error(logging,lmsg)
+    subroutine handle_fatal_memory_error(iounit,logging,verbose,append, &
+                                         fname,lmsg,umsg,emsg)
 #if defined(__INTEL_COMPILER) || defined(__ICC)   
       use IFCORE, only :  TRACEBACKQQ
 #endif
           use M_journal, only : journal
-        
-          logical(kind=i4),    intent(in) :: logging
-        
+          integer(kind=i4),    intent(in) :: iounit
+          logical(kind=i4),    intent(in) :: logging, verbose,append
+          character(len=*),      intent(in) :: fname
           character(len=*),      intent(in) :: lmsg ! message to logger
           
-       
+          character(len=*),      intent(in) :: umsg ! user message 
+          character(len=*),      intent(in) :: emsg ! system message
           
-         
+          ! Locals
+          character(len=10) ::  stime
+          character(len=8)  ::  sdate
           ! Start of executable statements
           if(logging == .true.) then
              call journal('%','%Y-%M-%DT%h:%m:%s.%x%u:%b')
              call journal('t',lmsg)
-          end if
+          else if (verbose == .true. ) then
+              call print_fatal_error( "========================= FATAL =========================", &
+                                      umsg, emsg, sdate, __LINE__ )
+           end if
 #if defined(__INTEL_COMPILER) || defined(__ICC)   
            call TRACEBACKQQ(STRING="MEMORY-ALLOC/DEALLOC-ERROR", USER_EXIT_CODE= -1)
 #elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
@@ -181,25 +187,48 @@ module mod_print_error
 #endif
           ERROR STOP   
        end subroutine handle_fatal_memory_error
+
+    subroutine print_backtrace_and_exit(umsg)
+#if defined(__INTEL_COMPILER) || defined(__ICC)   
+      use IFCORE, only :  TRACEBACKQQ
+#endif
+         character(len=*),      intent(in) :: umsg ! user message 
+#if defined(__INTEL_COMPILER) || defined(__ICC)   
+           call TRACEBACKQQ(STRING=umsg, USER_EXIT_CODE= -1)
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           call backtrace()
+#endif
+          ERROR STOP  
+    end subroutine print_backtrace_and_exit
           
     !=====================================
     !  File I/O fatal error
     !  handler
     !=====================================                               
-       subroutine handle_fatal_fileio_error(logging,lmsg)
+       subroutine handle_fatal_fileio_error(iounit,logging,verbose,append, &
+                                            fname,filerr,lmsg,umsg,emsg)
 #if defined(__INTEL_COMPILER) || defined(__ICC)   
       use IFCORE, only :  TRACEBACKQQ
 #endif         
          use M_journal, only : journal
-        
-         logical(kind=i4),    intent(in) :: logging
-        
+         integer(kind=i4),    intent(in) :: iounit
+         logical(kind=i4),    intent(in) :: logging,verbose,append
+         character(len=*),      intent(in) :: fname ! name file to written (logger)
+         character(len=*),      intent(in) :: filerr ! name of file which failed to be opened
          character(len=*),      intent(in) :: lmsg ! message to logger
-       
+         character(len=*),      intent(in) :: umsg ! user message 
+         character(len=*),      intent(in) :: emsg ! system message
+         
+         ! Locals
+         character(len=10) ::  stime
+         character(len=8)  ::  sdate
          ! Start of executable statements
          if(logging == .true.) then
              call journal('%','%Y-%M-%DT%h:%m:%s.%x%u:%b')
              call journal('t',lmsg)
+         else if (verbose == .true. ) then
+              call print_fatal_error( "========================= FATAL =========================", &
+                                      umsg, emsg, sdate, __LINE__ )
          end if
 #if defined(__INTEL_COMPILER) || defined(__ICC)              
          call TRACEBACKQQ(STRING="File: " // trim(filerr) // " I/O Error", USER_EXIT_CODE= -1)
