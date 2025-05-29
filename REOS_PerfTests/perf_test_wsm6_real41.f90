@@ -5,11 +5,18 @@
  icc -c -std=c99 GMS_fast_pmc_access.h GMS_fast_pmc_access.c
 
  ifort -o perf_test_wsm6d_real41 -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-avx512 -mavx512f \
-    -align array64bytes -falign-loops=32 -fno-math-errno -fopenmp -fvec-with-mask -fvec-peel-loops \
+    -align array64byte -falign-loops=32 -fno-math-errno -fopenmp -fvec-with-mask -fvec-peel-loops \
     -qopt-assume-safe-padding -qopt-malloc-options=4 -qopt-multiple-gather-scatter-by-shuffles    \
     -qopt-zmm-usage=high -simd -unroll \
     -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_config.fpp GMS_kinds.f90 M_msg.f90 M_journal.f90 GMS_print_error.f90 GMS_pmc_samples.f90 \
-     GMS_wsm6_kernel.f90 GMS_wsm6_driver GMS_fast_pmc_access.o perf_test_wsm6_real41.f90
+     GMS_wsm6_kernel.f90 GMS_fast_pmc_access.f90 GMS_wsm6_driver.f90 GMS_fast_pmc_access.o perf_test_wsm6_real41.f90
+    ASM:
+    ifort -S perf_test_wsm6d_real41 -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-avx512 -mavx512f \
+    -align array64byte -falign-loops=32 -fno-math-errno -fopenmp -fvec-with-mask -fvec-peel-loops \
+    -qopt-assume-safe-padding -qopt-malloc-options=4 -qopt-multiple-gather-scatter-by-shuffles    \
+    -qopt-zmm-usage=high -simd -unroll \
+    -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_config.fpp GMS_kinds.f90 M_msg.f90 M_journal.f90 GMS_print_error.f90 GMS_pmc_samples.f90 \
+     GMS_wsm6_kernel.f90 GMS_fast_pmc_access.f90 GMS_wsm6_driver.f90 GMS_fast_pmc_access.o perf_test_wsm6_real41.f90
 #endif
 
 
@@ -26,11 +33,11 @@ program main
     real(kind=sp), allocatable, dimension(:,:,:)   :: den 
     real(kind=sp), allocatable, dimension(:,:,:)   :: p 
     real(kind=sp), allocatable, dimension(:,:,:)   :: delz 
-    real(kind=sp), allocatable, dimension(:,:)     :: rainz 
+    real(kind=sp), allocatable, dimension(:,:)     :: rain
     real(kind=sp), allocatable, dimension(:,:)     :: rainncv 
     real(kind=sp), allocatable, dimension(:,:)     :: sr 
     real(kind=sp), allocatable, dimension(:,:)     :: snow 
-    real(kind=sp), allocatable, dimension(:,:)     :: snowcv 
+    real(kind=sp), allocatable, dimension(:,:)     :: snowncv 
     real(kind=sp), allocatable, dimension(:,:)     :: graupel 
     real(kind=sp), allocatable, dimension(:,:)     :: graupelncv 
     !dir$ attributes align : 64 :: t 
@@ -44,7 +51,7 @@ program main
     !dir$ attributes align : 64 :: rainncv 
     !dir$ attributes align : 64 :: sr 
     !dir$ attributes align : 64 :: snow 
-    !dir$ attributes align : 64 :: snowcv 
+    !dir$ attributes align : 64 :: snowncv 
     !dir$ attributes align : 64 :: graupel 
     !dir$ attributes align : 64 :: graupelncv
     type(core_counters1D) :: core_counters 
@@ -55,12 +62,14 @@ program main
     integer(kind=i4)      :: its,ite,jts,jte,kts,kte 
     
     print*, header 
-    call wsm6_driver(ids,ide,jds,jde,kds,kde, &
+    call wsm6D_driver(ids,ide,jds,jde,kds,kde, &
                      ims,ime,jms,jme,kms,kme, &
                      its,ite,jts,jte,kts,kte, &
                      t,qci,qrs,q,den,p,delz,  &
                      rain,rainncv,sr,snow,    &
-                     snowncv,graupel,graupelncv)
+                     snowncv,graupel,graupelncv, &
+                     core_counters)
+                     
 
     print*, footer 
 
