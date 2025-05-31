@@ -72,7 +72,21 @@ unsigned long corrected_pmc_delta(unsigned long,
 
 float get_TSC_frequency();
 
+unsigned long long approximate_cpuid_bias();
 
+unsigned long long approximate_rdpmc_bias();
+
+void approx_cpuid_bias_samples(unsigned long long * __restrict__ ,
+                               unsigned long long * __restrict__ ,
+                               unsigned long long * __restrict__ ,
+                               const unsigned long long,
+                               const unsigned long long);
+
+void approx_rdpmc_bias_samples(unsigned long long * __restrict__ ,
+                               unsigned long long * __restrict__ ,
+                               unsigned long long * __restrict__ ,
+                               const unsigned long long,
+                               const unsigned long long);                             
 
 
 #endif /*__GMS_FAST_PMC_ACCESS_H__*/

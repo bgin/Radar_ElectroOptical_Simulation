@@ -60,6 +60,7 @@ unsigned long rdpmc(int c) {
     return (a | (d << 32));
 }
 
+
 // core performance counter width varies by processor
 // the width is contained in bits 23:16 of the EAX register
 // after executing the CPUID instruction with an initial EAX
@@ -208,5 +209,185 @@ float get_TSC_frequency() {
 			}
 		}
 	}
-	return(-1.0);
+	return(-1.0f);
+}
+
+unsigned long long approximate_cpuid_bias()
+{
+	 unsigned long long lat_cpuid_start;
+	 unsigned long long lat_cpuid_end;
+	 unsigned long long cpuid_bias;
+	 unsigned int cyc1_lo, cyc1_hi;
+	 unsigned int cyc2_lo, cyc2_hi;
+	 unsigned int eax,ebx,ecx,edx;
+	 
+     // Dry run.
+	  __asm__ __volatile__ (
+                 "CPUID\n\t"
+                 "RDTSC\n\t"
+                 "mov %%edx, %0\n\t"
+                 "mov %%eax, %1\n\t" : "=r" (cyc1_hi),"=r" (cyc1_lo) :: "%rax", "%rbx", "%rcx", "%rdx" 
+                 );
+     __asm__ __volatile__ ("cpuid" : \
+	              "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) );
+     __asm__ __volatile__ (
+                 "CPUID\n\t"
+                 "RDTSC\n\t"
+                 "mov %%edx, %0\n\t"
+                 "mov %%eax, %1\n\t" : "=r" (cyc2_hi),"=r" (cyc2_lo) :: "%rax", "%rbx", "%rcx", "%rdx" 
+                 );
+
+	  //The main measurement run.
+
+	   __asm__ __volatile__ (
+                 "CPUID\n\t"
+                 "RDTSC\n\t"
+                 "mov %%edx, %0\n\t"
+                 "mov %%eax, %1\n\t" : "=r" (cyc1_hi),"=r" (cyc1_lo) :: "%rax", "%rbx", "%rcx", "%rdx" 
+                 );
+     __asm__ __volatile__ ("cpuid" : \
+	              "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) );
+     __asm__ __volatile__ (
+                 "CPUID\n\t"
+                 "RDTSC\n\t"
+                 "mov %%edx, %0\n\t"
+                 "mov %%eax, %1\n\t" : "=r" (cyc2_hi),"=r" (cyc2_lo) :: "%rax", "%rbx", "%rcx", "%rdx" 
+                 );
+	  
+	  lat_cpuid_start = (((unsigned long long)cyc1_hi << 32) | cyc1_lo);
+	  lat_cpuid_end   = (((unsigned long long)cyc2_hi << 32) | cyc2_lo);
+	  cpuid_bias      = lat_cpuid_end-lat_cpuid_start;
+	  return cpuid_bias;
+}
+
+unsigned long long approximate_rdpmc_bias()
+{
+	unsigned long long lat_rdpmc_start;
+	unsigned long long lat_rdpmc_end;
+	unsigned long long rdpmc_bias;
+	unsigned int a,d,c;
+	unsigned int cyc3_hi, cyc3_lo;
+	unsigned int cyc4_hi, cyc4_lo;
+
+	c = (1ull<<30)+1;
+    __asm__ __volatile__ (
+                 "CPUID\n\t"
+                 "RDTSC\n\t"
+                 "mov %%edx, %0\n\t"
+                 "mov %%eax, %1\n\t" : "=r" (cyc3_hi),"=r" (cyc3_lo) :: "%rax", "%rbx", "%rcx", "%rdx" 
+                 );
+     __asm__ __volatile__ ("rdpmc" : "=a" (a), "=d" (d) : "c" (c) );
+     __asm__ __volatile__ (
+                 "CPUID\n\t"
+                 "RDTSC\n\t"
+                 "mov %%edx, %0\n\t"
+                 "mov %%eax, %1\n\t" : "=r" (cyc4_hi),"=r" (cyc4_lo) :: "%rax", "%rbx", "%rcx", "%rdx" 
+                 );
+
+	 __asm__ __volatile__ (
+                 "CPUID\n\t"
+                 "RDTSC\n\t"
+                 "mov %%edx, %0\n\t"
+                 "mov %%eax, %1\n\t" : "=r" (cyc3_hi),"=r" (cyc3_lo) :: "%rax", "%rbx", "%rcx", "%rdx" 
+                 );
+     __asm__ __volatile__ ("rdpmc" : "=a" (a), "=d" (d) : "c" (c) );
+     __asm__ __volatile__ (
+                 "CPUID\n\t"
+                 "RDTSC\n\t"
+                 "mov %%edx, %0\n\t"
+                 "mov %%eax, %1\n\t" : "=r" (cyc4_hi),"=r" (cyc4_lo) :: "%rax", "%rbx", "%rcx", "%rdx" 
+                 );
+	 
+	 lat_rdpmc_start = (((unsigned long long)cyc3_hi << 32) | cyc3_lo);
+	 lat_rdpmc_end   = (((unsigned long long)cyc4_hi << 32) | cyc4_lo);
+     rdpmc_bias      = lat_rdpmc_end-lat_rdpmc_start;
+	 return rdpmc_bias;
+}
+
+void approx_cpuid_bias_samples(unsigned long long * __restrict__ cpuid_bias_start,
+                               unsigned long long * __restrict__ cpuid_bias_end,
+							   unsigned long long * __restrict__ cpuid_bias_delta,
+							   const unsigned long long n_runs,
+							   const unsigned long long n_samples)
+{
+	 
+	   //Dry run
+	   __attribute__((unused))
+	   volatile unsigned long long result;
+	   result = approximate_cpuid_bias();
+       for(unsigned long long __i = 0ull; __i != n_runs; ++__i)
+	   {   
+		   	unsigned int cyc1_lo, cyc1_hi;
+	        unsigned int cyc2_lo, cyc2_hi;
+	        unsigned int eax,ebx,ecx,edx;
+
+		   for(unsigned long long __j = 0ull; __j != n_samples; ++__j)
+		   {
+			     __asm__ __volatile__ ("lfence");
+			     __asm__ __volatile__ (
+                              "CPUID\n\t"
+                              "RDTSC\n\t"
+                              "mov %%edx, %0\n\t"
+                              "mov %%eax, %1\n\t" : "=r" (cyc1_hi),"=r" (cyc1_lo) :: "%rax", "%rbx", "%rcx", "%rdx" 
+                 );
+                 __asm__ __volatile__ ("cpuid" : \
+	                                   "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) );
+                 __asm__ __volatile__ (
+                              "CPUID\n\t"
+                              "RDTSC\n\t"
+                              "mov %%edx, %0\n\t"
+                              "mov %%eax, %1\n\t" : "=r" (cyc2_hi),"=r" (cyc2_lo) :: "%rax", "%rbx", "%rcx", "%rdx" 
+                 );
+				 __asm__ __volatile__ ("lfence");
+                 unsigned long long start = (((unsigned long long)cyc1_hi << 32) | cyc1_lo);
+				 cpuid_bias_start[__i*n_samples+__j] = start;
+				 unsigned long long end   = (((unsigned long long)cyc2_hi << 32) | cyc2_lo);
+				 cpuid_bias_end[__i*n_samples+__j]   = end;
+				 cpuid_bias_delta[__i*n_samples+__j] = end-start;
+		   }
+	   }
+
+}
+
+void approx_rdpmc_bias_samples(unsigned long long * __restrict__ rdpmc_bias_start,
+                               unsigned long long * __restrict__ rdpmc_bias_end,
+							   unsigned long long * __restrict__ rdpmc_bias_delta,
+							   const unsigned long long n_runs,
+							   const unsigned long long n_samples)
+{
+	    // Dry run 
+		__attribute__((unused))
+		volatile unsigned long long result;
+		result = approximate_rdpmc_bias();
+		for(unsigned long long __i = 0ull; __i != n_runs; ++__i)
+		{
+			  unsigned int a,d,c;
+	          unsigned int cyc3_hi, cyc3_lo;
+	          unsigned int cyc4_hi, cyc4_lo;
+			  c = (1ull<<30)+1;
+
+			  for(unsigned long long __j = 0ull; __j != n_samples; ++__j)
+			  {
+				   __asm__ __volatile__ ("lfence");
+				   __asm__ __volatile__ (
+                                         "CPUID\n\t"
+                                         "RDTSC\n\t"
+                                         "mov %%edx, %0\n\t"
+                                         "mov %%eax, %1\n\t" : "=r" (cyc3_hi),"=r" (cyc3_lo) :: "%rax", "%rbx", "%rcx", "%rdx" 
+                            );
+                   __asm__ __volatile__ ("rdpmc" : "=a" (a), "=d" (d) : "c" (c) );
+                   __asm__ __volatile__ (
+                                         "CPUID\n\t"
+                                         "RDTSC\n\t"
+                                         "mov %%edx, %0\n\t"
+                                         "mov %%eax, %1\n\t" : "=r" (cyc4_hi),"=r" (cyc4_lo) :: "%rax", "%rbx", "%rcx", "%rdx" 
+                            );
+				    __asm__ __volatile__ ("lfence");
+					unsigned long long start = (((unsigned long long)cyc3_hi << 32) | cyc3_lo);
+					rdpmc_bias_start[__i*n_samples+__j] = start;
+					unsigned long long end   = (((unsigned long long)cyc4_hi << 32) | cyc4_lo);
+					rdpmc_bias_end[__i*n_samples+__j]   = end;
+					rdpmc_bias_delta[__i*n_samples+__j] = end-start;
+			  }
+		}
 }
