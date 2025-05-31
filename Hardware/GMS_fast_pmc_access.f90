@@ -5,7 +5,7 @@ module fast_pmc_access
     !=============================================================!
     ! Fortran wrappers to 'GMS_fast_pmc_access.h' header file     !
     !=============================================================!
-    use, intrinsic :: ISO_C_BINDINGS
+    use, intrinsic :: ISO_C_BINDING
     implicit none
     public
 
@@ -180,5 +180,53 @@ module fast_pmc_access
     
 
      end interface
+
+     interface 
+         function approximate_cpuid_bias() result(val) &
+                     bind(c,name='approximate_cpuid_bias')
+               use, intrinsic :: ISO_C_BINDING
+               real(c_long_long) :: val
+         end function approximate_cpuid_bias
+     end interface 
+
+     interface 
+         function approximate_rdpmc_bias() result(val) &
+                     bind(c,name='approximate_rdpmc_bias')
+               use, intrinsic :: ISO_C_BINDING
+               real(c_long_long) :: val 
+         end function approximate_rdpmc_bias
+     end interface 
+
+     interface 
+         subroutine approx_cpuid_bias_samples(cpuid_bias_start, &
+                                              cpuid_bias_end,   &
+                                              cpuid_bias_delta, &
+                                              n_runs,           &
+                                              n_samples)
+                        bind(c,name='approx_cpuid_bias_samples')
+                  use, intrinsic :: ISO_C_BINDING 
+                  integer(c_long_long), dimension(:), intent(inout)     :: cpuid_bias_start 
+                  integer(c_long_long), dimension(:), intent(inout)     :: cpuid_bias_end 
+                  integer(c_long_long), dimension(:), intent(inout)     :: cpuid_bias_delta 
+                  integer(c_long_long),               intent(in), value :: n_runs 
+                  integer(c_long_long),               intent(in), value :: n_samples 
+         end subroutine approx_cpuid_bias_samples
+     end interface 
+
+     interface 
+         subroutine approx_rdpmc_bias_samples(rdpmc_bias_start, &
+                                              rdpmc_bias_end,   &
+                                              rdpmc_bias_delta, &
+                                              n_runs,           &
+                                              n_samples)
+                        bind(c,name='approx_rdpmc_bias_samples')
+                  use, intrinsics :: ISO_C_BINDING
+                  integer(c_long_long), dimension(:), intent(inout)     :: rdpmc_bias_start 
+                  integer(c_long_long), dimension(:), intent(inout)     :: rdpmc_bias_end 
+                  integer(c_long_long), dimension(:), intent(inout)     :: rdpmc_bias_delta 
+                  integer(c_long_long),               intent(in), value :: n_runs 
+                  integer(c_long_long),               intent(in), value :: n_samples 
+         end subroutine approx_rdpmc_bias_samples
+     end interface 
       
 end module fast_pmc_access
