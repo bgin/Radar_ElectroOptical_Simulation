@@ -41,12 +41,7 @@ MODULE mod_fpcompare
   PUBLIC :: Tolerance
   PUBLIC :: Compares_Within_Tolerance
   ! Non-overloaded vectorized procedures.
-  PUBLIC :: xmm2r8_fpcmp_xmm2r8
-  PUBLIC :: xmm4r4_fpcmp_xmm4r4
-  PUBLIC :: ymm4r8_fpcmp_ymm4r8
-  PUBLIC :: ymm8r4_fpcmp_ymm8r4
-  PUBLIC :: zmm16r4_fpcmp_zmm16r4
-  PUBLIC :: zmm8r8_fpcmp_zmm8r8
+ 
   PUBLIC :: xmm2r8_equalto_xmm2r8
   PUBLIC :: xmm4r4_equalto_xmm4r4
   PUBLIC :: ymm4r8_equalto_ymm4r8
@@ -71,12 +66,7 @@ MODULE mod_fpcompare
   PUBLIC :: ymm8r4_tol_ymm8r4
   PUBLIC :: zmm16r4_tol_zmm16r4
   PUBLIC :: zmm8r8_tol_zmm8r8
-  PUBLIC :: xmm2r8_cwt_xmm2r8
-  PUBLIC :: xmm4r4_cwt_xmm4r4
-  PUBLIC :: ymm4r8_cwt_ymm4r8
-  PUBLIC :: ymm8r4_cwt_ymm8r4
-  PUBLIC :: zmm8r8_cwt_zmm8r8
-  PUBLIC :: zmm16r4_cwt_zmm16r4
+  
   ! ---------------------
   ! Procedure overloading
   ! ---------------------
@@ -213,41 +203,41 @@ CONTAINS
 !----------------------------------------------------------------------------------
 !DIR$ ATTRIBUTES INLINE :: EqualTo_Real_Single
   ELEMENTAL FUNCTION EqualTo_Real_Single( x, y ) RESULT( EqualTo )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: EqualTo_Real_Single
     REAL(kind=sp), INTENT(IN)  :: x, y
     LOGICAL :: EqualTo
-    EqualTo = ABS(x-y) < SPACING( MAX(ABS(x),ABS(y)) )
+    EqualTo = ABS(x-y) <= SPACING( MAX(ABS(x),ABS(y)) )
   END FUNCTION EqualTo_Real_Single
   
 !DIR$ ATTRIBUTES INLINE :: EqualTo_Real_Double
   ELEMENTAL FUNCTION EqualTo_Real_Double( x, y ) RESULT( EqualTo )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: EqualTo_Real_Double
     REAL(kind=dp), INTENT(IN)  :: x, y
     LOGICAL :: EqualTo
-    EqualTo = ABS(x-y) < SPACING( MAX(ABS(x),ABS(y)) )
+    EqualTo = ABS(x-y) <= SPACING( MAX(ABS(x),ABS(y)) )
   END FUNCTION EqualTo_Real_Double
   
 !DIR$ ATTRIBUTES INLINE :: EqualTo_Complex_Single
   ELEMENTAL FUNCTION EqualTo_Complex_Single( x, y ) RESULT( EqualTo )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: EqualTo_Complex_Single
     COMPLEX(kind=sp), INTENT(IN)  :: x, y
     LOGICAL :: EqualTo
     REAL(kind=sp) :: rx, ix
     REAL(kind=sp) :: ry, iy
-    rx = REAL(x,sp); ix = AIMAG(x)
-    ry = REAL(y,sp); iy = AIMAG(y)
+    rx = REAL(x,sp)
+    ix = AIMAG(x)
+    ry = REAL(y,sp) 
+    iy = AIMAG(y)
     EqualTo = EqualTo_Real_Single( rx, ry ) .AND. EqualTo_Real_Single( ix, iy )
   END FUNCTION EqualTo_Complex_Single
 
 !DIR$ ATTRIBUTES INLINE :: EqualTo_Complex_Double
   ELEMENTAL FUNCTION EqualTo_Complex_Double( x, y ) RESULT( EqualTo )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: EqualTo_Complex_Double
     COMPLEX(kind=dp), INTENT(IN)  :: x, y
     LOGICAL :: EqualTo
     REAL(kind=dp) :: rx, ix
-    REAL(kin=dp) :: ry, iy
-    rx = REAL(x,dp); ix = AIMAG(x)
-    ry = REAL(y,dp); iy = AIMAG(y)
+    REAL(kind=dp) :: ry, iy
+    rx = REAL(x,dp)
+    ix = AIMAG(x)
+    ry = REAL(y,dp)
+    iy = AIMAG(y)
     EqualTo = EqualTo_Real_Double( rx, ry ) .AND. EqualTo_Real_Double( ix, iy )
   END FUNCTION EqualTo_Complex_Double
 
@@ -293,7 +283,6 @@ CONTAINS
 
  !DIR$ ATTRIBUTES INLINE :: Is_Greater_Than_Single
   ELEMENTAL FUNCTION Is_Greater_Than_Single( x, y ) RESULT ( Greater_Than )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: Is_Greater_Than_Single
     REAL(kind=sp), INTENT(IN) :: x, y
     LOGICAL :: Greater_Than
     IF ( (x-y) >= SPACING( MAX( ABS(x), ABS(y) ) ) ) THEN
@@ -305,7 +294,6 @@ CONTAINS
 
 !DIR$ ATTRIBUTES INLINE :: Is_Greater_Than_Double
   ELEMENTAL FUNCTION Is_Greater_Than_Double( x, y ) RESULT ( Greater_Than )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: Is_Greater_Than_Double
     REAL(kind=dp), INTENT(IN) :: x, y
     LOGICAL :: Greater_Than
     IF ( (x-y) >= SPACING( MAX( ABS(x), ABS(y) ) ) ) THEN
@@ -356,7 +344,6 @@ CONTAINS
   !----------------------------------------------------------------------------------
 !DIR$ ATTRIBUTES INLINE :: Is_Less_Than_Single
   ELEMENTAL FUNCTION Is_Less_Than_Single( x, y ) RESULT ( Less_Than )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: Is_Less_Than_Single
     REAL(kind=sp), INTENT(IN) :: x, y
     LOGICAL :: Less_Than
     IF ( (y-x) >= SPACING( MAX( ABS(x), ABS(y) ) ) ) THEN
@@ -368,7 +355,7 @@ CONTAINS
 
 !DIR$ ATTRIBUTES INLINE :: Is_Less_Than_Double
   ELEMENTAL FUNCTION Is_Less_Than_Double( x, y ) RESULT ( Less_Than )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: Is_Less_Than_Double
+
     REAL(kind=dp), INTENT(IN) :: x, y
     LOGICAL :: Less_Than
     IF ( (y-x) >= SPACING( MAX( ABS(x), ABS(y) ) ) ) THEN
@@ -481,11 +468,10 @@ CONTAINS
 !----------------------------------------------------------------------------------
 !DIR$ ATTRIBUTES INLINE :: Compare_Real_Single
   ELEMENTAL FUNCTION Compare_Real_Single( x, y, ULP, Percent ) RESULT( Compare )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: Compare_Real_Single
     ! Arguments
     REAL(kind=sp),           INTENT(IN) :: x
     REAL(kind=sp),           INTENT(IN) :: y
-    INTEGER(kind=int4)     , OPTIONAL, INTENT(IN) :: ULP
+    INTEGER(kind=i4)     , OPTIONAL, INTENT(IN) :: ULP
     REAL(kind=sp), OPTIONAL, INTENT(IN) :: Percent
     ! Function result
     LOGICAL :: Compare
@@ -518,11 +504,10 @@ CONTAINS
 
 !DIR$ ATTRIBUTES INLINE :: Compare_Real_Double
   ELEMENTAL FUNCTION Compare_Real_Double( x, y, ULP, Percent ) RESULT( Compare )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: Compare_Real_Double
     ! Arguments
     REAL(kind=dp),           INTENT(IN) :: x
     REAL(kind=dp),           INTENT(IN) :: y
-    INTEGER(kind=int4)     , OPTIONAL, INTENT(IN) :: ULP
+    INTEGER(kind=i4)     , OPTIONAL, INTENT(IN) :: ULP
     REAL(kind=dp), OPTIONAL, INTENT(IN) :: Percent
     ! Function result
     LOGICAL :: Compare
@@ -555,11 +540,10 @@ CONTAINS
 
 !DIR$ ATTRIBUTES INLINE :: Compare_Complex_Single
   ELEMENTAL FUNCTION Compare_Complex_Single( x, y, ULP, Percent ) RESULT( Compare )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: Compare_Complex_Single
     ! Arguments
     COMPLEX(kind=sp),           INTENT(IN) :: x
     COMPLEX(kind=sp),           INTENT(IN) :: y
-    INTEGER(kind=int4)        , OPTIONAL, INTENT(IN) :: ULP
+    INTEGER(kind=i4)        , OPTIONAL, INTENT(IN) :: ULP
     REAL(kind=sp)   , OPTIONAL, INTENT(IN) :: Percent
     ! Function result
     LOGICAL :: Compare
@@ -580,11 +564,11 @@ CONTAINS
 
 !DIR$ ATTRIBUTES INLINE :: Compare_Complex_Double
   ELEMENTAL FUNCTION Compare_Complex_Double( x, y, ULP, Percent ) RESULT( Compare )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: Compare_Complex_Double
+
     ! Arguments
     COMPLEX(kind=dp),           INTENT(IN) :: x
     COMPLEX(kind=dp),           INTENT(IN) :: y
-    INTEGER(kind=int4)        , OPTIONAL, INTENT(IN) :: ULP
+    INTEGER(kind=i4)        , OPTIONAL, INTENT(IN) :: ULP
     REAL(kind=dp)   , OPTIONAL, INTENT(IN) :: Percent
     ! Function result
     LOGICAL :: Compare
@@ -646,7 +630,7 @@ CONTAINS
 !----------------------------------------------------------------------------------
 !DIR$ ATTRIBUTES INLINE :: Tolerance_Real_Single
   ELEMENTAL FUNCTION Tolerance_Real_Single(x,n) RESULT( Tolerance )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: Tolerance_Real_Single
+
     REAL(kind=sp), INTENT(IN) :: x
     INTEGER(kind=i4)     , INTENT(IN) :: n
     REAL(kind=sp) :: Tolerance
@@ -661,7 +645,7 @@ CONTAINS
   
 !DIR$ ATTRIBUTES INLINE :: Tolerance_Real_Double  
   ELEMENTAL FUNCTION Tolerance_Real_Double(x,n) RESULT( Tolerance )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: Tolerance_Real_Double
+
     REAL(kind=dp), INTENT(IN) :: x
     INTEGER(kind=i4),      INTENT(IN) :: n
     REAL(kind=dp) :: Tolerance
@@ -676,7 +660,7 @@ CONTAINS
 
 !DIR$ ATTRIBUTES INLINE :: Tolerance_Complex_Single
   ELEMENTAL FUNCTION Tolerance_Complex_Single(x,n) RESULT( Tolerance )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: Tolerance_Complex_Single
+
     COMPLEX(kind=sp), INTENT(IN) :: x
     INTEGER(kind=i4),         INTENT(IN) :: n
     COMPLEX(kind=sp) :: Tolerance
@@ -688,7 +672,7 @@ CONTAINS
 
 !DIR$ ATTRIBUTES INLINE :: Tolerance_Complex_Double
   ELEMENTAL FUNCTION Tolerance_Complex_Double(x,n) RESULT( Tolerance )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: Tolerance_Complex_Double
+
     COMPLEX(kind=dp), INTENT(IN) :: x
     INTEGER(kind=i4),         INTENT(IN) :: n
     COMPLEX(kind=dp) :: Tolerance
@@ -755,7 +739,7 @@ CONTAINS
 !----------------------------------------------------------------------------------
 !DIR$ ATTRIBUTES INLINE :: cwt_Real_Single
   ELEMENTAL FUNCTION cwt_Real_Single(x,y,n,cutoff) RESULT(is_comparable)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: cwt_Real_Single
+
     REAL(kind=sp),           INTENT(IN) :: x, y
     INTEGER(kind=i4),                INTENT(IN) :: n
     REAL(kind=sp), OPTIONAL, INTENT(IN) :: cutoff
@@ -772,7 +756,7 @@ CONTAINS
 
 !DIR$ ATTRIBUTES INLINE :: cwt_Real_Double
   ELEMENTAL FUNCTION cwt_Real_Double(x,y,n,cutoff) RESULT(is_comparable)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: cwt_Real_Double
+
     REAL(kind=dp),           INTENT(IN) :: x, y
     INTEGER(kind=i4),                INTENT(IN) :: n
     REAL(kind=dp), OPTIONAL, INTENT(IN) :: cutoff
@@ -789,7 +773,7 @@ CONTAINS
 
 !DIR$ ATTRIBUTES INLINE :: cwt_Complex_Single
   ELEMENTAL FUNCTION cwt_Complex_Single(x,y,n,cutoff) RESULT(is_comparable)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: cwt_Complex_Single
+
     COMPLEX(kind=sp),           INTENT(IN) :: x, y
     INTEGER(kind=i4),                   INTENT(IN) :: n
     COMPLEX(kind=sp), OPTIONAL, INTENT(IN) :: cutoff
@@ -806,7 +790,7 @@ CONTAINS
 
 !DIR$ ATTRIBUTES INLINE :: cwt_Complex_Double
   ELEMENTAL FUNCTION cwt_Complex_Double(x,y,n,cutoff) RESULT(is_comparable)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: cwt_Complex_Double
+
     COMPLEX(kind=dp),           INTENT(IN) :: x, y
     INTEGER(kind=i4),                   INTENT(IN) :: n
     COMPLEX(kind=dp), OPTIONAL, INTENT(IN) :: cutoff
@@ -827,33 +811,30 @@ CONTAINS
 
 !DIR$ ATTRIBUTES INLINE :: xmm2r8_equalto_xmm2r8
   pure  function xmm2r8_equalto_xmm2r8(x,y) result(compare)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm2r8_equalto_xmm2r8
 !DIR$ ATTRIBUTES VECTOR        :: xmm2r8_equalto_xmm2r8
     type(XMM2r8_t),      intent(in) :: x
     type(XMM2r8_t),      intent(in) :: y
     ! Locals/return
-    type(Mask2_t),  automatic :: compare
+    type(Mask2_t) :: compare
     ! EXec code....
      compare.m = ABS(x.v-y.v) < SPACING(MAX(ABS(x.v),ABS(y.v)))
   end function xmm2r8_equalto_xmm2r8
 
 !DIR$ ATTRIBUTES INLINE :: xmm4r4_equalto_xmm4r4   
   pure  function xmm4r4_equalto_xmm4r4(x,y) result(compare)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm4r4_equalto_xmm4r4
 !DIR$ ATTRIBUTES VECTOR        :: xmm4r4_equalto_xmm4r4
     type(XMM4r4_t),       intent(in) :: x
     type(XMM4r4_t),       intent(in) :: y
     ! Locals/return
 
-    type(Mask4_t), automatic :: compare
+    type(Mask4_t) :: compare
     ! Exec code ....
     compare.m = ABS(x.v-y.v) < SPACING(MAX(ABS(x.v),ABS(y.v)))
   end function xmm4r4_equalto_xmm4r4
 
 !DIR$ ATTRIBUTES INLINE :: ymm4r8_equalto_ymm4r8
   pure  function ymm4r8_equalto_ymm4r8(x,y) result(compare)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm4r8_equalto_ymm4r8
-    !DIR$ ATTRIBUTES VECTOR :: ymm4r8_equalto_ymm4r8
+        !DIR$ ATTRIBUTES VECTOR :: ymm4r8_equalto_ymm4r8
     type(YMM4r8_t),        intent(in) :: x
     type(YMM4r8_t),        intent(in) :: y
     ! Locals/return
@@ -863,8 +844,7 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: ymm8r4_equalto_ymm8r4
   pure  function ymm8r4_equalto_ymm8r4(x,y) result(compare)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm8r4_equalto_ymm8r4
-    !DIR$ ATTRIBUTES VECTOR :: ymm8r4_equalto_ymm8r4
+       !DIR$ ATTRIBUTES VECTOR :: ymm8r4_equalto_ymm8r4
     type(YMM8r4_t),        intent(in) :: x
     type(YMM8r4_t),        intent(in) :: y
     ! Locals/return
@@ -875,8 +855,7 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: zmm16r4_equalto_zmm16r4
   pure function zmm16r4_equalto_zmm16r4(x,y) result(compare)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm16r4_equalto_zmm16r4
-    !DIR$ ATTRIBUTES VECTOR :: zmm16r4_equalto_zmm16r4
+        !DIR$ ATTRIBUTES VECTOR :: zmm16r4_equalto_zmm16r4
     type(ZMM16r4_t),       intent(in) :: x
     type(ZMM16r4_t),       intent(in) :: y
     ! Locals/return
@@ -887,8 +866,7 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: zmm8r8_equalto_zmm8r8
   pure function zmm8r8_equalto_zmm8r8(x,y) result(compare)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm8r8_equalto_zmm8r8
-    !DIR$ ATTRIBUTES VECTOR :: zmm8r8_equalto_zmm8r8
+        !DIR$ ATTRIBUTES VECTOR :: zmm8r8_equalto_zmm8r8
     type(ZMM8r8_t),        intent(in) :: x
     type(ZMM8r8_t),        intent(in) :: y
     ! Locals
@@ -898,8 +876,7 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: xmm2r8_rgt_xmm2r8
   pure  function xmm2r8_rgt_xmm2r8(x,y) result(gt)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm2r8_rgt_xmm2r8
-    !DIR$ ATTRIBUTES VECTOR :: xmm2r8_rgt_xmm2r8
+        !DIR$ ATTRIBUTES VECTOR :: xmm2r8_rgt_xmm2r8
     type(XMM2r8_t),      intent(in) :: x
     type(XMM2r8_t),      intent(in) :: y
     ! Locals
@@ -909,16 +886,15 @@ CONTAINS
     ! Exec code ....
     vtmp.m = (x.v-y.v) >= SPACING(MAX(ABS(x.v),ABS(y.v)))
     if( vtmp.m(0) .and. vtmp.m(1)) then
-       gt.v = .true.
+       gt.m = .true.
     else
-       gt.v = .false.
+       gt.m = .false.
     end if
   end function xmm2r8_rgt_xmm2r8
 
   !DIR$ ATTRIBUTES INLINE :: xmm4r4_rgt_xmm4r4
   pure  function xmm4r4_rgt_xmm4r4(x,y) result(gt)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm4r4_rgt_xmm4r4
-    !DIR$ ATTRIBUTES VECTOR :: xmm4r4_rgt_xmm4r4
+       !DIR$ ATTRIBUTES VECTOR :: xmm4r4_rgt_xmm4r4
     type(XMM4r4_t),     intent(in) :: x
     type(XMM4r4_t),     intent(in) :: y
     ! Locals
@@ -936,8 +912,7 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: ymm4r8_rgt_ymm4r8
   pure  function ymm4r8_rgt_ymm4r8(x,y) result(gt)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm4r8_rgt_ymm4r8
-    !DIR$ ATTRIBUTES VECTOR  :: ymm4r8_rgt_ymm4r8
+        !DIR$ ATTRIBUTES VECTOR  :: ymm4r8_rgt_ymm4r8
     type(YMM4r8_t),          intent(in) :: x
     type(YMM4r8_t),          intent(in) :: y
     ! Locals
@@ -955,8 +930,7 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: ymm8r4_rgt_ymm8r4
   pure  function ymm8r4_rgt_ymm8r4(x,y) result(gt)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm8r4_rgt_ymm8r4
-    !DIR$ ATTRIBUTES VECTOR :: ymm8r4_rgt_ymm8r4
+        !DIR$ ATTRIBUTES VECTOR :: ymm8r4_rgt_ymm8r4
     type(YMM8r4_t),       intent(in) :: x
     type(YMM8r4_t),       intent(in) :: y
     ! Locals
@@ -975,8 +949,7 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: zmm16r4_rgt_zmm16r4
   pure  function zmm16r4_rgt_zmm16r4(x,y) result(gt)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm16r4_rgt_zmm16r4
-    !DIR$ ATTRIBUTES VECTOR :: zmm16r4_rgt_zmm16r4
+        !DIR$ ATTRIBUTES VECTOR :: zmm16r4_rgt_zmm16r4
     type(ZMM16r4_t),   intent(in) :: x
     type(ZMM16r4_t),   intent(in) :: y
     ! Locals
@@ -995,8 +968,7 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: zmm8r8_rgt_zmm8r8
   pure  function zmm8r8_rgt_zmm8r8(x,y) result(gt)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm8r8_rgt_zmm8r8
-    !DIR$ ATTRIBUTES VECTOR :: zmm8r8_rgt_zmm8r8
+       !DIR$ ATTRIBUTES VECTOR :: zmm8r8_rgt_zmm8r8
     type(ZMM8r8_t),      intent(in) :: x
     type(ZMM8r8_t),      intent(in) :: y
     ! Locals
@@ -1015,8 +987,7 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: xmm2r8_rlt_xmm2r8
   pure  function xmm2r8_rlt_xmm2r8(x,y) result(gt)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm2r8_rlt_xmm2r8
-    !DIR$ ATTRIBUTES VECTOR :: xmm2r8_rlt_xmm2r8
+       !DIR$ ATTRIBUTES VECTOR :: xmm2r8_rlt_xmm2r8
     type(XMM2r8_t),        intent(in) :: x
     type(XMM2r8_t),        intent(in) :: y
     ! Locals
@@ -1033,8 +1004,7 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: xmm4r4_rlt_xmm4r4
   pure function xmm4r4_rlt_xmm4r4(x,y) result(gt)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm4r4_rlt_xmm4r4
-    !DIR$ ATTRIBUTES VECTOR :: xmm4r4_rlt_xmm4r4
+       !DIR$ ATTRIBUTES VECTOR :: xmm4r4_rlt_xmm4r4
     type(XMM4r4_t),       intent(in) :: x
     type(XMM4r4_t),       intent(in) :: y
     ! Locals
@@ -1053,7 +1023,7 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: ymm4r8_rlt_ymm4r8
   pure  function ymm4r8_rlt_ymm4r8(x,y) result(gt)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm4r8_rlt_ymm4r8
+   
     !DIR$ ATTRIBUTES VECTOR :: ymm4r8_rlt_ymm4r8
     type(YMM4r8_t),       intent(in) :: x
     type(YMM4r8_t),       intent(in) :: y
@@ -1074,8 +1044,7 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: ymm8r4_rlt_ymm8r4
   pure function ymm8r4_rlt_ymm8r4(x,y) result(gt)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm8r4_rlt_ymm8r4
-    !DIR$ ATTRIBUTES VECTOR :: ymm8r4_rlt_ymm8r4
+      !DIR$ ATTRIBUTES VECTOR :: ymm8r4_rlt_ymm8r4
     type(YMM8r4_t),      intent(in) :: x
     type(YMM8r4_t),      intent(in) :: y
     ! Locals
@@ -1094,8 +1063,7 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: zmm8r8_rlt_zmm8r8
   pure  function zmm8r8_rlt_zmm8r8(x,y) result(gt)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm8r8_rlt_zmm8r8
-    !DIR$ ATTRIBUTES VECTOR :: zmm8r8_rlt_zmm8r8
+       !DIR$ ATTRIBUTES VECTOR :: zmm8r8_rlt_zmm8r8
     type(ZMM8r8_t),        intent(in) :: x
     type(ZMM8r8_t),        intent(in) :: y
     ! Locals
@@ -1114,8 +1082,7 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: zmm16r4_rlt_zmm16r4
   pure  function zmm16r4_rlt_zmm16r4(x,y) result(gt)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm16r4_rlt_zmm16r4
-    !DIR$ ATTRIBUTES VECTOR :: zmm16r4_rlt_zmm16r4
+       !DIR$ ATTRIBUTES VECTOR :: zmm16r4_rlt_zmm16r4
     type(ZMM16r4_t),       intent(in) :: x
     type(ZMM16r4_t),       intent(in) :: y
     ! lLocals
@@ -1134,8 +1101,7 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: xmm2r8_tol_xmm2r8
   pure  function xmm2r8_tol_xmm2r8(x,n) result(tol)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm2r8_tol_xmm2r8
-    !DIR$ ATTRIBUTES VECTOR :: xmm2r8_tol_xmm2r8
+      !DIR$ ATTRIBUTES VECTOR :: xmm2r8_tol_xmm2r8
     type(XMM2r8_t),     intent(in) :: x
     type(XMM2i4_t),     intent(in) :: n
     ! Locals/eeturn
@@ -1156,14 +1122,13 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: xmm4r4_tol_xmm4r4
   pure function xmm4r4_tol_xmm4r4(x,n) result(tol)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm4r4_tol_xmm4r4
-    !DIR$ ATTRIBUTES VECTOR :: xmm4r4_tol_xmm4r4
+       !DIR$ ATTRIBUTES VECTOR :: xmm4r4_tol_xmm4r4
     type(XMM4r4_t),     intent(in) :: x
     type(XMM4i4_t),     intent(in) :: n
     ! Locals/returns
     type(XMM4r4_t) :: tol
     type(XMM4i4_t), automatic :: e
-    type(Mask_t),   automatic :: vtmp
+    type(Mask4_t),   automatic :: vtmp
    
     ! EXec code ....
     vtmp.m = ABS(x.v) > XMM4r4_ZERO.v
@@ -1178,14 +1143,13 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: ymm4r8_tol_ymm4r8
   pure  function ymm4r8_tol_ymm4r8(x,n) result(tol)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm4r8_tol_ymm4r8
-    !DIR$ ATTRIBUTES VECTOR :: ymm4r8_tol_ymm4r8
+        !DIR$ ATTRIBUTES VECTOR :: ymm4r8_tol_ymm4r8
     type(YMM4r8_t),      intent(in) :: x
     type(XMM4i4_t),      intent(in) :: n
     ! Locals
     type(YMM4r8_t) :: tol
     type(XMM4i4_t), automatic ::  e
-    type(Mask8_t),  automatic :: vtmp
+    type(Mask4_t),  automatic :: vtmp
     
     ! EXec code ....
     vtmp.m = ABS(x.v) > YMM4r8_ZERO.v
@@ -1200,8 +1164,7 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE ::  ymm8r4_tol_ymm8r4
   pure  function ymm8r4_tol_ymm8r4(x,n) result(tol)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm8r4_tol_ymm8r4
-    !DIR$ ATTRIBUTES VECTOR :: ymm8r4_tol_ymm8r4
+       !DIR$ ATTRIBUTES VECTOR :: ymm8r4_tol_ymm8r4
     type(YMM8r4_t),                     intent(in) :: x
     type(YMM8i4_t),                     intent(in) :: n
     ! LOcals
@@ -1212,9 +1175,9 @@ CONTAINS
     ! Exec code ....
     vtmp.m = ABS(x.v) > YMM8r4_ZERO.v
    
-    if(ALL(vtmp.m))) then
+    if(ALL(vtmp.m)) then
        e.v  = FLOOR(LOG10(ABS(x.v))) - n.v
-       tol.v = YMM8r4_TEN**e.v
+       tol.v = YMM8r4_TEN.v**e.v
     else
        tol.v = YMM8r4_ONE.v
     end if
@@ -1222,8 +1185,7 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: zmm16r4_tol_zmm16r4
   pure  function zmm16r4_tol_zmm16r4(x,n) result(tol)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm16r4_tol_zmm16r4
-    !DIR$ ATTRIBUTES VECTOR :: zmm16r4_tol_zmm16r4
+        !DIR$ ATTRIBUTES VECTOR :: zmm16r4_tol_zmm16r4
     type(ZMM16r4_t),                     intent(in) :: x
     type(ZMM16i4_t),                     intent(in) :: n
     ! Locals
@@ -1237,9 +1199,9 @@ CONTAINS
     ! EXec code ....
     vtmp.m = ABS(x.v) > ZMM16r4_ZERO.v
    
-    if(ALL(vtmp.m))) then
+    if(ALL(vtmp.m)) then
        e.v = FLOOR(LOG10(ABS(x.v))) - n.v
-       tol.v = ZMM16r4_TEN**e.v
+       tol.v = ZMM16r4_TEN.v**e.v
     else
        tol.v = ZMM16r4_ONE.v
     end if
@@ -1248,37 +1210,35 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: zmm8r8_tol_zmm8r8
   pure  function zmm8r8_tol_zmm8r8(x,n) result(tol)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm8r8_tol_zmm8r8
-    !DIR$ ATTRIBUTES VECTOR :: zmm8r8_tol_zmm8r8
+        !DIR$ ATTRIBUTES VECTOR :: zmm8r8_tol_zmm8r8
     type(ZMM8r8_t),                     intent(in) :: x
-    integer(kind=int4), dimension(0:7), intent(in) :: n
+    integer(kind=i4), dimension(0:7), intent(in) :: n
     ! Locals
 !DIR$  ATTRIBUTES ALIGN : 64 :: tol
     type(ZMM8r8_t) :: tol
 !DIR$ ATTRIBUTES ALIGN : 64 :: e
-    integer(kind=int4), dimension(0:7), automatic :: e
+    integer(kind=i4), dimension(0:7), automatic :: e
     !DIR$ ATTRIBUTES ALIGN : 64 :: vtmp
     type(Mask8_t), automatic :: vtmp
   
     ! EXec code ....
     vtmp.m = ABS(x.v) > ZMM8r8_ZERO.v
     
-    if(ALL(vtmp.m))) then
+    if(ALL(vtmp.m)) then
        e = FLOOR(LOG10(ABS(x.v))) - n
-       tol.v = ZMM8r8_TEN**e
+       tol.v = ZMM8r8_TEN.v**e
     else
        tol.v = ZMM8r8_ONE.v
     end if
   end function zmm8r8_tol_zmm8r8
-
+#if 0
   !DIR$ ATTRIBUTES INLINE ::  xmm2r8_cwt_xmm2r8
   pure function xmm2r8_cwt_xmm2r8(x,y,n,cutoff) result(isc)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm2r8_cwt_xmm2r8
-    !DIR$ ATTRIBUTES VECTOR :: xmm2r8_cwt_xmm2r8
+       !DIR$ ATTRIBUTES VECTOR :: xmm2r8_cwt_xmm2r8
     type(XMM2r8_t),        intent(in) :: x
     type(XMM2r8_t),        intent(in) :: y
     type(XMM2i4_t),        intent(in) :: n
-    type(XMM2r8_t),        intent(in), optional :: cutoff
+    type(XMM2r8_t),        intent(in) :: cutoff
     ! LOcals
     type(XMM2r8_t), automatic :: c,t
     type(Mask2_t) :: isc
@@ -1286,17 +1246,17 @@ CONTAINS
     type(Mask2_t), automatic :: vtmp1,vtmp2
    
     ! EXec code ....
-    if(present(cutoff)) then
-       c = cutoff
-    else
+    where(cutoff.v)
+        c = cutoff
+    elsewhere
        c = XMM2r8_CUTOFF_EPS
-    end if
-    isc = .true.
+    end where 
+    isc.m = .true.
     vtmp1.m = ABS(x.v) > c.v
    
     vtmp2.m = ABS(y.v) > c.v
  
-    if(ALL(vtmp1.m).or.ALL(vtmp2.m))) then
+    if(ALL(vtmp1.m).or.ALL(vtmp2.m)) then
        t = xmm2r8_tol_xmm2r8(x,n)
        isc.m = ABS(x.v-y.v) < t.v
     end if
@@ -1304,29 +1264,28 @@ CONTAINS
 
 !DIR$ ATTRIBUTES INLINE :: xmm4r4_cwt_xmm4r4
   pure  function xmm4r4_cwt_xmm4r4(x,y,n,cutoff) result(isc)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm4r4_cwt_xmm4r4
-    !DIR$ ATTRIBUTES VECTOR :: xmm4r4_cwt_xmm4r4
+        !DIR$ ATTRIBUTES VECTOR :: xmm4r4_cwt_xmm4r4
     type(XMM4r4_t),       intent(in) :: x
     type(XMM4r4_t),       intent(in) :: y
     type(XMM4i4_t),       intent(in) :: n
-    type(XMM4r4_t),       intent(in), optional :: cutoff
+    type(XMM4r4_t),       intent(in) :: cutoff
     ! Locals
     type(Mask4_t) :: isc
     type(XMM4r4_t), automatic :: c,t
-    type(Mask2_t), automatic :: vtmp1,vtmp2
+    type(Mask4_t), automatic :: vtmp1,vtmp2
    
     ! EXec code ....
-    if(present(cutoff)) then
+    where(cutoff.v)
        c = cutoff
-    else
+    elsewhere 
        c = XMM4r4_CUTOFF_EPS
-    end if
-    isc = .true.
+    end where 
+    isc.m = .true.
     vtmp1.m = ABS(x.v) > c.v
   
     vtmp2.m = ABS(y.v) > c.v
    
-    if(ALL(vtmp1.m).or.ALL(vtmp2.m))) then
+    if(ALL(vtmp1.m).or.ALL(vtmp2.m)) then
        t = xmm4r4_tol_xmm4r4(x,n)
        isc.m = ABS(x.v-y.v) < t.v
     end if
@@ -1334,12 +1293,11 @@ CONTAINS
 
  !DIR$ ATTRIBUTES INLINE :: ymm4r8_cwt_ymm4r8
   pure  function ymm4r8_cwt_ymm4r8(x,y,n,cutoff) result(isc)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm4r8_cwt_ymm4r8
-    !DIR$ ATTRIBUTES VECTOR :: ymm4r8_cwt_ymm4r8
+        !DIR$ ATTRIBUTES VECTOR :: ymm4r8_cwt_ymm4r8
     type(YMM4r8_t),      intent(in) :: x
     type(YMM4r8_t),      intent(in) :: y
     type(XMM4i4_t),      intent(in) :: n
-    type(YMM4r8_t),      intent(in), optional :: cutoff
+    type(YMM4r8_t),      intent(in) :: cutoff
     ! Locals
     type(Mask4_t) :: isc
  !DIR$ ATTRIBUTES ALIGN : 32 :: c,t
@@ -1347,17 +1305,17 @@ CONTAINS
     type(Mask4_t),  automatic :: vtmp1,vtmp2
 
     ! Exec code ...
-    if(present(cutoff)) then
+    where(cutoff.v) 
        c = cutoff
-    else
+    elsewhere 
        c = YMM4r8_CUTOFF_EPS
-    end if
-    isc = .true.
+    end where 
+    isc.m = .true.
     vtmp1.m = ABS(x.v) > c.v
   
     vtmp2.m = ABS(y.v) > c.v
    
-    if(ALL(vtmp1.m).or.ALL(vtmp2.m))) then
+    if(ALL(vtmp1.m).or.ALL(vtmp2.m)) then
        t = ymm4r8_tol_ymm4r8(x,n)
        isc.m = ABS(x.v-y.v) < t.v
     end if
@@ -1365,12 +1323,11 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: ymm8r4_cwt_ymm8r4
   pure  function ymm8r4_cwt_ymm8r4(x,y,n,cutoff) result(isc)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm8r4_cwt_ymm8r4
-    !DIR$ ATTRIBUTES VECTOR :: ymm8r4_cwt_ymm8r4
+       !DIR$ ATTRIBUTES VECTOR :: ymm8r4_cwt_ymm8r4
     type(YMM8r4_t),       intent(in) :: x
     type(YMM8r4_t),       intent(in) :: y
     type(YMM8i4_t),       intent(in) :: n
-    type(YMM8r4_t),       intent(in), optional :: cutoff
+    type(YMM8r4_t),       intent(in) :: cutoff
     ! LOcals
     type(Mask8_t) :: isc
     !DIR$ ATTRIBUTES ALIGN : 32 :: c,t
@@ -1378,17 +1335,17 @@ CONTAINS
     type(Mask8_t),  automatic :: vtmp1,vtmp2
   
     ! EXec code ....
-    if(present(cutoff)) then
+    where(cutoff.v) 
        c = cutoff
     else
        c = YMM8r4_CUTOFF_EPS
     end if
-    isc = .true.
+    isc.m = .true.
     vtmp1.m = ABS(x.v) > c.v
    
     vtmp2.m = ABS(y.v) > c.v
     
-    if(ALL(vtmp1.m).or.ALL(vtmp2.m))) then
+    if(ALL(vtmp1.m).or.ALL(vtmp2.m)) then
        t = ymm8r4_tol_ymm8r4(x,n)
        isc.m = ABS(x.v-y.v) < t.v
     end if
@@ -1396,12 +1353,11 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: zmm8r8_cwt_zmm8r8
   pure  function zmm8r8_cwt_zmm8r8(x,y,n,cutoff) result(isc)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm8r8_cwt_zmm8r8
-    !DIR$ ATTRIBUTES VECTOR :: zmm8r8_cwt_zmm8r8
+       !DIR$ ATTRIBUTES VECTOR :: zmm8r8_cwt_zmm8r8
     type(ZMM8r8_t),        intent(in) :: x
     type(ZMM8r8_t),        intent(in) :: y
-    type(YMM8i4_t),        intent(in) :: n
-    type(ZMM8r8_t),        intent(in), optional :: cutoff
+    type(ZMM8i4_t),        intent(in) :: n
+    type(ZMM8r8_t),        intent(in):: cutoff
     !Locals
     type(Mask8_t) :: isc
     !DIR$ ATTRIBUTES ALIGN : 64 :: c,t
@@ -1409,17 +1365,17 @@ CONTAINS
     type(Mask8_t),  automatic :: vtmp1,vtmp2
    
     ! Exec code ...
-    if(present(cutoff)) then
+    where(cutoff.v) 
        c = cutoff
-    else
+    elsewhere
        c = ZMM8r8_CUTOFF_EPS
-    end if
-    isc = .true.
+    end where 
+    isc.m = .true.
     vtmp1.m = ABS(x.v) > c.v
     
     vtmp2.m = ABS(y.v) > c.v
     
-    if(ALL(vtmp1.m).or.ALL(vtmp2.m))) then
+    if(ALL(vtmp1.m).or.ALL(vtmp2.m)) thenif(present(cutoff)) then
        t = zmm8r8_tol_zmm8r8(x,n)
        isc.m = ABS(x.v-y.v) < t.v
     end if
@@ -1427,12 +1383,11 @@ CONTAINS
 
   !DIR$ ATTRIBUTES INLINE :: zmm16r4_cwt_zmm16r4
   pure function zmm16r4_cwt_zmm16r4(x,y,n,cutoff) result(isc)
-    !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm16r4_cwt_zmm16r4
-    !DIR$ ATTRIBUTES VECTOR :: zmm16r4_cwt_zmm16r4
+       !DIR$ ATTRIBUTES VECTOR :: zmm16r4_cwt_zmm16r4
     type(ZMM16r4_t),       intent(in) :: x
     type(ZMM16r4_t),       intent(in) :: y
     type(ZMM16i4_t),       intent(in) :: n
-    type(ZMM16r4_t),       intent(in), optional :: cutoff
+    type(ZMM16r4_t),       intent(in) :: cutoff
     ! Locals
     type(Mask16_t) :: isc
     !DIR$ ATTRIBUTES ALIGN : 64 :: c,t
@@ -1440,21 +1395,21 @@ CONTAINS
     type(Mask16_t),  automatic :: vtmp1,vtmp2
 
     ! Exec code ......
-    if(present(cutoff)) then
+    where(cutoff.v) 
        c = cutoff
-    else
+    else where 
        c = ZMM16r4_CUTOFF_EPS
-    end if
+    end where 
     isc = .true.
     vtmp1.m = ABS(x.v) > c.v
    
     vtmp2.m = ABS(y.v) > c.v
    
-    if(ALL(vtmp1.m).or.ALL(vtmp2.m))) then
+    if(ALL(vtmp1.m).or.ALL(vtmp2.m)) then
        t = zmm16r4_tol_zmm16r4(x,n)
        isc.m = ABS(x.v-y.v) < t.v
     end if
   end function zmm16r4_cwt_zmm16r4
-  
+#endif 
   
 END MODULE mod_fpcompare
