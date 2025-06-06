@@ -817,7 +817,8 @@ CONTAINS
     ! Locals/return
     type(Mask2_t) :: compare
     ! EXec code....
-     compare.m = ABS(x.v-y.v) < SPACING(MAX(ABS(x.v),ABS(y.v)))
+     compare.m = ABS(x.v-y.v) <= SPACING(MAX(ABS(x.v),ABS(y.v)))
+     !compare.m(1) = ABS(x.v(1)-y.v(1)) <= SPACING(MAX(ABS(x.v(1)),ABS(y.v(1))))
   end function xmm2r8_equalto_xmm2r8
 
 !DIR$ ATTRIBUTES INLINE :: xmm4r4_equalto_xmm4r4   
@@ -829,7 +830,7 @@ CONTAINS
 
     type(Mask4_t) :: compare
     ! Exec code ....
-    compare.m = ABS(x.v-y.v) < SPACING(MAX(ABS(x.v),ABS(y.v)))
+    compare.m = ABS(x.v-y.v) <= SPACING(MAX(ABS(x.v),ABS(y.v)))
   end function xmm4r4_equalto_xmm4r4
 
 !DIR$ ATTRIBUTES INLINE :: ymm4r8_equalto_ymm4r8
@@ -839,7 +840,7 @@ CONTAINS
     type(YMM4r8_t),        intent(in) :: y
     ! Locals/return
     type(Mask4_t) :: compare
-    compare.m = ABS(x.v-y.v) < SPACING(MAX(ABS(x.v),ABS(y.v)))
+    compare.m = ABS(x.v-y.v) <= SPACING(MAX(ABS(x.v),ABS(y.v)))
   end function ymm4r8_equalto_ymm4r8
 
   !DIR$ ATTRIBUTES INLINE :: ymm8r4_equalto_ymm8r4
@@ -850,7 +851,7 @@ CONTAINS
     ! Locals/return
     type(Mask8_t) :: compare
     ! Exec code ...
-    compare.m = ABS(x.v-y.v) < SPACING(MAX(ABS(x.v),ABS(y.v)))
+    compare.m = ABS(x.v-y.v) <= SPACING(MAX(ABS(x.v),ABS(y.v)))
   end function ymm8r4_equalto_ymm8r4
 
   !DIR$ ATTRIBUTES INLINE :: zmm16r4_equalto_zmm16r4
@@ -861,7 +862,7 @@ CONTAINS
     ! Locals/return
     type(Mask16_t) :: compare
     ! Exec code ....
-    compare.m = ABS(x.v-y.v) < SPACING(MAX(ABS(x.v),ABS(y.v)))
+    compare.m = ABS(x.v-y.v) <= SPACING(MAX(ABS(x.v),ABS(y.v)))
   end function zmm16r4_equalto_zmm16r4
 
   !DIR$ ATTRIBUTES INLINE :: zmm8r8_equalto_zmm8r8
@@ -871,7 +872,7 @@ CONTAINS
     type(ZMM8r8_t),        intent(in) :: y
     ! Locals
     type(Mask8_t) :: compare
-    compare.m = ABS(x.v-y.v) < SPACING(MAX(ABS(x.v),ABS(y.v)))
+    compare.m = ABS(x.v-y.v) <= SPACING(MAX(ABS(x.v),ABS(y.v)))
   end function zmm8r8_equalto_zmm8r8
 
   !DIR$ ATTRIBUTES INLINE :: xmm2r8_rgt_xmm2r8
