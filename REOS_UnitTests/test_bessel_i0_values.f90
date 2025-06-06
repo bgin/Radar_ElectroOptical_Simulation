@@ -32,7 +32,7 @@ module mod_test_bessel_i0_values
 #if 0
     ICC and ifort commands
     icc -c -std=c99 GMS_intrinsics_wrappers.c
-    ifort -o test_bessel_i0_values -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-avx512 \
+    ifort -o test_bessel_i0_values -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-av512 \
     -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_config.fpp GMS_kinds.f90 GMS_vectypes.f90 GMS_spec_func_xmm2r8.f90 GMS_mod_fpcompare.f90 GMS_intrinsics_wrappers.o test_bessel_i0_values.f90
     
     -------------------------------------------------------------------------------------------------------------------------------------------------
@@ -425,8 +425,7 @@ subroutine unit_test_bessel_i0_values()
               end_c         = end-RDTSC_LATENCY
               tsc_elapsed   = end_c-start_c 
               print*,"[X_ARG1-RDTSC:]", tsc_elapsed, "TSC cycles."
-              if(m_equal.m(0)==.true. .and. &
-                 m_equal.m(1)==.true.) then 
+              if(any(m_equal.m)) then 
                  print*, "[X_ARG1-PASSED:] actual:",actual_xmm2r8,"expected=",FX_RES1
               else 
                  print*, "[X_ARG1-FAILED:] actual:",actual_xmm2r8,"expected=",FX_RES1
@@ -439,8 +438,7 @@ subroutine unit_test_bessel_i0_values()
               end_c         = end-RDTSC_LATENCY
               tsc_elapsed   = end_c-start_c 
               print*,"[X_ARG2-RDTSC:]", tsc_elapsed, "TSC cycles."
-              if(m_equal.m(0)==.true. .and. &
-                 m_equal.m(1)==.true.) then 
+              if(any(m_equal.m)) then 
                  print*, "[X_ARG2-PASSED:] actual:",actual_xmm2r8,"expected=",FX_RES2
               else 
                  print*, "[X_ARG2-FAILED:] actual:",actual_xmm2r8,"expected=",FX_RES2
@@ -453,8 +451,7 @@ subroutine unit_test_bessel_i0_values()
               end_c         = end-RDTSC_LATENCY
               tsc_elapsed   = end_c-start_c 
               print*,"[X_ARG3-RDTSC:]", tsc_elapsed, "TSC cycles."
-              if(m_equal.m(0)==.true. .and. &
-                 m_equal.m(1)==.true.) then 
+              if(any(m_equal.m)) then 
                  print*, "[X_ARG3-PASSED:] actual:",actual_xmm2r8,"expected=",FX_RES3
               else 
                  print*, "[X_ARG3-FAILED:] actual:",actual_xmm2r8,"expected=",FX_RES3
@@ -467,8 +464,7 @@ subroutine unit_test_bessel_i0_values()
               end_c         = end-RDTSC_LATENCY
               tsc_elapsed   = end_c-start_c 
               print*,"[X_ARG4-RDTSC:]", tsc_elapsed, "TSC cycles."
-              if(m_equal.m(0)==.true. .and. &
-                 m_equal.m(1)==.true.) then 
+              if(any(m_equal.m)) then 
                  print*, "[X_ARG4-PASSED:] actual:",actual_xmm2r8,"expected=",FX_RES4
               else 
                  print*, "[X_ARG4-FAILED:] actual:",actual_xmm2r8,"expected=",FX_RES4
@@ -481,8 +477,7 @@ subroutine unit_test_bessel_i0_values()
               end_c         = end-RDTSC_LATENCY
               tsc_elapsed   = end_c-start_c 
               print*,"[X_ARG5-RDTSC:]", tsc_elapsed, "TSC cycles."
-              if(m_equal.m(0)==.true. .and. &
-                 m_equal.m(1)==.true.) then 
+              if(any(m_equal.m)) then 
                  print*, "[X_ARG5-PASSED:] actual:",actual_xmm2r8,"expected=",FX_RES5
               else 
                  print*, "[X_ARG5-FAILED:] actual:",actual_xmm2r8,"expected=",FX_RES5
@@ -495,8 +490,7 @@ subroutine unit_test_bessel_i0_values()
               end_c         = end-RDTSC_LATENCY
               tsc_elapsed   = end_c-start_c 
               print*,"[X_ARG6-RDTSC:]", tsc_elapsed, "TSC cycles."
-              if(m_equal.m(0)==.true. .and. &
-                 m_equal.m(1)==.true.) then 
+              if(any(m_equal.m)) then 
                  print*, "[X_ARG6-PASSED:] actual:",actual_xmm2r8,"expected=",FX_RES6
               else 
                  print*, "[X_ARG6-FAILED:] actual:",actual_xmm2r8,"expected=",FX_RES6
@@ -509,8 +503,7 @@ subroutine unit_test_bessel_i0_values()
               end_c         = end-RDTSC_LATENCY
               tsc_elapsed   = end_c-start_c 
               print*,"[X_ARG7-RDTSC:]", tsc_elapsed, "TSC cycles."
-              if(m_equal.m(0)==.true. .and. &
-                 m_equal.m(1)==.true.) then 
+              if(any(m_equal.m)) then 
                  print*, "[X_ARG7-PASSED:] actual:",actual_xmm2r8,"expected=",FX_RES7
               else 
                  print*, "[X_ARG7-FAILED:] actual:",actual_xmm2r8,"expected=",FX_RES7
@@ -523,8 +516,7 @@ subroutine unit_test_bessel_i0_values()
               end_c         = end-RDTSC_LATENCY
               tsc_elapsed   = end_c-start_c 
               print*,"[X_ARG8-RDTSC:]", tsc_elapsed, "TSC cycles."
-              if(m_equal.m(0)==.true. .and. &
-                 m_equal.m(1)==.true.) then 
+              if(any(m_equal.m)) then 
                  print*, "[X_ARG8-PASSED:] actual:",actual_xmm2r8,"expected=",FX_RES8
               else 
                  print*, "[X_ARG8-FAILED:] actual:",actual_xmm2r8,"expected=",FX_RES8
@@ -537,8 +529,7 @@ subroutine unit_test_bessel_i0_values()
               end_c         = end-RDTSC_LATENCY
               tsc_elapsed   = end_c-start_c 
               print*,"[X_ARG1-RDTSC:]", tsc_elapsed, "TSC cycles."
-              if(m_equal.m(0)==.true. .and. &
-                 m_equal.m(1)==.true.) then 
+              if(any(m_equal.m)) then 
                  print*, "[X_ARG9-PASSED:] actual:",actual_xmm2r8,"expected=",FX_RES9
               else 
                  print*, "[X_ARG9-FAILED:] actual:",actual_xmm2r8,"expected=",FX_RES9
@@ -551,8 +542,7 @@ subroutine unit_test_bessel_i0_values()
               end_c         = end-RDTSC_LATENCY
               tsc_elapsed   = end_c-start_c 
               print*,"[X_ARG10-RDTSC:]", tsc_elapsed, "TSC cycles."
-              if(m_equal.m(0)==.true. .and. &
-                 m_equal.m(1)==.true.) then 
+              if(any(m_equal.m)) then 
                  print*, "[X_ARG10-PASSED:] actual:",actual_xmm2r8,"expected=",FX_RES10
               else 
                  print*, "[X_ARG10-FAILED:] actual:",actual_xmm2r8,"expected=",FX_RES10
