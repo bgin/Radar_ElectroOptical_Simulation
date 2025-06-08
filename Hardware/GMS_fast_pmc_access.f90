@@ -198,6 +198,65 @@ module fast_pmc_access
      end interface 
 
      interface 
+         function cpuid_signature() result(val) &
+                     bind(c,name='cpuid_signature')
+                use,intrinsic :: ISO_C_BINDING 
+                integer(c_int) :: val 
+         end function cpuid_signature 
+     end interface 
+
+     interface 
+          function read_CHA_counter(cpuid_signature, &
+                                    socket,          &
+                                    cha_number,      &
+                                    counter,         &
+                                    msr_fd)     result(val) &
+                      bind(c,name='read_CHA_counter')
+                 use,intrinsic :: ISO_C_BINDING
+                 integer(c_long_long), value :: cpuid_signature 
+                 integer(c_int),       value :: socket 
+                 integer(c_int),       value :: cha_number 
+                 integer(c_int),       value :: counter 
+                 integer(c_int)              :: msr_fd 
+                 integer(c_long_long)        :: val 
+          end function read_CHA_counter
+     end interface 
+
+     interface 
+           function program_CHA_counter(cpuid_signature, &
+                                        num_chas,        &
+                                        cha_perfevtsel,  &
+                                        num_counters,    &
+                                        msr_fd,          &
+                                        num_sockets)   result(val) &
+                        bind(c,name='program_CHA_counter')
+                  use,intrinsic :: ISO_C_BINDING 
+                  integer(c_long_long), value :: cpuid_signature  
+                  integer(c_int),       value :: num_chas 
+                  integer(c_long_long)        :: cha_perfevtsel 
+                  integer(c_int),       value :: num_counters 
+                  integer(c_int)              :: msr_fd 
+                  integer(c_int),       value :: num_sockets 
+                  integer(c_int)              :: val 
+           end function program_CHA_counter
+     end interface 
+
+     interface 
+           function PCI_cfg_index(bus,      &
+                                  device,   &
+                                  function, &
+                                  offset) result(val) &
+                      bind(c,name='PCI_cfg_index')
+                use,intrinsic :: ISO_C_BINDING 
+                integer(c_int),  value :: bus 
+                integer(c_int),  value :: device 
+                integer(c_int),  value :: function 
+                integer(c_int),  value :: offset 
+                integer(c_int)         :: val 
+           end function PCI_cfg_index
+     end interface 
+
+     interface 
          subroutine approx_cpuid_bias_samples(cpuid_bias_start, &
                                               cpuid_bias_end,   &
                                               cpuid_bias_delta, &
