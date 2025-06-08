@@ -655,53 +655,10 @@ module spec_func_xmm2r8
 
 
  
-!*****************************************************************************80
-!
-!! BESEI1 evaluates the exponentially scaled Bessel I1(X) function.
-!
-!  Discussion:
-!
-!    This routine computes approximate values for the
-!    modified Bessel function of the first kind of order one
-!    multiplied by EXP(-ABS(X)).
-!
-!  Licensing:
-!
-!    This code is distributed under the GNU LGPL license.
-!
-!  Modified:
-!
-!    03 April 2007
-!
-!  Author:
-!
-!    Original FORTRAN77 version by William Cody.
-!    FORTRAN90 version by John Burkardt.
-!
-!  Parameters:
-!
-!    Input, real ( kind = 8 ) X, the argument of the function.
-!
-!    Output, real ( kind = 8 ) BESEI1, the value of the function.
+
          
 
      
-#if 0
-
-           function besei1_xmm2r8(x) result(val)
-               
-              !dir$ optimize:3
-              !dir$ attributes forceinline :: besei1_xmm2r8
-              type(XMM2r8_t),   intent(in) :: x
-              type(XMM2r8_t)  :: val
-              type(XMM2r8_t), automatic :: t0 
-              integer(kind=i4), automatic :: jint
-              jint = 2
-              call calci1_xmm2r8(x,t0,jint) 
-              val = t0 
-          end function besei1_xmm2r8
-          
-#endif
         
 
    !*****************************************************************************80
@@ -1254,9 +1211,9 @@ module spec_func_xmm2r8
 !    3, exp(-x)*Ei(x).
 !
   
-#if 0
 
-         subroutine calcei_xmm2r8(arg,val,jint) 
+
+         subroutine calcei_xmm2r8(arg,val) 
            
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: calcei_xmm2r8
@@ -1264,7 +1221,7 @@ module spec_func_xmm2r8
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: calcei_xmm2r8  
                type(XMM2r8_t),   intent(in)   :: arg
                type(XMM2r8_t),   intent(out)  :: val
-               integer(kind=i4), intent(in)   :: jint
+              
                
                !dir$ attributes align : 16 :: q
                !dir$ attributes align : 16 :: qlq
@@ -1293,25 +1250,161 @@ module spec_func_xmm2r8
                !dir$ attributes align : 16 :: xinf
                !dir$ attributes align : 16 :: xmax
                !dir$ attributes align : 16 :: xbig
-               type(XMM2r8_t), parameter :: zero = XMM2r8_t(0.0e+0_dp)
-               type(XMM2r8_t), parameter :: p037 = XMM2r8_t(0.037e+0_dp)
-               type(XMM2r8_t), parameter :: half = XMM2r8_t(0.5e+0_dp)
-               type(XMM2r8_t), parameter :: one  = XMM2r8_t(1.0e+0_dp)
-               type(XMM2r8_t), parameter :: two  = XMM2r8_t(2.0e+0_dp)
-               type(XMM2r8_t), parameter :: three= XMM2r8_t(3.0e+0_dp)
-               type(XMM2r8_t), parameter :: four = XMM2r8_t(4.0e+0_dp)
-               type(XMM2r8_t), parameter :: six  = XMM2r8_t(6.0e+0_dp)
-               type(XMM2r8_t), parameter :: twlve= XMM2r8_t(12.0e+0_dp)
-               type(XMM2r8_t), parameter :: two4 = XMM2r8_t(24.0e+0_dp)
-               type(XMM2r8_t), parameter :: frty = XMM2r8_t(40.0e+0_dp)
-               type(XMM2r8_t), parameter :: exp40= XMM2r8_t(2.3538526683701998541e+17)
-               type(XMM2r8_t), parameter :: x01  = XMM2r8_t(381.5e+0_dp)
-               type(XMM2r8_t), parameter :: x11  = XMM2r8_t(1024.0e+0_dp)
-               type(XMM2r8_t), parameter :: x02  = XMM2r8_t(-5.1182968633365538008e-5_dp)
-               type(XMM2r8_t), parameter :: x0   = XMM2r8_t(3.7250741078136663466e-1_dp)
-               type(XMM2r8_t), parameter :: xinf = XMM2r8_t(1.79e+308_dp)
-               type(XMM2r8_t), parameter :: xmax = XMM2r8_t(716.351e+0_dp)
-               type(XMM2r8_t), parameter :: xbig = XMM2r8_t(701.84e+0_dp)
+               type(XMM2r8_t), parameter :: zero = XMM2r8_t([0.0e+0_dp,0.0e+0_dp])
+               type(XMM2r8_t), parameter :: p037 = XMM2r8_t([0.037e+0_dp,0.037e+0_dp])
+               type(XMM2r8_t), parameter :: half = XMM2r8_t([0.5e+0_dp,0.5e+0_dp])
+               type(XMM2r8_t), parameter :: one  = XMM2r8_t([1.0e+0_dp,1.0e+0_dp])
+               type(XMM2r8_t), parameter :: two  = XMM2r8_t([2.0e+0_dp,2.0e+0_dp])
+               type(XMM2r8_t), parameter :: three= XMM2r8_t([3.0e+0_dp,3.0e+0_dp])
+               type(XMM2r8_t), parameter :: four = XMM2r8_t([4.0e+0_dp,4.0e+0_dp])
+               type(XMM2r8_t), parameter :: six  = XMM2r8_t([6.0e+0_dp,6.0e+0_dp])
+               type(XMM2r8_t), parameter :: twlve= XMM2r8_t([12.0e+0_dp,12.0e+0_dp])
+               type(XMM2r8_t), parameter :: two4 = XMM2r8_t([24.0e+0_dp,24.0e+0_dp])
+               type(XMM2r8_t), parameter :: frty = XMM2r8_t([40.0e+0_dp,40.0e+0_dp])
+               type(XMM2r8_t), parameter :: exp40= XMM2r8_t([2.3538526683701998541e+17,2.3538526683701998541e+17_dp])
+               type(XMM2r8_t), parameter :: x01  = XMM2r8_t([381.5e+0_dp,381.5e+0_dp)
+               type(XMM2r8_t), parameter :: x11  = XMM2r8_t([1024.0e+0_dp,1024.0e+0_dp)
+               type(XMM2r8_t), parameter :: x02  = XMM2r8_t([-5.1182968633365538008e-5_dp,-5.1182968633365538008e-5_dp])
+               type(XMM2r8_t), parameter :: x0   = XMM2r8_t([3.7250741078136663466e-1_dp,3.7250741078136663466e-1_dp])
+               type(XMM2r8_t), parameter :: xinf = XMM2r8_t([1.79e+308_dp,1,79e+308_dp])
+               type(XMM2r8_t), parameter :: xmax = XMM2r8_t([716.351e+0_dp,716.351e+0_dp])
+               type(XMM2r8_t), parameter :: xbig = XMM2r8_t([701.84e+0_dp,701.84e+0_dp])
+               type(XMM2r8_t), parameter :: a1   = XMM2r8_t([1.1669552669734461083368e+2_dp,1.1669552669734461083368e+2_dp])
+	           type(XMM2r8_t), parameter :: a2   = XMM2r8_t([2.1500672908092918123209e+3_dp,2.1500672908092918123209e+3_dp])
+               type(XMM2r8_t), parameter :: a3   = XMM2r8_t([1.5924175980637303639884e+4_dp,1.5924175980637303639884e+4_dp])
+               type(XMM2r8_t), parameter :: a4   = XMM2r8_t([8.9904972007457256553251e+4_dp,8.9904972007457256553251e+4_dp])
+               type(XMM2r8_t), parameter :: a5   = XMM2r8_t([1.5026059476436982420737e+5_dp,1.5026059476436982420737e+5_dp])
+               type(XMM2r8_t), parameter :: a6   = XMM2r8_t([-1.4815102102575750838086e+5_dp,-1.4815102102575750838086e+5_dp])
+               type(XMM2r8_t), parameter :: a7   = XMM2r8_t([5.0196785185439843791020e+0_dp,5.0196785185439843791020e+0_dp])
+               type(XMM2r8_t), parameter :: b1   = XMM2r8_t([4.0205465640027706061433e+1_dp,4.0205465640027706061433e+1_dp]) 
+               type(XMM2r8_t), parameter :: b2   = XMM2r8_t([7.5043163907103936624165e+2_dp,7.5043163907103936624165e+2_dp])
+               type(XMM2r8_t), parameter :: b3   = XMM2r8_t([8.1258035174768735759855e+3_dp,8.1258035174768735759855e+3_dp]) 
+               type(XMM2r8_t), parameter :: b4   = XMM2r8_t([5.2440529172056355429883e+4_dp,5.2440529172056355429883e+4_dp]) 
+               type(XMM2r8_t), parameter :: b5   = XMM2r8_t([1.8434070063353677359298e+5_dp,1.8434070063353677359298e+5_dp]) 
+               type(XMM2r8_t), parameter :: b6   = XMM2r8_t([2.5666493484897117319268e+5_dp,2.5666493484897117319268e+5_dp])
+               type(XMM2r8_t), parameter :: c1   = XMM2r8_t(3.828573121022477169108e-1_dp,3.828573121022477169108e-1_dp) 
+               type(XMM2r8_t), parameter :: c2   = XMM2r8_t([1.107326627786831743809e+1_dp,1.107326627786831743809e+1_dp])
+               type(XMM2r8_t), parameter :: c3   = XMM2r8_t([7.246689782858597021199e+1_dp,7.246689782858597021199e+1_dp]) 
+               type(XMM2r8_t), parameter :: c4   = XMM2r8_t([1.700632978311516129328e+2_dp,1.700632978311516129328e+2_dp]) 
+               type(XMM2r8_t), parameter :: c5   = XMM2r8_t([1.698106763764238382705e+2_dp,1.698106763764238382705e+2_dp])
+               type(XMM2r8_t), parameter :: c6   = XMM2r8_t([7.633628843705946890896e+1_dp,7.633628843705946890896e+1_dp]) 
+               type(XMM2r8_t), parameter :: c7   = XMM2r8_t([1.487967702840464066613e+1_dp,1.487967702840464066613e+1_dp]) 
+               type(XMM2r8_t), parameter :: c8   = XMM2r8_t([9.999989642347613068437e-1_dp,9.999989642347613068437e-1_dp]) 
+               type(XMM2r8_t), parameter :: c10  = XMM2r8_t([1.737331760720576030932e-8_dp,1.737331760720576030932e-8_dp])
+               type(XMM2r8_t), parameter :: d1   = XMM2r8_t(8.258160008564488034698e-2_dp,8.258160008564488034698e-2_dp)     
+	           type(XMM2r8_t), parameter :: d2   = XMM2r8_t(4.344836335509282083360e+0_dp,4.344836335509282083360e+0_dp) 
+               type(XMM2r8_t), parameter :: d3   = XMM2r8_t(4.662179610356861756812e+1_dp,4.662179610356861756812e+1_dp) 
+               type(XMM2r8_t), parameter :: d4   = XMM2r8_t(1.775728186717289799677e+2_dp,1.775728186717289799677e+2_dp) 
+               type(XMM2r8_t), parameter :: d5   = XMM2r8_t(2.953136335677908517423e+2_dp,2.953136335677908517423e+2_dp) 
+               type(XMM2r8_t), parameter :: d6   = XMM2r8_t(2.342573504717625153053e+2_dp,2.342573504717625153053e+2_dp)
+               type(XMM2r8_t), parameter :: d7   = XMM2r8_t(9.021658450529372642314e+1_dp,9.021658450529372642314e+1_dp)
+               type(XMM2r8_t), parameter :: d8   = XMM2r8_t(1.587964570758947927903e+1_dp,1.587964570758947927903e+1_dp)
+               type(XMM2r8_t), parameter :: d9   = XMM2r8_t(1.000000000000000000000e+0_dp,1.000000000000000000000e+0_dp)
+      type(XMM2r8_t), dimension(0:9), save :: calcei_e = [XMM2r8_t(1.3276881505637444622987e+2_dp),   &
+                                                          XMM2r8_t(3.5846198743996904308695e+4_dp),   &
+                                                          XMM2r8_t(1.7283375773777593926828e+5_dp),   &
+                                                          XMM2r8_t(2.6181454937205639647381e+5_dp),   &
+                                                          XMM2r8_t(1.7503273087497081314708e+5_dp),   & 
+                                                          XMM2r8_t(5.9346841538837119172356e+4_dp),   &
+                                                          XMM2r8_t(1.0816852399095915622498e+4_dp),   &
+                                                          XMM2r8_t(1.0611777263550331766871e+03_dp),  &
+                                                          XMM2r8_t(5.2199632588522572481039e+1_dp),   &
+                                                          XMM2r8_t(9.9999999999999999087819e-1_dp)]
+      type(XMM2r8_t), dimension(0:9), save :: calcei_f = [XMM2r8_t(3.9147856245556345627078e+4_dp),   &
+                                                          XMM2r8_t(2.5989762083608489777411e+5_dp),   &
+                                                          XMM2r8_t(5.5903756210022864003380e+5_dp),   &
+                                                          XMM2r8_t(5.4616842050691155735758e+5_dp),   &
+                                                          XMM2r8_t(2.7858134710520842139357e+5_dp),   &
+                                                          XMM2r8_t(7.9231787945279043698718e+4_dp),   &
+                                                          XMM2r8_t(1.2842808586627297365998e+4_dp),   &
+                                                          XMM2r8_t(1.1635769915320848035459e+3_dp),   &
+                                                          XMM2r8_t(5.4199632588522559414924e+1_dp),   &
+                                                          XMM2r8_t(1.0000000000000000000000e+0_dp)]
+      type(XMM2r8_t), dimension(0:3), save :: calcei_plg=[XMM2r8_t(-2.4562334077563243311e+01_dp),    &
+                                                          XMM2r8_t(2.3642701335621505212e+02_dp),     &
+                                                          XMM2r8_t(-5.4989956895857911039e+02_dp),    &
+                                                          XMM2r8_t(3.5687548468071500413e+02_dp)]
+      type(XMM2r8_t), dimension(0:3), save :: calcei_qlg=[XMM2r8_t(-3.5553900764052419184e+01_dp),    &
+                                                          XMM2r8_t(1.9400230218539473193e+02_dp),     &
+                                                          XMM2r8_t(-3.3442903192607538956e+02_dp),    &
+                                                          XMM2r8_t(1.7843774234035750207e+02_dp)]
+      type(XMM2r8_t), dimension(0:9), save :: calcei_p  =[XMM2r8_t(-1.2963702602474830028590e+01_dp), &
+                                                          XMM2r8_t(-1.2831220659262000678155e+03_dp), &
+                                                          XMM2r8_t(-1.4287072500197005777376e+04_dp), &
+                                                          XMM2r8_t(-1.4299841572091610380064e+06_dp), &
+                                                          XMM2r8_t(-3.1398660864247265862050e+05_dp), &
+                                                          XMM2r8_t(-3.5377809694431133484800e+08_dp), &
+                                                          XMM2r8_t(3.1984354235237738511048e+08_dp),  &
+                                                          XMM2r8_t(-2.5301823984599019348858e+10_dp), &
+                                                          XMM2r8_t(1.2177698136199594677580e+10_dp),  &
+                                                          XMM2r8_t(-2.0829040666802497120940e+11_dp)]
+      type(XMM2r8_t), dimension(0:9), save :: calcei_q  =[XMM2r8_t(7.6886718750000000000000e+01_dp),  &
+                                                          XMM2r8_t(-5.5648470543369082846819e+03_dp), &
+                                                          XMM2r8_t(1.9418469440759880361415e+05_dp),  &
+                                                          XMM2r8_t(-4.2648434812177161405483e+06_dp), &
+                                                          XMM2r8_t(6.4698830956576428587653e+07_dp),  &
+                                                          XMM2r8_t(-7.0108568774215954065376e+08_dp), &
+                                                          XMM2r8_t(5.4229617984472955011862e+09_dp),  &
+                                                          XMM2r8_t(-2.8986272696554495342658e+10_dp), &
+                                                          XMM2r8_t(9.8900934262481749439886e+10_dp),  &
+                                                          XMM2r8_t(-8.9673749185755048616855e+10_dp)]
+      type(XMM2r8_t), dimension(0:9), save :: calcei_r  =[XMM2r8_t(-2.645677793077147237806e+00_dp),  &
+                                                          XMM2r8_t(-2.378372882815725244124e+00_dp),  &
+                                                          XMM2r8_t(-2.421106956980653511550e+01_dp),  & 
+                                                          XMM2r8_t(1.052976392459015155422e+01_dp),   &
+                                                          XMM2r8_t(1.945603779539281810439e+01_dp),   &
+                                                          XMM2r8_t(-3.015761863840593359165e+01_dp),  &
+                                                          XMM2r8_t(1.120011024227297451523e+01_dp),   &
+                                                          XMM2r8_t(-3.988850730390541057912e+00_dp),  &
+                                                          XMM2r8_t(9.565134591978630774217e+00_dp),   & 
+                                                          XMM2r8_t(9.981193787537396413219e-1_dp)]
+      type(XMM2r8_t), dimension(0:8), save :: calcei_s  =[XMM2r8_t(1.598517957704779356479e-4_dp),    &
+                                                          XMM2r8_t(4.644185932583286942650e+00_dp),   &
+                                                          XMM2r8_t(3.697412299772985940785e+02_dp),   &
+                                                          XMM2r8_t(-8.791401054875438925029e+00_dp),  &
+                                                          XMM2r8_t(7.608194509086645763123e+02_dp),   &
+                                                          XMM2r8_t(2.852397548119248700147e+01_dp),   &
+                                                          XMM2r8_t(4.731097187816050252967e+02_dp),   &
+                                                          XMM2r8_t(-2.369210235636181001661e+02_dp),  &
+                                                          XMM2r8_t(1.249884822712447891440e+00_dp)]
+      type(XMM2r8_t), dimension(0:9), save :: calcei_p1 =[XMM2r8_t(-1.647721172463463140042e+00_dp),  &
+                                                          XMM2r8_t(-1.860092121726437582253e+01_dp),  &
+                                                          XMM2r8_t(-1.000641913989284829961e+01_dp),  &
+                                                          XMM2r8_t(-2.105740799548040450394e+01_dp),  &
+                                                          XMM2r8_t(-9.13483569999874255243e-1_dp),    &
+                                                          XMM2r8_t(-3.323612579343962284333e+01_dp),  &
+                                                          XMM2r8_t(2.495487730402059440626e+01_dp),   &
+                                                          XMM2r8_t(2.652575818452799819855e+01_dp),   &
+                                                          XMM2r8_t(-1.845086232391278674524e+00_dp),  &
+                                                          XMM2r8_t(9.999933106160568739091e-1_dp)]
+      type(XMM2r8_t), dimension(0:8), save :: calcei_q1 =[XMM2r8_t(9.792403599217290296840e+01_dp),   &
+                                                          XMM2r8_t(6.403800405352415551324e+01_dp),   &
+                                                          XMM2r8_t(5.994932325667407355255e+01_dp),   &
+                                                          XMM2r8_t(2.538819315630708031713e+02_dp),   &
+                                                          XMM2r8_t(4.429413178337928401161e+01_dp),   &
+                                                          XMM2r8_t(1.192832423968601006985e+03_dp),   &
+                                                          XMM2r8_t(1.991004470817742470726e+02_dp),   &
+                                                          XMM2r8_t(-1.093556195391091143924e+01_dp),  &
+                                                          XMM2r8_t(1.001533852045342697818e+00_dp)]
+      type(XMM2r8_t), dimension(0:9), save :: calcei_p2 =[XMM2r8_t(1.75338801265465972390e+02_dp),    &
+                                                          XMM2r8_t(-2.23127670777632409550e+02_dp),   &
+                                                          XMM2r8_t(-1.81949664929868906455e+01_dp),   &
+                                                          XMM2r8_t(-2.79798528624305389340e+01_dp),   &
+                                                          XMM2r8_t(-7.63147701620253630855e+00_dp),   &
+                                                          XMM2r8_t(-1.52856623636929636839e+01_dp),   &
+                                                          XMM2r8_t(-7.06810977895029358836e+00_dp),   &
+                                                          XMM2r8_t(-5.00006640413131002475e+00_dp),   &
+                                                          XMM2r8_t(-3.00000000320981265753e+00_dp),   &
+                                                          XMM2r8_t(1.00000000000000485503e+00_dp)]
+      type(XMM2r8_t), dimension(0:8), save :: calcei_q2 =[XMM2r8_t(3.97845977167414720840e+04_dp),    &
+                                                          XMM2r8_t(3.97277109100414518365e+00_dp),    &
+                                                          XMM2r8_t(1.37790390235747998793e+02_dp),    &
+                                                          XMM2r8_t(1.17179220502086455287e+02_dp),    &
+                                                          XMM2r8_t(7.04831847180424675988e+01_dp),    &
+                                                          XMM2r8_t(-1.20187763547154743238e+01_dp),   &
+                                                          XMM2r8_t(-7.99243595776339741065e+00_dp),   &
+                                                          XMM2r8_t(-2.99999894040324959612e+00_dp),   &
+                                                          XMM2r8_t(1.99999999999048104167e+00_dp)]
                !dir$ attributes align : 16 :: ei
                !dir$ attributes align : 16 :: frac
                !dir$ attributes align : 16 :: res
@@ -1342,271 +1435,7 @@ module spec_func_xmm2r8
                type(Mask2_t),  automatic :: msk8
                type(Mask2_t),  automatic :: msk9
                type(Mask2_t),  automatic :: msk10
-#if (GMS_EXPLICIT_VECTORIZE) == 1
-               integer(kind=i4) :: j
-#endif   
-#if (GMS_EXPLICIT_VECTORIZE) == 1
-           
-               !dir$ loop_count(4)
-               !dir$ vector aligned
-               !dir$ vector vectorlength(8)
-               !dir$ vector always
-               do j=0,1
-                   x.v(j)    = arg.v(j)
-                   msk1.m(j) = (x.v(j)==zero.v(j))
-                   msk2.m(j) = (x.v(j)<zero.v(j))
-                   msk6.m(j) = (x.v(j)<six.v(j))
-                   msk8.m(j) = (x.v(j)<twlve.v(j))
-                   msk9.m(j) = (x.v(j)<=two4.v(j))
-                   if(all(msk1.m(j))) then
-               
-                       ei.v(j) = -xinf.v(j)
-                       if(jint==2) ei.v(j) = -ei.v(j)
-                   ! /*
-	           !             !
-                   !              !  Calculate EI for negative argument or for E1.
-                   !             !   
-	           !          */
-	           else if(all(msk2.m(j)).or.jint==2) then
-	       
-	                  y.v(j)    = abs(x.v(j))
-	                  msk3.m(j) = (y.v(j)<one.v(j))
-	                  msk4.m(j) = (y.v(j)<=four.v(j))
-	                  msk5.m(j) = (xbig.v(j)<y.v(j))
-	                  if(all(msk3.m(j))) then
-	           
-	                     sump.v(j) = calcei_a(6).v(j)*y.v(j)+calcei_a(0).v(j))
-	                     sumq.v(j) = y.v(j)+calcei_b(0).v(j)
-	                     sump.v(j) = sump.v(j)*y.v(j)+calcei_a(1).v(j)
-	                     sumq.v(j) = sumq.v(j)*y.v(j)+calcei_b(1).v(j)
-	                     sump.v(j) = sump.v(j)*y.v(j)+calcei_a(2).v(j)
-	                     sumq.v(j) = sumq.v(j)*y.v(j)+calcei_b(2).v(j)
-	                     sump.v(j) = sump.v(j)*y.v(j)+calcei_a(3).v(j)
-	                     sumq.v(j) = sumq.v(j)*y.v(j)+calcei_b(3).v(j)
-	                     sump.v(j) = sump.v(j)*y.v(j)+calcei_a(4).v(j)
-	                     sumq.v(j) = sumq.v(j)*y.v(j)+calcei_b(4).v(j)
-	                     sump.v(j) = sump.v(j)*y.v(j)+calcei_a(5).v(j)
-	                     sumq.v(j) = sumq.v(j)*y.v(j)+calcei_b(5).v(j)
-	                     ei.v(j)   = log(y.v(j))-(sump.v(j)/sumq.v(j))
-	                     if(jint==3) ei.v(j) = ei.v(j)*exp(y.v(j))
-	              
-	                 else if(all(msk4.m(j))) then
-	              
-	                     w.v(j)    = one.v(j)/y.v(j)
-	                     sump.v(j) = calcei_c(0).v(j)
-	                     sumq.v(j) = calcei_d(0).v(j)
-	                     sump.v(j) = sump.v(j)*w.v(j)+calcei_c(1).v(j)
-	                     sumq.v(j) = sumq.v(j)*w.v(j)+calcei_d(1).v(j)
-	                     sump.v(j) = sump.v(j)*w.v(j)+calcei_c(2).v(j)
-	                     sumq.v(j) = sumq.v(j)*w.v(j)+calcei_d(2).v(j)
-	                     sump.v(j) = sump.v(j)*w.v(j)+calcei_c(3).v(j)
-	                     sumq.v(j) = sumq.v(j)*w.v(j)+calcei_d(3).v(j)
-	                     sump.v(j) = sump.v(j)*w.v(j)+calcei_c(4).v(j)
-	                     sumq.v(j) = sumq.v(j)*w.v(j)+calcei_d(4).v(j)
-	                     sump.v(j) = sump.v(j)*w.v(j)+calcei_c(5).v(j)
-	                     sumq.v(j) = sumq.v(j)*w.v(j)+calcei_d(5).v(j)
-	                     sump.v(j) = sump.v(j)*w.v(j)+calcei_c(6).v(j)
-	                     sumq.v(j) = sumq.v(j)*w.v(j)+calcei_d(6).v(j)
-	                     sump.v(j) = sump.v(j)*w.v(j)+calcei_c(7).v(j)
-	                     sumq.v(j) = sumq.v(j)*w.v(j)+calcei_d(7).v(j)
-	                     sump.v(j) = sump.v(j)*w.v(j)+calcei_c(8).v(j)
-	                     sumq.v(j) = sumq.v(j)*w.v(j)+calcei_d(8).v(j)
-	                     ei.v(j)   = -sump.v(j)/sumq.v(j)
-	              
-	                     if(jint/=3) ei.v(j) = ei.v(j)*exp(-y.v(j)) 
-	              
-	               else 
-	               
-	                     if(all(msk5.m(j)).and.jint<3) then
-	              
-	                         ei.v(j) = zero.v(j)
-	               
-	                    else
-	               
-	                         w.v(j)    = one.v(j)/y.v(j)
-	                         sump.v(j) = calcei_e(0).v(j)
-	                         sumq.v(j) = calcei_f(0).v(j)
-	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(1).v(j)
-	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(1).v(j)
-	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(2).v(j)
-	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(2).v(j)
-	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(3).v(j)
-	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(3).v(j) 
-	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(4).v(j)
-	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(4).v(j)
-	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(5).v(j)
-	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(5).v(j)
-	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(6).v(j)
-	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(6).v(j)
-	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(7).v(j)
-	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(7).v(j)
-	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(8).v(j)
-	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(8).v(j)
-	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(9).v(j)
-	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(9).v(j)
-	                         t0.v(j)   = sump.v(j)/sumq.v(j)
-	                         t1.v(j)   = one.v(j)-w.v(j)
-	                         ei.v(j)   = -w.v(j)*t0.v(j)*t1.v(j)
-	               
-	                         if(jint/=3) ei.v(j) = -y.v(j)*ei.v(j)
-	               
-	                 end if
-	           
-	             end if
-	       
-	             if(jint==2) ei.v(j) = -ei.v(j)
-	              !    /*
-	              !                  !
-                      !                  !  To improve conditioning, rational approximations are expressed
-                      !                  !  in terms of Chebyshev polynomials for 0 <= X < 6, and in
-                      !                  !  continued fraction form for larger X.
-                      !                  !
-	              !               */
-	       else if(all(msk6.m(j))) then
-	             
-	             t.v(j)     = x.v(j)+x.v(j)
-	             t.v(j)     = (t.v(j)/three.v(j))-two.v(j)
-	             px(0).v(j) = zero.v(j)
-	             qx(0).v(j) = zero.v(j)
-	             px(1).v(j) = calcei_p(0).v(j)
-	             qx(1).v(j) = calcei_q(0).v(j)
-	             px(2).v(j) = t.v(j)*px(1).v(j)-px(0).v(j)+calcei_p(1).v(j)
-	             qx(2).v(j) = t.v(j)*qx(1).v(j)-qx(0).v(j)+calcei_q(1).v(j)
-	             px(3).v(j) = t.v(j)*px(2).v(j)-px(1).v(j)+calcei_p(2).v(j)
-	             qx(3).v(j) = t.v(j)*qx(2).v(j)-qx(1).v(j)+calcei_q(2).v(j)
-	             px(4).v(j) = t.v(j)*px(3).v(j)-px(2).v(j)+calcei_p(3).v(j)
-	             qx(4).v(j) = t.v(j)*qx(3).v(j)-qx(2).v(j)+calcei_q(3).v(j)
-	             px(5).v(j) = t.v(j)*px(4).v(j)-px(3).v(j)+calcei_p(4).v(j)
-	             qx(5).v(j) = t.v(j)*qx(4).v(j)-qx(3).v(j)+calcei_q(4).v(j)
-	             px(6).v(j) = t.v(j)*px(5).v(j)-px(4).v(j)+calcei_p(5).v(j)
-	             qx(6).v(j) = t.v(j)*qx(5).v(j)-qx(4).v(j)+calcei_q(5).v(j)
-	             px(7).vv(j) = t.v(j)*px(6).v(j)-px(5).v(j)+calcei_p(6).v(j)
-	             qx(7).v(j) = t.v*qx(6).v-qx(5).v+calcei_q(6).v(j)
-	             px(8).v(j) = t.v(j)*px(7).v(j)-px(6).v(j)+calcei_p(7).v(j)
-	             qx(8).v(j) = t.v(j)*qx(7).v(j)-qx(6).v(j)+calcei_q(7).v(j)
-	             t0.v(j)    = half.v(j)*t.v(j)
-	             sump.v(j)  = t0.v(j)*px(9).v(j)-px(8).v(j)+calcei_p(9).v(j)
-	             sumq.v(j)  = t0.v(j)*qx(9).v(j)-qx(8).v(j)+calcei_q(9).v(j)
-	             frac.v(j)  = sump.v(j)/sumq.v(j)
-	             t0.v(j)    = x.v(j)-x01.v(j)/x11.v(j)
-	             xmx0.v(j)  = t0.v(j)-x02.v(j)
-	             msk7.m(j)  = (p037.v(j)<=abs(xmx0.v(j))
-	             
-	             if(all(msk7.m(j))) then
-	                   t0.v(j) = x.v(j)/x0.v(j)
-	                   ei.v(j) = frac.v(j)*xmx0.v(j)+log(t0.v(j))
-	                   if(jint==3) ei.v(j) = exp(-x.v(j))*ei.v(j)
-	             else
-	                 !  //Special approximation to ln(X/X0) for X close to X0. 
-	                 y.v(j)    = xmx0.v(j)/(x.v(j)+x0.v(j))
-	                 ysq.v(j)  = y.v(j)*y.v(j)
-	                 sump.v(j) = calcei_plg(0).v(j)
-	                 sumq.v(j) = ysq.v(j)+calcei_qlg(0).v(j)
-	                 sump.v(j) = sump.v(j)*ysq.v(j)+calcei_plg(1).v(j)
-	                 sumq.v(j) = sumq.v(j)*ysq.v(j)+calcei_qlg(1).v(j)
-	                 sump.v(j) = sump.v(j)*ysq.v(j)+calcei_plg(2).v(j)
-	                 sumq.v(j) = sumq.v(j)*ysq.v(j)+calcei_qlg(2).v(j)
-	                 sump.v(j) = sump.v(j)*ysq.v(j)+calcei_plg(3).v(j)
-	                 sumq.v(j) = sumq.v(j)*ysq.v(j)+calcei_qlg(3).v(j)
-	                 t0.v(j)   = sumq.v(j)*(x.v(j)+x0.v(j))+frac.v(j)
-	                 ei.v(j)   = (sump.v(j)/t0.v(j))*xmx0.v(j)
-	                 
-	                 if(jint==3) ei.v(j) = exp(-x.v(j))*ei.v(j) 
-	             end if
-	             
-	       else if(all(msk8.m(j))) then
-	       
-	              frac.v(j)= zero.v(j)
-	              frac.v(j)= calcei_s(0).v(j)/(calcei_r(0).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	              frac.v(j)= calcei_s(1).v(j)/(calcei_r(1).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	              frac.v(j)= calcei_s(2).v(j)/(calcei_r(2).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	              frac.v(j)= calcei_s(3).v(j)/(calcei_r(3).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	              frac.v(j)= calcei_s(4).v(j)/(calcei_r(4).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	              frac.v(j)= calcei_s(5).v(j)/(calcei_r(5).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	              frac.v(j)= calcei_s(6).v(j)/(calcei_r(6).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	              frac.v(j)= calcei_s(7).v(j)/(calcei_r(7).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	              frac.v(j)= calcei_s(8).v(j)/(calcei_r(8).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	              ei.v(j)  = (calcei_r(9).v(j)+frac.v(j))/x.v(j)
-	              
-	              if(jint==3) ei.v(j) = ei.v(j)*exp(x.v(j))
-	              
-	        else if(all(msk9.m(j))) then
-	        
-	              frac.v(j) = zero.v(j)
-	              frac.v(j)= calcei_q1(0).v(j)/(calcei_p1(0).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	              frac.v(j)= calcei_q1(1).v(j)/(calcei_p1(1).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	              frac.v(j)= calcei_q1(2).v(j)/(calcei_p1(2).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	              frac.v(j)= calcei_q1(3).v(j)/(calcei_p1(3).v(j)+ &
-	                                          x.v+frac.v(j))
-	              frac.v(j)= calcei_q1(4).v(j)/(calcei_p1(4).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	              frac.v(j)= calcei_q1(5).v(j)/(calcei_p1(5).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	              frac.v(j)= calcei_q1(6).v(j)/(calcei_p1(6).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	              frac.v(j)= calcei_q1(7).v(j)/(calcei_p1(7).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	              frac.v(j)= calcei_q1(8).v(j)/(calcei_p1(8).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	              ei.v(j)  = (calcei_p1(9).v(j)+frac.v(j))/x.v(j)
-	              
-	              if(jint/=3) ei.v(j) = ei.v(j)*exp(x.v(j))
-	                                     
-	        else
-	             
-	               msk10.m(j) = (xmax.v(j)<=x.v(j))
-	               if(all(msk10.m).and.jint==3) then
-	                   ei.v(j) = xinf.v(j)
-	               else
-	                   y.v(j)    = one.v(j)/x.v(j)
-	                   frac.v(j) = zero.v(j)
-	                   frac.v(j)= calcei_q2(0).v(j)/(calcei_p2(0).v(j)+ &
-	                                               x.v+frac.v(j))
-	                   frac.v(j)= calcei_q2(1).v(j)/(calcei_p2(1).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	                   frac.v(j)= calcei_q2(2).v(j)/(calcei_p2(2).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	                   frac.v(j)= calcei_q2(3).v(j)/(calcei_p2(3).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	                   frac.v(j)= calcei_q2(4).v(j)/(calcei_p2(4).v(j)+ &
-	                                          x.v+frac.v(j))
-	                   frac.v(j)= calcei_q2(5).v(j)/(calcei_p2(5).v(j)+ &
-	                                          x.v+frac.v(j))
-	                   frac.v(j)= calcei_q2(6).v(j)/(calcei_p2(6).v(j)+ &
-	                                          x.v+frac.v(j))
-	                   frac.v(j)= calcei_q2(7).v(j)/(calcei_p2(7).v(j)+ &
-	                                          x.v(j)+frac.v(j))
-	                   frac.v(j)= calcei_q2(8).v(j)/(calcei_p2(8).v(j)+ &
-	                                          x.v(j)+frac.v(j))   
-	                   frac.v(j)= calcei_p2(9).v(j)+frac.v(j)
-	                   ei.v(j)  = frac.v(j)*y.v(j)*y.v(j)+y.v(j)
-	                   
-	                   if(jint/=3) then
-	                      msk10.m(j) = (x.v(j)<=(xmax.v(j)-two4.v(j)))
-	                      if(all(msk10.m(j))) then
-	                          ei.v(j) = ei.v(j)*exp(x.v(j))
-	                      else
-	                          t0.v(j) = x.v(j)-frty.v(j)
-	                          ei.v(j) = ei.v(j)*t0.v(j)*exp40.v(j)
-	                      end if
-	                   end if
-	               end if
-	           end if
-	           val.v(j) = ei.v(j) 
-               end do
-#else
+
                x.v    = arg.v
                msk1.m = (x.v==zero.v)
                msk2.m = (x.v<zero.v)
@@ -1863,7 +1692,7 @@ module spec_func_xmm2r8
 #endif
        end subroutine calcei_xmm2r8
        
-#endif       
+    
 
 !
 !! CALCI0 computes various I0 Bessel functions.
@@ -2257,14 +2086,16 @@ module spec_func_xmm2r8
               type(XMM2r8_t),   automatic    :: xx
               type(Mask2_t),    automatic    :: msk1,msk2
               type(Mask2_t),    automatic    :: msk3,msk4
-              type(Mask2_t),    automatic    :: msk5
+              type(Mask2_t),    automatic    :: msk5,mge15
 
               x.v    = abs(arg.v)
-              msk1.m = (x.v<xsmall.v)
-              msk2.m = (x.v<one5.v)
-              msk3.m = (xmax.v<x.v)
+
+              msk1.m  = (x.v<xsmall.v)
+              msk2.m  = (x.v<one5.v)
+              mge15.m = (x.v>=one5.v)
+              msk3.m  = (xmax.v<x.v)
               where(msk1.m) 
-                  val.v = half.v*x.v
+                 val.v = half.v*x.v
               else where(msk2.m)
                   xx.v  = x.v*x.v
                   sump.v= p1.v
@@ -2281,6 +2112,7 @@ module spec_func_xmm2r8
                   sump.v= sump.v*xx.v+p12.v
                   sump.v= sump.v*xx.v+p13.v
                   sump.v= sump.v*xx.v+p14.v
+                  sump.v= sump.v*xx.v+p15.v 
                   xx.v  = xx.v-two25.v
                   sumq.v= (((((  &
                             xx.v+q1.v)  &
@@ -2290,9 +2122,9 @@ module spec_func_xmm2r8
                           * xx.v+q5.v)
                   val.v = (sump.v/sumq.v)*x.v
                   
-              where(msk3.m)
-                      val.v = xinf.v        
-              else where 
+                    
+              else where
+                      
                       xx.v   = one.v/x.v-rec15.v
                       sump.v = ((((((   &
                                       pp1.v     &
@@ -2311,22 +2143,23 @@ module spec_func_xmm2r8
                                * xx.v+qq5.v)  &
                                * xx.v+qq6.v
                       val.v  = sump.v/sumq.v
-                      msk4.m = (xmax.v-one.v<x.v)
+                      msk4.m = (xmax.v-one5.v<x.v)
                       where(msk4.m)
                             a.v = exp(x.v-frty.v)
                             b.v = exp40.v
                       else where 
+                          
                             a.v = exp(x.v)
                             b.v = one.v
                       end where 
                       t0.v   = val.v*a.v+pbar.v*a.v
                       val.v  = (t0.v/sqrt(x.v))*b.v
-               end where  
-            end where 
-              msk5.m = (arg.v<zero.v)
-              where(msk5.m) 
-                   val.v = -val.v
-              end where 
+            end where  
+           
+             msk5.m = (arg.v<zero.v)
+             where(msk5.m) 
+                  val.v = -val.v
+             end where 
         end subroutine calci1_xmm2r8
         
 #if 0        
