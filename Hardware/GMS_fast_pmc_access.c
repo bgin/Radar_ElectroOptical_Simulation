@@ -1,4 +1,6 @@
 
+
+
 #include "GMS_fast_pmc_access.h"
 
 unsigned long rdtsc() {
@@ -91,7 +93,7 @@ int get_fixed_counter_width() {
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <unistd.h>
 // Utility routine to compute counter differences taking into account rollover
 // when the performance counter width is not known at compile time.  
 // Use the "get_counter_width()" function to get the counter width on the
@@ -210,6 +212,210 @@ float get_TSC_frequency() {
 		}
 	}
 	return(-1.0f);
+}
+
+#define CPUID_SIGNATURE_HASWELL 0x000306f0U
+#define CPUID_SIGNATURE_SKX 0x00050650U
+#define CPUID_SIGNATURE_ICX 0x000606a0U
+#define CPUID_SIGNATURE_SPR 0x000806f0U
+// Based on J. McCalpin code 
+
+unsigned int cpuid_signature() {
+    int cpuid_return[4];
+
+    __cpuid(&cpuid_return[0], 1);
+
+    unsigned int  ModelInfo = cpuid_return[0] & 0x0fff0ff0;  // mask out the reserved and "stepping" fields, leaving only the base and extended Family/Model fields
+
+#ifdef 0
+    if (ModelInfo == CPUID_SIGNATURE_HASWELL) {                   // expected values for Haswell EP
+        printf("Haswell EP\n");
+    }
+    else if (ModelInfo == CPUID_SIGNATURE_SKX) {              // expected values for SKX/CLX
+        printf("SKX/CLX\n");
+    }
+    else if (ModelInfo == CPUID_SIGNATURE_ICX) {              // expected values for Ice Lake Xeon
+        printf("ICX\n");
+    }
+    else if (ModelInfo == CPUID_SIGNATURE_SPR) {              // expected values for Sapphire Rapids Xeon
+        printf("SPR\n");
+    } else {
+        printf("Unknown processor 0x%x\n",ModelInfo);
+    }
+#endif
+
+    return ModelInfo;
+}
+
+// Based on J. McCalpin code 
+unsigned long read_CHA_counter(unsigned int cpuid_signature,
+                               int socket, 
+							   int cha_number, 
+							   int counter,
+                               int * msr_fd)
+{
+	unsigned long msr_val, msr_num, msr_base;
+    unsigned long msr_stride;
+
+    msr_val = 0;
+
+    switch(cpuid_signature) {
+        case CPUID_SIGNATURE_HASWELL:
+        // ------------ Haswell EP -- Xeon E5-2xxx v3 --------------
+            // printf("CPUID Signature 0x%x identified as Haswell EP\n",CurrentCPUIDSignature);
+            break;
+        // ------------ Skylake Xeon and Cascade Lake Xeon -- 1st and 2nd generation Xeon Scalable Processors ------------
+        case CPUID_SIGNATURE_SKX:
+            // printf("CPUID Signature 0x%x identified as Skylake Xeon/Cascade Lake Xeon\n",CurrentCPUIDSignature);
+            msr_base = 0xe00;
+            msr_stride = 0x10;              // specific to SKX/CLX
+            msr_num = msr_base + msr_stride*cha_number + counter + 8;     // compute MSR number for count register for counter
+            // printf("DEBUG: socket %d cha_number %d counter %d msr_num 0x%lx msr_val 0x%lx\n",socket,cha_number,counter,msr_num,msr_val);
+            pread(msr_fd[socket],&msr_val,sizeof(msr_val),msr_num);
+            return (msr_val);
+            break;
+        // ------------- Ice Lake Xeon -- 3rd generation Xeon Scalable Processors ------------
+        case CPUID_SIGNATURE_ICX:
+            // printf("CPUID Signature 0x%x identified as Ice Lake Xeon\n",CurrentCPUIDSignature);
+            msr_stride = 0x0e;              // ICX-specific
+
+            if (cha_number >= 34) {
+                msr_base = 0x0e00 - 0x47c;       // ICX MSRs skip backwards for CHAs 34-39
+            } else if (cha_number >= 18) {
+                msr_base = 0x0e00 + 0x0e;        // ICX MSRs skip forward for CHAs 18-33
+            } else {
+                msr_base = 0x0e00;               // MSRs for the first 18 CHAs
+            }
+            msr_num = msr_base + msr_stride*cha_number + counter + 8;     // compute MSR number for count register for counter 
+            pread(msr_fd[socket],&msr_val,sizeof(msr_val),msr_num);
+            return(msr_val); 
+            break;
+        // ------------------ Sapphire Rapids -- 4th generation Xeon Scalable Processors and Xeon CPU Max Processors ------------
+        case CPUID_SIGNATURE_SPR:
+            // printf("CPUID Signature 0x%x identified as Sapphire Rapids Xeon\n",CurrentCPUIDSignature);
+            msr_base = 0x2000;
+            msr_stride = 0x10;
+            msr_num = msr_base + msr_stride*cha_number + 0x8 + counter;
+            pread(msr_fd[socket],&msr_val,sizeof(msr_val),msr_num);
+            return(msr_val); 
+            break;
+        default:
+            fprintf(stderr,"CHA counters not yet supported for CPUID Signature 0x%x\n",cpuid_signature);
+            exit(1);
+	}
+}
+
+// Based on J. McCalpin code (slightly adapted)
+int program_CHA_counter(unsigned int cpuid_signature, 
+                        int num_chas,
+						unsigned long * cha_perfevtsel,
+                        int num_counters, 
+						int * msr_fd, 
+						int num_sockets)
+{
+    int pkg,tile,counter;
+    unsigned long msr_val, msr_num, msr_base;
+    unsigned long msr_stride;
+
+    switch(cpuid_signature) {
+        case CPUID_SIGNATURE_HASWELL:
+        // ------------ Haswell EP -- Xeon E5-2xxx v3 --------------
+            printf("CPUID Signature 0x%x identified as Haswell EP\n",cpuid_signature);
+            break;
+        // ------------ Skylake Xeon and Cascade Lake Xeon -- 1st and 2nd generation Xeon Scalable Processors ------------
+        case CPUID_SIGNATURE_SKX:
+            printf("CPUID Signature 0x%x identified as Skylake Xeon/Cascade Lake Xeon\n",cpuid_signature);
+            msr_base = 0xe00;
+            msr_stride = 0x10;              // specific to SKX/CLX
+            for (pkg=0; pkg<num_sockets; pkg++) {
+                for (tile=0; tile<num_chas; tile++) {
+                    for (counter=0; counter<num_counters; counter++) {
+                        msr_num = msr_base + msr_stride*tile + counter + 1;     // ctl register for counter
+                        msr_val = cha_perfevtsel[counter];
+                        // printf("DEBUG: pkg %d tile %d counter %d msr_num 0x%lx msr_val 0x%lx\n",pkg,tile,counter,msr_num,msr_val);
+                        pwrite(msr_fd[pkg],&msr_val,sizeof(msr_val),msr_num);
+                    }
+                    // The CHA performance counters on SKX/CLX have two filter registers that are required for some events.
+                    // PMON_BOX_FILTER0 (offset 0x5) controls LLC_LOOKUP state (bits 26:17) and optional TID (bits 8:0)
+                    msr_num = msr_base + msr_stride*tile + 5;    // filter0
+                    msr_val = 0x01e20000;              // bits 24:21,17 FMESI -- all LLC lookups, not not SF lookups
+                    // printf("DEBUG: pkg %d tile %d counter %d msr_num 0x%lx msr_val 0x%lx\n",pkg,tile,counter,msr_num,msr_val);
+                    pwrite(msr_fd[pkg],&msr_val,sizeof(msr_val),msr_num);
+                    // PMON_BOX_FILTER1 (offset 0x6) allows opcode filtering and local/remote filtering.
+                    //    FILTER1 should be set to 0x03B for no filtering (all memory, all local/remote, all opcodes)
+                    msr_num = msr_base + msr_stride*tile + 6;    // filter1
+                    msr_val = 0x03b;                    // near&non-near memory, local&remote, all opcodes
+                    // printf("DEBUG: pkg %d tile %d counter %d msr_num 0x%lx msr_val 0x%lx\n",pkg,tile,counter,msr_num,msr_val);
+                    pwrite(msr_fd[pkg],&msr_val,sizeof(msr_val),msr_num);
+                }
+            }
+            break;
+        // ------------- Ice Lake Xeon -- 3rd generation Xeon Scalable Processors ------------
+        case CPUID_SIGNATURE_ICX:
+            printf("CPUID Signature 0x%x identified as Ice Lake Xeon\n",cpuid_signature);
+            msr_stride = 0x0e;              // ICX-specific
+            for (pkg=0; pkg<num_sockets; pkg++) {
+                for (tile=0; tile<num_chas; tile++) {
+                    if (tile >= 34) {
+                        msr_base = 0x0e00 - 0x47c;       // ICX MSRs skip backwards for CHAs 34-39
+                    } else if (tile >= 18) {
+                        msr_base = 0x0e00 + 0x0e;        // ICX MSRs skip forward for CHAs 18-33
+                    } else {
+                        msr_base = 0x0e00;               // MSRs for the first 18 CHAs
+                    }
+
+                    // unit control register -- optional write bit 1 (value 0x2) to clear counters
+                    msr_num = msr_base + msr_stride*tile;
+                    msr_val = 0x2;
+                    pwrite(msr_fd[pkg],&msr_val,sizeof(msr_val),msr_num);
+
+                    // program the control registers for counters 0..num_counters-1
+                    for (counter=0; counter<num_counters; counter++) {
+                        msr_num = msr_base + msr_stride*tile + counter + 1;     // ctl register for counter
+                        msr_val = cha_perfevtsel[counter];
+                        pwrite(msr_fd[pkg],&msr_val,sizeof(msr_val),msr_num);
+                    }
+                }
+            }
+            return(0); // no error checking yet -- if it dies, it dies....
+            break;
+        // ------------------ Sapphire Rapids -- 4th generation Xeon Scalable Processors and Xeon CPU Max Processors ------------
+        case CPUID_SIGNATURE_SPR:
+            printf("CPUID Signature 0x%x identified as Sapphire Rapids Xeon\n",cpuid_signature);
+            msr_base = 0x2000;
+            msr_stride = 0x10;
+            for (pkg=0; pkg<num_sockets; pkg++) {
+                for (tile=0; tile<num_chas; tile++) {
+                    for (counter=0; counter<num_counters; counter++) {
+                        msr_num = msr_base + msr_stride*tile + counter + 2;     // compute MSR number of control register for counter
+                        msr_val = cha_perfevtsel[counter];
+                        // printf("DEBUG: pkg %d tile %d counter %d msr_num 0x%lx msr_val 0x%lx\n",pkg,tile,counter,msr_num,msr_val);
+                        pwrite(msr_fd[pkg],&msr_val,sizeof(msr_val),msr_num);
+                    }
+                }
+            }
+            return(0); // no error checking yet -- if it dies, it dies....
+            break;
+        default:
+            fprintf(stderr,"CHA counters not yet supported for CPUID Signature 0x%x\n",cpuid_signature);
+            exit(1); 
+	}
+}
+
+// Convert PCI(bus:device.function,offset) to uint32_t array index
+unsigned int  PCI_cfg_index(unsigned int Bus, unsigned int Device, unsigned int Function, unsigned int Offset)
+{
+    unsigned int byteaddress;
+    unsigned int index;
+    assert (Device >= 0);
+    assert (Function >= 0);
+    assert (Offset >= 0);
+    assert (Device < (1<<5));
+    assert (Function < (1<<3));
+    assert (Offset < (1<<12));
+    byteaddress = (Bus<<20) | (Device<<15) | (Function<<12) | Offset;
+    index = byteaddress / 4;
+    return ( index );
 }
 
 unsigned long long approximate_cpuid_bias()

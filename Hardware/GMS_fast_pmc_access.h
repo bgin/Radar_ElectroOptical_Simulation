@@ -72,6 +72,22 @@ unsigned long corrected_pmc_delta(unsigned long,
 
 float get_TSC_frequency();
 
+unsigned int cpuid_signature();
+
+unsigned long read_CHA_counter(unsigned int,
+                               int, int, int,
+                               int *);
+
+int program_CHA_counter(unsigned int, 
+                        int, unsigned long *,
+                        int, int *, int);
+
+
+unsigned int  PCI_cfg_index(unsigned int, 
+                            unsigned int, 
+                            unsigned int, 
+                            unsigned int);
+
 unsigned long long approximate_cpuid_bias();
 
 unsigned long long approximate_rdpmc_bias();
