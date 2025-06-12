@@ -371,70 +371,7 @@ module spec_func_xmm2r8
                                                           XMM2r8_t(1.4847228371802360957e+04_dp),            & 
                                                           XMM2r8_t(1.8821890840982713696e+03_dp),            & 
                                                           XMM2r8_t(9.2556599177304839811e+01_dp)]
-    !!
-    !! calck0_xmm2r8 constant arrays (saved)
-    !!
-    !dir$ attributes align : 16 :: calck1_p
-    !dir$ attributes align : 16 :: calck1_q
-    !dir$ attributes align : 16 :: calck1_f
-    !dir$ attributes align : 16 :: calck1_g
-    !dir$ attributes align : 16 :: calck1_pp
-    !dir$ attributes align : 16 :: calck1_qq
-     type(XMM2r8_t), dimension(0:4), save ::  calck1_p = [XMM2r8_t(4.8127070456878442310e-1_dp), & 
-                                                          XMM2r8_t(9.9991373567429309922e+1_dp), &
-                                                          XMM2r8_t(7.1885382604084798576e+3_dp), &
-                                                          XMM2r8_t(1.7733324035147015630e+5_dp), &
-                                                          XMM2r8_t(7.1938920065420586101e+5_dp)]
-     type(XMM2r8_t), dimension(0:2), save ::  calck1_q = [XMM2r8_t(2.8143915754538725829e+2_dp), &
-                                                          XMM2r8_t(3.7264298672067697862e+4_dp), &
-                                                          XMM2r8_t(-2.2149374878243304548e+6_dp)]
-     type(XMM2r8_t), dimension(0:4), save ::  calck1_f = [XMM2r8_t(-2.2795590826955002390e-1_dp), &
-                                                          XMM2r8_t(-5.3103913335180275253e+1_dp), &
-                                                          XMM2r8_t(-4.5051623763436087023e+3_dp), &
-                                                          XMM2r8_t(-1.4758069205414222471e+5_dp), &
-                                                          XMM2r8_t(-1.3531161492785421328e+6_dp)]
-     type(XMM2r8_t), dimension(0:2), save ::  calck1_g = [XMM2r8_t(3.0507151578787595807e+2_dp),  &
-                                                          XMM2r8_t(4.3117653211351080007e+4_dp),  &
-                                                          XMM2r8_t(-2.7062322985570842656e+6_dp)]
-     type(XMM2r8_t), dimension(0:10), save :: calck1_pp =[XMM2r8_t(6.4257745859173138767e-2_dp),  &
-                                                          XMM2r8_t(7.5584584631176030810e+0_dp),  &
-                                                          XMM2r8_t(1.3182609918569941308e+2_dp),  &
-                                                          XMM2r8_t(8.1094256146537402173e+2_dp),  &
-                                                          XMM2r8_t(2.3123742209168871550e+3_dp),  &
-                                                          XMM2r8_t(3.4540675585544584407e+3_dp),  &
-                                                          XMM2r8_t(2.8590657697910288226e+3_dp),  &
-                                                          XMM2r8_t(1.3319486433183221990e+3_dp),  &
-                                                          XMM2r8_t(3.4122953486801312910e+2_dp),  &
-                                                          XMM2r8_t(4.4137176114230414036e+1_dp),  &
-                                                          XMM2r8_t(2.2196792496874548962e+0_dp)] 
-     type(XMM2r8_t), dimension(0:8), save :: calck1_qq  =[XMM2r8_t(3.6001069306861518855e+1_dp),  &
-                                                          XMM2r8_t(3.3031020088765390854e+2_dp),  &
-                                                          XMM2r8_t(1.2082692316002348638e+3_dp),  &
-                                                          XMM2r8_t(2.1181000487171943810e+3_dp),  &
-                                                          XMM2r8_t(1.9448440788918006154e+3_dp),  &
-                                                          XMM2r8_t(9.6929165726802648634e+2_dp),  &
-                                                          XMM2r8_t(2.5951223655579051357e+2_dp),  &
-                                                          XMM2r8_t(3.4552228452758912848e+1_dp),  &
-                                                          XMM2r8_t(1.7710478032601086579e+0_dp)]    
-    !!
-    !! caljy0_xmm2r8 constant arrays (saved)
-    !!  
-     !dir$ attributes align : 16 :: caljy0_plg
-     !dir$ attributes align : 16 :: caljy0_qlg
-     !dir$ attributes align : 16 :: caljy0_pj0
-     !dir$ attributes align : 16 :: caljy0_qj0
-     !dir$ attributes align : 16 :: caljy0_pj1
-     !dir$ attributes align : 16 :: caljy0_qj1
-     !dir$ attributes align : 16 :: caljy0_py0
-     !dir$ attributes align : 16 :: caljy0_qy0
-     !dir$ attributes align : 16 :: caljy0_py1
-     !dir$ attributes align : 16 :: caljy0_qy1
-     !dir$ attributes align : 16 :: caljy0_py2
-     !dir$ attributes align : 16 :: caljy0_qy2
-     !dir$ attributes align : 16 :: caljy0_p0
-     !dir$ attributes align : 16 :: caljy0_q0
-     !dir$ attributes align : 16 :: caljy0_p1
-     !dir$ attributes align : 16 :: caljy0_q1
+   
      type(XMM2r8_t), dimension(0:3), save ::  caljy0_plg=[XMM2r8_t(2.4562334077563243311e+1_dp), &
 	                                                  XMM2r8_t(2.3642701335621505212e+2_dp), &
                                                           XMM2r8_t(-5.4989956895857911039e+2_dp),&
@@ -1034,7 +971,7 @@ module spec_func_xmm2r8
 !
 !    Output, real ( kind = 8 ) BESK1, the value of the function.        
 
-#if 0
+
 
           function besk1_xmm2r8(x) result(val)
                
@@ -1045,12 +982,11 @@ module spec_func_xmm2r8
               type(XMM2r8_t),   intent(in) :: x
               type(XMM2r8_t)  :: val
               type(XMM2r8_t), automatic :: t0 
-              integer(kind=i4), automatic :: jint
-              jint = 1
-              call calck1_xmm2r8(x,t0,jint) 
+              call calck1_xmm2r8(x,t0) 
+              val = t0 
           end function besk1_xmm2r8   
           
-#endif           
+         
 
 !
 !! BESY0 evaluates the Bessel Y0(X) function.
@@ -1907,7 +1843,7 @@ module spec_func_xmm2r8
 
          end subroutine calck0_xmm2r8
          
-#if 0         
+      
 
 !
 !! CALCK1 computes various K1 Bessel functions.
@@ -1952,7 +1888,7 @@ module spec_func_xmm2r8
 
 
 
-       subroutine calck1_xmm2r8(val,arg,jint)
+       subroutine calck1_xmm2r8(arg,val)
               
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: calck1_xmm2r8
@@ -1960,187 +1896,180 @@ module spec_func_xmm2r8
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: calck1_xmm2r8  
               type(XMM2r8_t),   intent(in)   :: arg
               type(XMM2r8_t),   intent(out)  :: val
-              integer(kind=i4), intent(in)   :: jint  
-              !dir$ attributes align : 16 :: zero
-              !dir$ attributes align : 16 :: one
-              !dir$ attributes align : 16 :: xsmall
-              !dir$ attributes align : 16 :: xinf
-              !dir$ attributes align : 16 :: xmax
-              !dir$ attributes align : 16 :: sumf
-              !dir$ attributes align : 16 :: sumg
-              !dir$ attributes align : 16 :: sump
-              !dir$ attributes align : 16 :: sumq
-              !dir$ attributes align : 16 :: temp
-              !dir$ attributes align : 16 :: x
-              !dir$ attributes align : 16 :: xx
-              !dir$ attributes align : 16 :: t0
-              !dir$ attributes align : 16 :: t1
-              !dir$ attributes align : 16 :: t2
+              
+              type(XMM2r8_t),   automatic    :: sumf,sumg
+              type(XMM2r8_t),   automatic    :: sump,sumq
+              type(XMM2r8_t),   automatic    :: x,xx
+              type(XMM2r8_t),   automatic    :: t0,t1,t2
+              type(Mask2_t),    automatic    :: msk1,msk2
+              type(Mask2_t),    automatic    :: msk3,msk4  
               type(XMM2r8_t),   parameter    :: zero   = XMM2r8_t(0.0_dp)
               type(XMM2r8_t),   parameter    :: one    = XMM2r8_t(1.0_dp)
               type(XMM2r8_t),   parameter    :: xsmall = XMM2r8_t(1.11e-16_dp)
               type(XMM2r8_t),   parameter    :: xinf   = XMM2r8_t(1.79e+308_dp)
               type(XMM2r8_t),   parameter    :: xmax   = XMM2r8_t(705.342e+00_dp) 
               type(XMM2r8_t),   parameter    :: xleast = XMM2r8_t(2.23e-308_dp)
-              type(XMM2r8_t),   automatic    :: sumf,sumg
-              type(XMM2r8_t),   automatic    :: sump,sumq
-              type(XMM2r8_t),   automatic    :: x,xx
-              type(XMM2r8_t),   automatic    :: t0,t1,t2
-              type(Mask2_t),    automatic    :: msk1,msk2
-              type(Mask2_t),    automatic    :: msk3,msk4   
-#if (GMS_EXPLICIT_VECTORIZE) == 1
-               integer(kind=i4) :: j
-#endif   
-#if (GMS_EXPLICIT_VECTORIZE) == 1
-           
-               !dir$ loop_count(4)
-               !dir$ vector aligned
-               !dir$ vector vectorlength(8)
-               !dir$ vector always
-               do j=0,1
-                    x.v(j)     = arg.v(j) 
-                    msk1.m(j)  = (x.v(j)<=least.v(j))
-                    msk2.m(j) = (x.v(j)<=one.v(j))
-                    msk4.m(j) = (xmax.v(j)<x.v(j))
-                    if(all(msk1.m(j))) then
-                        val.v(j) = xinf.v(j)
-                    else if(all(msk2.m(j))) then
-                            msk3.m(j) = (x.v(j)<=xsmall.v(j))
-                            if(all(msk3.m(j))) then
-                                  val.v(j) = one.v(j)/x.v(j)
-                            else
-                                  xx.v(j)    = x.v(j)*x.v(j)
-                                  sump.v(j)  = ((((    &
-                                               calck1_p(0).v(j)       &
-                                          *    xx.v(j)+calck1_p(1).v(j)) & 
-                                          *    xx.v(j)+calck1_p(2).v(j)) &
-                                          *    xx.v(j)+calck1_p(3).v(j)) &
-                                          *    xx.v(j)+calck1_p(4).v(j)) &
-                                          *    xx.v(j)+calck1_q(2).v(j)
-                                  sumq.v(j)   = ((     &
-                                               xx.v(j)+calck1_q(0).v(j)) &
-                                          * xx.v(j)+calck1_q(1).v(j)) &
-                                          * xx.v(j)+calck1_q(2).v(j))
-                                  t1.v(j)     = sump.v(j)/sumq.v(j)  
-                                  sumf.v(j)   = (((    &
-                                              calck1_f(0).v(j)       &
-                                          *    xx.v(j)+calck1_f(1).v(j)) &
-                                          *    xx.v(j)+calck1_f(2).v(j)) &
-                                          *    xx.v(j)+calck1_f(3).v(j)) &
-                                          *    xx.v(j)+calck1_f(4).v(j)
-                                  t2.v(j)     = xx.v(j)*log(x.v(j))
-                                  sumg.v(j)   = (((    &
-                                               xx.v(j)+calck1_g(0).v(j)) &
-                                          *    xx.v(j)+calck1_g(1).v(j)) &
-                                          *    xx.v(j)+calck1_g(2).v(j)
-                                  t0.v(j)     = sumf.v(j)/sumg.v(j)
-                                  val.v(j)    = (t2.v(j)*t0.v(j)+t1.v(j))/x.v(j)
-                                  if(jint==2) val.v(j) = val.v(j)*exp(x.v(j))
-                            end if
-                 else if(all(msk4.m(j)).and.jint==1) then
-                            val.v(j) = zero.v(j)
-                 else
-                            xx.v(j)  = one.v(j)/x.v(j)
-                            sump.v(j)= calck1_pp(0).v(j)
-                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(1).v(j)
-                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(2).v(j)
-                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(3).v(j)
-                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(4).v(j)
-                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(5).v(j)
-                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(6).v(j)
-                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(7).v(j)
-                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(8).v(j)
-                            sump.v(j)= sump.v(j)*xx.v+calck1_pp(9).v(j)
-                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(10).v(j)
-                            t0.v(j)  = sqrt(x.v(j))
-                            sumq.v(j)= xx.v(j)
-                            sumq.v(j)= (sumq.v(j)+calck1_qq(0).v(j))*xx.v(j)
-                            sumq.v(j)= (sumq.v(j)+calck1_qq(1).v(j))*xx.v(j)
-                            sumq.v(j)= (sumq.v(j)+calck1_qq(2).v(j))*xx.v(j)
-                            sumq.v(j)= (sumq.v(j)+calck1_qq(3).v(j))*xx.v(j)
-                            sumq.v(j)= (sumq.v(j)+calck1_qq(4).v(j))*xx.v(j)
-                            sumq.v(j)= (sumq.v(j)+calck1_qq(5).v(j))*xx.v(j)
-                            sumq.v(j)= (sumq.v(j)+calck1_qq(6).v(j))*xx.v(j)
-                            sumq.v(j)= (sumq.v(j)+calck1_qq(7).v(j))*xx.v(j)
-                            sumq.v(j)= sumq.v(j)+calck1_qq(8).v(j)
-                            val.v = sump.v(j)/sumq.v(j)/t0.v(j)
-                            if(jint==1) val.v(j) = val.v(j)*exp(-x.v(j))
-                end if
-            end do
-#else         
+              type(XMM2r8_t),   parameter    :: p1     = XMM2r8_t(4.8127070456878442310e-1_dp)
+              type(XMM2r8_t),   parameter    :: p2     = XMM2r8_t(9.9991373567429309922e+1_dp)
+              type(XMM2r8_t),   parameter    :: p3     = XMM2r8_t(7.1885382604084798576e+3_dp)
+              type(XMM2r8_t),   parameter    :: p4     = XMM2r8_t(1.7733324035147015630e+5_dp)
+              type(XMM2r8_t),   parameter    :: p5     = XMM2r8_t(7.1938920065420586101e+5_dp)
+              type(XMM2r8_t),   parameter    :: q1     = XMM2r8_t(-2.8143915754538725829e+2_dp)
+              type(XMM2r8_t),   parameter    :: q2     = XMM2r8_t(3.7264298672067697862e+4_dp) 
+              type(XMM2r8_t),   parameter    :: q3     = XMM2r8_t(-2.2149374878243304548e+6_dp)
+              type(XMM2r8_t),   parameter    :: f1     = XMM2r8_t(-2.2795590826955002390e-1_dp)
+              type(XMM2r8_t),   parameter    :: f2     = XMM2r8_t(-5.3103913335180275253e+1_dp) 
+              type(XMM2r8_t),   parameter    :: f3     = XMM2r8_t(-4.5051623763436087023e+3_dp) 
+              type(XMM2r8_t),   parameter    :: f4     = XMM2r8_t(-1.4758069205414222471e+5_dp) 
+              type(XMM2r8_t),   parameter    :: f5     = XMM2r8_t(-1.3531161492785421328e+6_dp)
+              type(XMM2r8_t),   parameter    :: g1     = XMM2r8_t(-3.0507151578787595807e+2_dp)
+              type(XMM2r8_t),   parameter    :: g2     = XMM2r8_t(4.3117653211351080007e+4_dp)
+              type(XMM2r8_t),   parameter    :: g3     = XMM2r8_t(-2.7062322985570842656e+6_dp)
+              type(XMM2r8_t),   parameter    :: pp1    = XMM2r8_t(6.4257745859173138767e-2_dp)
+              type(XMM2r8_t),   parameter    :: pp2    = XMM2r8_t(7.5584584631176030810e+0_dp)
+              type(XMM2r8_t),   parameter    :: pp3    = XMM2r8_t(1.3182609918569941308e+2_dp)
+              type(XMM2r8_t),   parameter    :: pp4    = XMM2r8_t(8.1094256146537402173e+2_dp)
+              type(XMM2r8_t),   parameter    :: pp5    = XMM2r8_t(2.3123742209168871550e+3_dp)
+              type(XMM2r8_t),   parameter    :: pp6    = XMM2r8_t(3.4540675585544584407e+3_dp)
+              type(XMM2r8_t),   parameter    :: pp7    = XMM2r8_t(2.8590657697910288226e+3_dp)
+              type(XMM2r8_t),   parameter    :: pp8    = XMM2r8_t(1.3319486433183221990e+3_dp)
+              type(XMM2r8_t),   parameter    :: pp9    = XMM2r8_t(3.4122953486801312910e+2_dp)
+              type(XMM2r8_t),   parameter    :: pp10   = XMM2r8_t(4.4137176114230414036e+1_dp)
+              type(XMM2r8_t),   parameter    :: pp11   = XMM2r8_t(2.2196792496874548962e+0_dp) 
+              type(XMM2r8_t),   parameter    :: qq1    = XMM2r8_t(3.6001069306861518855e+1_dp)
+              type(XMM2r8_t),   parameter    :: qq2    = XMM2r8_t(3.3031020088765390854e+2_dp)
+              type(XMM2r8_t),   parameter    :: qq3    = XMM2r8_t(1.2082692316002348638e+3_dp)
+              type(XMM2r8_t),   parameter    :: qq4    = XMM2r8_t(2.1181000487171943810e+3_dp)
+              type(XMM2r8_t),   parameter    :: qq5    = XMM2r8_t(1.9448440788918006154e+3_dp)
+              type(XMM2r8_t),   parameter    :: qq6    = XMM2r8_t(9.6929165726802648634e+2_dp)
+              type(XMM2r8_t),   parameter    :: qq7    = XMM2r8_t(2.5951223655579051357e+2_dp)
+              type(XMM2r8_t),   parameter    :: qq8    = XMM2r8_t(3.4552228452758912848e+1_dp)
+              type(XMM2r8_t),   parameter    :: qq9    = XMM2r8_t(1.7710478032601086579e+0_dp)
+               
+              !dir$ attributes align : 16 :: zero
+              !dir$ attributes align : 16 :: one
+              !dir$ attributes align : 16 :: xsmall
+              !dir$ attributes align : 16 :: xinf
+              !dir$ attributes align : 16 :: xmax
+              !dir$ attributes align : 16 :: xleast 
+              !dir$ attributes align : 16 :: sumf
+              !dir$ attributes align : 16 :: sumg
+              !dir$ attributes align : 16 :: sump
+              !dir$ attributes align : 16 :: sumq
+              !dir$ attributes align : 16 :: x
+              !dir$ attributes align : 16 :: xx
+              !dir$ attributes align : 16 :: t0
+              !dir$ attributes align : 16 :: t1
+              !dir$ attributes align : 16 :: t2
+              !dir$ attributes align : 16 :: p1 
+              !dir$ attributes align : 16 :: p2 
+              !dir$ attributes align : 16 :: p3 
+              !dir$ attributes align : 16 :: p4 
+              !dir$ attributes align : 16 :: p5 
+              !dir$ attributes align : 16 :: q1 
+              !dir$ attributes align : 16 :: q2 
+              !dir$ attributes align : 16 :: q3 
+              !dir$ attributes align : 16 :: f1 
+              !dir$ attributes align : 16 :: f2 
+              !dir$ attributes align : 16 :: f3 
+              !dir$ attributes align : 16 :: f4 
+              !dir$ attributes align : 16 :: f5 
+              !dir$ attributes align : 16 :: g1 
+              !dir$ attributes align : 16 :: g2 
+              !dir$ attributes align : 16 :: g3 
+              !dir$ attributes align : 16 :: pp1 
+              !dir$ attributes align : 16 :: pp2 
+              !dir$ attributes align : 16 :: pp3 
+              !dir$ attributes align : 16 :: pp4 
+              !dir$ attributes align : 16 :: pp5 
+              !dir$ attributes align : 16 :: pp6 
+              !dir$ attributes align : 16 :: pp7 
+              !dir$ attributes align : 16 :: pp8 
+              !dir$ attributes align : 16 :: pp9 
+              !dir$ attributes align : 16 :: pp10
+              !dir$ attributes align : 16 :: pp11
+              !dir$ attributes align : 16 :: qq1
+              !dir$ attributes align : 16 :: qq2
+              !dir$ attributes align : 16 :: qq3
+              !dir$ attributes align : 16 :: qq4
+              !dir$ attributes align : 16 :: qq5
+              !dir$ attributes align : 16 :: qq6
+              !dir$ attributes align : 16 :: qq7
+              !dir$ attributes align : 16 :: qq8
+              !dir$ attributes align : 16 :: qq9
               x.v    = arg.v
-              msk1.m = (x.v<=least.v)
+              msk1.m = (x.v<=xleast.v)
               msk2.m = (x.v<=one.v)
               msk4.m = (xmax.v<x.v)
-              if(all(msk1.m)) then
+              where(msk1.m)
                   val.v = xinf.v
-              else if(all(msk2.m)) then
-                  msk3.m = (x.v<=xsmall.v)
-                  if(all(msk3.m)) then
+              else where(msk2.m)
+                  msk3.m = (x.v<xsmall.v)
+                  where(msk3.m)
                       val.v = one.v/x.v
-                  else
+                  else where 
                       xx.v    = x.v*x.v
                       sump.v  = ((((    &
-                                    calck1_p(0).v       &
-                               *    xx.v+calck1_p(1).v) & 
-                               *    xx.v+calck1_p(2).v) &
-                               *    xx.v+calck1_p(3).v) &
-                               *    xx.v+calck1_p(4).v) &
-                               *    xx.v+calck1_q(2).v
+                                    p1.v       &
+                               *    xx.v+p2.v) & 
+                               *    xx.v+p3.v) &
+                               *    xx.v+p4.v) &
+                               *    xx.v+p5.v) &
+                               *    xx.v+q3.v
                       sumq.v   = ((     &
-                                    xx.v+calck1_q(0).v) &
-                                  * xx.v+calck1_q(1).v) &
-                                  * xx.v+calck1_q(2).v
+                                    xx.v+q1.v) &
+                                  * xx.v+q2.v) &
+                                  * xx.v+q3.v
                       t1.v     = sump.v/sumq.v  
                       sumf.v   = (((    &
-                                    calck1_f(0).v       &
-                               *    xx.v+calck1_f(1).v) &
-                               *    xx.v+calck1_f(2).v) &
-                               *    xx.v+calck1_f(3).v) &
-                               *    xx.v+calck1_f(4).v
+                                    f1.v       &
+                               *    xx.v+f2.v) &
+                               *    xx.v+f3.v) &
+                               *    xx.v+f4.v) &
+                               *    xx.v+f5.v
                       t2.v     = xx.v*log(x.v)
                       sumg.v   = ((    &
-                                    xx.v+calck1_g(0).v) &
-                               *    xx.v+calck1_g(1).v) &
-                               *    xx.v+calck1_g(2).v
+                                    xx.v+g1.v) &
+                               *    xx.v+g2.v) &
+                               *    xx.v+g3.v
                       t0.v     = sumf.v/sumg.v
                       val.v    = (t2.v*t0.v+t1.v)/x.v
-                      if(jint==2) val.v = val.v*exp(x.v)
-                  end if
-             else if(all(msk4.m).and.jint==1) then
+                    
+                  end where 
+             else where(msk4.m)
                       val.v = zero.v
-             else
+             else where 
                       xx.v  = one.v/x.v
-                      sump.v= calck1_pp(0).v
-                      sump.v= sump.v*xx.v+calck1_pp(1).v
-                      sump.v= sump.v*xx.v+calck1_pp(2).v
-                      sump.v= sump.v*xx.v+calck1_pp(3).v
-                      sump.v= sump.v*xx.v+calck1_pp(4).v
-                      sump.v= sump.v*xx.v+calck1_pp(5).v
-                      sump.v= sump.v*xx.v+calck1_pp(6).v
-                      sump.v= sump.v*xx.v+calck1_pp(7).v
-                      sump.v= sump.v*xx.v+calck1_pp(8).v
-                      sump.v= sump.v*xx.v+calck1_pp(9).v
-                      sump.v= sump.v*xx.v+calck1_pp(10).v
+                      sump.v= pp1.v
+                      sump.v= sump.v*xx.v+pp2.v
+                      sump.v= sump.v*xx.v+pp3.v
+                      sump.v= sump.v*xx.v+pp4.v
+                      sump.v= sump.v*xx.v+pp5.v
+                      sump.v= sump.v*xx.v+pp6.v
+                      sump.v= sump.v*xx.v+pp7.v
+                      sump.v= sump.v*xx.v+pp8.v
+                      sump.v= sump.v*xx.v+pp9.v
+                      sump.v= sump.v*xx.v+pp10.v
+                      sump.v= sump.v*xx.v+pp11.v
                       t0.v  = sqrt(x.v)
                       sumq.v= xx.v
-                      sumq.v= (sumq.v+calck1_qq(0).v)*xx.v
-                      sumq.v= (sumq.v+calck1_qq(1).v)*xx.v
-                      sumq.v= (sumq.v+calck1_qq(2).v)*xx.v
-                      sumq.v= (sumq.v+calck1_qq(3).v)*xx.v
-                      sumq.v= (sumq.v+calck1_qq(4).v)*xx.v
-                      sumq.v= (sumq.v+calck1_qq(5).v)*xx.v
-                      sumq.v= (sumq.v+calck1_qq(6).v)*xx.v
-                      sumq.v= (sumq.v+calck1_qq(7).v)*xx.v
-                      sumq.v= sumq.v+calck1_qq(8).v
+                      sumq.v= (sumq.v+qq1.v)*xx.v
+                      sumq.v= (sumq.v+qq2.v)*xx.v
+                      sumq.v= (sumq.v+qq3.v)*xx.v
+                      sumq.v= (sumq.v+qq4.v)*xx.v
+                      sumq.v= (sumq.v+qq5.v)*xx.v
+                      sumq.v= (sumq.v+qq6.v)*xx.v
+                      sumq.v= (sumq.v+qq7.v)*xx.v
+                      sumq.v= (sumq.v+qq8.v)*xx.v
+                      sumq.v= sumq.v+qq9.v
                       val.v = sump.v/sumq.v/t0.v
-                      if(jint==1) val.v = val.v*exp(-x.v)
-              end if
-#endif
+                      val.v = val.v*exp(-x.v)
+             end where 
+
         end subroutine calck1_xmm2r8
         
         
-
+#if 0
 !
 !! CALJY0 computes various J0 and Y0 Bessel functions.
 !
