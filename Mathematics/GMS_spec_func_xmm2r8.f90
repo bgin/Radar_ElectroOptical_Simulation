@@ -372,102 +372,7 @@ module spec_func_xmm2r8
                                                           XMM2r8_t(1.8821890840982713696e+03_dp),            & 
                                                           XMM2r8_t(9.2556599177304839811e+01_dp)]
    
-     type(XMM2r8_t), dimension(0:3), save ::  caljy0_plg=[XMM2r8_t(2.4562334077563243311e+1_dp), &
-	                                                  XMM2r8_t(2.3642701335621505212e+2_dp), &
-                                                          XMM2r8_t(-5.4989956895857911039e+2_dp),&
-                                                          XMM2r8_t(3.5687548468071500413e+2_dp)]
-     type(XMM2r8_t), dimension(0:3), save ::  caljy0_qlg=[XMM2r8_t(3.5553900764052419184e+1_dp), &
-	                                                  XMM2r8_t(1.9400230218539473193e+2_dp), &
-                                                          XMM2r8_t(-3.3442903192607538956e+2_dp),&
-                                                          XMM2r8_t(1.7843774234035750207e+2_dp)]  
-     type(XMM2r8_t), dimension(0:6), save ::  caljy0_pj0=[XMM2r8_t(6.6302997904833794242e+6_dp), &
-	                                                  XMM2r8_t(-6.2140700423540120665e+8_dp),& 
-                                                          XMM2r8_t(2.7282507878605942706e+10_dp),&
-                                                          XMM2r8_t(-4.1298668500990866786e+11_dp),& 
-                                                          XMM2r8_t(-1.2117036164593528341e-1_dp), &
-                                                          XMM2r8_t(1.0344222815443188943e+2_dp),  &
-                                                          XMM2r8_t(-3.6629814655107086448e+4_dp)]
-     type(XMM2r8_t), dimension(0:4), save ::  caljy0_qj0=[XMM2r8_t(4.5612696224219938200e+5_dp),  & 
-	                                                  XMM2r8_t(1.3985097372263433271e+8_dp),  & 
-                                                          XMM2r8_t(2.6328198300859648632e+10_dp), & 
-                                                          XMM2r8_t(2.3883787996332290397e+12_dp), & 
-                                                          XMM2r8_t(9.3614022392337710626e+2_dp)]
-     type(XMM2r8_t), dimension(0:7), save ::  caljy0_pj1=[XMM2r8_t(4.4176707025325087628e+3_dp),  & 
-	                                                  XMM2r8_t(1.1725046279757103576e+4_dp),  &
-                                                          XMM2r8_t(1.0341910641583726701e+4_dp),  &
-                                                          XMM2r8_t(-7.2879702464464618998e+3_dp), & 
-                                                          XMM2r8_t(-1.2254078161378989535e+4_dp), &
-                                                          XMM2r8_t(-1.8319397969392084011e+3_dp), & 
-                                                          XMM2r8_t(4.8591703355916499363e+1_dp),  & 
-                                                          XMM2r8_t(7.4321196680624245801e+2_dp)]
-     type(XMM2r8_t), dimension(0:6), save ::  caljy0_qj1=[XMM2r8_t(3.3307310774649071172e+2_dp),  &
-	                                                  XMM2r8_t(-2.9458766545509337327e+3_dp), &
-                                                          XMM2r8_t(1.8680990008359188352e+4_dp),  &
-                                                          XMM2r8_t(-8.4055062591169562211e+4_dp), & 
-                                                          XMM2r8_t(2.4599102262586308984e+5_dp),  &
-                                                          XMM2r8_t(-3.5783478026152301072e+5_dp), & 
-                                                          XMM2r8_t(-2.5258076240801555057e+1_dp)]
-     type(XMM2r8_t), dimension(0:5), save ::  caljy0_py0=[XMM2r8_t(1.0102532948020907590e+4_dp),  &
-	                                                  XMM2r8_t(-2.1287548474401797963e+6_dp), & 
-                                                          XMM2r8_t(2.0422274357376619816e+8_dp),  &
-                                                          XMM2r8_t(-8.3716255451260504098e+9_dp), & 
-                                                          XMM2r8_t(1.0723538782003176831e+11_dp), &
-                                                          XMM2r8_t(-1.8402381979244993524e+1_dp)]
-     type(XMM2r8_t), dimension(0:4), save ::  caljy0_qy0=[XMM2r8_t(6.6475986689240190091e+2_dp),  & 
-	                                                  XMM2r8_t(2.3889393209447253406e+5_dp),  & 
-                                                          XMM2r8_t(5.5662956624278251596e+7_dp),  & 
-                                                          XMM2r8_t(8.1617187777290363573e+9_dp),  & 
-                                                          XMM2r8_t(5.8873865738997033405e+11_dp)]
-     type(XMM2r8_t), dimension(0:6), save ::  caljy0_py1=[XMM2r8_t(1.4566865832663635920e+4_dp),  & 
-	                                                  XMM2r8_t(4.6905288611678631510e+6_dp),  & 
-                                                          XMM2r8_t(-6.9590439394619619534e+8_dp), &
-                                                          XMM2r8_t(4.3600098638603061642e+10_dp), &
-                                                          XMM2r8_t(-5.5107435206722644429e+11_dp),&
-                                                          XMM2r8_t(-2.2213976967566192242e+13_dp),& 
-                                                          XMM2r8_t(1.7427031242901594547e+1_dp)]
-     type(XMM2r8_t), dimension(0:5), save ::  caljy0_qy1=[XMM2r8_t(8.3030857612070288823e+2_dp),  & 
-	                                                  XMM2r8_t(4.0669982352539552018e+5_dp),  & 
-                                                          XMM2r8_t(1.3960202770986831075e+8_dp),  & 
-                                                          XMM2r8_t(3.4015103849971240096e+10_dp), &
-                                                          XMM2r8_t(5.4266824419412347550e+12_dp), & 
-                                                          XMM2r8_t(4.3386146580707264428e+14_dp)]
-     type(XMM2r8_t), dimension(0:7), save ::  caljy0_py2=[XMM2r8_t(2.1363534169313901632e+4_dp),  &
-	                                                  XMM2r8_t(-1.0085539923498211426e+7_dp), & 
-                                                          XMM2r8_t(2.1958827170518100757e+9_dp),  &
-                                                          XMM2r8_t(-1.9363051266772083678e+11_dp),& 
-                                                          XMM2r8_t(-1.2829912364088687306e+11_dp),& 
-                                                          XMM2r8_t(6.7016641869173237784e+14_dp), & 
-                                                          XMM2r8_t(-8.0728726905150210443e+15_dp),&
-                                                          XMM2r8_t(-1.7439661319197499338e+1_dp)]
-     type(XMM2r8_t), dimension(0:6), save ::  caljy0_qy2=[XMM2r8_t(8.7903362168128450017e+2_dp),  & 
-	                                                  XMM2r8_t(5.3924739209768057030e+5_dp),  &
-                                                          XMM2r8_t(2.4727219475672302327e+8_dp),  & 
-                                                          XMM2r8_t(8.6926121104209825246e+10_dp), &
-                                                          XMM2r8_t(2.2598377924042897629e+13_dp), & 
-                                                          XMM2r8_t(3.9272425569640309819e+15_dp), &
-                                                          XMM2r8_t(3.4563724628846457519e+17_dp)]
-     type(XMM2r8_t), dimension(0:5), save ::  caljy0_p0 =[XMM2r8_t(3.4806486443249270347e+3_dp),  & 
-	                                                  XMM2r8_t(2.1170523380864944322e+4_dp),  & 
-                                                          XMM2r8_t(4.1345386639580765797e+4_dp),  & 
-                                                          XMM2r8_t(2.2779090197304684302e+4_dp),  &
-                                                          XMM2r8_t(8.8961548424210455236e-1_dp),  & 
-                                                          XMM2r8_t(1.5376201909008354296e+2_dp)]
-     type(XMM2r8_t), dimension(0:4), save ::  caljy0_q0 =[XMM2r8_t(3.5028735138235608207e+3_dp),  & 
-	                                                  XMM2r8_t(2.1215350561880115730e+4_dp),  & 
-                                                          XMM2r8_t(4.1370412495510416640e+4_dp),  & 
-                                                          XMM2r8_t(2.2779090197304684318e+4_dp),  &
-                                                          XMM2r8_t(1.5711159858080893649e+2_dp)]
-     type(XMM2r8_t), dimension(0:5), save ::  caljy0_p1 =[XMM2r8_t(-2.2300261666214198472e+1_dp), &
-	                                                  XMM2r8_t(-1.1183429920482737611e+2_dp), & 
-                                                          XMM2r8_t(-1.8591953644342993800e+2_dp), &
-                                                          XMM2r8_t(-8.9226600200800094098e+1_dp), &
-                                                          XMM2r8_t(-8.8033303048680751817e+3_dp), &
-                                                          XMM2r8_t(-1.2441026745835638459e+00_dp)]
-     type(XMM2r8_t), dimension(0:4), save ::  caljy0_q1 =[XMM2r8_t(1.4887231232283756582e+3_dp),  & 
-	                                                  XMM2r8_t(7.2642780169211018836e+3_dp),  &
-                                                          XMM2r8_t(1.1951131543434613647e+4_dp),  & 
-                                                          XMM2r8_t(5.7105024128512061905e+3_dp),  &
-                                                          XMM2r8_t(9.0593769594993125859e+1_dp)]
+     
     !!
     !! caljy1_xmm2r8 constant arrays (saved)
     !!  
@@ -1018,7 +923,7 @@ module spec_func_xmm2r8
 !    Output, real ( kind = 8 ) BESY0, the value of the function.
 
 
-#if 0
+
            function besy0_xmm2r8(x) result(val)
                
               !dir$ optimize:3
@@ -1030,11 +935,11 @@ module spec_func_xmm2r8
               type(XMM2r8_t), automatic :: t0 
               integer(kind=i4), automatic :: jint
               jint = 1
-              call caly0_xmm2r8(x,t0,jint) 
+              call caljy0_xmm2r8(x,t0,jint) 
               val = t0 
           end function besy0_xmm2r8   
           
-#endif           
+          
 
 !
 !! BESY1 evaluates the Bessel Y1(X) function.
@@ -2069,7 +1974,7 @@ module spec_func_xmm2r8
         end subroutine calck1_xmm2r8
         
         
-#if 0
+
 !
 !! CALJY0 computes various J0 and Y0 Bessel functions.
 !
@@ -2130,7 +2035,137 @@ module spec_func_xmm2r8
               type(XMM2r8_t),   intent(in)   :: arg
               type(XMM2r8_t),   intent(out)  :: val
               integer(kind=i4), intent(in)   :: jint 
-              !dir$ attributes align : 16 :: zero
+             
+              type(XMM2r8_t),   parameter :: zero  = XMM2r8_t(0.0e+0_dp)
+              type(XMM2r8_t),   parameter :: one   = XMM2r8_t(1.0e+0_dp)
+              type(XMM2r8_t),   parameter :: three = XMM2r8_t(3.0e+0_dp)
+              type(XMM2r8_t),   parameter :: four  = XMM2r8_t(4.0e+0_dp)
+              type(XMM2r8_t),   parameter :: eight = XMM2r8_t(8.0e+0_dp)
+              type(XMM2r8_t),   parameter :: five5 = XMM2r8_t(5.5e+0_dp)
+              type(XMM2r8_t),   parameter :: sixty4= XMM2r8_t(64.0e+0_dp)
+              type(XMM2r8_t),   parameter :: oneov8= XMM2r8_t(0.125e+0_dp)
+              type(XMM2r8_t),   parameter :: p17   = XMM2r8_t(1.716e-1_dp)
+              type(XMM2r8_t),   parameter :: two56 = XMM2r8_t(256.0e+0_dp)
+              type(XMM2r8_t),   parameter :: cons  = XMM2r8_t(-1.1593151565841244881e-1_dp)
+              type(XMM2r8_t),   parameter :: pi2   = XMM2r8_t(6.3661977236758134308e-1_dp)
+              type(XMM2r8_t),   parameter :: twopi = XMM2r8_t(6.2831853071795864769e+0_dp)
+              type(XMM2r8_t),   parameter :: twopi1= XMM2r8_t(6.28125e+0_dp)
+              type(XMM2r8_t),   parameter :: twopi2= XMM2r8_t(1.9353071795864769253e-3_dp)
+              type(XMM2r8_t),   parameter :: xmax  = XMM2r8_t(1.07e+09_dp)
+              type(XMM2r8_t),   parameter :: xsmall= XMM2r8_t(9.31e-10_dp)
+              type(XMM2r8_t),   parameter :: xinf  = XMM2r8_t(1.7e+38_dp)
+              type(XMM2r8_t),   parameter :: xj0   = XMM2r8_t(2.4048255576957727686e+0_dp)
+              type(XMM2r8_t),   parameter :: xj1   = XMM2r8_t(5.5200781102863106496e+0_dp)
+              type(XMM2r8_t),   parameter :: xy0   = XMM2r8_t(8.9357696627916752158e-1_dp)
+              type(XMM2r8_t),   parameter :: xy1   = XMM2r8_t(3.9576784193148578684e+0_dp)
+              type(XMM2r8_t),   parameter :: xy2   = XMM2r8_t(7.0860510603017726976e+0_dp)
+              type(XMM2r8_t),   parameter :: xj01  = XMM2r8_t(616.0e+0_dp)
+              type(XMM2r8_t),   parameter :: xj02  = XMM2r8_t(-1.4244423042272313784e-3_dp)
+              type(XMM2r8_t),   parameter :: xj11  = XMM2r8_t(1413.0e+0_dp)
+              type(XMM2r8_t),   parameter :: xj12  = XMM2r8_t(5.4686028631064959660e-4_dp)
+              type(XMM2r8_t),   parameter :: xy01  = XMM2r8_t(228.0e+0_dp)
+              type(XMM2r8_t),   parameter :: xy02  = XMM2r8_t(2.9519662791675215849e-3_dp)
+              type(XMM2r8_t),   parameter :: xy11  = XMM2r8_t(1013.0e+0_dp)
+              type(XMM2r8_t),   parameter :: xy12  = XMM2r8_t(6.4716931485786837568e-4_dp)
+              type(XMM2r8_t),   parameter :: xy21  = XMM2r8_t(1814.0e+0_dp)
+              type(XMM2r8_t),   parameter :: xy22  = XMM2r8_t(1.1356030177269762362e-4_dp)
+              type(XMM2r8_t),   parameter :: plg1  = XMM2r8_t(-2.4562334077563243311e+1_dp)
+	          type(XMM2r8_t),   parameter :: plg2  = XMM2r8_t(2.3642701335621505212e+2_dp)
+              type(XMM2r8_t),   parameter :: plg3  = XMM2r8_t(-5.4989956895857911039e+2_dp)
+              type(XMM2r8_t),   parameter :: plg4  = XMM2r8_t(3.5687548468071500413e+2_dp)
+              type(XMM2r8_t),   parameter :: qlg1  = XMM2r8_t(-3.5553900764052419184e+1_dp)
+	          type(XMM2r8_t),   parameter :: qlg2  = XMM2r8_t(1.9400230218539473193e+2_dp)
+              type(XMM2r8_t),   parameter :: qlg3  = XMM2r8_t(-3.3442903192607538956e+2_dp)
+              type(XMM2r8_t),   parameter :: qlg4  = XMM2r8_t(1.7843774234035750207e+2_dp)  
+              type(XMM2r8_t),   parameter :: pj01  = XMM2r8_t(6.6302997904833794242e+6_dp)
+	          type(XMM2r8_t),   parameter :: pj02  = XMM2r8_t(-6.2140700423540120665e+8_dp) 
+              type(XMM2r8_t),   parameter :: pj03  = XMM2r8_t(2.7282507878605942706e+10_dp)
+              type(XMM2r8_t),   parameter :: pj04  = XMM2r8_t(-4.1298668500990866786e+11_dp) 
+              type(XMM2r8_t),   parameter :: pj05  = XMM2r8_t(-1.2117036164593528341e-1_dp)
+              type(XMM2r8_t),   parameter :: pj06  = XMM2r8_t(1.0344222815443188943e+2_dp)
+              type(XMM2r8_t),   parameter :: pj07  = XMM2r8_t(-3.6629814655107086448e+4_dp)
+              type(XMM2r8_t),   parameter :: qj01  = XMM2r8_t(4.5612696224219938200e+5_dp)
+	          type(XMM2r8_t),   parameter :: qj02  = XMM2r8_t(1.3985097372263433271e+8_dp) 
+              type(XMM2r8_t),   parameter :: qj03  = XMM2r8_t(2.6328198300859648632e+10_dp) 
+              type(XMM2r8_t),   parameter :: qj04  = XMM2r8_t(2.3883787996332290397e+12_dp) 
+              type(XMM2r8_t),   parameter :: qj05  = XMM2r8_t(9.3614022392337710626e+2_dp)
+              type(XMM2r8_t),   parameter :: pj11  = XMM2r8_t(4.4176707025325087628e+3_dp)
+	          type(XMM2r8_t),   parameter :: pj12  = XMM2r8_t(1.1725046279757103576e+4_dp)
+              type(XMM2r8_t),   parameter :: pj13  = XMM2r8_t(1.0341910641583726701e+4_dp)
+              type(XMM2r8_t),   parameter :: pj14  = XMM2r8_t(-7.2879702464464618998e+3_dp) 
+              type(XMM2r8_t),   parameter :: pj15  = XMM2r8_t(-1.2254078161378989535e+4_dp)
+              type(XMM2r8_t),   parameter :: pj16  = XMM2r8_t(-1.8319397969392084011e+3_dp) 
+              type(XMM2r8_t),   parameter :: pj17  = XMM2r8_t(4.8591703355916499363e+1_dp) 
+              type(XMM2r8_t),   parameter :: pj18  = XMM2r8_t(7.4321196680624245801e+2_dp)
+              type(XMM2r8_t),   parameter :: qj11  = XMM2r8_t(3.3307310774649071172e+2_dp)
+	          type(XMM2r8_t),   parameter :: qj12  = XMM2r8_t(-2.9458766545509337327e+3_dp)
+              type(XMM2r8_t),   parameter :: qj13  = XMM2r8_t(1.8680990008359188352e+4_dp)
+              type(XMM2r8_t),   parameter :: qj14  = XMM2r8_t(-8.4055062591169562211e+4_dp) 
+              type(XMM2r8_t),   parameter :: qj15  = XMM2r8_t(2.4599102262586308984e+5_dp)
+              type(XMM2r8_t),   parameter :: qj16  = XMM2r8_t(-3.5783478026152301072e+5_dp) 
+              type(XMM2r8_t),   parameter :: qj17  = XMM2r8_t(-2.5258076240801555057e+1_dp)
+              type(XMM2r8_t),   parameter :: py01  = XMM2r8_t(1.0102532948020907590e+4_dp)
+	          type(XMM2r8_t),   parameter :: py02  = XMM2r8_t(-2.1287548474401797963e+6_dp) 
+              type(XMM2r8_t),   parameter :: py03  = XMM2r8_t(2.0422274357376619816e+8_dp)
+              type(XMM2r8_t),   parameter :: py04  = XMM2r8_t(-8.3716255451260504098e+9_dp) 
+              type(XMM2r8_t),   parameter :: py05  = XMM2r8_t(1.0723538782003176831e+11_dp)
+              type(XMM2r8_t),   parameter :: py06  = XMM2r8_t(-1.8402381979244993524e+1_dp)
+              type(XMM2r8_t),   parameter :: qy01  = XMM2r8_t(6.6475986689240190091e+2_dp)
+	          type(XMM2r8_t),   parameter :: qy02  = XMM2r8_t(2.3889393209447253406e+5_dp) 
+              type(XMM2r8_t),   parameter :: qy03  = XMM2r8_t(5.5662956624278251596e+7_dp) 
+              type(XMM2r8_t),   parameter :: qy04  = XMM2r8_t(8.1617187777290363573e+9_dp) 
+              type(XMM2r8_t),   parameter :: qy05  = XMM2r8_t(5.8873865738997033405e+11_dp)
+              type(XMM2r8_t),   parameter :: py11  = XMM2r8_t(1.4566865832663635920e+4_dp) 
+	          type(XMM2r8_t),   parameter :: py12  = XMM2r8_t(4.6905288611678631510e+6_dp) 
+              type(XMM2r8_t),   parameter :: py13  = XMM2r8_t(-6.9590439394619619534e+8_dp)
+              type(XMM2r8_t),   parameter :: py14  = XMM2r8_t(4.3600098638603061642e+10_dp)
+              type(XMM2r8_t),   parameter :: py15  = XMM2r8_t(-5.5107435206722644429e+11_dp)
+              type(XMM2r8_t),   parameter :: py16  = XMM2r8_t(-2.2213976967566192242e+13_dp) 
+              type(XMM2r8_t),   parameter :: py17  = XMM2r8_t(1.7427031242901594547e+1_dp)
+              type(XMM2r8_t),   parameter :: qy11  = XMM2r8_t(8.3030857612070288823e+2_dp)
+	          type(XMM2r8_t),   parameter :: qy12  = XMM2r8_t(4.0669982352539552018e+5_dp) 
+              type(XMM2r8_t),   parameter :: qy13  = XMM2r8_t(1.3960202770986831075e+8_dp) 
+              type(XMM2r8_t),   parameter :: qy14  = XMM2r8_t(3.4015103849971240096e+10_dp)
+              type(XMM2r8_t),   parameter :: qy15  = XMM2r8_t(5.4266824419412347550e+12_dp) 
+              type(XMM2r8_t),   parameter :: qy16  = XMM2r8_t(4.3386146580707264428e+14_dp)
+              type(XMM2r8_t),   parameter :: py21  = XMM2r8_t(2.1363534169313901632e+4_dp)
+	          type(XMM2r8_t),   parameter :: py22  = XMM2r8_t(-1.0085539923498211426e+7_dp) 
+              type(XMM2r8_t),   parameter :: py23  = XMM2r8_t(2.1958827170518100757e+9_dp)
+              type(XMM2r8_t),   parameter :: py24  = XMM2r8_t(-1.9363051266772083678e+11_dp) 
+              type(XMM2r8_t),   parameter :: py25  = XMM2r8_t(-1.2829912364088687306e+11_dp) 
+              type(XMM2r8_t),   parameter :: py26  = XMM2r8_t(6.7016641869173237784e+14_dp) 
+              type(XMM2r8_t),   parameter :: py27  = XMM2r8_t(-8.0728726905150210443e+15_dp)
+              type(XMM2r8_t),   parameter :: py28  = XMM2r8_t(-1.7439661319197499338e+1_dp)
+              type(XMM2r8_t),   parameter :: qy21  = XMM2r8_t(8.7903362168128450017e+2_dp)
+	          type(XMM2r8_t),   parameter :: qy22  = XMM2r8_t(5.3924739209768057030e+5_dp)
+              type(XMM2r8_t),   parameter :: qy23  = XMM2r8_t(2.4727219475672302327e+8_dp) 
+              type(XMM2r8_t),   parameter :: qy24  = XMM2r8_t(8.6926121104209825246e+10_dp)
+              type(XMM2r8_t),   parameter :: qy25  = XMM2r8_t(2.2598377924042897629e+13_dp) 
+              type(XMM2r8_t),   parameter :: qy26  = XMM2r8_t(3.9272425569640309819e+15_dp)
+              type(XMM2r8_t),   parameter :: qy27  = XMM2r8_t(3.4563724628846457519e+17_dp)
+              type(XMM2r8_t),   parameter :: p01   = XMM2r8_t(3.4806486443249270347e+3_dp)
+	          type(XMM2r8_t),   parameter :: p02   = XMM2r8_t(2.1170523380864944322e+4_dp) 
+              type(XMM2r8_t),   parameter :: p03   = XMM2r8_t(4.1345386639580765797e+4_dp) 
+              type(XMM2r8_t),   parameter :: p04   = XMM2r8_t(2.2779090197304684302e+4_dp)
+              type(XMM2r8_t),   parameter :: p05   = XMM2r8_t(8.8961548424210455236e-1_dp) 
+              type(XMM2r8_t),   parameter :: p06   = XMM2r8_t(1.5376201909008354296e+2_dp)
+              type(XMM2r8_t),   parameter :: q01   = XMM2r8_t(3.5028735138235608207e+3_dp)
+	          type(XMM2r8_t),   parameter :: q02   = XMM2r8_t(2.1215350561880115730e+4_dp) 
+              type(XMM2r8_t),   parameter :: q03   = XMM2r8_t(4.1370412495510416640e+4_dp) 
+              type(XMM2r8_t),   parameter :: q04   = XMM2r8_t(2.2779090197304684318e+4_dp)
+              type(XMM2r8_t),   parameter :: q05   = XMM2r8_t(1.5711159858080893649e+2_dp)
+              type(XMM2r8_t),   parameter :: p11   = XMM2r8_t(-2.2300261666214198472e+1_dp)
+	          type(XMM2r8_t),   parameter :: p12   = XMM2r8_t(-1.1183429920482737611e+2_dp)
+              type(XMM2r8_t),   parameter :: p13   = XMM2r8_t(-1.8591953644342993800e+2_dp)
+              type(XMM2r8_t),   parameter :: p14   = XMM2r8_t(-8.9226600200800094098e+1_dp)
+              type(XMM2r8_t),   parameter :: p15   = XMM2r8_t(-8.8033303048680751817e+3_dp)
+              type(XMM2r8_t),   parameter :: p16   = XMM2r8_t(-1.2441026745835638459e+00_dp)
+              type(XMM2r8_t),   parameter :: q11   = XMM2r8_t(1.4887231232283756582e+3_dp) 
+	          type(XMM2r8_t),   parameter :: q12   = XMM2r8_t(7.2642780169211018836e+3_dp)
+              type(XMM2r8_t),   parameter :: q13   = XMM2r8_t(1.1951131543434613647e+4_dp) 
+              type(XMM2r8_t),   parameter :: q14   = XMM2r8_t(5.7105024128512061905e+3_dp)
+              type(XMM2r8_t),   parameter :: q15   = XMM2r8_t(9.0593769594993125859e+1_dp)
+               !dir$ attributes align : 16 :: zero
               !dir$ attributes align : 16 :: one
               !dir$ attributes align : 16 :: three
               !dir$ attributes align : 16 :: four
@@ -2163,39 +2198,113 @@ module spec_func_xmm2r8
               !dir$ attributes align : 16 :: xy12
               !dir$ attributes align : 16 :: xy21
               !dir$ attributes align : 16 :: xy22
-              type(XMM2r8_t),   parameter :: zero  = XMM2r8_t(0.0e+0_dp);
-              type(XMM2r8_t),   parameter :: one   = XMM2r8_t(1.0e+0_dp);
-              type(XMM2r8_t),   parameter :: three = XMM2r8_t(3.0e+0_dp);
-              type(XMM2r8_t),   parameter :: four  = XMM2r8_t(4.0e+0_dp);
-              type(XMM2r8_t),   parameter :: eight = XMM2r8_t(8.0e+0_dp);
-              type(XMM2r8_t),   parameter :: five5 = XMM2r8_t(5.5e+0_dp); 
-              type(XMM2r8_t),   parameter :: sixty4= XMM2r8_t(64.0e+0_dp);
-              type(XMM2r8_t),   parameter :: oneov8= XMM2r8_t(0.125e+0_dp); 
-              type(XMM2r8_t),   parameter :: p17   = XMM2r8_t(1.716e-1_dp);
-              type(XMM2r8_t),   parameter :: two56 = XMM2r8_t(256.0e+0_dp);
-              type(XMM2r8_t),   parameter :: cons  = XMM2r8_t(-1.1593151565841244881e-1_dp);
-              type(XMM2r8_t),   parameter :: pi2   = XMM2r8_t(6.3661977236758134308e-1_dp);
-              type(XMM2r8_t),   parameter :: twopi = XMM2r8_t(6.2831853071795864769e+0_dp);
-              type(XMM2r8_t),   parameter :: twopi1= XMM2r8_t(6.28125e+0_dp);
-              type(XMM2r8_t),   parameter :: twopi2= XMM2r8_t(1.9353071795864769253e-3_dp);
-              type(XMM2r8_t),   parameter :: xmax  = XMM2r8_t(1.07e+09_dp);
-              type(XMM2r8_t),   parameter :: xsmall= XMM2r8_t(9.31e-10_dp);
-              type(XMM2r8_t),   parameter :: xinf  = XMM2r8_t(1.7e+38_dp);
-              type(XMM2r8_t),   parameter :: xj0   = XMM2r8_t(2.4048255576957727686e+0_dp);
-              type(XMM2r8_t),   parameter :: xj1   = XMM2r8_t(5.5200781102863106496e+0_dp);
-              type(XMM2r8_t),   parameter :: xy0   = XMM2r8_t(8.9357696627916752158e-1_dp);
-              type(XMM2r8_t),   parameter :: xy1   = XMM2r8_t(3.9576784193148578684e+0_dp);
-              type(XMM2r8_t),   parameter :: xy2   = XMM2r8_t(7.0860510603017726976e+0_dp);
-              type(XMM2r8_t),   parameter :: xj01  = XMM2r8_t(616.0e+0_dp);
-              type(XMM2r8_t),   parameter :: xj02  = XMM2r8_t(-1.4244423042272313784e-3_dp);
-              type(XMM2r8_t),   parameter :: xj11  = XMM2r8_t(1413.0e+0_dp);
-              type(XMM2r8_t),   parameter :: xj12  = XMM2r8_t(5.4686028631064959660e-4_dp);
-              type(XMM2r8_t),   parameter :: xy01  = XMM2r8_t(228.0e+0_dp);
-              type(XMM2r8_t),   parameter :: xy02  = XMM2r8_t(2.9519662791675215849e-3_dp);
-              type(XMM2r8_t),   parameter :: xy11  = XMM2r8_t(1013.0e+0_dp);
-              type(XMM2r8_t),   parameter :: xy12  = XMM2r8_t(6.4716931485786837568e-4_dp);
-              type(XMM2r8_t),   parameter :: xy21  = XMM2r8_t(1814.0e+0_dp);
-              type(XMM2r8_t),   parameter :: xy22  = XMM2r8_t(1.1356030177269762362e-4_dp);  
+              !dir$ attributes align : 16 :: plg1
+              !dir$ attributes align : 16 :: plg2
+              !dir$ attributes align : 16 :: plg3
+              !dir$ attributes align : 16 :: plg4
+              !dir$ attributes align : 16 :: qlg1
+              !dir$ attributes align : 16 :: qlg2
+              !dir$ attributes align : 16 :: qlg3
+              !dir$ attributes align : 16 :: qlg4
+              !dir$ attributes align : 16 :: pj01
+              !dir$ attributes align : 16 :: pj02
+              !dir$ attributes align : 16 :: pj03
+              !dir$ attributes align : 16 :: pj04
+              !dir$ attributes align : 16 :: pj05
+              !dir$ attributes align : 16 :: pj06
+              !dir$ attributes align : 16 :: pj07
+              !dir$ attributes align : 16 :: qj01
+              !dir$ attributes align : 16 :: qj02
+              !dir$ attributes align : 16 :: qj03
+              !dir$ attributes align : 16 :: qj04
+              !dir$ attributes align : 16 :: qj05
+              !dir$ attributes align : 16 :: pj11
+              !dir$ attributes align : 16 :: pj12
+              !dir$ attributes align : 16 :: pj13
+              !dir$ attributes align : 16 :: pj14
+              !dir$ attributes align : 16 :: pj15
+              !dir$ attributes align : 16 :: pj16
+              !dir$ attributes align : 16 :: pj17
+              !dir$ attributes align : 16 :: pj18
+              !dir$ attributes align : 16 :: qj11
+              !dir$ attributes align : 16 :: qj12
+              !dir$ attributes align : 16 :: qj13
+              !dir$ attributes align : 16 :: qj14
+              !dir$ attributes align : 16 :: qj15
+              !dir$ attributes align : 16 :: qj16
+              !dir$ attributes align : 16 :: qj17
+              !dir$ attributes align : 16 :: py01
+              !dir$ attributes align : 16 :: py02
+              !dir$ attributes align : 16 :: py03
+              !dir$ attributes align : 16 :: py04
+              !dir$ attributes align : 16 :: py05
+              !dir$ attributes align : 16 :: py06
+              !dir$ attributes align : 16 :: qy01
+              !dir$ attributes align : 16 :: qy02
+              !dir$ attributes align : 16 :: qy03
+              !dir$ attributes align : 16 :: qy04
+              !dir$ attributes align : 16 :: qy05
+              !dir$ attributes align : 16 :: py11
+              !dir$ attributes align : 16 :: py12
+              !dir$ attributes align : 16 :: py13
+              !dir$ attributes align : 16 :: py14
+              !dir$ attributes align : 16 :: py15
+              !dir$ attributes align : 16 :: py16
+              !dir$ attributes align : 16 :: py17
+              !dir$ attributes align : 16 :: qy11
+              !dir$ attributes align : 16 :: qy12
+              !dir$ attributes align : 16 :: qy13
+              !dir$ attributes align : 16 :: qy14
+              !dir$ attributes align : 16 :: qy15
+              !dir$ attributes align : 16 :: qy16
+              !dir$ attributes align : 16 :: py21
+              !dir$ attributes align : 16 :: py22
+              !dir$ attributes align : 16 :: py23
+              !dir$ attributes align : 16 :: py24
+              !dir$ attributes align : 16 :: py25
+              !dir$ attributes align : 16 :: py26
+              !dir$ attributes align : 16 :: py27
+              !dir$ attributes align : 16 :: py28
+              !dir$ attributes align : 16 :: qy21
+              !dir$ attributes align : 16 :: qy22
+              !dir$ attributes align : 16 :: qy23
+              !dir$ attributes align : 16 :: qy24
+              !dir$ attributes align : 16 :: qy25
+              !dir$ attributes align : 16 :: qy26
+              !dir$ attributes align : 16 :: qy27
+              !dir$ attributes align : 16 :: p01
+              !dir$ attributes align : 16 :: p02
+              !dir$ attributes align : 16 :: p03
+              !dir$ attributes align : 16 :: p04
+              !dir$ attributes align : 16 :: p05
+              !dir$ attributes align : 16 :: p06
+              !dir$ attributes align : 16 :: q01
+              !dir$ attributes align : 16 :: q02
+              !dir$ attributes align : 16 :: q03
+              !dir$ attributes align : 16 :: q04
+              !dir$ attributes align : 16 :: q05
+              !dir$ attributes align : 16 :: p11
+              !dir$ attributes align : 16 :: p12
+              !dir$ attributes align : 16 :: p13
+              !dir$ attributes align : 16 :: p14
+              !dir$ attributes align : 16 :: p15
+              !dir$ attributes align : 16 :: p16
+              !dir$ attributes align : 16 :: q11
+              !dir$ attributes align : 16 :: q12
+              !dir$ attributes align : 16 :: q13
+              !dir$ attributes align : 16 :: q14
+              !dir$ attributes align : 16 :: q15
+            
+              type(XMM2r8_t),   automatic :: ax,down
+              type(XMM2r8_t),   automatic :: prod,resj
+              type(XMM2r8_t),   automatic :: r0,r1
+              type(XMM2r8_t),   automatic :: up,w
+              type(XMM2r8_t),   automatic :: wsq,xden,xnum 
+              type(XMM2r8_t),   automatic :: xy,z,zsq
+              type(XMM2r8_t),   automatic :: t0,t1
+              type(XMM2r8_t),   automatic :: pi2ax,t2
+              type(XMM2r8_t),   automatic :: t3
+              type(Mask2_t),    automatic :: m0,m1
               !dir$ attributes align : 16 :: ax
               !dir$ attributes align : 16 :: down
               !dir$ attributes align : 16 :: prod
@@ -2206,6 +2315,7 @@ module spec_func_xmm2r8
               !dir$ attributes align : 16 :: w
               !dir$ attributes align : 16 :: wsq
               !dir$ attributes align : 16 :: xden
+              !dir$ attributes align : 16 :: xnum 
               !dir$ attributes align : 16 :: xy
               !dir$ attributes align : 16 :: z
               !dir$ attributes align : 16 :: zsq
@@ -2214,220 +2324,17 @@ module spec_func_xmm2r8
               !dir$ attributes align : 16 :: pi2ax
               !dir$ attributes align : 16 :: t2
               !dir$ attributes align : 16 :: t3
-            
-              type(XMM2r8_t),   automatic :: ax,down
-              type(XMM2r8_t),   automatic :: prod,resj
-              type(XMM2r8_t),   automatic :: r0,r1
-              type(XMM2r8_t),   automatic :: up,w
-              type(XMM2r8_t),   automatic :: wsq,xden
-              type(XMM2r8_t),   automatic :: xy,z,zsq
-              type(XMM2r8_t),   automatic :: t0,t1
-              type(XMM2r8_t),   automatic :: pi2ax,t2
-              type(XMM2r8_t),   automatic :: t3
-              type(Mask2_t),    automatic :: m0,m1
-#if (GMS_EXPLICIT_VECTORIZE) == 1
-               integer(kind=i4) :: j
-#endif   
+              
+
               ax.v   = abs(arg.v)
               m0.m   = (arg.v<=zero.v)
               pi2ax.v= pi2.v/ax.v
               m1.m   = (xmax.v<ax.v)
-              if(all(m0.m).and.jint==1) then
-                  val.v = -xinf.v
-                  return
-              else if(all(m1.m)) then
-                  val.v = zero.v
-                  return
-              end if
               m0.m = (eight.v<ax.v)
-              m1.m = (ax.v<=small.v)
+              m1.m = (ax.v<=xsmall.v)
               if(all(m0.m)) goto 800
-              if(all(m1.m)) then
-                 if(jint==0) then
-                     val.v = one.v
-                 else
-                     val.v = pi2.v*log(ax.v)+cons.v
-                     return
-                 end if
-              end if
-#if (GMS_EXPLICIT_VECTORIZE) == 1
-           
-               !dir$ loop_count(4)
-               !dir$ vector aligned
-               !dir$ vector vectorlength(8)
-               !dir$ vector always
-               do j=0,1
-                    m0.m(j)  = (ax.v(j)<=four.v(j))
-                    zsq.v(j) = ax.v(j)*ax.v(j)
-                    if(all(m0.m(j))) then
-                        xnum.v(j) = caljy0_pj0(4).v(j)*zsq.v(j)+ &
-                                 caljy0_pj0(5).v(j)*zsq.v(j)+ &
-                                 caljy0_pj0(6).v(j)
-                        xden.v(j) = zsq.v(j)+caljy0_qj0(4).v(j)
-                        xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_pj0(0).v(j)
-                        xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qj0(0).v(j)
-                        xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_pj0(1).v(j)
-                        xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qj0(1).v(j)
-                        xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_pj0(2).v(j)
-                        xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qj0(2).v(j)
-                        xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_pj0(3).v(j)
-                        xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qj0(3).v(j)
-                        t0.v(j)   = ax.v(j)-(xj01.v(j)/two56.v(j))
-                        t1.v(j)   = ax.v(j)+xj0.v(j)
-                        prod.v(j) = (t0.v(j)-xj02.v(j))*t1.v(j)
-                    else
-                        wsq.v(j)  = one.v(j)-(zsq.v(j)/sixty4.v(j))
-                        xnum.v(j) = caljy0_pj1(6).v(j)*wsq.v(j)+ &
-                                    caljy0_pji(7).v(j)
-                        xden.v(j) = wsq.v(j)+caljy0_qj1(6).v(j)
-                        xnum.v(j) = xnum.v(j)*wsq.v(j)+caljy0_pj1(0).v(j)
-                        xden.v(j) = xden.v(j)*wsq.v(j)+caljy0_qj1(0).v(j)
-                        xnum.v(j) = xnum.v(j)*wsq.v(j)+caljy0_pj1(1).v(j)
-                        xden.v(j) = xden.v(j)*wsq.v(j)+caljy0_qj1(1).v(j)
-                        xnum.v(j) = xnum.v(j)*wsq.v(j)+caljy0_pj1(2).v(j)
-                        xden.v(j) = xden.v(j)*wsq.v(j)+caljy0_qj1(2).v(j)
-                        xnum.v(j) = xnum.v(j)*wsq.v(j)+caljy0_pj1(3).v(j)
-                        xden.v(j) = xden.v(j)*wsq.v(j)+caljy0_qj1(3).v(j)
-                        xnum.v(j) = xnum.v(j)*wsq.v(j)+caljy0_pj1(4).v(j)
-                        xden.v(j) = xden.v(j)*wsq.v(j)+caljy0_qj1(4).v(j)
-                        xnum.v(j) = xnum.v(j)*wsq.v(j)+caljy0_pj1(5).v(j)
-                        xden.v(j) = xden.v(j)*wsq.v(j)+caljy0_qj1(5).v(j)
-                        t0.v(j)   = ax.v(j)-(xj11.v(j)/two56.v(j))
-                        t1.v(j)   = ax.v(j)+xj1.v(j)
-                        prod.v(j) = (t0.v(j)*t1.v(j))-xj12.v(j)
-                   end if
-                   val.v(j)  = prod.v(j)*(xnum.v(j)/xden.v(j))
-                   if(jint==0) return
-!    /*
-!                          Calculate Y0.  First find  RESJ = pi/2 ln(x/xn) J0(x),
-!                          !  where xn is a zero of Y0.
-!                       */      
-                   m0.m(j)  = (ax.v(j)<=three.v(j))       
-                   m1.m(j)  = (ax.v(j)<=five.v(j))
-                   if(all(m0.m(j))) then
-                       up.v(j) = (ax.v(j)-xy01.v(j)/two56.v(j))-xy02.v(j)
-                       xy.v(j) = xy0.v(j)
-                   else if(all(m1.m(j))) then
-                       up.v(j) = (ax.v(j)-xy11.v(j)/two56.v(j))-xy12.v(j)
-                       xy.v(j) = xy1.v(j)
-                   else
-                       up.v(j) = (ax.v(j)-xy21.v(j)/two56.v(j))-xy22.v(j)
-                       xy.v(j) = xy1.v(j)
-                   end if
-                   down.v(j)   = ax.v(j)*xy.v(j)
-                   t0.v(j)     = abs(up.v(j))
-                   t1.v(j)     = p17.v(j)*down.v(j)
-                   m0.m(j)     = (t0.v(j)<t1.v(j))
-                   if(all(m0.m(j))) then
-                        w.v(j)   = up.v(j)/down.v(j)
-                        wsq.v(j) = w.v(j)*w.v(j)
-                        xnum.v(j)= wsq.v(j)+caljy0_qlg(0).v(j)
-                        xnum.v(j)= caljy0_plg(0).v(j)
-                        xden.v(j)= wsq.v(j)+caljy0_qlg(0).v(j)
-                        xnum.v(j)= xnum.v(j)*wsq.v(j)+caljy0_plg(1).v(j)
-                        xden.v(j)= xden.v(j)*wsq.v(j)+caljy0_qlg(1).v(j)
-                        xnum.v(j)= xnum.v(j)*wsq.v(j)+caljy0_plg(2).v(j)
-                        xden.v(j)= xden.v(j)*wsq.v(j)+caljy0_qlg(2).v(j)
-                        xnum.v(j)= xnum.v(j)*wsq.v(j)+caljy0_plg(3).v(j)
-                        xden.v(j)= xden.v(j)*wsq.v(j)+caljy0_qlg(3).v(j)
-                        t0.v(j)  = xnum.v(j)/xden.v(j)
-                        t1.v(j)  = pi.v(j)*val.v(j)
-                        resj.v(j)= t1.v(j)*w.v(j)*t0.v(j)
-                  else
-                        t0.v(j)  = xnum.v(j)/xden.v(j)
-                        t1.v(j)  = pi.v(j)*val.v(j)
-                        resj.v(j)= t1.v(j)*log(t0.v(j))
-                  end if
-!               /*
-!                           Now calculate Y0 for appropriate interval, preserving
-!                           !  accuracy near the zero of Y0.
-!                       */
-                   m0.v(j) = (ax.v(j)<=three.v(j))
-                   m1.v(j) = (ax.v(j)<=five5.v(j))
-                   if(all(m0.m(j))) then
-                      xnum.v(j) = caljy0_py0(5).v(j)*zsq.v(j)+ &
-                                  caljy0_py0(0).v(j)
-                      xden.v(j) = zsq.v(j)+caljy0_qy0(0).v(j)
-                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py0(1).v(j)
-                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy0(1).v(j)
-                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py0(2).v(j)
-                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy0(2).v(j)
-                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py0(3).v(j)
-                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy0(3).v(j)
-                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py0(4).v(j)
-                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy0(4).v(j)
-                  else if(all(m1.m(j))) then
-                      xnum.v(j) = caljy0_py1(6).v(j)*zsq.v(j)+ &
-                                  caljy0_py1(0).v(j)
-                      xden.v(j) = zsq.v(j)+caljy0_qy1(0).v(j)
-                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py1(1).v(j)
-                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy1(1).v(j)
-                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py1(2).v(j)
-                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy1(2).v(j)
-                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py1(3).v(j)
-                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy1(3).v(j)
-                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py1(4).v(j)
-                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy1(4).v(j)
-                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py1(5).v(j)
-                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy1(5).v(j)
-                 else
-                      xnum.v(j) = caljy0_py2(7).v(j)*zsq.v(j)+ &
-                                  caljy0_py2(0).v(j)
-                      xden.v(j) = zsq.v(j)+caljy0_qy2(0).v(j)
-                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py2(1).v(j)
-                      xden.v(j) = xnum.v(j)*zsq.v(j)+caljy0_qy2(1).v(j)
-                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py2(2).v(j)
-                      xden.v(j) = xnum.v(j)*zsq.v(j)+caljy0_qy2(2).v(j)
-                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py2(3).v(j)
-                      xden.v(j) = xnum.v(j)*zsq.v(j)+caljy0_qy2(3).v(j)
-                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py2(4).v(j)
-                      xden.v(j) = xnum.v(j)*zsq.v(j)+caljy0_qy2(4).v(j)
-                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py2(5).v(j)
-                      xden.v(j) = xnum.v(j)*zsq.v(j)+caljy0_qy2(5).v(j)
-                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py2(6).v(j)
-                      xden.v(j) = xnum.v(j)*zsq.v(j)+caljy0_qy2(6).v(j)
-                 end if
-                 t0.v(j)  = xnum.v(j)/xden.v(j)
-                 t1.v(j)  = up.v(j)*down.v(j)
-                 val.v(j) = t0.v(j)*t1.v(j)+resj.v(j)
-                 return
-800              z.v(j)   = eight.v(j)/ax.v(j)
-                 w.v(j)   = ax.v(j)/twopi.v(j)
-                 t1.v(j)  = int(w.v(j),kind=i8)
-                 w.v(j)   = real(t1.v(j),kind=dp)+oneov8.v(j)
-                 t0.v(j)  = w.v(j)*twopi2.v(j)
-                 t1.v(j)  = ax.v(j)-w.v(j)
-                 w.v(j)   = t1.v(j)*twopi1.v(j)-t0.v(j)
-                 zsq.v(j) = z.v(j)*z.v(j)
-                 xnum.v(j)= caljy0_p0(4).v(j)*zsq.v(j)+ &
-                      caljy0_p0(5).v(j)
-                 xden.v(j)= zsq.v(j)+caljy0_q0(4).v(j)
-                 up.v(j)  = caljy0_p1(4).v(j)*zsq.v(j)+ &
-                      caljy0_p1(5).v(j)
-                 down.v(j)= zsq.v(j)+caljy0_q1(4).v(j)
-                 xnum.v(j)= xnum.v(j)*zsq.v(j)+caljy0_p0(0).v(j)
-                 xden.v(j)= xden.v(j)*zsq.v(j)+caljy0_q0(0).v(j)
-                 xnum.v(j)= xnum.v(j)*zsq.v(j)+caljy0_p0(1).v(j)
-                 xden.v(j)= xden.v(j)*zsq.v(j)+caljy0_q0(1).v(j)
-                 xnum.v(j)= xnum.v(j)*zsq.v(j)+caljy0_p0(2).v(j)
-                 xden.v(j)= xden.v(j)*zsq.v(j)+caljy0_q0(2).v(j)
-                 xnum.v(j)= xnum.v(j)*zsq.v(j)+caljy0_p0(3).v(j)
-                 xden.v(j)= xden.v(j)*zsq.v(j)+caljy0_q0(3).v(j)
-                 r0.v(j)  = xnum.v(j)/xden.v(j)
-                 t1.v(j)  = cos(w.v(j))
-                 r1.v(j)  = up.v(j)/down.v(j)
-                 t0.v(j)  = sqrt(pi2ax.v(j))
-                 t2.v(j)  = sin(w.v(j))
-                 t3.v(j)  = z.v(j)*r1.v(j)
-                 if(jint==0) then
-                     val.v(j) = t0.v(j)*r0.v(j)*t1.v(j)- &
-                          t3.v(j)*t2.v(j)
-                 else
-                     val.v(j) = t0.v(j)*r0.v(j)*t2.v(j)+ &
-                             t3.v(j)*t1.v(j)
-                 end if
-           end do
-#else
+              
+
              
 !               /*
 !                            !  Calculate J0 for appropriate interval, preserving
@@ -2436,137 +2343,136 @@ module spec_func_xmm2r8
 ! */                     
               m0.m  = (ax.v<=four.v)
               zsq.v = ax.v*ax.v
-              if(all(m0.m)) then
-                  xnum.v = caljy0_pj0(4).v*zsq.v+ &
-                           caljy0_pj0(5).v*zsq.v+ &
-                           caljy0_pj0(6).v
-                  xden.v = zsq.v+caljy0_qj0(4).v
-                  xnum.v = xnum.v*zsq.v+caljy0_pj0(0).v
-                  xden   = xden.v*zsq.v+caljy0_qj0(0).v
-                  xnum.v = xnum.v*zsq.v+caljy0_pj0(1).v
-                  xden   = xden.v*zsq.v+caljy0_qj0(1).v
-                  xnum.v = xnum.v*zsq.v+caljy0_pj0(2).v
-                  xden   = xden.v*zsq.v+caljy0_qj0(2).v
-                  xnum.v = xnum.v*zsq.v+caljy0_pj0(3).v
-                  xden   = xden.v*zsq.v+caljy0_qj0(3).v
-                  t0.v   = ax.v-(xj01.v/two56.v)
+              where(m0.m)
+                  xnum.v = pj05.v*zsq.v+ &
+                           pj06.v*zsq.v+ &
+                           pj07.v
+                  xden.v = zsq.v+qj05.v
+                  xnum.v = xnum.v*zsq.v+pj01.v
+                  xden.v   = xden.v*zsq.v+qj01.v
+                  xnum.v = xnum.v*zsq.v+pj02.v
+                  xden.v   = xden.v*zsq.v+qj02.v
+                  xnum.v = xnum.v*zsq.v+pj03.v
+                  xden.v   = xden.v*zsq.v+qj03.v
+                  xnum.v = xnum.v*zsq.v+pj04.v
+                  xden.v   = xden.v*zsq.v+qj04.v
+                  t0.v   = ax.v-xj01.v/two56.v
                   t1.v   = ax.v+xj0.v
                   prod.v = (t0.v-xj02.v)*t1.v
-              else
-                  wsq.v  = one.v-(zsq.v/sixty4.v)
-                  xnum.v = caljy0_pj1(6).v*wsq.v+ &
-                           caljy0_pji(7).v
-                  xden.v = wsq.v+caljy0_qj1(6).v
-                  xnum.v = xnum.v*wsq.v+caljy0_pj1(0).v
-                  xden.v = xden.v*wsq.v+caljy0_qj1(0).v
-                  xnum.v = xnum.v*wsq.v+caljy0_pj1(1).v
-                  xden.v = xden.v*wsq.v+caljy0_qj1(1).v
-                  xnum.v = xnum.v*wsq.v+caljy0_pj1(2).v
-                  xden.v = xden.v*wsq.v+caljy0_qj1(2).v
-                  xnum.v = xnum.v*wsq.v+caljy0_pj1(3).v
-                  xden.v = xden.v*wsq.v+caljy0_qj1(3).v
-                  xnum.v = xnum.v*wsq.v+caljy0_pj1(4).v
-                  xden.v = xden.v*wsq.v+caljy0_qj1(4).v
-                  xnum.v = xnum.v*wsq.v+caljy0_pj1(5).v
-                  xden.v = xden.v*wsq.v+caljy0_qj1(5).v
-                  t0.v   = ax.v-(xj11.v/two56.v)
+              else where 
+                  wsq.v  = one.v-zsq.v/sixty4.v
+                  xnum.v = pj17.v*wsq.v+ &
+                           pj18.v
+                  xden.v = wsq.v+qj17.v
+                  xnum.v = xnum.v*wsq.v+pj11.v
+                  xden.v = xden.v*wsq.v+qj11.v
+                  xnum.v = xnum.v*wsq.v+pj12.v
+                  xden.v = xden.v*wsq.v+qj12.v
+                  xnum.v = xnum.v*wsq.v+pj13.v
+                  xden.v = xden.v*wsq.v+qj13.v
+                  xnum.v = xnum.v*wsq.v+pj14.v
+                  xden.v = xden.v*wsq.v+qj14.v
+                  xnum.v = xnum.v*wsq.v+pj15.v
+                  xden.v = xden.v*wsq.v+qj15.v
+                  xnum.v = xnum.v*wsq.v+pj16.v
+                  xden.v = xden.v*wsq.v+qj16.v
+                  t0.v   = ax.v-xj11.v/two56.v
                   t1.v   = ax.v+xj1.v
                   prod.v = (t0.v*t1.v)-xj12.v
-              end if
-              val.v  = prod.v*(xnum.v/xden.v)
+              end where 
+              val.v  = prod.v*xnum.v/xden.v
               if(jint==0) return
 !    /*
 !                          Calculate Y0.  First find  RESJ = pi/2 ln(x/xn) J0(x),
 !                          !  where xn is a zero of Y0.
 !                       */      
               m0.m  = (ax.v<=three.v)       
-              m1.m  = (ax.v<=five.v)
-              if(all(m0.m)) then
+              m1.m  = (ax.v<=five5.v)
+              where(m0.m)
                   up.v = (ax.v-xy01.v/two56.v)-xy02.v
                   xy.v = xy0.v
-              else if(all(m1.m)) then
+              else where(m1.m)
                   up.v = (ax.v-xy11.v/two56.v)-xy12.v
                   xy.v = xy1.v
-              else
+              else where 
                   up.v = (ax.v-xy21.v/two56.v)-xy22.v
                   xy.v = xy1.v
-              end if
+              end where 
               down.v   = ax.v*xy.v
               t0.v     = abs(up.v)
               t1.v     = p17.v*down.v
               m0.m     = (t0.v<t1.v)
-              if(all(m0.m)) then
+              where(m0.m)
                   w.v   = up.v/down.v
                   wsq.v = w.v*w.v
-                  xnum.v= wsq.v+caljy0_qlg(0).v
-                  xnum.v= caljy0_plg(0).v
-                  xden.v= wsq.v+caljy0_qlg(0).v
-                  xnum.v= xnum.v*wsq.v+caljy0_plg(1).v
-                  xden.v= xden.v*wsq.v+caljy0_qlg(1).v
-                  xnum.v= xnum.v*wsq.v+caljy0_plg(2).v
-                  xden.v= xden.v*wsq.v+caljy0_qlg(2).v
-                  xnum.v= xnum.v*wsq.v+caljy0_plg(3).v
-                  xden.v= xden.v*wsq.v+caljy0_qlg(3).v
+                  xnum.v= plg1.v
+                  xden.v= wsq.v+qlg1.v
+                  xnum.v= xnum.v*wsq.v+plg2.v
+                  xden.v= xden.v*wsq.v+qlg2.v
+                  xnum.v= xnum.v*wsq.v+plg3.v
+                  xden.v= xden.v*wsq.v+qlg3.v
+                  xnum.v= xnum.v*wsq.v+plg4.v
+                  xden.v= xden.v*wsq.v+qlg4.v
                   t0.v  = xnum.v/xden.v
-                  t1.v  = pi.v*val.v
+                  t1.v  = pi2.v*val.v
                   resj.v= t1.v*w.v*t0.v
-              else
-                  t0.v  = xnum.v/xden.v
-                  t1.v  = pi.v*val.v
+              else where 
+                  t0.v  = ax.v/xy.v
+                  t1.v  = pi2.v*val.v
                   resj.v= t1.v*log(t0.v)
-              end if
+              end where 
 !               /*
 !                           Now calculate Y0 for appropriate interval, preserving
 !                           !  accuracy near the zero of Y0.
 !                       */
-              m0.v = (ax.v<=three.v)
-              m1.v = (ax.v<=five5.v)
-              if(all(m0.m)) then
-                  xnum.v = caljy0_py0(5).v*zsq.v+ &
-                           caljy0_py0(0).v
-                  xden.v = zsq.v+caljy0_qy0(0).v
-                  xnum.v = xnum.v*zsq.v+caljy0_py0(1).v
-                  xden.v = xden.v*zsq.v+caljy0_qy0(1).v
-                  xnum.v = xnum.v*zsq.v+caljy0_py0(2).v
-                  xden.v = xden.v*zsq.v+caljy0_qy0(2).v
-                  xnum.v = xnum.v*zsq.v+caljy0_py0(3).v
-                  xden.v = xden.v*zsq.v+caljy0_qy0(3).v
-                  xnum.v = xnum.v*zsq.v+caljy0_py0(4).v
-                  xden.v = xden.v*zsq.v+caljy0_qy0(4).v
-              else if(all(m1.m)) then
-                  xnum.v = caljy0_py1(6).v*zsq.v+ &
-                           caljy0_py1(0).v
-                  xden.v = zsq.v+caljy0_qy1(0).v
-                  xnum.v = xnum.v*zsq.v+caljy0_py1(1).v
-                  xden.v = xden.v*zsq.v+caljy0_qy1(1).v
-                  xnum.v = xnum.v*zsq.v+caljy0_py1(2).v
-                  xden.v = xden.v*zsq.v+caljy0_qy1(2).v
-                  xnum.v = xnum.v*zsq.v+caljy0_py1(3).v
-                  xden.v = xden.v*zsq.v+caljy0_qy1(3).v
-                  xnum.v = xnum.v*zsq.v+caljy0_py1(4).v
-                  xden.v = xden.v*zsq.v+caljy0_qy1(4).v
-                  xnum.v = xnum.v*zsq.v+caljy0_py1(5).v
-                  xden.v = xden.v*zsq.v+caljy0_qy1(5).v
-              else
-                  xnum.v = caljy0_py2(7).v*zsq.v+ &
-                           caljy0_py2(0).v
-                  xden.v = zsq.v+caljy0_qy2(0).v
-                  xnum.v = xnum.v*zsq.v+caljy0_py2(1).v
-                  xden.v = xnum.v*zsq.v+caljy0_qy2(1).v
-                  xnum.v = xnum.v*zsq.v+caljy0_py2(2).v
-                  xden.v = xnum.v*zsq.v+caljy0_qy2(2).v
-                  xnum.v = xnum.v*zsq.v+caljy0_py2(3).v
-                  xden.v = xnum.v*zsq.v+caljy0_qy2(3).v
-                  xnum.v = xnum.v*zsq.v+caljy0_py2(4).v
-                  xden.v = xnum.v*zsq.v+caljy0_qy2(4).v
-                  xnum.v = xnum.v*zsq.v+caljy0_py2(5).v
-                  xden.v = xnum.v*zsq.v+caljy0_qy2(5).v
-                  xnum.v = xnum.v*zsq.v+caljy0_py2(6).v
-                  xden.v = xnum.v*zsq.v+caljy0_qy2(6).v
-              end if
+              m0.m = (ax.v<=three.v)
+              m1.m = (ax.v<=five5.v)
+              where(m0.m)
+                  xnum.v = py06.v*zsq.v+ &
+                           py01.v
+                  xden.v = zsq.v+qy01.v
+                  xnum.v = xnum.v*zsq.v+py02.v
+                  xden.v = xden.v*zsq.v+qy02.v
+                  xnum.v = xnum.v*zsq.v+py03.v
+                  xden.v = xden.v*zsq.v+qy03.v
+                  xnum.v = xnum.v*zsq.v+py04.v
+                  xden.v = xden.v*zsq.v+qy04.v
+                  xnum.v = xnum.v*zsq.v+py05.v
+                  xden.v = xden.v*zsq.v+qy05.v
+              else where(m1.m)
+                  xnum.v = py17.v*zsq.v+ &
+                           py11.v
+                  xden.v = zsq.v+qy11.v
+                  xnum.v = xnum.v*zsq.v+py12.v
+                  xden.v = xden.v*zsq.v+qy12.v
+                  xnum.v = xnum.v*zsq.v+py13.v
+                  xden.v = xden.v*zsq.v+qy13.v
+                  xnum.v = xnum.v*zsq.v+py14.v
+                  xden.v = xden.v*zsq.v+qy14.v
+                  xnum.v = xnum.v*zsq.v+py15.v
+                  xden.v = xden.v*zsq.v+qy15.v
+                  xnum.v = xnum.v*zsq.v+py16.v
+                  xden.v = xden.v*zsq.v+qy16.v
+              else where 
+                  xnum.v = py28.v*zsq.v+ &
+                           py21.v
+                  xden.v = zsq.v+qy21.v
+                  xnum.v = xnum.v*zsq.v+py22.v
+                  xden.v = xnum.v*zsq.v+qy22.v
+                  xnum.v = xnum.v*zsq.v+py23.v
+                  xden.v = xnum.v*zsq.v+qy23.v
+                  xnum.v = xnum.v*zsq.v+py24.v
+                  xden.v = xnum.v*zsq.v+qy24.v
+                  xnum.v = xnum.v*zsq.v+py25.v
+                  xden.v = xnum.v*zsq.v+qy25.v
+                  xnum.v = xnum.v*zsq.v+py26.v
+                  xden.v = xnum.v*zsq.v+qy26.v
+                  xnum.v = xnum.v*zsq.v+py27.v
+                  xden.v = xnum.v*zsq.v+qy27.v
+              end where 
               t0.v  = xnum.v/xden.v
               t1.v  = up.v*down.v
-              val.v = t0.v*t1.v+resj.v
+              val.v = resj.v+t1.v*t1.v
               return
 800           z.v   = eight.v/ax.v
               w.v   = ax.v/twopi.v
@@ -2576,24 +2482,24 @@ module spec_func_xmm2r8
               t1.v  = ax.v-w.v
               w.v   = t1.v*twopi1.v-t0.v
               zsq.v = z.v*z.v
-              xnum.v= caljy0_p0(4).v*zsq.v+ &
-                      caljy0_p0(5).v
-              xden.v= zsq.v+caljy0_q0(4).v
-              up.v  = caljy0_p1(4).v*zsq.v+ &
-                      caljy0_p1(5).v
-              down.v= zsq.v+caljy0_q1(4).v
-              xnum.v= xnum.v*zsq.v+caljy0_p0(0).v
-              xden.v= xden.v*zsq.v+caljy0_q0(0).v
-              xnum.v= xnum.v*zsq.v+caljy0_p0(1).v
-              xden.v= xden.v*zsq.v+caljy0_q0(1).v
-              xnum.v= xnum.v*zsq.v+caljy0_p0(2).v
-              xden.v= xden.v*zsq.v+caljy0_q0(2).v
-              xnum.v= xnum.v*zsq.v+caljy0_p0(3).v
-              xden.v= xden.v*zsq.v+caljy0_q0(3).v
+              xnum.v= p05.v*zsq.v+ &
+                      p06.v
+              xden.v= zsq.v+q05.v
+              up.v  = p15.v*zsq.v+ &
+                      p16.v
+              down.v= zsq.v+q15.v
+              xnum.v= xnum.v*zsq.v+p01.v
+              xden.v= xden.v*zsq.v+q01.v
+              xnum.v= xnum.v*zsq.v+p02.v
+              xden.v= xden.v*zsq.v+q02.v
+              xnum.v= xnum.v*zsq.v+p03.v
+              xden.v= xden.v*zsq.v+q03.v
+              xnum.v= xnum.v*zsq.v+p04.v
+              xden.v= xden.v*zsq.v+q04.v
               r0.v  = xnum.v/xden.v
               t1.v  = cos(w.v)
               r1.v  = up.v/down.v
-              t0.v  = sqrt(pi2ax.v)
+              t0.v  = sqrt(pi2.v/ax.v)
               t2.v  = sin(w.v)
               t3.v  = z.v*r1.v
               if(jint==0) then
@@ -2603,10 +2509,9 @@ module spec_func_xmm2r8
                   val.v = t0.v*r0.v*t2.v+ &
                           t3.v*t1.v
               end if
-#endif
         end subroutine caljy0_xmm2r8
         
-        
+#if 0        
 
 !
 !! CALJY1 computes various J1 and Y1 Bessel functions.
