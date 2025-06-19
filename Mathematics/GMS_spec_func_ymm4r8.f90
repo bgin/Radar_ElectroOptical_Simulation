@@ -180,7 +180,7 @@ module spec_func_ymm4r8
  
 
 
-            function besi1_xmm2r8(x) result(val)
+            function besi1_ymm4r8(x) result(val)
                
               !dir$ optimize:3
             
@@ -293,51 +293,7 @@ module spec_func_ymm4r8
           
          
 
-!
-!! BESY0 evaluates the Bessel Y0(X) function.
-!
-!  Discussion:
-!
-!    This routine computes approximate values for Bessel functions
-!    of the second kind of order zero for arguments 0 < X <= XMAX.
-!
-!    See comments heading CALJY0.
-!
-!  Licensing:
-!
-!    This code is distributed under the GNU LGPL license.
-!
-!  Modified:
-!
-!    03 April 2007
-!
-!  Author:
-!
-!    Original FORTRAN77 version by William Cody.
-!    FORTRAN90 version by John Burkardt.
-!
-!  Parameters:
-!
-!    Input, real ( kind = 8 ) X, the argument of the function.
-!
-!    Output, real ( kind = 8 ) BESY0, the value of the function.
 
-
-
-           function besy0_ymm4r8(x) result(val)
-               
-              !dir$ optimize:3
-              
-              !dir$ attributes forceinline :: besy0_ymm4r8
-             
-              type(YMM4r8_t),   intent(in) :: x
-              type(YMM4r8_t)  :: val
-              type(YMM4r8_t), automatic :: t0 
-              integer(kind=i4), automatic :: jint
-              jint = 1
-              call caljy0_ymm4r8(x,t0,jint) 
-              val = t0 
-          end function besy0_ymm4r8   
           
           
 
@@ -469,8 +425,8 @@ module spec_func_ymm4r8
                                                                     4.7914889422856814203e-01_dp,4.7914889422856814203e-01_dp])         
                type(YMM4r8_t),   parameter    :: pp5   = YMM4r8_t([-3.7384991926068969150e-03_dp,-3.7384991926068969150e-03_dp, &
                                                                    -3.7384991926068969150e-03_dp,-3.7384991926068969150e-03_dp])        
-               type(YMM4r8_t),   parameter    :: pp6   = YMM4r8_t([-2.6801520353328635310e-03_dp,-2.6801520353328635310e-03_d, &
-                                                                   -2.6801520353328635310e-03_dp,-2.6801520353328635310e-03_d])        
+               type(YMM4r8_t),   parameter    :: pp6   = YMM4r8_t([-2.6801520353328635310e-03_dp,-2.6801520353328635310e-03_dp, &
+                                                                   -2.6801520353328635310e-03_dp,-2.6801520353328635310e-03_dp])        
                type(YMM4r8_t),   parameter    :: pp7   = YMM4r8_t([ 9.9168777670983678974e-05_dp,9.9168777670983678974e-05_dp, &
                                                                     9.9168777670983678974e-05_dp,9.9168777670983678974e-05_dp])        
                type(YMM4r8_t),   parameter    :: pp8   = YMM4r8_t([-2.1877128189032726730e-06_dp,-2.1877128189032726730e-06_dp, &
