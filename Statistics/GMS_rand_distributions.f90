@@ -103,7 +103,7 @@ CONTAINS
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
 !DIR$ ATTRIBUTES INLINE :: random_normal
-!DIR$ ATTRIBUTES ALIGN : 32 :: random_normal
+
 #endif
 FUNCTION random_normal() RESULT(fn_val)
  
@@ -154,7 +154,7 @@ END FUNCTION random_normal
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
 !DIR$ ATTRIBUTES INLINE :: random_normal_clamped
-!DIR$ ATTRIBUTES ALIGN : 32 :: random_normal_clamped
+
 #endif
 FUNCTION random_normal_clamped() RESULT(fn_val)
   
@@ -223,7 +223,7 @@ END FUNCTION random_normal_clamped
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
  !DIR$ ATTRIBUTES INLINE :: random_gamma
- !DIR$ ATTRIBUTES ALIGN : 32 :: random_gamma
+ 
 #endif
   FUNCTION random_gamma(s,first) RESULT(fn_val)
    
@@ -260,7 +260,7 @@ END FUNCTION random_gamma
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
 !DIR$ ATTRIBUTES INLINE :: random_gamma1
-!DIR$ ATTRIBUTES ALIGN : 32 :: random_gamma1
+
 #endif
 FUNCTION random_gamma1(s,first) RESULT(fn_val)
     
@@ -319,7 +319,7 @@ END FUNCTION random_gamma1
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
  !DIR$ ATTRIBUTES INLINE :: random_gamma2
- !DIR$ ATTRIBUTES ALIGN : 32 :: random_gamma2
+ 
 #endif
   FUNCTION random_gamma2(s) RESULT(fn_val)
     
@@ -346,7 +346,7 @@ REAL(kind=sp), SAVE :: a, p, c, uf, vr, d
 #if defined(_OPENMP)
 !$omp threadprivate(a,p,c,uf,vr,d)
 #endif
-
+#if 0
 IF (first) THEN                        ! Initialization, if necessary
   a = one - s
   p = a/(a + s*EXP(-a))
@@ -359,7 +359,7 @@ IF (first) THEN                        ! Initialization, if necessary
   vr = one - vsmall
   d = a*LOG(a)
 END IF
-
+#endif 
 DO
   CALL RANDOM_NUMBER(r)
   IF (r >= vr) THEN
@@ -392,7 +392,7 @@ END FUNCTION random_gamma2
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
  !DIR$ ATTRIBUTES INLINE :: random_chisq
-  !DIR$ ATTRIBUTES ALIGN : 32 :: random_chisq
+  
 #endif
 FUNCTION random_chisq(ndf, first) RESULT(fn_val)
  
@@ -416,7 +416,7 @@ END FUNCTION random_chisq
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
 !DIR$ ATTRIBUTES INLINE :: random_exponential
-!DIR$ ATTRIBUTES ALIGN : 32 :: random_exponential
+
 #endif
   FUNCTION random_exponential() RESULT(fn_val)
     
@@ -447,7 +447,7 @@ END FUNCTION random_exponential
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
 !DIR$ ATTRIBUTES INLINE :: random_exponential_clamped
-!DIR$ ATTRIBUTES ALIGN : 32 :: random_exponential_clamped
+
 #endif
   FUNCTION random_exponential_clamped() RESULT(fn_val)
     
@@ -492,7 +492,7 @@ END FUNCTION random_exponential_clamped
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
 !DIR$ ATTRIBUTES INLINE :: random_Weibull
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_Weibull
+    
 #endif
 FUNCTION random_Weibull(a) RESULT(fn_val)
     
@@ -517,7 +517,7 @@ END FUNCTION random_Weibull
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
 !DIR$ ATTRIBUTES INLINE :: random_Weibull_clamped
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_Weibull_clamped
+   
 #endif
 FUNCTION random_Weibull_clamped(a) RESULT(fn_val)
     
@@ -546,7 +546,7 @@ END FUNCTION random_Weibull_clamped
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
  !DIR$ ATTRIBUTES INLINE :: random_beta
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_beta
+   
 #endif
   FUNCTION random_beta(aa,bb,first) RESULT(fn_val)
    
@@ -629,9 +629,11 @@ END FUNCTION random_beta
 
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
-  FUNCTION random_t(m) RESULT(fn_val)
     !DIR$ ATTRIBUTES INLINE :: random_t
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_t
+  
+#endif 
+  FUNCTION random_t(m) RESULT(fn_val)
+    
 
 
 ! Adapted from Fortran 77 code from the book:
@@ -695,9 +697,9 @@ END FUNCTION random_t
 
 #if defined (__ICC) || (defined __INTEL_COMPILER)
  !DIR$ ATTRIBUTES INLINE :: random_mvnorm
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_mvnorm
+    
 #endif
-  SUBROUTINE ramdom_mvnorm(n,h,d,f,first,x,ier)
+  SUBROUTINE random_mvnorm(n,h,d,f,first,x,ier)
    
 
 
@@ -799,9 +801,9 @@ END SUBROUTINE random_mvnorm
 
 #if defined (__ICC) || (defined __INTEL_COMPILER)
  !DIR$ ATTRIBUTES INLINE :: random_mvnorm_clamped
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_mvnorm_clamped
+   
 #endif
-  SUBROUTINE ramdom_mvnorm_clamped(n,h,d,f,first,x,ier)
+  SUBROUTINE random_mvnorm_clamped(n,h,d,f,first,x,ier)
    
 
 
@@ -898,14 +900,14 @@ DO j = 1,n
 END DO ! j = 1,n
 
 RETURN
-END SUBROUTINE random_mvnorm
+END SUBROUTINE random_mvnorm_clamped 
 
 
 
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
  !DIR$ ATTRIBUTES INLINE :: random_inv_gauss
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_inv_gauss
+   
 #endif
 FUNCTION random_inv_gauss(h,b, first) RESULT(fn_val)
    
@@ -977,9 +979,7 @@ END FUNCTION random_inv_gauss
 
 
 
-#elif defined (__ICC) || defined (__INTEL_COMPILER)
-!DIR$ ATTRIBUTES ALIGN : 32 :: random_Poisson
-#endif
+
   FUNCTION random_Poisson(mu, first) RESULT(ival)
     
 
@@ -1235,9 +1235,7 @@ RETURN
 END FUNCTION random_Poisson
 
 
-#elif defined (__ICC) || defined (__INTEL_COMPILER)
-!DIR$ ATTRIBUTES ALIGN : 32 :: random_Poisson_clamped
-#endif
+
   FUNCTION random_Poisson_clamped(mu, first) RESULT(ival)
     
 
@@ -1491,16 +1489,16 @@ ELSE
 END IF
 
 RETURN
-END FUNCTION random_Poisson
+END FUNCTION random_Poisson_clamped 
 
 
 
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
 !DIR$ ATTRIBUTES INLINE :: random_binomial1
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_binomial1
+  
 #endif
-  FUNCTION random_binomial(n,p,first)    RESULT(ival)
+  FUNCTION random_binomial1(n,p,first)    RESULT(ival)
     
     
 
@@ -1587,7 +1585,7 @@ END FUNCTION random_binomial1
 
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
- !DIR$ ATTRIBUTES ALIGN : 32 :: bin_prob
+
     !DIR$ ATTRIBUTES INLINE :: bin_prob
 #endif
   FUNCTION bin_prob(n,p,r) RESULT(fn_val)
@@ -1612,7 +1610,7 @@ END FUNCTION bin_prob
 
 #if defined __ICC || defined __INTEL_COMPILER
  !DIR$ ATTRIBUTES INLINE :: lngamma
-    !DIR$ ATTRIBUTES ALIGN : 32 :: lngamma
+    
 #endif
   FUNCTION lngamma(x) RESULT(fn_val)
    
@@ -1679,9 +1677,7 @@ END FUNCTION lngamma
 
 
 
-#if defined (__ICC) || defined (__INTEL_COMPILER)
- !DIR$ ATTRIBUTES ALIGN : 32 :: random_binomial2
-#endif
+
   FUNCTION random_binomial2(n,pp,first) RESULT(ival)
    
     
@@ -1756,7 +1752,7 @@ INTEGER(kind=i4)            :: ival
 REAL(kind=sp)            :: alv, amaxp, f, if1, f1, if2,f2, u, v, iw,w, iw2,w2, x, ix1,x1, ix2,x2, ynorm, iz,z, iz2,z2
 REAL(kind=sp), PARAMETER :: zero = 0.0_sp, half = 0.5_sp, one = 1.0_sp
 REAL(kind=sp), PARAMETER :: C000000601250601250601251 = 0.00000601250601250601251_sp
-INTEGER(kind=i4)         :: i, ix, ix1, k, mp
+INTEGER(kind=i4)         :: i, ix, k, mp
 INTEGER(kind=i4), SAVE   :: m
 #if defined(_OPENMP)
 !$omp threadprivate(m)
@@ -1947,7 +1943,7 @@ END FUNCTION random_binomial2
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
  !DIR$ ATTRIBUTES INLINE :: random_neg_binomial
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_neg_binomial
+  
 #endif
   FUNCTION random_neg_binomial(sk, p) RESULT(ival)
    
@@ -2023,7 +2019,7 @@ END FUNCTION random_neg_binomial
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
  !DIR$ ATTRIBUTES INLINE :: random_von_Mises
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_von_Mises
+    
 #endif
 FUNCTION random_von_Mises(k, first) RESULT(fn_val)
 
@@ -2045,7 +2041,7 @@ REAL, INTENT(IN)     :: k
 LOGICAL, INTENT(IN)  :: first
 REAL                 :: fn_val
 
-     Local variables
+!     Local variables
 
 INTEGER          :: j, n
 INTEGER, SAVE    :: nk
@@ -2060,11 +2056,11 @@ REAL, SAVE       :: p(20), theta(0:20)
 REAL             :: sump, r, th, lambda, rlast
 REAL (dp)        :: dk
 
-!IF (first) THEN                        ! Initialization, if necessary
-!  IF (k < zero) THEN
+IF (first) THEN                        ! Initialization, if necessary
+  IF (k < zero) THEN
     !WRITE(*, *) '** Error: argument k for random_von_Mises = ', k
-!    RETURN
-!  END IF
+    RETURN
+  END IF
 
   nk = k + k + one
   IF (nk > 20) THEN
@@ -2129,7 +2125,7 @@ END FUNCTION random_von_Mises
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
 !DIR$ ATTRIBUTES INLINE :: integral
-    !DIR$ ATTRIBUTES ALIGN : 32 :: integral
+  
 #endif
 SUBROUTINE integral(a, b, result, dk)
 
@@ -2164,7 +2160,7 @@ END SUBROUTINE integral
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
 !DIR$ ATTRIBUTES INLINE :: random_Cauchy
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_Cauchy
+   
 #endif
   FUNCTION random_Cauchy() RESULT(fn_val)
     
