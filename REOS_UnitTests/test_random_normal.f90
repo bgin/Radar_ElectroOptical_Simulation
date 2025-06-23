@@ -115,6 +115,7 @@ subroutine unit_test_random_normal_looped()
               character(len=60),         parameter  :: footer = "[TEST #2: random_normal, (buffer-fill) -- END]  "
               
               character(len=40),         parameter  :: OUTFILE  = "unit_test_random_normal_looped_output.dat" 
+              integer(kind=i4),          parameter  :: IOUNIT = 102
               real(kind=sp), dimension(0:buf_len), automatic :: rand_buf 
               !dir$ attributes align : 64 :: rand_buf 
               character(len=256),        automatic  :: emsg 
@@ -122,7 +123,8 @@ subroutine unit_test_random_normal_looped()
               integer(kind=c_long_long), automatic  :: start_c, end_c,tsc_elapsed
               integer(kind=i4),          automatic  :: ioerr 
               integer(kind=i4),          automatic  :: i__ 
-              integer(kind=i4),          parameter  :: IOUNIT = 102
+              logical(kind=i1),          automatic  :: ioflag 
+              
 #if 0
               integer(c_int),            parameter :: SIGTRAP = 5 
               integer(c_int),            automatic :: ret_val
@@ -132,7 +134,45 @@ subroutine unit_test_random_normal_looped()
               if(ret_val/=0_c_int) print*, "raise returned=",ret_val
 #endif
               print*, header 
-              
+              start       = rdtsc_wrap()
+              do i__ = 0, buf_len, 8 
+                 rand_buf(i__+0) = random_normal()
+                 rand_buf(i__+1) = random_normal()
+                 rand_buf(i__+2) = random_normal()
+                 rand_buf(i__+3) = random_normal()
+                 rand_buf(i__+4) = random_normal()
+                 rand_buf(i__+5) = random_normal()
+                 rand_buf(i__+6) = random_normal()
+                 rand_buf(i__+7) = random_normal()
+              end do 
+              end         = rdtsc_wrap()
+              start_c     = start-RDTSC_LATENCY
+              end_c       = end-RDTSC_LATENCY
+              tsc_elapsed = end_c-start_c 
+              if(tsc_elapsed<ZERO) then
+                 print*,"[INVALID-TSC]=", tsc_elapsed
+              else 
+                 print*, "[WARNING]: Crude timing measurement!!"
+                 print*,"[TSC]=", tsc_elapsed 
+              end if 
+#if 1
+              ioerr = 0
+              open(UNIT=IOUNIT,FILE=OUTFILE,IOMSG=emsg,ACCESS="SEQUENTIAL",STATUS="NEW")
+              ioflag = (ioerr==0)
+              if(.not.ioflag) then 
+                 print*, "[ERROR] -- OPEN failed an error message is as follows:"
+                 print*, emsg 
+                 return 
+              else 
+                 write(IOUNIT,'(A64)') "[OUTPUT-START]: random_normal (buffer-fill)."
+                 do i__=0, buf_len 
+                    write(IOUNIT,'(A6,I5,F22.15)') "Index:", i__,rand_buf(i__)
+                 end do 
+                 write(IOUNIT,'(A64)') "[OUTPUT-END]: random_normal (buffer-fill)."
+              end if  
+              close(IOUNIT,STATUS='KEEP')
+#endif
+              print*, footer
 end subroutine unit_test_random_normal_looped
 
 
@@ -142,4 +182,5 @@ end module mod_test_random_normal
 program main 
    use mod_test_random_normal
    call unit_test_random_normal()
+   call unit_test_random_normal_looped()
 end program main 
