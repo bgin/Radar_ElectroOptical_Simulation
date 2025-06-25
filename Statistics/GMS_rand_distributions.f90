@@ -248,7 +248,7 @@ REAL(kind=sp)                :: fn_val
 IF (s > one) THEN
   fn_val = random_gamma1(s, first)
 ELSE IF (s < one) THEN
-  fn_val = random_gamma2(s)
+  fn_val = random_gamma2(s,first)
 ELSE
   fn_val = random_exponential()
 END IF
@@ -321,7 +321,7 @@ END FUNCTION random_gamma1
  !DIR$ ATTRIBUTES INLINE :: random_gamma2
  
 #endif
-  FUNCTION random_gamma2(s) RESULT(fn_val)
+  FUNCTION random_gamma2(s,first) RESULT(fn_val)
     
 
 ! Adapted from Fortran 77 code from the book:
@@ -337,7 +337,7 @@ END FUNCTION random_gamma1
 !          (REAL < 1.0)
 
 REAL(kind=sp), INTENT(IN)    :: s
-!LOGICAL, INTENT(IN)          :: first
+LOGICAL, INTENT(IN)          :: first
 REAL(kind=sp)                :: fn_val
 
 !     Local variables
@@ -346,7 +346,7 @@ REAL(kind=sp), SAVE :: a, p, c, uf, vr, d
 #if defined(_OPENMP)
 !$omp threadprivate(a,p,c,uf,vr,d)
 #endif
-#if 0
+
 IF (first) THEN                        ! Initialization, if necessary
   a = one - s
   p = a/(a + s*EXP(-a))
@@ -359,7 +359,7 @@ IF (first) THEN                        ! Initialization, if necessary
   vr = one - vsmall
   d = a*LOG(a)
 END IF
-#endif 
+
 DO
   CALL RANDOM_NUMBER(r)
   IF (r >= vr) THEN
