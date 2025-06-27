@@ -510,6 +510,8 @@ REAL(kind=sp)             :: fn_val
 !     For speed, there is no checking that a is not zero or very small.
 
 fn_val = random_exponential() ** (one/a)
+ 
+ 
 RETURN
 
 END FUNCTION random_Weibull
@@ -532,10 +534,25 @@ FUNCTION random_Weibull_clamped(a) RESULT(fn_val)
 
 REAL(kind=sp), INTENT(IN) :: a
 REAL(kind=sp)             :: fn_val
-
+REAL(Kind=sp), automatic  :: tmp 
+REAL(kind=sp), parameter  :: C01 = 0.1_sp ! angmin
+REAL(kind=sp), parameter  :: C147079632679489661923132 = 1.47079632679489661923132_sp ! angmax
+REAL(kind=sp), parameter  :: posv   = -1.0_sp
+REAL(kind=sp), parameter  :: C157079632679489661923132 = 1.57079632679489661923132_sp
 !     For speed, there is no checking that a is not zero or very small.
 
-fn_val = random_exponential_clamped() ** (one/a)
+!fn_val = random_exponential_clamped() ** (one/a)
+tmp = random_exponential_clamped() ** (one/a)
+if(tmp>=C157079632679489661923132) then
+    fn_val=C147079632679489661923132
+else if(tmp<zero) then
+   fn_val=tmp*posv
+else if(tmp==zero.or.tmp<C01) then
+   fn_val=C01
+else
+fn_val = tmp
+end if 
+
 RETURN
 
 END FUNCTION random_Weibull_clamped
@@ -625,6 +642,104 @@ END DO
 IF (swap) fn_val = one - fn_val
 RETURN
 END FUNCTION random_beta
+
+#if defined (__ICC) || defined (__INTEL_COMPILER)
+ !DIR$ ATTRIBUTES INLINE :: random_beta_clamped
+   
+#endif
+  FUNCTION random_beta_clamped(aa,bb,first) RESULT(fn_val)
+   
+
+
+! Adapted from Fortran 77 code from the book:
+!     Dagpunar, J. 'Principles of random variate generation'
+!     Clarendon Press, Oxford, 1988.   ISBN 0-19-852202-9
+
+! FUNCTION GENERATES A RANDOM VARIATE IN [0,1]
+! FROM A BETA DISTRIBUTION WITH DENSITY
+! PROPORTIONAL TO BETA**(AA-1) * (1-BETA)**(BB-1).
+! USING CHENG'S LOG LOGISTIC METHOD.
+
+!     AA = SHAPE PARAMETER FROM DISTRIBUTION (0 < REAL)
+!     BB = SHAPE PARAMETER FROM DISTRIBUTION (0 < REAL)
+
+REAL(kind=sp), INTENT(IN)    :: aa, bb
+LOGICAL, INTENT(IN) :: first
+REAL(kind=sp)                :: fn_val
+
+!     Local variables
+REAL(kind=sp), PARAMETER  :: aln4 = 1.3862944_sp
+REAL(kind=sp), parameter  :: C01 = 0.1_sp ! angmin
+REAL(kind=sp), parameter  :: C147079632679489661923132 = 1.47079632679489661923132_sp ! angmax
+REAL(kind=sp), parameter  :: posv   = -1.0_sp
+REAL(kind=sp), parameter  :: C157079632679489661923132 = 1.57079632679489661923132_sp
+REAL(kind=sp)             :: a, b, g, r, s, x, y, z
+REAL(kind=sp)             :: tmp 
+REAL(kind=sp), SAVE       :: d, f, h, t, c
+#if defined(_OPENMP)
+!$omp threadprivate(d,f,h,t,c)
+#endif
+LOGICAL, SAVE    :: swap
+#if defined(_OPENMP)
+!$omp threadprivate(swap)
+#endif
+
+IF (first) THEN                        ! Initialization, if necessary
+  a = aa
+  b = bb
+  swap = b > a
+  IF (swap) THEN
+    g = b
+    b = a
+    a = g
+  END IF
+  d = a/b
+  f = a+b
+  IF (b > one) THEN
+    h = SQRT((two*a*b - f)/(f - two))
+    t = one
+  ELSE
+    h = b
+    t = one/(one + (a/(vlarge*b))**b)
+  END IF
+  c = a+h
+END IF
+
+DO
+  CALL RANDOM_NUMBER(r)
+  CALL RANDOM_NUMBER(x)
+  s = r*r*x
+  IF (r < vsmall .OR. s <= zero) CYCLE
+  IF (r < t) THEN
+    x = LOG(r/(one - r))/h
+    y = d*EXP(x)
+    z = c*x + f*LOG((one + d)/(one + y)) - aln4
+    IF (s - one > z) THEN
+      IF (s - s*z > one) CYCLE
+      IF (LOG(s) > z) CYCLE
+    END IF
+    !fn_val = y/(one + y)
+    tmp = y/(one+y)
+    if(tmp>=C157079632679489661923132) then
+       fn_val=C147079632679489661923132
+    else if(tmp<zero) then
+       fn_val=tmp*posv
+    else if(tmp==zero.or.tmp<C01) then
+       fn_val=C01
+    else
+       fn_val = tmp
+    end if 
+  ELSE
+    IF (4.0_sp*s > (one + one/d)**f) CYCLE
+    fn_val = one
+  END IF
+  EXIT
+END DO
+
+IF (swap) fn_val = one - fn_val
+RETURN
+END FUNCTION random_beta_clamped
+
 
 
 
