@@ -64,7 +64,9 @@ module mod_vecconsts
     character(*),       parameter, public :: MOD_VECCONSTS_CREATE_DATE = "14-10-2018 10:57 PM GMT+2 (SUN 14 OCT 2018 10:57 -00200)"
     
     ! Module build creation
-    character(*),       parameter, public :: MOD_VECCONSTS_BUILD_DATE = " "
+    character(*),       parameter, public :: MOD_VECCONSTS_BUILD_DATE = __DATE__ 
+
+    character(*),       parameter, public :: MOD_VECCONSTS_BUILD_TIME = __TIME__ 
     
     ! Module author info
     character(*),       parameter, public :: MOD_VECCONSTS_AUTHOR = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
@@ -113,7 +115,7 @@ module mod_vecconsts
     
     type(XMM4r4_t), parameter, public  :: v4r4_invpi      = XMM4r4_t(0.31830988618379067153777_sp)
     
-    type(XXMM4r4_t), parameter, public  :: v4r4_pi        = XMM4r4_t(3.14159265358979323846264_sp)
+    type(XMM4r4_t), parameter, public  :: v4r4_pi        = XMM4r4_t(3.14159265358979323846264_sp)
     
     type(XMM4r4_t), parameter, public  :: v4r4_0          = XMM4r4_t(0.0_sp)
     
@@ -123,8 +125,7 @@ module mod_vecconsts
     
     type(XMM4r4_t), parameter, public  :: v4r4_airysr3    = XMM4r4_t( 1.732050807568877_sp)
     
-    type(XMM4r4_t), parameter, public  :: v4r4_1em100     = XMM4r4_t(1.0E-100_sp)
-    
+        
     type(XMM4r4_t), parameter, public  :: v4r4_eps1e15    = XMM4r4_t(1.0E-15_sp)
     
     type(XMM4r4_t), parameter, public  :: v4r4_1over1_5   = XMM4r4_t(0.66666666666666666666666666666667E+00_sp)
@@ -261,11 +262,9 @@ module mod_vecconsts
 
     type(YMM8r4_t), parameter, public  :: v8r4_huge     = YMM8r4_t(HUGE(1.0_sp))
 
-    real(kind=dp),  parameter, private :: PINF64       = IEEE_VALUE(1.0E+00_dp,IEEE_POSITIVE_INF)
-
-    real(kind=sp),  parameter, private :: PINF32       = IEEE_VALUE(1.0E+00_SP,IEEE_POSITIVE_INF)
     
-    type(YMM4r8_t), parameter, public  :: v4_pinf       = YMM4r8_t( PIN64F)
+    
+    
 
     
     
@@ -328,9 +327,9 @@ module mod_vecconsts
     
     type(ZMM8r8_t), parameter, public  :: v8r8_ln4        = ZMM8r8_t( 1.3862943611198906188344642429164E+00_dp)
 
-    type(ZMM8r4_t), parameter, public  :: v8r8_pinf       = ZMM8r4_t(PINF32)
+   
     
-   ! type(ZMM8r8_t), parameter, public  :: v8_pinf       = ZMM8r8_t( IEEE_VALUE(1.0E+00_dp,IEEE_POSITIVE_INF))
+   
 
     type(ZMM16r4_t), parameter, public  :: v16_0        = ZMM16r4_t(0.0_sp)
 
@@ -382,6 +381,6 @@ module mod_vecconsts
 
     type(ZMM16r4_t), parameter, public  :: v16_huge       = ZMM16r4_t(HUGE(1.0_sp))
 
-    type(ZMM16r4_t), parameter, public  :: v16_pinf         = ZMM16r4_t(PINF32)
+    
     
 end module mod_vecconsts
