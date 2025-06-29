@@ -82,7 +82,9 @@ module sse_cvec2
      ! Module creation date
      character(*),        parameter :: SSE_CVEC2_CREATE_DATE = "15-10-2023 14:18 +00200 (SUN 15 OCT 2022 GMT+2)"
      ! Module build date
-     character(*),        parameter :: SSE_CVEC2_BUILD_DATE  = __DATE__ " " __TIME__
+     character(*),        parameter :: SSE_CVEC2_BUILD_DATE  = __DATE__ 
+
+     character(*),        parameter :: SSE_CVEC2_BUILD_TIME  = __TIME__
      ! Module author info
      character(*),        parameter :: SSE_CVEC2_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
      ! Short description
@@ -259,7 +261,7 @@ module sse_cvec2
       contains
 !DIR$ ATTRIBUTES INLINE :: default_init
      pure   function default_init() result(iq)
-          !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: default_init
+          
           !DIR$ ATTRIBUTES VECTOR :: default_init 
           !DIR$ ATTRIBUTES ALIGN : 16 :: iq
           !use mod_vecconsts, only : v8_n0
@@ -271,7 +273,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: array_init
      pure   function array_init(re,im) result(iq)
-          !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: array_init
+          
           !DIR$ ATTRIBUTES VECTOR :: array_init
           real(kind=dp), dimension(0:1), intent(in) :: re
           real(kind=dp), dimension(0:1), intent(in) :: im
@@ -284,29 +286,29 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: complex1_init
      pure   function complex1_init(c) result(iq)
-          !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: complex1_init
+        
           complex(kind=dp), intent(in) :: c
           !DIR$ ATTRIBUTES ALIGN : 16 :: iq
           type(XMM2c8_t) :: iq
           ! Exec code ...
-          iq.re = real(c,kind=dp)
-          iq.im = aimag(c,kind=dp)
+          iq.re = real(c)
+          iq.im = aimag(c)
      end function complex1_init
 
 !DIR$ ATTRIBUTES INLINE :: complex2x4_init
      pure   function complex2x4_init(c) result(iq)
-         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: complex2x4_init
+        
          complex(kind=dp), dimension(0:1), intent(in) :: c
          !DIR$ ATTRIBUTES ALIGN : 16 :: iq
          type(XMM2c8_t) :: iq
          ! Exec code ....
-         iq.re = real(c,kind=dp)
-         iq.im = aimag(c,kind=dp)
+         iq.re = real(c)
+         iq.im = aimag(c)
      end function complex2x4_init
 
 !DIR$ ATTRIBUTES INLINE :: xmm2r82x_init       
      pure  function xmm2r82x_init(v1,v2) result(iq)
-         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: xmm2r82x_init
+        
          !DIR$ ATTRIBUTES VECTOR :: xmm2r82x_init
          type(XMM2r8_t),  intent(in) :: v1
          type(XMM2r8_t),  intent(in) :: v2
@@ -319,7 +321,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: xmm2r81x_init
      pure function xmm2r81x_init(v1) result(iq)
-         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: xmm2r81x_init
+        
          !DIR$ ATTRIBUTES VECTOR :: xmm2r81x_init
          type(XMM2r8_t),  intent(in) :: v1
          !DIR$ ATTRIBUTES ALIGN : 16 :: iq
@@ -331,7 +333,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: r81x_init
      pure function r81x_init(s) result(iq)
-         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: r81x_init
+         
          !DIR$ ATTRIBUTES VECTOR :: r81x_init
          real(kind=dp),  intent(in) :: s
          !DIR$ ATTRIBUTES ALIGN : 16 :: iq
@@ -343,7 +345,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE ::  copy_init
      pure function copy_init(rhs) result(iq)
-         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_init
+         
          !DIR$ ATTRIBUTES VECTOR :: copy_init
          type(XMM2c8_t),  intent(in) :: rhs
          !DIR$ ATTRIBUTES ALIGN : 16 :: iq
@@ -354,7 +356,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_add_xmm2c8
      pure function xmm2c8_add_xmm2c8(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: xmm2c8_add_xmm2c8
+       
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_add_xmm2c8
        type(XMM2c8_t),  intent(in) :: lhs
        type(XMM2c8_t),  intent(in) :: rhs
@@ -367,21 +369,21 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_add_c1
      pure function xmm2c8_add_c1(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: xmm2c8_add_c1
+      
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_add_c1
        type(XMM2c8_t),  intent(in) :: lhs
        complex(kind=dp),     intent(in), value :: rhs
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
        type(XMM2c8_t) :: iq
        ! EXec code ....
-       iq.re = lhs.re+real(rhs,kind=dp)
-       iq.im = lhs.im+aimag(rhs,kind=dp)
+       iq.re = lhs.re+real(rhs)
+       iq.im = lhs.im+aimag(rhs)
      end function xmm2c8_add_c1
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_add_xmm2r8
      pure function xmm2c8_add_xmm2r8(lhs,rhs) result(iq)
       
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: xmm2c8_add_xmm2r8
+       
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_add_xmm2r8
        type(XMM2c8_t),   intent(in) :: lhs
        type(XMM2r8_t),        intent(in),value :: rhs
@@ -395,7 +397,7 @@ module sse_cvec2
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_add_s1
      pure function xmm2c8_add_s1(lhs,rhs) result(iq)
       
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: xmm2c8_add_s1
+      
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_add_s1
        type(XMM2c8_t),   intent(in) :: lhs
        real(kind=dp),         intent(in), value :: rhs
@@ -407,21 +409,20 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: c1_add_xmm2c8     
      pure function c1_add_xmm2c8(lhs,rhs) result(iq)
-       !
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_add_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR :: c1_add_xmm2c8
        complex(kind=dp),     intent(in) :: lhs
        type(XMM2c8_t),  intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
        type(XMM2c8_t) :: iq
-       iq.re = real(lhs,kind=dp)+rhs.re
-       iq.im = aimag(lhs,kind=dp)+rhs.im
+       iq.re = real(lhs)+rhs.re
+       iq.im = aimag(lhs)+rhs.im
      end function c1_add_xmm2c8
 
-!DIR$ ATTRIBUTES INLINE xmm2r8_add_xmm2c8
+!DIR$ ATTRIBUTES INLINE :: xmm2r8_add_xmm2c8
      pure function xmm2r8_add_xmm2c8(lhs,rhs) result(iq)
       
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  xmm2r8_add_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR ::  xmm2r8_add_xmm2c8
        type(XMM2r8_t),      intent(in) :: lhs
        type(XMM2c8_t), intent(in) :: rhs
@@ -434,19 +435,19 @@ module sse_cvec2
 !DIR$ ATTRIBUTES INLINE :: s1_add_xmm2c8
      pure function s1_add_xmm2c8(lhs,rhs) result(iq)
        
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: s1_add_xmm2c8
+       
        !DIR$ ATTRIBUTES VECTOR :: s1_add_xmm2c8
        real(kind=dp),       intent(in) :: lhs
        type(XMM2c8_t), intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
        type(XMM2c8_t) :: iq
-       iq.m_re = lhs+rhs.m_re
-       iq.m_im = 0.0_dp
+       iq.re = lhs+rhs.re
+       iq.im = 0.0_dp
      end function s1_add_xmm2c8
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_sub_xmm2c8
      pure function xmm2c8_sub_xmm2c8(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  xmm2c8_sub_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR ::  xmm2c8_sub_xmm2c8
        type(XMM2c8_t),    intent(in) :: lhs
        type(XMM2c8_t),    intent(in) :: rhs
@@ -458,20 +459,20 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_sub_c1
      pure function xmm2c8_sub_c1(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: xmm2c8_sub_c1
+       
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_sub_c1
        type(XMM2c8_t),     intent(in) :: lhs
        complex(kind=dp),        intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
        type(XMM2c8_t) :: iq
-       iq.re = lhs.re-real(rhs,kind=dp)
-       iq.im = lhs.im-aimag(rhs,kind=dp)
+       iq.re = lhs.re-real(rhs)
+       iq.im = lhs.im-aimag(rhs)
      end function xmm2c8_sub_c1
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_sub_xmm2r8
      pure function xmm2c8_sub_xmm2r8(lhs,rhs) result(iq)
       
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: xmm2c8_sub_xmm2r8
+     
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_sub_xmm2r8
        type(XMM2c8_t),    intent(in) :: lhs
        type(XMM2r8_t),         intent(in) :: rhs
@@ -483,7 +484,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_sub_s1
      pure function xmm2c8_sub_s1(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: xmm2c8_sub_s1
+       
        !DIR$ ATTRTIBUTES VECTOR :: xmm2c8_sub_s1
        type(XMM2c8_t),     intent(in) :: lhs
        real(kind=dp),           intent(in) :: rhs
@@ -495,20 +496,20 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: c1_sub_xmm2c8
      pure function c1_sub_xmm2c8(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_sub_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR :: c1_sub_xmm2c8
        complex(kind=dp),      intent(in) :: lhs
        type(XMM2c8_t),   intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
        type(XMM2c8_t) :: iq
-       iq.re = real(lhs,kind=dp)-rhs.re
-       iq.im = aimag(lhs,kind=dp)-rhs.im
+       iq.re = real(lhs)-rhs.re
+       iq.im = aimag(lhs)-rhs.im
      end function c1_sub_xmm2c8
 
 !DIR$ ATTRIBUTES INLINE :: xmm2r8_sub_xmm2c8
      pure function xmm2r8_sub_xmm2c8(lhs,rhs) result(iq)
      
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: xmm2r8_sub_xmm2c8
+     
        !DIR$ ATTRIBUTES VECTOR :: xmm2r8_sub_xmm2c8
        type(XMM2r8_t),      intent(in) :: lhs
        type(XMM2c8_t), intent(in) :: rhs
@@ -520,7 +521,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: s1_sub_xmm2c8
      pure function  s1_sub_xmm2c8(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  s1_sub_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR ::  s1_sub_xmm2c8
        real(kind=dp),       intent(in) :: lhs
        type(XMM2c8_t), intent(in) :: rhs
@@ -532,7 +533,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_mul_xmm2c8
      pure function xmm2c8_mul_xmm2c8(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: xmm2c8_mul_xmm2c8
+       
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_mul_xmm2c8
        type(XMM2c8_t),    intent(in) :: lhs
        type(XMM2c8_t),    intent(in) :: rhs
@@ -550,7 +551,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_mul_c1
      pure function  xmm2c8_mul_c1(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  xmm2c8_mul_c1
+       
        !DIR$ ATTRIBUTES VECTOR ::  xmm2c8_mul_c1
        type(XMM2c8_t),     intent(in) :: lhs
        complex(kind=dp),        intent(in) :: rhs
@@ -558,17 +559,17 @@ module sse_cvec2
        type(XMM2c8_t) :: iq
        !DIR$ ATTRIBUTES ALIGN : 16 :: xmm0,xmm1,xmm2,xmm3
        type(XMM2r8_t) :: xmm0,xmm1,xmm2,xmm3
-       xmm0.v = lhs.re*real(rhs,kind=dp)
-       xmm1.v = lhs.im*aimag(rhs,kind=dp)
+       xmm0.v = lhs.re*real(rhs)
+       xmm1.v = lhs.im*aimag(rhs)
        iq.re  = xmm0.v-xmm1.v
-       xmm2.v = lhs.im*real(rhs,kind=dp)
-       xmm3.v = lhs.re*aimag(rhs,kind=dp)
+       xmm2.v = lhs.im*real(rhs)
+       xmm3.v = lhs.re*aimag(rhs)
        iq.im  = xmm2.v-xmm3.v
      end function  xmm2c8_mul_c1
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_mul_xmm2r8
      pure function xmm2c8_mul_xmm2r8(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: xmm2c8_mul_xmm2r8
+      
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_mul_xmm2r8
        type(XMM2c8_t),    intent(in) :: lhs
        type(XMM2r8_t),         intent(in) :: rhs
@@ -580,7 +581,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_mul_s1
      pure function  xmm2c8_mul_s1(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  xmm2c8_mul_s1
+       
        !DIR$ ATTRIBUTES VECTOR ::  xmm2c8_mul_s1
        type(XMM2c8_t),    intent(in) :: lhs
        real(kind=dp),   intent(in) :: rhs
@@ -592,7 +593,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: c1_mul_xmm2c8
      pure function c1_mul_xmm2c8(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_mul_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR :: c1_mul_xmm2c8
        complex(kind=dp),        intent(in) :: lhs
        type(XMM2c8_t),     intent(in) :: rhs
@@ -600,21 +601,21 @@ module sse_cvec2
        type(XMM2c8_t) :: iq
        !DIR$ ATTRIBUTES ALIGN : 16 :: xmm0,xmm1,xmm2,xmm3
        type(XMM2r8_t) :: xmm0,xmm1,xmm2,xmm3
-       xmm0.v = real(lhs,kind=dp)*rhs.re
-       xmm1.v = aimag(lhs,kind=dp)*rhs.im
+       xmm0.v = real(lhs)*rhs.re
+       xmm1.v = aimag(lhs)*rhs.im
        iq.re  = xmm0.v+xmm1.v
-       xmm2.v = real(lhs,kind=dp)*rhs.im
-       xmm3.v = aimag(lhs,kind=dp)*rhs.re
+       xmm2.v = real(lhs)*rhs.im
+       xmm3.v = aimag(lhs)*rhs.re
        iq.im  = xmm2.v-xmm3.v
      end function c1_mul_xmm2c8
 
 !DIR$ ATTRIBUTES INLINE :: xmm2r8_mul_xmm2c8
      pure function  xmm2r8_mul_xmm2c8(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  xmm2r8_mul_xmm2c8
+       
        !DIR$ ATTRIBUTES VECTOR ::  xmm2r8_mul_xmm2c8
        type(XMM2r8_t),        intent(in) :: lhs
        type(XMM2c8_t),   intent(in) :: rhs
-       !DIR$ ATTRIBUTES ALIGN : 16 ::  xmm2r8_mul_xmm2c8
+       !DIR$ ATTRIBUTES ALIGN : 16 ::  iq 
        type(XMM2c8_t) :: iq
        iq.re = lhs.v*rhs.re
        iq.im = lhs.v*rhs.im
@@ -622,7 +623,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: s1_mul_xmm2c8
      pure function s1_mul_xmm2c8(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: s1_mul_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR :: s1_mul_xmm2c8
        real(kind=dp),       intent(in) :: lhs
        type(XMM2c8_t), intent(in) :: rhs
@@ -634,7 +635,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_div_xmm2c8    
      pure function xmm2c8_div_xmm2c8(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  xmm2c8_div_xmm2c8   
+      
        !DIR$ ATTRIBUTES VECTOR ::  xmm2c8_div_xmm2c8   
        type(XMM2c8_t),    intent(in) :: lhs
        type(XMM2c8_t),    intent(in) :: rhs
@@ -657,7 +658,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_div_c1
      pure function xmm2c8_div_c1(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: xmm2c8_div_c1
+       
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_div_c1
        type(XMM2c8_t),   intent(in) :: lhs
        complex(kind=dp),      intent(in) :: rhs
@@ -665,31 +666,31 @@ module sse_cvec2
        type(XMM2c8_t) :: iq
        !DIR$ ATTRIBUTES ALIGN : 16 :: xmm0,xmm1,xmm2,xmm3,den
        type(XMM2r8_t), automatic :: xmm0,xmm1,xmm2,xmm3,den
-       xmm0.v = lhs.re*real(rhs,kind=dp)
-       xmm1.v = lhs.im*aimag(rhs,kind=dp)
-       xmm2.v = lhs.im*real(rhs,kind=dp)
-       xmm3.v = lhs.re*aimag(rhs,kind=dp)
-       den.v  = (real(rhs,kind=dp)*real(rhs,kind=dp))+ &
-            (aimag(rhs,kind=dp)*aimag(rhs,kind=dp))
+       xmm0.v = lhs.re*real(rhs)
+       xmm1.v = lhs.im*aimag(rhs)
+       xmm2.v = lhs.im*real(rhs)
+       xmm3.v = lhs.re*aimag(rhs)
+       den.v  = (real(rhs)*real(rhs))+ &
+            (aimag(rhs)*aimag(rhs))
        iq.re = (xmm0.v+xmm1.v)/den.v
        iq.im = (xmm2.v-xmm3.v)/den.v
      end function xmm2c8_div_c1
 
-!DIR$ ATTRIBUTES INLINE :: xmm2c8_div_v2
-     pure function xmm2c8_div_v2(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: xmm2c8_div_v2
-       !DIR$ ATTRIBUTES VECTOR :: xmm2c8_div_v2
+!DIR$ ATTRIBUTES INLINE :: xmm2c8_div_xmm2r8
+     pure function xmm2c8_div_xmm2r8(lhs,rhs) result(iq)
+       
+       !DIR$ ATTRIBUTES VECTOR :: xmm2c8_div_xmm2r8
        type(XMM2c8_t),  intent(in) :: lhs
        type(XMM2r8_t),       intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
        type(XMM2c8_t) :: iq
        iq.re = lhs.re/rhs.v
        iq.im = lhs.im/rhs.v
-     end function xmm2c8_div_v2
+     end function xmm2c8_div_xmm2r8 
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_div_s1
      pure  function xmm2c8_div_s1(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: xmm2c8_div_s1
+      
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_div_s1
        type(XMM2c8_t),     intent(in) :: lhs
        real(kind=dp),           intent(in) :: rhs
@@ -701,17 +702,17 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: c1_div_xmm2c8
      pure function c1_div_xmm2c8(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_div_xmm2c8
+       
        !DIR$ ATTRIBUTES VECTOR :: c1_div_xmm2c8
        complex(kind=dp),       intent(in) :: lhs
        type(XMM2c8_t),      intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
        type(XMM2c8_t) :: iq
        !DIR$ ATTRIBUTES ALIGN : 16 :: xmm0,xmm1,xmm2,xmm3,den
-       type(XMM2c8_t), automatic :: xmm0,xmm1,xmm2,xmm3,den
+       type(XMM2r8_t), automatic :: xmm0,xmm1,xmm2,xmm3,den
        real(kind=dp), automatic :: r,i
-       r = real(lhs,kind=dp)
-       i = aimag(lhs,kind=dp)
+       r = real(lhs)
+       i = aimag(lhs)
        xmm0.v = r*rhs.re
        xmm1.v = i*rhs.im
        xmm2.v = i*rhs.re
@@ -721,10 +722,10 @@ module sse_cvec2
        iq.im  = (xmm2.v-xmm3.v)/den.v
      end function c1_div_xmm2c8
 
-!DIR$ ATTRIBUTES INLINE :: v2_div_xmm2c8
-     pure  function v2_div_xmm2c8(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: v2_div_xmm2c8
-       !DIR$ ATTRIBUTES VECTOR :: v2_div_xmm2c8
+!DIR$ ATTRIBUTES INLINE :: xmm2r8_div_xmm2c8
+     pure  function xmm2r8_div_xmm2c8(lhs,rhs) result(iq)
+      
+       !DIR$ ATTRIBUTES VECTOR :: xmm2r8_div_xmm2c8
        type(XMM2r8_t),      intent(in) :: lhs
        type(XMM2c8_t), intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
@@ -734,11 +735,11 @@ module sse_cvec2
        t0.re = lhs.v
        t0.im = 0.0_dp
        iq    = t0/rhs
-    end function v2_div_xmm2c8
+    end function xmm2r8_div_xmm2c8
 
 !DIR$ ATTRIBUTES INLINE :: s1_div_xmm2c8
      pure  function s1_div_xmm2c8(lhs,rhs) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: s1_div_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR :: s1_div_xmm2c8
        real(kind=dp),       intent(in) :: lhs
        type(XMM2c8_t), intent(in) :: rhs
@@ -754,7 +755,7 @@ module sse_cvec2
 !DIR$ ATTRIBUTES INLINE :: conjugate
      pure  function conjugate(x) result(iq)
       
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: conjugate
+     
        !DIR$ ATTRIBUTES VECTOR :: conjugate
        type(XMM2c8_t),  intent(in) :: x
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
@@ -765,10 +766,10 @@ module sse_cvec2
      
 
      pure function cnorm_xmm2c8(x) result(cn) 
-#elif defined __ICC || defined __INTEL_COMPILER
+#if defined __ICC || defined __INTEL_COMPILER
            !DIR$ ATTRIBUTES INLINE :: cnorm_xmm2c8
            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: cnorm_xmm2c8
-           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cnorm_xmm2c8
+           
 #endif
             type(XMM2c8_t),  intent(in) :: x
             type(XMM2r8_t) :: cn
@@ -785,7 +786,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_eq_xmm2c8
      pure function xmm2c8_eq_xmm2c8(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: xmm2c8_eq_xmm2c8
+       
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_eq_xmm2c8
        type(XMM2c8_t),       intent(in) :: lhs
        type(XMM2c8_t),       intent(in) :: rhs
@@ -803,7 +804,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_eq_c1
      pure function xmm2c8_eq_c1(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: xmm2c8_eq_c1
+       
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_eq_c1
        type(XMM2c8_t),    intent(in) :: lhs
        complex(kind=dp),       intent(in) :: rhs
@@ -813,15 +814,15 @@ module sse_cvec2
        mre  = .false.
        mim  = .false.
        bres = .false.
-       mre = lhs.re == real(rhs,kind=dp)
+       mre = lhs.re == real(rhs)
        bres(0) = all(mre)
-       mim = lhs.im == aimag(rhs,kind=dp)
+       mim = lhs.im == aimag(rhs)
        bres(1) = all(mim)
      end function xmm2c8_eq_c1
 
 !DIR$ ATTRIBUTES INLINE :: c1_eq_xmm2c8
      pure function c1_eq_xmm2c8(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c1_eq_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR :: c1_eq_xmm2c8
        complex(kind=dp),        intent(in) :: lhs
        type(XMM2c8_t),     intent(in) :: rhs
@@ -831,15 +832,15 @@ module sse_cvec2
        mre  = .false.
        mim  = .false.
        bres = .false.
-       mre = real(lhs,kind=dp)  == rhs.re
+       mre = real(lhs)  == rhs.re
        bres(0) = all(mre)
-       mim = aimag(lhs,kind=dp) == rhs.im
+       mim = aimag(lhs) == rhs.im
        bres(1) = all(mim)
      end function c1_eq_xmm2c8
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_neq_xmm2c8
      pure function xmm2c8_neq_xmm2c8(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: xmm2c8_neq_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_neq_xmm2c8
        type(XMM2c8_t),       intent(in) :: lhs
        type(XMM2c8_t),       intent(in) :: rhs
@@ -857,7 +858,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_neq_c1
      pure function xmm2c8_neq_c1(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: xmm2c8_neq_c1
+      
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_neq_c1
        type(XMM2c8_t),    intent(in) :: lhs
        complex(kind=dp),       intent(in) :: rhs
@@ -867,15 +868,15 @@ module sse_cvec2
        mre  = .false.
        mim  = .false.
        bres = .false.
-       mre = lhs.re /= real(rhs,kind=dp)
+       mre = lhs.re /= real(rhs)
        bres(0) = all(mre)
-       mim = lhs.im /= aimag(rhs,kind=dp)
+       mim = lhs.im /= aimag(rhs)
        bres(1) = all(mim)
      end function xmm2c8_neq_c1
 
 !DIR$ ATTRIBUTES INLINE :: c1_neq_xmm2c8
      pure function c1_neq_xmm2c8(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c1_neq_xmm2c8
+       
        !DIR$ ATTRIBUTES VECTOR :: c1_neq_xmm2c8
        complex(kind=dp),        intent(in) :: lhs
        type(XMM2c8_t),     intent(in) :: rhs
@@ -885,15 +886,15 @@ module sse_cvec2
        mre  = .false.
        mim  = .false.
        bres = .false.
-       mre = real(lhs,kind=dp)  /= rhs.re
+       mre = real(lhs)  /= rhs.re
        bres(0) = all(mre)
-       mim = aimag(lhs,kind=dp) /= rhs.im
+       mim = aimag(lhs) /= rhs.im
        bres(1) = all(mim)
      end function c1_neq_xmm2c8
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_gt_xmm2c8
      pure function xmm2c8_gt_xmm2c8(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: xmm2c8_gt_xmm2c8
+       
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_gt_xmm2c8
        type(XMM2c8_t),       intent(in) :: lhs
        type(XMM2c8_t),       intent(in) :: rhs
@@ -911,7 +912,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_gt_c1
      pure function xmm2c8_gt_c1(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: xmm2c8_gt_c1
+      
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_gt_c1
        type(XMM2c8_t),    intent(in) :: lhs
        complex(kind=dp),       intent(in) :: rhs
@@ -921,15 +922,15 @@ module sse_cvec2
        mre  = .false.
        mim  = .false.
        bres = .false.
-       mre = lhs.re > real(rhs,kind=dp)
+       mre = lhs.re > real(rhs)
        bres(0) = all(mre)
-       mim = lhs.im > aimag(rhs,kind=dp)
+       mim = lhs.im > aimag(rhs)
        bres(1) = all(mim)
      end function xmm2c8_gt_c1
 
 !DIR$ ATTRIBUTES INLINE :: c1_gt_xmm2c8
      pure function c1_gt_xmm2c8(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c1_gt_xmm2c8
+       
        !DIR$ ATTRIBUTES VECTOR :: c1_gt_xmm2c8
        complex(kind=dp),        intent(in) :: lhs
        type(XMM2c8_t),     intent(in) :: rhs
@@ -939,15 +940,15 @@ module sse_cvec2
        mre  = .false.
        mim  = .false.
        bres = .false.
-       mre = real(lhs,kind=dp)  > rhs.re
+       mre = real(lhs)  > rhs.re
        bres(0) = all(mre)
-       mim = aimag(lhs,kind=dp) > rhs.im
+       mim = aimag(lhs) > rhs.im
        bres(1) = all(mim)
      end function c1_gt_xmm2c8
      
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_lt_xmm2c8
      pure function xmm2c8_lt_xmm2c8(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: xmm2c8_lt_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_lt_xmm2c8
        type(XMM2c8_t),       intent(in) :: lhs
        type(XMM2c8_t),       intent(in) :: rhs
@@ -965,7 +966,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_lt_c1
      pure function xmm2c8_lt_c1(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: xmm2c8_lt_c1
+       
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_lt_c1
        type(XMM2c8_t),    intent(in) :: lhs
        complex(kind=dp),       intent(in) :: rhs
@@ -975,15 +976,15 @@ module sse_cvec2
        mre  = .false.
        mim  = .false.
        bres = .false.
-       mre = lhs.re < real(rhs,kind=dp)
+       mre = lhs.re < real(rhs)
        bres(0) = all(mre)
-       mim = lhs.im < aimag(rhs,kind=dp)
+       mim = lhs.im < aimag(rhs)
        bres(1) = all(mim)
      end function xmm2c8_lt_c1
 
 !DIR$ ATTRIBUTES INLINE :: c1_lt_xmm2c8
      pure function c1_lt_xmm2c8(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c1_lt_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR :: c1_lt_xmm2c8
        complex(kind=dp),        intent(in) :: lhs
        type(XMM2c8_t),     intent(in) :: rhs
@@ -993,15 +994,15 @@ module sse_cvec2
        mre  = .false.
        mim  = .false.
        bres = .false.
-       mre = real(lhs,kind=dp) < rhs.re
+       mre = real(lhs) < rhs.re
        bres(0) = all(mre)
-       mim = aimag(lhs,kind=dp) < rhs.im
+       mim = aimag(lhs) < rhs.im
        bres(1) = all(mim)
      end function c1_lt_xmm2c8
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_ge_xmm2c8
      pure function xmm2c8_ge_xmm2c8(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: xmm2c8_ge_xmm2c8
+       
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_ge_xmm2c8
        type(XMM2c8_t),       intent(in) :: lhs
        type(XMM2c8_t),       intent(in) :: rhs
@@ -1019,7 +1020,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_ge_c1
      pure function xmm2c8_ge_c1(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: xmm2c8_ge_c1
+       
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_ge_c1
        type(XMM2c8_t),    intent(in) :: lhs
        complex(kind=dp),       intent(in) :: rhs
@@ -1029,15 +1030,15 @@ module sse_cvec2
        mre  = .false.
        mim  = .false.
        bres = .false.
-       mre = lhs.re >= real(rhs,kind=dp)
+       mre = lhs.re >= real(rhs)
        bres(0) = all(mre)
-       mim = lhs.im >= aimag(rhs,kind=dp)
+       mim = lhs.im >= aimag(rhs)
        bres(1) = all(mim)
      end function xmm2c8_ge_c1
 
 !DIR$ ATTRIBUTES INLINE :: c1_ge_xmm2c8
      pure function c1_ge_xmm2c8(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c1_ge_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR :: c1_ge_xmm2c8
        complex(kind=dp),        intent(in) :: lhs
        type(XMM2c8_t),     intent(in) :: rhs
@@ -1047,15 +1048,15 @@ module sse_cvec2
        mre  = .false.
        mim  = .false.
        bres = .false.
-       mre = real(lhs,kind=dp) >= rhs.re
+       mre = real(lhs) >= rhs.re
        bres(0) = all(mre)
-       mim = aimag(lhs,kind=dp) >= rhs.im
+       mim = aimag(lhs) >= rhs.im
        bres(1) = all(mim)
      end function c1_ge_xmm2c8
      
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_le_xmm2c8
      pure function xmm2c8_le_xmm2c8(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: xmm2c8_le_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_le_xmm2c8
        type(XMM2c8_t),       intent(in) :: lhs
        type(XMM2c8_t),       intent(in) :: rhs
@@ -1073,7 +1074,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_le_c1
      pure function xmm2c8_le_c1(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: xmm2c8_le_c1
+      
        !DIR$ ATTRIBUTES VECTOR :: xmm2c8_le_c1
        type(XMM2c8_t),    intent(in) :: lhs
        complex(kind=dp),       intent(in) :: rhs
@@ -1083,16 +1084,16 @@ module sse_cvec2
        mre  = .false.
        mim  = .false.
        bres = .false.
-       mre = lhs.re <= real(rhs,kind=dp)
+       mre = lhs.re <= real(rhs)
        bres(0) = all(mre)
-       mim = lhs.im <= aimag(rhs,kind=dp)
+       mim = lhs.im <= aimag(rhs)
        bres(1) = all(mim)
      end function xmm2c8_le_c1
 
 !DIR$ ATTRIBUTES INLINE :: c1_le_xmm2c8
      pure function c1_le_xmm2c8(lhs,rhs) result(bres)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c1_le_xmm2c8
-       !DIR$ ATTRIBUTES VECTOR :: c1_le_c8
+      
+       !DIR$ ATTRIBUTES VECTOR :: c1_le_xmm2c8 
        complex(kind=dp),        intent(in) :: lhs
        type(XMM2c8_t),     intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 16 :: mre,mim
@@ -1101,9 +1102,9 @@ module sse_cvec2
        mre  = .false.
        mim  = .false.
        bres = .false.
-       mre = real(lhs,kind=dp) <= rhs.re
+       mre = real(lhs) <= rhs.re
        bres(0) = all(mre)
-       mim = aimag(lhs,kind=dp) <= rhs.im
+       mim = aimag(lhs) <= rhs.im
        bres(1) = all(mim)
      end function c1_le_xmm2c8
      
@@ -1111,7 +1112,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: polar
      pure function polar(rho,theta) result (iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: polar
+     
        !DIR$ ATTRIBUTES VECTOR :: polar
        type(XMM2r8_t), intent(in) :: rho
        type(XMM2r8_t), intent(in) :: theta
@@ -1124,7 +1125,7 @@ module sse_cvec2
      
 !DIR$ ATTRIBUTES INLINE :: carg_xmm2c8
      pure function carg_xmm2c8(c) result(arg)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: carg_xmm2c8
+   
        !DIR$ ATTRIBUTES VECTOR :: carg_xmm2c8
        type(XMM2c8_t),   intent(in) :: c
        !DIR$ ATTRIBUTES ALIGN : 16 :: arg
@@ -1136,7 +1137,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: carg_2xmm2r8     
      pure function carg_2xmm2r8(re,im) result(arg)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: carg_2xmm2r8
+      
        !DIR$ ATTRIBUTES VECTOR :: carg_2xmm2r8
        type(XMM2r8_t),  intent(in) :: re
        type(XMM2r8_t),  intent(in) :: im
@@ -1148,25 +1149,25 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: csin_xmm2c8
      pure function csin_xmm2c8(c) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csin_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR :: csin_xmm2c8
-       type(XMM2c8_t),  intent(in) :: c8
+       type(XMM2c8_t),  intent(in) :: c
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
        type(XMM2c8_t) :: iq
        !DIR$ ATTRIBUTES ALIGN : 16 :: tre,tim
        type(XMM2r8_t) :: tre
        type(XMM2r8_t) :: tim
        ! Exec code ....
-       tre = c.re
-       tim = c.im
+       tre.v = c.re
+       tim.v = c.im
        iq.re = sin(tre.v)*cosh(tim.v)
        iq.im = cos(tre.v)*sinh(tim.v)
      end function csin_xmm2c8
 
-!DIR$ ATTRIBUTES INLINE :: csin_xmm4r8
+!DIR$ ATTRIBUTES INLINE :: csin_xmm2r8
      pure function csin_xmm2r8(re,im) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csin_xmm2r8
-       !DIR$ ATTRIBUTES VECTOR :: csin_xmm8r8
+     
+       !DIR$ ATTRIBUTES VECTOR :: csin_xmm2r8
        type(XMM2r8_t),   intent(in) :: re
        type(XMM2r8_t),   intent(in) :: im
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
@@ -1178,7 +1179,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: csinh_xmm2c8
      pure function csinh_xmm2c8(c) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csinh_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR :: csinh_xmm2c8
        type(XMM2c8_t),   intent(in) :: c
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
@@ -1187,45 +1188,45 @@ module sse_cvec2
        type(XMM2r8_t) :: tre
        type(XMM2r8_t) :: tim
        ! EXec code ....
-       tre = c.re
-       tim = c.im
+       tre.v = c.re
+       tim.v = c.im
        iq.re = sinh(tre.v)*cos(tim.v)
        iq.im = cosh(tre.v)*sin(tim.v)
      end function csinh_xmm2c8
 
 !DIR$ ATTRIBUTES INLINE :: csinh_xmm2r8
      pure function csinh_xmm2r8(re,im) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csinh_xmm2r8
-       !DIR$ ATTRIBUTES VECTOR :: csinh_xmm8r8
+      
+       !DIR$ ATTRIBUTES VECTOR :: csinh_xmm2r8
        type(XMM2r8_t), intent(in) :: re
        type(XMM2r8_t), intent(in) :: im
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
        type(XMM2c8_t) :: iq
        ! EXec code ....
        iq.re = sinh(re.v)*cos(im.v)
-       iq.im = cosh(re.v)*sin(im.v
+       iq.im = cosh(re.v)*sin(im.v)
      end function csinh_xmm2r8
 
 !DIR$ ATTRIBUTES INLINE :: ccos_xmm2c8
      pure function ccos_xmm2c8(c) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ccos_xmm2c8
+    
        !DIR$ ATTRIBUTES VECTOR :: ccos_xmm2c8
-       type(XMM2c8_t),   intent(in) :: c8
+       type(XMM2c8_t),   intent(in) :: c
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
        type(XMM2c8_t) :: iq
        !DIR$ ATTRIBUTES ALIGN : 16 :: tre,tim
        type(XMM2r8_t) :: tre
        type(XMM2r8_t) :: tim
        ! EXec code ....
-       tre = c.re
-       tim = c.im
+       tre.v = c.re
+       tim.v = c.im
        iq.re = cos(tre.v)*cosh(tim.v)
        iq.im = sin(tre.v)*sinh(tim.v)
      end function ccos_xmm2c8
 
 !DIR$ ATTRIBUTES INLINE :: ccos_xmm2r8
      pure function ccos_xmm2r8(re,im) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ccos_xmm2r8
+       
        !DIR$ ATTRIBUTES VECTOR :: ccos_xmm2r8
        type(XMM2r8_t), intent(in) :: re
        type(XMM2r8_t), intent(in) :: im
@@ -1238,7 +1239,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: ccosh_xmm2c8
      pure function ccosh_xmm2c8(c) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ccosh_xmm2c8
+       
        !DIR$ ATTRIBUTES VECTOR :: ccosh_xmm2c8
        type(XMM2c8_t),    intent(in) :: c
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
@@ -1247,15 +1248,15 @@ module sse_cvec2
        type(XMM2r8_t) :: tre
        type(XMM2r8_t) :: tim
        ! EXec code ....
-       tre = c.re
-       tim = c.im
+       tre.v = c.re
+       tim.v = c.im
        iq.re = cosh(tre.v)*cos(tim.v)
        iq.im = sinh(tre.v)*sin(tim.v)
      end function ccosh_xmm2c8
 
 !DIR$ ATTRIBUTES INLINE :: ccosh_xmm2r8
      pure function ccosh_xmm2r8(re,im) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ccosh_xmm2r8
+      
        !DIR$ ATTRIBUTES VECTOR :: ccosh_xmm2r8
        type(XMM2r8_t),   intent(in) :: re
        type(XMM2r8_t),   intent(in) :: im
@@ -1268,24 +1269,24 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: cexp_xmm2c8
      pure function cexp_xmm2c8(c) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cexp_xmm2c8
+       
        !DIR$ ATTRIBUTES VECTOR :: cexp_xmm2c8
-       type(XMM2c8_t),  intent(in) :: c8
+       type(XMM2c8_t),  intent(in) :: c
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
        type(XMM2c8_t) :: iq
        !DIR$ ATTRIBUTES ALIGN : 16 :: tre,tim
        type(XMM2r8_t) :: tre
        type(XMM2r8_t) :: tim
        ! Exec code ....
-       tre = c.re
-       tim = c.im
+       tre.v = c.re
+       tim.v = c.im
        iq.re = exp(tre.v)*cos(tim.v)
        iq.im = exp(tre.v)*sin(tim.v)
      end function cexp_xmm2c8
 
 !DIR$ ATTRIBUTES INLINE :: ctan_xmm2c8
      pure function ctan_xmm2c8(x) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ctan_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR :: ctan_xmm2c8
        type(XMM2c8_t),  intent(in) :: x
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
@@ -1295,7 +1296,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: ctanh_xmm2c8
      pure function ctanh_xmm2c8(x) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ctanh_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR :: ctanh_xmm2c8
        type(XMM2c8_t),  intent(in) :: x
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
@@ -1305,7 +1306,7 @@ module sse_cvec2
      
 !DIR$ ATTRIBUTES INLINE :: cexp_xmm2r8
      pure function cexp_xmm2r8(re,im) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cexp_xmm2r8
+      
        !DIR$ ATTRIBUTES VECTOR :: cexp_xmm2r8
        type(XMM2r8_t),  intent(in) :: re
        type(XMM2r8_t),  intent(in) :: im
@@ -1318,7 +1319,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: cabs_xmm2c8
      pure function cabs_xmm2c8(c) result(val)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cabs_xmm2c8
+       
        !DIR$ ATTRIBUTES VECTOR :: cabs_xmm2c8
        type(XMM2c8_t), intent(in) :: c
        !DIR$ ATTRIBUTES ALIGN : 16 :: val
@@ -1326,14 +1327,14 @@ module sse_cvec2
        !DIR$ ATTRIBUTES ALIGN : 16 :: tre,tim
        type(XMM2r8_t) :: tre,tim
        ! Exec code ...
-       tre = c.re
-       tim = c.im
+       tre.v = c.re
+       tim.v = c.im
        val.v = sqrt(tre.v*tre.v+tim.v*tim.v)
      end function cabs_xmm2c8
 
 !DIR$ ATTRIBUTES INLINE :: cabs_2xmm2r8
-     pure function cabs_2xmm8r8(re,im) result(val)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cabs_2xmm2r8
+     pure function cabs_2xmm2r8(re,im) result(val)
+       
        !DIR$ ATTRIBUTES VECTOR :: cabs_2xmm2r8
        type(XMM2r8_t),  intent(in) :: re
        type(XMM2r8_t),  intent(in) :: im
@@ -1345,7 +1346,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: cpow_xmm2c8
      pure function cpow_xmm2c8(c8,n) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cpow_xmm2c8
+       
        !DIR$ ATTRIBUTES VECTOR :: cpow_xmm2c8
        type(XMM2c8_t), intent(in) :: c8
        real(kind=dp),       intent(in) :: n
@@ -1356,8 +1357,8 @@ module sse_cvec2
        !DIR$ ATTRIBUTES ALIGN : 16 :: r,theta,pow,trig
        type(XMM2r8_t) :: r,theta,pow,trig
        !EXec code ....
-       tre = c8.re
-       tim = c8.im
+       tre.v = c8.re
+       tim.v = c8.im
        r.v = sqrt(tre.v*tre.v+tim.v*tim.v)
        pow.v   = r.v**n
        theta.v = atan(tim.v/tre.v)
@@ -1369,7 +1370,7 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: cpow_2xmmtr8
      pure function cpow_2xmm2r8(re,im,n) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cpow_2xmm2r8
+      
        !DIR$ ATTRIBUTES VECTOR :: cpow_2xmm2r8
        type(XMM2r8_t),   intent(in) :: re
        type(XMM2r8_t),   intent(in) :: im
@@ -1392,40 +1393,43 @@ module sse_cvec2
 
 !DIR$ ATTRIBUTES INLINE :: clog_xmm2c8    
      pure function clog_xmm2c8(c) result(iq)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: clog_xmm2c8
+      
        !DIR$ ATTRIBUTES VECTOR :: clog_xmm2c8
        type(XMM2c8_t),   intent(in) :: c
        !DIR$ ATTRIBUTES ALIGN : 16 :: iq
        type(XMM2c8_t) :: iq
        !DIR$ ATTRIBUTES ALIGN : 16 :: t0
-       type(XMM2r8_t) :: t0
+       type(XMM2r8_t) :: t0,t1 
        !
        ! EXec code ....
        t0 = cabs_xmm2c8(c)
        iq.re = log(t0.v)
-       iq.im = carg_xmm2c8(c)
+       t1    = carg_xmm2c8(c)
+       iq.im = t1.v 
       end function clog_xmm2c8 
     
 !DIR$ ATTRIBUTES INLINE :: clog_2xxmm2r8
       pure function clog_2xmm2r8(re,im) result(iq)
-        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: clog_2xmm2r8
+       
         !DIR$ ATTRIBUTES VECTOR :: clog_2xmm2r8
         type(XMM2r8_t),  intent(in), value :: re
         type(XMM2r8_t),  intent(in), value :: im
         !DIR$ ATTRIBUTES ALIGN : 16 :: iq
         type(XMM2c8_t) :: iq
         !DIR$ ATTRIBUTES ALIGN : 16 :: t0
-        type(XMM2r8_t) :: t0
+        !DIR$ ATTRIBUTES ALIGN : 16 :: t1 
+        type(XMM2r8_t) :: t0,t1 
         ! EXec code ....
         t0 = cabs_2xmm2r8(re,im)
         iq.re = log(t0.v)
-        iq.im = carg_2xmm2r8(re,im)
+        t1    = carg_2xmm2r8(re,im)
+        iq.im = t1.v 
       end function clog_2xmm2r8
 
 !DIR$ ATTRIBUTES INLINE :: csqrt_xmm2c8
       pure function csqrt_xmm2c8(c) result(iq)
         
-        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csqrt_xmm2c8
+        
         !DIR$ ATTRIBUTES VECTOR :: csqrt_xmm2c8
         type(XMM2c8_t),   intent(in) :: c
         !DIR$ ATTRIBUTES ALIGN : 16 :: iq
@@ -1446,7 +1450,7 @@ module sse_cvec2
 !DIR$ ATTRIBUTES INLINE :: csqrt_2xxmm2r8
       pure function csqrt_2xmm2r8(re,im) result(iq)
         
-        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csqrt_2xmm2r8
+       
         !DIR$ ATTRIBUTES VECTOR :: csqrt_2xmm2r8
         type(XMM2r8_t),  intent(in), value :: re
         type(XMM2r8_t),  intent(in), value :: im
@@ -1539,7 +1543,7 @@ module sse_cvec2
 !        use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !#endif
        
-        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cdiv_smith
+        
         !DIR$ ATTRIBUTES VECTOR :: cdiv_smith
         type(XMM2c8_t),  intent(in) :: lhs
         type(XMM2c8_t),  intent(in) :: rhs
@@ -1568,18 +1572,18 @@ module sse_cvec2
 !#if   (USE_INTRINSIC_VECTOR_COMPARE) == 1
 !        if(mask_gte == all_ones) then
 !#elif
-        if(all(bres)) then
+        where(bres) 
 !#endif
            ratio.v   = rhs.im/rhs.re
            denom.v   = rhs.re+(ratio.v*rhs.im)
            iq.re     = (lhs.re+lhs.im*ratio.v)/denom.v
            iq.im     = (lhs.im-lhs.re*ratio.v)/denom.v
-        else
+        else where 
            ratio.v   = rhs.re/rhs.im
            denom.v   = rhs.im+ratio.v*rhs.re
            iq.re     = (lhs.re*ratio.v+lhs.im)/denom.v
            iq.im     = (lhs.im*ratio.v-lhs.re)/denom.v
-        end if
+        end where 
       end function cdiv_smith
 
       
