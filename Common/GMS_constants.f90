@@ -37,7 +37,8 @@ module mod_constants
  ! Tab:5 col - Type and etc.. definitions
  ! Tab:10,11 col - Type , function and subroutine code blocks.
     
-    use mod_kinds, only : i4,i8,sp,dp
+    use mod_kinds, only : i4,sp,dp
+    USE, INTRINSIC :: IEEE_ARITHMETIC
     implicit none
     !=====================================================59
     !  File and module information:
@@ -119,12 +120,20 @@ module mod_constants
     
        ! Value of PI
     real(kind=dp),    parameter, public :: pi_const =   3.1415926535897932384626433832795_dp
+
+    ! Value of PI fp32
+
+    real(kind=sp),    parameter, public :: pir4_const = 3.14159265358979_sp
+
+    real(kind=sp),    parameter, public :: twopir4_const = pir4_const+pir4_const
     
        ! Value of 1/PI
     real(kind=dp),    parameter, public :: v1_over_pi =  0.31830988618379067153776752674503_dp
     
        ! Value of 2PI
     real(kind=dp),    parameter, public :: pi2_const =  6.283185307179586476925286766559_dp
+
+    
     
        ! Value of 4PI
     real(kind=dp),    parameter, public :: pi4_const =  12.566370614359172953850573533118_dp
@@ -145,46 +154,46 @@ module mod_constants
     real(kind=dp),    parameter, public :: pi_2pow    =   9.8696044010893586188344909998762_dp
     
         ! Value of PI**3
-    real(dp),    parameter, public :: pi_3pow    =   31.006276680299820175476315067101_dp
+    real(kind=dp),    parameter, public :: pi_3pow    =   31.006276680299820175476315067101_dp
     
         ! Value of PI**4
     real(dp),    parameter, public :: pi_4pow    =   97.409091034002437236440332688705_dp
     
         ! Value of SQRT(PI)
-    real(dp),    parameter, public :: sqrt_pi    =    1.7724538509055160272981674833411_dp
+    real(kind=dp),    parameter, public :: sqrt_pi    =    1.7724538509055160272981674833411_dp
     
          ! Value of SQRT(2PI)
-    real(dp),    parameter, public :: sqrt_2pi   =    2.506628274631000502415765284811_dp
+    real(kind=dp),    parameter, public :: sqrt_2pi   =    2.506628274631000502415765284811_dp
     
           ! Value of SQRT(4PI)
-    real(dp),    parameter, public :: sqrt_4pi   =     3.5449077018110320545963349666823_dp
+    real(kind=dp),    parameter, public :: sqrt_4pi   =     3.5449077018110320545963349666823_dp
     
           ! Value of 1/SQRT(2PI)
-    real(dp),    parameter, public :: isqrt_2pi  =     0.39894228040143267793994605993439_dp
+    real(kind=dp),    parameter, public :: isqrt_2pi  =     0.39894228040143267793994605993439_dp
     
           ! Value of 1/SQRT(4PI)
-    real(dp),    parameter, public :: isqrt_4pi  =     0.07957747154594766788444188168626_dp
+    real(kind=dp),    parameter, public :: isqrt_4pi  =     0.07957747154594766788444188168626_dp
     
           ! Value of Ln(2)
-    real(dp),    parameter, public :: ln2_const  =     0.69314718055994530941723212145818_dp
+    real(kind=dp),    parameter, public :: ln2_const  =     0.69314718055994530941723212145818_dp
     
           ! Value of Ln(4)
-    real(dp),    parameter, public :: ln4_const  =     1.3862943611198906188344642429164_dp
+    real(kind=dp),    parameter, public :: ln4_const  =     1.3862943611198906188344642429164_dp
     
           ! Very small constant (1.0E-15)
-    real(dp),    parameter, public :: v1em15     =     0.000000000000001_dp
+    real(kind=dp),    parameter, public :: v1em15     =     0.000000000000001_dp
     
           ! Shift by 1000
-    real(dp),    parameter, public :: shift1e3   =     1000.0_dp
+    real(kind=dp),    parameter, public :: shift1e3   =     1000.0_dp
     
           ! Very large constant
-    real(dp),    parameter, public :: v1e35      =     1.0E+35_dp
+    real(kind=dp),    parameter, public :: v1e35      =     1.0E+35_dp
     
            ! Machine epsilon (64-bit)
-    real(dp),    parameter, public :: meps64     =     0.00000000000000022204460492503131_dp
+    real(kind=dp),    parameter, public :: meps64     =     0.00000000000000022204460492503131_dp
     
            ! Standard tolerance (for statistical calculations) 
-    real(dp),    parameter, public :: statol     =     0.0000000000001_dp
+    real(kind=dp),    parameter, public :: statol     =     0.0000000000001_dp
     
     real(kind=dp),    parameter, public :: v1n        = 1.0_dp
     
@@ -195,14 +204,16 @@ module mod_constants
     real(kind=dp), parameter, public :: v1over3 = 0.3333333333333333333333333_dp
              
     real(kind=dp),    parameter, public :: v1over2    = 0.5_dp
-             
-    real(kind=dp),    parameter, public :: vposinf    = IEEE_VALUE(v1n,IEEE_POSITIVE_INF)
     
-    real(kind=dp), parameter, private :: INITVAL = HUGE(1.0E+00_dp)
+    real(kind=dp),    parameter, public :: INITVAL = TINY(1.0_dp)
+
+    real(kind=sp),   parameter, public :: INITVALR4 = TINY(1.0_sp)
+             
+    !real(kind=dp),    parameter, public :: vposinf    = IEEE_VALUE(v1n,IEEE_POSITIVE_INF)
     
     ! Array of increment coefficients which are of value 1/2^-n
     ! where n = 1,2...32
-    real(dp),   dimension(16), parameter, public :: ipow2_coeff = [ 0.5_dp,0.25_dp,                            &
+    real(kind=dp),   dimension(16), parameter, public :: ipow2_coeff = [ 0.5_dp,0.25_dp,                            &
                                                                         0.125_dp,0.0625_dp,0.03125_dp,         &
                                                                         0.015625_dp,0.0078125_dp,                &
                                                                         0.00390625_dp,0.001953125_dp,            &
