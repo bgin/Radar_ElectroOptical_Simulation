@@ -573,9 +573,9 @@ end module mod_test_sse_cvec2_add
 
 program main 
    use mod_test_sse_cvec2_add
-   !call unit_test_xmm2c8_add_xmm2c8()
-   !call unit_test_xmm2c8_add_xmm2c8_field()
-   !call unit_test_xmm2c8_add_c1()
-   !call unit_test_xmm2c8_add_c1_field()
+   call unit_test_xmm2c8_add_xmm2c8()
+   call unit_test_xmm2c8_add_xmm2c8_field()
+   call unit_test_xmm2c8_add_c1()
+   call unit_test_xmm2c8_add_c1_field()
    call unit_test_xmm2c8_add_xmm2r8_field()
 end program main 
