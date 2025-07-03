@@ -546,7 +546,7 @@ module sse_cvec2
        iq.re  = xmm0.v-xmm1.v
        xmm2.v = lhs.im*rhs.re
        xmm3.v = lhs.re*rhs.im
-       iq.im  = xmm2.v-xmm3.v
+       iq.im  = xmm2.v+xmm3.v
      end function xmm2c8_mul_xmm2c8
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_mul_c1
@@ -564,7 +564,7 @@ module sse_cvec2
        iq.re  = xmm0.v-xmm1.v
        xmm2.v = lhs.im*real(rhs)
        xmm3.v = lhs.re*aimag(rhs)
-       iq.im  = xmm2.v-xmm3.v
+       iq.im  = xmm2.v+xmm3.v
      end function  xmm2c8_mul_c1
 
 !DIR$ ATTRIBUTES INLINE :: xmm2c8_mul_xmm2r8
@@ -606,7 +606,7 @@ module sse_cvec2
        iq.re  = xmm0.v+xmm1.v
        xmm2.v = real(lhs)*rhs.im
        xmm3.v = aimag(lhs)*rhs.re
-       iq.im  = xmm2.v-xmm3.v
+       iq.im  = xmm2.v+xmm3.v
      end function c1_mul_xmm2c8
 
 !DIR$ ATTRIBUTES INLINE :: xmm2r8_mul_xmm2c8
