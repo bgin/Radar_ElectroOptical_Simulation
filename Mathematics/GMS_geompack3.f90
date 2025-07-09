@@ -1,5 +1,6 @@
 function angle ( xa, ya, xb, yb, xc, yc )
 
+
 !*****************************************************************************80
 !
 !! ANGLE computes the size of an angle in 2D.
@@ -14126,13 +14127,13 @@ function i4_uniform ( a, b, seed )
 !
   implicit none
 
-  integer ( kind = 4 ) ( kind = 4 ) a
-  integer ( kind = 4 ) ( kind = 4 ) b
-  integer ( kind = 4 ) ( kind = 4 ) i4_uniform
-  integer ( kind = 4 ) ( kind = 4 ) k
-  real    ( kind = 4 ) r
-  integer ( kind = 4 ) ( kind = 4 ) seed
-  integer ( kind = 4 ) ( kind = 4 ) value
+  integer ( kind = 4 )  a
+  integer ( kind = 4 )  b
+  integer ( kind = 4 )  i4_uniform
+  integer ( kind = 4 )  k
+  real    ( kind = 4 )  r
+  integer ( kind = 4 )  seed
+  integer ( kind = 4 )  value
 
   if ( seed == 0 ) then
     write ( *, '(a)' ) ' '
@@ -43539,7 +43540,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
       ifac = htsrc(b,c,d,n,p,fc,ht)
 
       if ( ifac <= 0 ) then
-        ierror = 300
+        ierr = 300
         return
       end if
 
@@ -43554,7 +43555,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
       ifac = htsrc(a,c,d,n,p,fc,ht)
 
       if ( ifac <= 0 ) then
-        ierror = 300
+        ierr = 300
         return
       end if
 
@@ -43569,7 +43570,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
       ifac = htsrc(a,b,d,n,p,fc,ht)
 
       if ( ifac <= 0 ) then
-        ierror = 300
+        ierr = 300
         return
       end if
 
@@ -43599,19 +43600,19 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
         if ( zero(1) ) then
           ifac = htsrc(b,c,d,n,p,fc,ht)
           if ( ifac <= 0 ) then
-            ierror = 300
+            ierr = 300
             return
           end if
         else if ( zero(2) ) then
           ifac = htsrc(a,c,d,n,p,fc,ht)
           if ( ifac <= 0 ) then
-            ierror = 300
+            ierr = 300
             return
           end if
         else if ( zero(3) ) then
           ifac = htsrc(a,b,d,n,p,fc,ht)
           if ( ifac <= 0 ) then
-            ierror = 300
+            ierr = 300
             return
           end if
         end if
@@ -43635,7 +43636,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
             ifac = htsrc(a,b,d,n,p,fc,ht)
 
             if ( ifac <= 0 ) then
-              ierror = 300
+              ierr = 300
               return
             end if
 
@@ -43650,7 +43651,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
             ifac = htsrc(a,c,d,n,p,fc,ht)
 
             if ( ifac <= 0 ) then
-              ierror = 300
+              ierr = 300
               return
             end if
 
@@ -43703,7 +43704,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
           ifac = htsrc(a,b,d,n,p,fc,ht)
 
           if ( ifac <= 0 ) then
-            ierror = 300
+            ierr = 300
             return
           end if
 
