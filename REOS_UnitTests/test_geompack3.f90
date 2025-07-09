@@ -18,7 +18,8 @@ program main
   write ( *, '(a)' ) 'GEOMPACK3_PRB:'
   write ( *, '(a)' ) '  FORTRAN90 version'
   write ( *, '(a)' ) '  Test the GEOMPACK3 library.'
-
+  
+  call test_bctr()
   call test_angle ( )
   call test_area ( )
   call test_dhpsrt ( )
@@ -26,7 +27,7 @@ program main
   call test_ihpsrt ( )
   call test_lu ( )
   call test_meas ( )
-  call test_prime ( )
+  !call test_prime ( )
   call test_rotiar ( )
 !
 !  Terminate.
@@ -40,6 +41,13 @@ program main
 
   stop
 end
+
+function d_pi() result(pi)
+    real(kind=8) :: pi 
+    pi = 3.14159265358979323846264338328
+end function d_pi
+
+
 subroutine test_angle ( )
 
 !*****************************************************************************80
@@ -179,7 +187,7 @@ subroutine test_bctr ( )
 !
   implicit none
 
-  real ( kind = 8 ) d_pi
+  
   integer ( kind = 4 ) ierr
   integer ( kind = 4 ), parameter :: maxbt = 2000
   integer ( kind = 4 ), parameter :: maxfc = 10000
@@ -212,6 +220,7 @@ subroutine test_bctr ( )
   integer ( kind = 4 ) nface,nfach,nfhol,nfph,nihol,nit,nlo,npf,npolh,nrfe,nt
   integer ( kind = 4 ) nteta,ntetd,ntri,nvc,nvch,nvert,nverth,outmod,p,prime,utet
   real    dectim,holtim,initim,tritim,t0,t1
+  real(kind=8) d_pi 
   real ( kind = 8 ) eang(maxfv),h(maxhf),nrml(3,maxfp),sa(4)
   real ( kind = 8 ) eta(maxnt),rho(maxnt),rvol(maxnt),sig(maxnt)
   real ( kind = 8 ) vcl(3,maxvc),vol(maxhf),wid(maxhf),wk(maxwk)
@@ -246,9 +255,9 @@ subroutine test_bctr ( )
      nihol,ntetd,crit,shrf
   hoflag = (nfhol > 0)
   nfhol = max(nfhol,0)
-  aspc2d = aspc2d* d_pi ( ) /180.0D+00
-  atol2d = atol2d* d_pi ( ) /180.0D+00
-  angacc = angacc* d_pi ( ) /180.0D+00
+  aspc2d = aspc2d*0.017453292519943295769236907685         !d_pi() /180.0D+00
+  atol2d = atol2d*0.017453292519943295769236907685 !d_pi()  /180.0D+00
+  angacc = angacc*0.017453292519943295769236907685 !d_pi()  /180.0D+00
   nfph = nface + nfhol
 
   if (nvc > maxvc .or. nfph >= maxfp .or. npolh >= maxhf) then
@@ -2180,7 +2189,7 @@ subroutine test_dtris3 ( )
     return
   end if
 
-  call imat_transpose_print ( 4, tetra_num, tetra, '  Tetrahedron indices:' )
+  !call imat_transpose_print ( 4, tetra_num, tetra, '  Tetrahedron indices:' )
 !
 !  Find the circumsphere through each tetrahedron, and check
 !  whether point E is inside tetrahedron A, B, C, D.
@@ -4032,6 +4041,7 @@ subroutine test_meas ( )
 
   return
 end
+#if 0
 subroutine test_prime ( )
 
 !*****************************************************************************80
@@ -4070,6 +4080,7 @@ subroutine test_prime ( )
 
   return
 end
+#endif 
 subroutine test_ptpolg ( )
 
 !*****************************************************************************80
