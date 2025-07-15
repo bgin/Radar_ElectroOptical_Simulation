@@ -1278,6 +1278,210 @@ subroutine unit_test_Dmax_r8_t
 end subroutine unit_test_Dmax_r8_t 
 
 
+subroutine unit_test_Dmin_r4_t 
+           use iso_c_binding, only : c_int, c_long_long 
+           use IFPORT 
+           use , intrinsic           :: IEEE_ARITHMETIC
+           implicit none 
+#if 0
+              interface
+                  function raise(sig) bind(C,name="raise")
+                           use iso_c_binding, only : c_int 
+                           integer(c_int) :: raise 
+                           integer(c_int), value :: sig 
+                  end function raise 
+              end interface
+#endif
+              interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+              end interface
+              character(len=80),                  parameter  :: header = "[TEST #13:  alloc/dealloc: Dmin_r4_t  -- START]"
+              character(len=80),                  parameter  :: footer = "[TEST #13:  alloc/dealloc: Dmin_r4_t  -- END]" 
+              type(Dmax_r4_t),                    automatic  :: m_Dmin
+              integer(kind=c_long_long),          automatic  :: start,end 
+              integer(kind=c_long_long),          automatic  :: start_c,end_c 
+              integer(kind=c_long_long),          automatic  :: tsc_elapsed 
+              integer(kind=i4),                   automatic  :: n
+              
+#if 0
+              integer(c_int),            parameter :: SIGTRAP = 5 
+              integer(c_int),            automatic :: ret_val
+#endif 
+
+              print*, header
+#if 0
+              ret_val = raise(SIGTRAP)
+              if(ret_val/=0_c_int) print*, "raise returned=",ret_val
+#endif
+
+              n = set_random_size()
+              start = rdtsc_wrap()
+              allocate(m_Dmin.h(n))
+              allocate(m_Dmin.delta(n))
+              allocate(m_Dmin.dmin(n))
+              end   = rdtsc_wrap()
+              call check_allocation_stats(m_Dmin.h)
+              call check_allocation_stats(m_Dmin.delta)
+              call check_allocation_stats(m_Dmin.dmin)
+              start_c     = start-RDTSC_LATENCY
+              end_c       = end-RDTSC_LATENCY
+              tsc_elapsed = end_c-start_c
+              if(tsc_elapsed<ZERO) then
+                 print*,"[INVALID-TSC]=", tsc_elapsed
+              else 
+                 print*, "[WARNING]: Crude timing measurement!!"
+                 print*,"[TSC]=", tsc_elapsed 
+              end if 
+              if(allocated(m_Dmin.h)) deallocate(m_Dmin.h)
+              if(allocated(m_Dmin.delta)) deallocate(m_Dmin.delta)
+              if(allocated(m_Dmin.dmin)) deallocate(m_Dmin.dmin)
+              call check_allocation_stats(m_Dmin.h)
+              call check_allocation_stats(m_Dmin.delta)
+              call check_allocation_stats(m_Dmin.dmin)
+              print*, footer 
+              contains 
+
+              function set_random_size() result(rval)
+                       implicit none 
+                       integer(kind=i4), automatic :: rnum 
+                       integer(kind=i4), parameter :: lo = 512
+                       integer(kind=i4)            :: rval 
+                       rnum = irand()
+                       if(rnum<lo) then 
+                          rnum=lo
+                          rval=rnum
+                       end if 
+                       rval=rnum 
+               end function set_random_size
+
+              subroutine check_allocation_stats(array)
+                       implicit none
+                       real(kind=sp), allocatable, dimension(:), intent(in) :: array 
+                       ! Locals
+                       integer(kind=i8), automatic :: vaddr 
+                       integer(kind=i8), automatic :: size 
+                       integer(kind=i4), automatic :: lo_bound
+                       integer(kind=i4), automatic :: hi_bound 
+                       logical(kind=i1), automatic :: is_allocated 
+                       vaddr        = LOC(array)
+                       size         = SIZEOF(array)
+                       lo_bound     = LBOUND(array,DIM=1)
+                       hi_bound     = UBOUND(array,DIM=1)
+                       is_allocated = allocated(array)
+                       print*,"======================INFO======================================"
+                       print*, "vaddr=",vaddr,"size=",size,"allocated=",is_allocated
+                       print*, "lo_bound=",lo_bound,"hi_bound=",hi_bound 
+                       print*,"======================INFO======================================"
+              end subroutine check_allocation_stats
+
+end subroutine unit_test_Dmin_r4_t 
+
+
+subroutine unit_test_Dmin_r8_t 
+           use iso_c_binding, only : c_int, c_long_long 
+           use IFPORT 
+           use , intrinsic           :: IEEE_ARITHMETIC
+           implicit none 
+#if 0
+              interface
+                  function raise(sig) bind(C,name="raise")
+                           use iso_c_binding, only : c_int 
+                           integer(c_int) :: raise 
+                           integer(c_int), value :: sig 
+                  end function raise 
+              end interface
+#endif
+              interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+              end interface
+              character(len=80),                  parameter  :: header = "[TEST #14:  alloc/dealloc: Dmin_r8_t  -- START]"
+              character(len=80),                  parameter  :: footer = "[TEST #14:  alloc/dealloc: Dmin_r8_t  -- END]" 
+              type(Dmax_r8_t),                    automatic  :: m_Dmin
+              integer(kind=c_long_long),          automatic  :: start,end 
+              integer(kind=c_long_long),          automatic  :: start_c,end_c 
+              integer(kind=c_long_long),          automatic  :: tsc_elapsed 
+              integer(kind=i4),                   automatic  :: n
+              
+#if 0
+              integer(c_int),            parameter :: SIGTRAP = 5 
+              integer(c_int),            automatic :: ret_val
+#endif 
+
+              print*, header
+#if 0
+              ret_val = raise(SIGTRAP)
+              if(ret_val/=0_c_int) print*, "raise returned=",ret_val
+#endif
+
+              n = set_random_size()
+              start = rdtsc_wrap()
+              allocate(m_Dmin.h(n))
+              allocate(m_Dmin.delta(n))
+              allocate(m_Dmin.dmin(n))
+              end   = rdtsc_wrap()
+              call check_allocation_stats(m_Dmin.h)
+              call check_allocation_stats(m_Dmin.delta)
+              call check_allocation_stats(m_Dmin.dmin)
+              start_c     = start-RDTSC_LATENCY
+              end_c       = end-RDTSC_LATENCY
+              tsc_elapsed = end_c-start_c
+              if(tsc_elapsed<ZERO) then
+                 print*,"[INVALID-TSC]=", tsc_elapsed
+              else 
+                 print*, "[WARNING]: Crude timing measurement!!"
+                 print*,"[TSC]=", tsc_elapsed 
+              end if 
+              if(allocated(m_Dmin.h)) deallocate(m_Dmin.h)
+              if(allocated(m_Dmin.delta)) deallocate(m_Dmin.delta)
+              if(allocated(m_Dmin.dmin)) deallocate(m_Dmin.dmin)
+              call check_allocation_stats(m_Dmin.h)
+              call check_allocation_stats(m_Dmin.delta)
+              call check_allocation_stats(m_Dmin.dmin)
+              print*, footer 
+              contains 
+
+              function set_random_size() result(rval)
+                       implicit none 
+                       integer(kind=i4), automatic :: rnum 
+                       integer(kind=i4), parameter :: lo = 512
+                       integer(kind=i4)            :: rval 
+                       rnum = irand()
+                       if(rnum<lo) then 
+                          rnum=lo
+                          rval=rnum
+                       end if 
+                       rval=rnum 
+               end function set_random_size
+
+              subroutine check_allocation_stats(array)
+                       implicit none
+                       real(kind=dp), allocatable, dimension(:), intent(in) :: array 
+                       ! Locals
+                       integer(kind=i8), automatic :: vaddr 
+                       integer(kind=i8), automatic :: size 
+                       integer(kind=i4), automatic :: lo_bound
+                       integer(kind=i4), automatic :: hi_bound 
+                       logical(kind=i1), automatic :: is_allocated 
+                       vaddr        = LOC(array)
+                       size         = SIZEOF(array)
+                       lo_bound     = LBOUND(array,DIM=1)
+                       hi_bound     = UBOUND(array,DIM=1)
+                       is_allocated = allocated(array)
+                       print*,"======================INFO======================================"
+                       print*, "vaddr=",vaddr,"size=",size,"allocated=",is_allocated
+                       print*, "lo_bound=",lo_bound,"hi_bound=",hi_bound 
+                       print*,"======================INFO======================================"
+              end subroutine check_allocation_stats
+
+end subroutine unit_test_Dmin_r8_t
+
+
 
 end module mod_test_eos_sensor_types  
 
