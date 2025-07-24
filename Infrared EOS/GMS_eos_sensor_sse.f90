@@ -698,14 +698,13 @@ module eos_sensor_sse
      end subroutine compute_SN_dispatch_xmm2r8
      
      
-#if 0
+
 
 
     pure function compute_SM_xmm4r4(R,phi,gamma) result(SM)
         !dir$ optimize:3
        
         !dir$ attributes forceinline :: compute_SM_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_xmm4r4
         type(XMM4r4_t),  intent(in) :: R
         type(XMM4r4_t),  intent(in), optional :: phi
         type(XMM4r4_t),  intent(in), optional :: gamma
@@ -713,7 +712,7 @@ module eos_sensor_sse
         type(XMM4r4_t), automatic :: SN
         !dir$ attributes align : 16:: SN
         SN = compute_SN_xmm4r4(R,phi,gamma)
-        SM = 2.0_sp*SN.v
+        SM.v = 2.0_sp*SN.v
      end function compute_SM_xmm4r4
 
 
@@ -721,7 +720,7 @@ module eos_sensor_sse
         !dir$ optimize:3
       
         !dir$ attributes forceinline :: compute_SM_unroll_16x_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_16x_xmm4r4
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: compute_SM_unroll_16x_xmm4r4
         type(XMM4r4_t),  intent(in) :: R
         type(XMM4r4_t),  dimension(1:n), intent(in) :: phi
         type(XMM4r4_t),  dimension(1:n), intent(in) :: gamma
@@ -729,7 +728,7 @@ module eos_sensor_sse
         integer(kind=i4),                 intent(in) :: n
         type(XMM4r4_t), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
         type(XMM4r4_t), automatic :: p8,p9,p10,p11,p12,p13,p14,p15
-        type(XMM4r4_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+        type(XMM4r4_t), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
         type(XMM4r4_t), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
         integer(kind=i4) :: i,m,m1
         m = mod(n,16)
@@ -805,14 +804,14 @@ module eos_sensor_sse
         !dir$ optimize:3
        
         !dir$ attributes forceinline :: compute_SM_unroll_8x_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_8x_xmm4r4
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: compute_SM_unroll_8x_xmm4r4
         type(XMM4r4_t),  intent(in) :: R
         type(XMM4r4_t),  dimension(1:n), intent(in) :: phi
         type(XMM4r4_t),  dimension(1:n), intent(in) :: gamma
         type(XMM4r4_t),  dimension(1:n), intent(out):: SM
         integer(kind=i4),                 intent(in) :: n
         type(XMM4r4_t), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
-        type(XMM4r4_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+        type(XMM4r4_t), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
         integer(kind=i4) :: i,m,m1
         m = mod(n,8)
         if(m /= 0) then
@@ -859,11 +858,11 @@ module eos_sensor_sse
      end subroutine compute_SM_unroll_8x_xmm4r4
      
 
-     subroutine compute_SM_unroll_4x_xmm4r4(R,phi,gamma,SN,n)
+     subroutine compute_SM_unroll_4x_xmm4r4(R,phi,gamma,SM,n)
         !dir$ optimize:3
         
         !dir$ attributes forceinline :: compute_SM_unroll_4x_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_4x_xmm4r4
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: compute_SM_unroll_4x_xmm4r4
         type(XMM4r4_t),  intent(in) :: R
         type(XMM4r4_t),  dimension(1:n), intent(in) :: phi
         type(XMM4r4_t),  dimension(1:n), intent(in) :: gamma
@@ -882,7 +881,7 @@ module eos_sensor_sse
         m1 = m+1
         !dir$ assume_aligned phi:16
         !dir$ assume_aligned gamma:16
-        !dir$ assume_aligned SN:16
+        !dir$ assume_aligned SM:16
         !dir$ vector aligned
         !dir$ ivdep
         !dir$ vector vectorlength(4)
@@ -910,7 +909,7 @@ module eos_sensor_sse
         !dir$ optimize:3
        
         !dir$ attributes forceinline :: compute_SM_unroll_2x_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_2x_xmm4r4
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: compute_SM_unroll_2x_xmm4r4
         type(XMM4r4_t),  intent(in) :: R
         type(XMM4r4_t),  dimension(1:n), intent(in) :: phi
         type(XMM4r4_t),  dimension(1:n), intent(in) :: gamma
@@ -950,7 +949,7 @@ module eos_sensor_sse
         !dir$ optimize:3
         
         !dir$ attributes forceinline :: compute_SM_rolled_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_rolled_xmm4r4
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: compute_SM_rolled_xmm4r4
         type(XMM4r4_t),  intent(in) :: R
         type(XMM4r4_t),  dimension(1:n), intent(in) :: phi
         type(XMM4r4_t),  dimension(1:n), intent(in) :: gamma
@@ -1013,7 +1012,6 @@ module eos_sensor_sse
         !dir$ optimize:3
         
         !dir$ attributes forceinline :: compute_SM_ymmyr8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_xmm2r8
         type(XMM2r8_t),  intent(in) :: R
         type(XMM2r8_t),  intent(in), optional :: phi
         type(XMM2r8_t),  intent(in), optional :: gamma
@@ -1021,7 +1019,7 @@ module eos_sensor_sse
         type(XMM2r8_t), automatic :: SN
         !dir$ attributes align : 16:: SN
         SN = compute_SN_xmm2r8(R,phi,gamma)
-        SM = 2.0_dp*SN.v
+        SM.v = 2.0_dp*SN.v
      end function compute_SM_xmm2r8
 
 
@@ -1029,7 +1027,7 @@ module eos_sensor_sse
         !dir$ optimize:3
        
         !dir$ attributes forceinline :: compute_SM_unroll_16x_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_16x_xmm2r8
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: compute_SM_unroll_16x_xmm2r8
         type(XMM2r8_t),  intent(in) :: R
         type(XMM2r8_t),  dimension(1:n), intent(in) :: phi
         type(XMM2r8_t),  dimension(1:n), intent(in) :: gamma
@@ -1037,7 +1035,7 @@ module eos_sensor_sse
         integer(kind=i4),                 intent(in) :: n
         type(XMM2r8_t), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
         type(XMM2r8_t), automatic :: p8,p9,p10,p11,p12,p13,p14,p15
-        type(XMM2r8_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+        type(XMM2r8_t), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
         type(XMM2r8_t), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
         integer(kind=i4) :: i,m,m1
         m = mod(n,16)
@@ -1114,14 +1112,14 @@ module eos_sensor_sse
         !dir$ optimize:3
        
         !dir$ attributes forceinline :: compute_SM_unroll_8x_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_8x_xmm2r8
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: compute_SM_unroll_8x_xmm2r8
         type(XMM2r8_t),  intent(in) :: R
         type(XMM2r8_t),  dimension(1:n), intent(in) :: phi
         type(XMM2r8_t),  dimension(1:n), intent(in) :: gamma
         type(XMM2r8_t),  dimension(1:n), intent(out):: SM
         integer(kind=i4),                 intent(in) :: n
         type(XMM2r8_t), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
-        type(XMM2r8_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+        type(XMM2r8_t), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
         integer(kind=i4) :: i,m,m1
         m = mod(n,8)
         if(m /= 0) then
@@ -1173,7 +1171,7 @@ module eos_sensor_sse
         !dir$ optimize:3
     
         !dir$ attributes forceinline :: compute_SM_unroll_4x_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_4x_xmm2r8
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: compute_SM_unroll_4x_xmm2r8
         type(XMM2r8_t),  intent(in) :: R
         type(XMM2r8_t),  dimension(1:n), intent(in) :: phi
         type(XMM2r8_t),  dimension(1:n), intent(in) :: gamma
@@ -1215,11 +1213,11 @@ module eos_sensor_sse
      end subroutine compute_SM_unroll_4x_xmm2r8
 
 
-   subroutine compute_SM_unroll_2x_xmm2r8(R,phi,gamma,SN,n)
+   subroutine compute_SM_unroll_2x_xmm2r8(R,phi,gamma,SM,n)
         !dir$ optimize:3
        
         !dir$ attributes forceinline :: compute_SM_unroll_2x_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_2x_xmm2r8
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: compute_SM_unroll_2x_xmm2r8
         type(XMM2r8_t),  intent(in) :: R
         type(XMM2r8_t),  dimension(1:n), intent(in) :: phi
         type(XMM2r8_t),  dimension(1:n), intent(in) :: gamma
@@ -1260,7 +1258,7 @@ module eos_sensor_sse
         !dir$ optimize:3
       
         !dir$ attributes forceinline :: compute_SM_rolled_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_rolled_xmm2r8
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: compute_SM_rolled_xmm2r8
         type(XMM2r8_t),  intent(in) :: R
         type(XMM2r8_t),  dimension(1:n), intent(in) :: phi
         type(XMM2r8_t),  dimension(1:n), intent(in) :: gamma
@@ -1272,7 +1270,7 @@ module eos_sensor_sse
       
         !dir$ assume_aligned phi:16
         !dir$ assume_aligned gamma:16
-        !dir$ assume_aligned SN:16
+        !dir$ assume_aligned SM:16
         !dir$ vector aligned
         !dir$ ivdep
         !dir$ vector vectorlength(8)
@@ -1329,15 +1327,14 @@ module eos_sensor_sse
         !dir$ optimize:3
         
         !dir$ attributes forceinline :: ratio_FH_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_xmm4r4
         type(XMM4r4_t),  intent(in) :: psi
         type(XMM4r4_t),  intent(in) :: phi
         type(XMM4r4_t) :: FH
         type(XMM4r4_t), parameter :: half = XMM4r4_t(0.5_sp)
         type(XMM4r4_t), automatic :: hpsi,hphi
-        hpsi = half.v*psi.v
-        hphi = half.v*phi.v
-        FH   = tan(hpsi.v)/tan(hphi.v)
+        hpsi.v = half.v*psi.v
+        hphi.v = half.v*phi.v
+        FH.v   = tan(hpsi.v)/tan(hphi.v)
      end function ratio_FH_xmm4r4
 
 
@@ -1345,7 +1342,7 @@ module eos_sensor_sse
         !dir$ optimize:3
        
         !dir$ attributes forceinline :: ratio_FH_unroll_16x_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_16x_xmm4r4
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: ratio_FH_unroll_16x_xmm4r4
         type(XMM4r4_t),  dimension(1:n),  intent(in) :: psi
         type(XMM4r4_t),  dimension(1:n),  intent(in) :: phi
         type(XMM4r4_t),  dimension(1:n),  intent(out):: FH
@@ -1434,7 +1431,7 @@ module eos_sensor_sse
         !dir$ optimize:3
        
         !dir$ attributes forceinline :: ratio_FH_unroll_8x_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_8x_xmm4r4
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: ratio_FH_unroll_8x_xmm4r4
         type(XMM4r4_t),  dimension(1:n),  intent(in) :: psi
         type(XMM4r4_t),  dimension(1:n),  intent(in) :: phi
         type(XMM4r4_t),  dimension(1:n),  intent(out):: FH
@@ -1496,7 +1493,7 @@ module eos_sensor_sse
         !dir$ optimize:3
         
         !dir$ attributes forceinline :: ratio_FH_unroll_4x_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_4x_xmm4r4
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: ratio_FH_unroll_4x_xmm4r4
         type(XMM4r4_t),  dimension(1:n),  intent(in) :: psi
         type(XMM4r4_t),  dimension(1:n),  intent(in) :: phi
         type(XMM4r4_t),  dimension(1:n),  intent(out):: FH
@@ -1546,7 +1543,7 @@ module eos_sensor_sse
         !dir$ optimize:3
         !dir$ attributes code_align : 16:: ratio_FH_unroll_2x_xmm4r4
         !dir$ attributes forceinline :: ratio_FH_unroll_2x_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_2x_xmm4r4
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: ratio_FH_unroll_2x_xmm4r4
         type(XMM4r4_t),  dimension(1:n),  intent(in) :: psi
         type(XMM4r4_t),  dimension(1:n),  intent(in) :: phi
         type(XMM4r4_t),  dimension(1:n),  intent(out):: FH
@@ -1589,7 +1586,7 @@ module eos_sensor_sse
         !dir$ optimize:3
         !dir$ attributes code_align : 16:: ratio_FH_rolled_xmm4r4
         !dir$ attributes forceinline :: ratio_FH_rolled_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_rolled_xmm4r4
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: ratio_FH_rolled_xmm4r4
         type(XMM4r4_t),  dimension(1:n),  intent(in) :: psi
         type(XMM4r4_t),  dimension(1:n),  intent(in) :: phi
         type(XMM4r4_t),  dimension(1:n),  intent(out):: FH
@@ -1648,25 +1645,23 @@ module eos_sensor_sse
      
      pure function ratio_FH_xmm2r8(psi,phi) result(FH)
         !dir$ optimize:3
-        !dir$ attributes code_align : 16:: ratio_FH_xmm2r8
         !dir$ attributes forceinline :: ratio_FH_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_xmm2r8
         type(XMM2r8_t),  intent(in) :: psi
         type(XMM2r8_t),  intent(in) :: phi
         type(XMM2r8_t) :: FH
         type(XMM2r8_t), parameter :: half = XMM2r8_t(0.5_dp)
         type(XMM2r8_t), automatic :: hpsi,hphi
-        hpsi = half.v*psi.v
-        hphi = half.v*phi.v
-        FH   = tan(hpsi.v)/tan(hphi.v)
-     end function ratio_FH_xmm2r8
+        hpsi.v = half.v*psi.v
+        hphi.v = half.v*phi.v
+        FH.v   = tan(hpsi.v)/tan(hphi.v)
+      end function ratio_FH_xmm2r8
 
 
      subroutine ratio_FH_unroll_16x_xmm2r8(psi,phi,FH,n)
         !dir$ optimize:3
         !dir$ attributes code_align : 16:: ratio_FH_unroll_16x_xmm2r8
         !dir$ attributes forceinline :: ratio_FH_unroll_16x_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_16x_xmm2r8
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: ratio_FH_unroll_16x_xmm2r8
         type(XMM2r8_t),  dimension(1:n),  intent(in) :: psi
         type(XMM2r8_t),  dimension(1:n),  intent(in) :: phi
         type(XMM2r8_t),  dimension(1:n),  intent(out):: FH
@@ -1755,7 +1750,7 @@ module eos_sensor_sse
         !dir$ optimize:3
         !dir$ attributes code_align : 16:: ratio_FH_unroll_8x_xmm2r8
         !dir$ attributes forceinline :: ratio_FH_unroll_8x_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_8x_xmm2r8
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: ratio_FH_unroll_8x_xmm2r8
         type(XMM2r8_t),  dimension(1:n),  intent(in) :: psi
         type(XMM2r8_t),  dimension(1:n),  intent(in) :: phi
         type(XMM2r8_t),  dimension(1:n),  intent(out):: FH
@@ -1816,7 +1811,7 @@ module eos_sensor_sse
         !dir$ optimize:3
         !dir$ attributes code_align : 16:: ratio_FH_unroll_4x_xmm2r8
         !dir$ attributes forceinline :: ratio_FH_unroll_4x_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_4x_xmm2r8
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: ratio_FH_unroll_4x_xmm2r8
         type(XMM2r8_t),  dimension(1:n),  intent(in) :: psi
         type(XMM2r8_t),  dimension(1:n),  intent(in) :: phi
         type(XMM2r8_t),  dimension(1:n),  intent(out):: FH
@@ -1866,7 +1861,7 @@ module eos_sensor_sse
         !dir$ optimize:3
         !dir$ attributes code_align : 16:: ratio_FH_unroll_2x_xmm2r8
         !dir$ attributes forceinline :: ratio_FH_unroll_2x_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_2x_xmm2r8
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: ratio_FH_unroll_2x_xmm2r8
         type(XMM2r8_t),  dimension(1:n),  intent(in) :: psi
         type(XMM2r8_t),  dimension(1:n),  intent(in) :: phi
         type(XMM2r8_t),  dimension(1:n),  intent(out):: FH
@@ -1909,7 +1904,7 @@ module eos_sensor_sse
         !dir$ optimize:3
         !dir$ attributes code_align : 16:: ratio_FH_rolled_xmm2r8
         !dir$ attributes forceinline :: ratio_FH_rolled_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_rolled_xmm2r8
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: ratio_FH_rolled_xmm2r8
         type(XMM2r8_t),  dimension(1:n),  intent(in) :: psi
         type(XMM2r8_t),  dimension(1:n),  intent(in) :: phi
         type(XMM2r8_t),  dimension(1:n),  intent(out):: FH
@@ -1961,7 +1956,8 @@ module eos_sensor_sse
             end select
         
      end subroutine ratio_FH_dispatch_xmm2r8
-     
+
+ 
      
 !///////////////////////////////////////////////////////////////////////////////////!
 !///////////////////////////////////////////////////////////////////////////////////!
@@ -1970,12 +1966,13 @@ module eos_sensor_sse
      ! следовательно, угол установки сканирующего зеркала
      ! Formula 4, p. 56
      
-     
+
+
      pure function scan_mirror_ang_xmm4r4(gam0,psi,phi,dir) result(gamma)
         !dir$ optimize:3
-        !dir$ attributes code_align : 16:: scan_mirror_ang_xmm4r4
+        
         !dir$ attributes forceinline :: scan_mirror_ang_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_xmm4r4
+        
         type(XMM4r4_t),  intent(in) :: gam0
         type(XMM4r4_t),  intent(in) :: psi
         type(XMM4r4_t),  intent(in) :: phi
@@ -1984,13 +1981,13 @@ module eos_sensor_sse
         type(XMM4r4_t), parameter :: half = XMM4r4_t(0.5_sp)
         type(XMM4r4_t), automatic :: t0,t1
         if(dir=="pos") then
-            t0 = gam0.v+half.v*phi.v*half.v
+            t0.v = gam0.v+half.v*phi.v*half.v
             t1 = ratio_FH_xmm4r4(psi,phi)
-            gamma = t0.v*t1.v
+            gamma.v = t0.v*t1.v
         else if(dir=="neg") then
-            t0 = gam0.v-half.v*phi.v*half.v
+            t0.v = gam0.v-half.v*phi.v*half.v
             t1 = ratio_FH_xmm4r4(psi,phi)
-            gamma = t0.v*t1.v
+            gamma.v = t0.v*t1.v
         end if
      end function scan_mirror_ang_xmm4r4
 
@@ -1999,7 +1996,7 @@ module eos_sensor_sse
         !dir$ optimize:3
         !dir$ attributes code_align : 16:: scan_mirror_ang_unroll_16x_xmm4r4
         !dir$ attributes forceinline :: scan_mirror_ang_unroll_16x_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_16x_xmm4r4
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: scan_mirror_ang_unroll_16x_xmm4r4
         type(XMM4r4_t),  dimension(1:n),  intent(in)  :: gam0
         type(XMM4r4_t),  dimension(1:n),  intent(in)  :: psi
         type(XMM4r4_t),  dimension(1:n),  intent(in)  :: phi
@@ -2101,7 +2098,7 @@ module eos_sensor_sse
             gamma(i+14)= scan_mirror_ang_xmm4r4(g14,ps14,ph14,dir) 
             g15        = gam0(i+15)
             ps15       = psi(i+15)
-            ph155      = phi(i+15)
+            ph15      = phi(i+15)
             gamma(i+15)= scan_mirror_ang_xmm4r4(g15,ps15,ph15,dir)                  
          end do
      end subroutine scan_mirror_ang_unroll_16x_xmm4r4
@@ -2112,7 +2109,7 @@ module eos_sensor_sse
         !dir$ optimize:3
         !dir$ attributes code_align : 16:: scan_mirror_ang_unroll_8x_xmm4r4
         !dir$ attributes forceinline :: scan_mirror_ang_unroll_8x_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_8x_xmm4r4
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: scan_mirror_ang_unroll_8x_xmm4r4
         type(XMM4r4_t),  dimension(1:n),  intent(in)  :: gam0
         type(XMM4r4_t),  dimension(1:n),  intent(in)  :: psi
         type(XMM4r4_t),  dimension(1:n),  intent(in)  :: phi
@@ -2187,7 +2184,7 @@ module eos_sensor_sse
         !dir$ optimize:3
         !dir$ attributes code_align : 16:: scan_mirror_ang_unroll_4x_xmm4r4
         !dir$ attributes forceinline :: scan_mirror_ang_unroll_4x_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_4x_xmm4r4
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: scan_mirror_ang_unroll_4x_xmm4r4
         type(XMM4r4_t),  dimension(1:n),  intent(in)  :: gam0
         type(XMM4r4_t),  dimension(1:n),  intent(in)  :: psi
         type(XMM4r4_t),  dimension(1:n),  intent(in)  :: phi
@@ -2245,7 +2242,7 @@ module eos_sensor_sse
         !dir$ optimize:3
         !dir$ attributes code_align : 16:: scan_mirror_ang_unroll_2x_xmm4r4
         !dir$ attributes forceinline :: scan_mirror_ang_unroll_2x_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_2x_xmm4r4
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: scan_mirror_ang_unroll_2x_xmm4r4
         type(XMM4r4_t),  dimension(1:n),  intent(in)  :: gam0
         type(XMM4r4_t),  dimension(1:n),  intent(in)  :: psi
         type(XMM4r4_t),  dimension(1:n),  intent(in)  :: phi
@@ -2296,7 +2293,7 @@ module eos_sensor_sse
         !dir$ optimize:3
         !dir$ attributes code_align : 16:: scan_mirror_ang_rolled_xmm4r4
         !dir$ attributes forceinline :: scan_mirror_ang_rolled_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_rolled_xmm4r4
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: scan_mirror_ang_rolled_xmm4r4
         type(XMM4r4_t),  dimension(1:n),  intent(in)  :: gam0
         type(XMM4r4_t),  dimension(1:n),  intent(in)  :: psi
         type(XMM4r4_t),  dimension(1:n),  intent(in)  :: phi
@@ -2343,13 +2340,13 @@ module eos_sensor_sse
         integer(kind=i4),                  intent(in)  :: unroll_cnt
        
              select case (unroll_cnt)
-               case (16)
-                  call scan_mirror_ang_unroll_16x_xmm4r4(gam0,psi,phi,dir,gamma,n)
-               case (8)
-                  call scan_mirror_ang_unroll_8x_xmm4r4(gam0,psi,phi,dir,gamma,n)
                case (4)
-                  call scan_mirror_ang_unroll_4x_xmm4r4(gam0,psi,phi,dir,gamma,n)
+                  call scan_mirror_ang_unroll_16x_xmm4r4(gam0,psi,phi,dir,gamma,n)
+               case (3)
+                  call scan_mirror_ang_unroll_8x_xmm4r4(gam0,psi,phi,dir,gamma,n)
                case (2)
+                  call scan_mirror_ang_unroll_4x_xmm4r4(gam0,psi,phi,dir,gamma,n)
+               case (1)
                   call scan_mirror_ang_unroll_2x_xmm4r4(gam0,psi,phi,dir,gamma,n)
                case (0)
                   call scan_mirror_ang_rolled_xmm4r4(gam0,psi,phi,dir,gamma,n)
@@ -2365,9 +2362,9 @@ module eos_sensor_sse
 
     pure function scan_mirror_ang_xmm2r8(gam0,psi,phi,dir) result(gamma)
         !dir$ optimize:3
-        !dir$ attributes code_align : 32 :: scan_mirror_ang_xmm2r8
+        
         !dir$ attributes forceinline :: scan_mirror_ang_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_xmm2r8
+       
         type(XMM2r8_t),  intent(in) :: gam0
         type(XMM2r8_t),  intent(in) :: psi
         type(XMM2r8_t),  intent(in) :: phi
@@ -2376,13 +2373,13 @@ module eos_sensor_sse
         type(XMM2r8_t), parameter :: half = XMM2r8_t(0.5_dp)
         type(XMM2r8_t), automatic :: t0,t1
         if(dir=="pos") then
-            t0 = gam0.v+half.v*phi.v*half.v
+            t0.v = gam0.v+half.v*phi.v*half.v
             t1 = ratio_FH_xmm2r8(psi,phi)
-            gamma = t0.v*t1.v
+            gamma.v = t0.v*t1.v
         else if(dir=="neg") then
-            t0 = gam0.v-half.v*phi.v*half.v
+            t0.v = gam0.v-half.v*phi.v*half.v
             t1 = ratio_FH_xmm2r8(psi,phi)
-            gamma = t0.v*t1.v
+            gamma.v = t0.v*t1.v
         end if
      end function scan_mirror_ang_xmm2r8
 
@@ -2391,7 +2388,7 @@ module eos_sensor_sse
         !dir$ optimize:3
         !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_16x_xmm2r8
         !dir$ attributes forceinline :: scan_mirror_ang_unroll_16x_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_16x_xmm2r8
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: scan_mirror_ang_unroll_16x_xmm2r8
         type(XMM2r8_t),  dimension(1:n),  intent(in)  :: gam0
         type(XMM2r8_t),  dimension(1:n),  intent(in)  :: psi
         type(XMM2r8_t),  dimension(1:n),  intent(in)  :: phi
@@ -2493,7 +2490,7 @@ module eos_sensor_sse
             gamma(i+14)= scan_mirror_ang_xmm2r8(g14,ps14,ph14,dir) 
             g15        = gam0(i+15)
             ps15       = psi(i+15)
-            ph155      = phi(i+15)
+            ph15      = phi(i+15)
             gamma(i+15)= scan_mirror_ang_xmm2r8(g15,ps15,ph15,dir)                  
          end do
      end subroutine scan_mirror_ang_unroll_16x_xmm2r8
@@ -2504,7 +2501,7 @@ module eos_sensor_sse
         !dir$ optimize:3
         !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_8x_xmm2r8
         !dir$ attributes forceinline :: scan_mirror_ang_unroll_8x_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_8x_xmm2r8
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: scan_mirror_ang_unroll_8x_xmm2r8
         type(XMM2r8_t),  dimension(1:n),  intent(in)  :: gam0
         type(XMM2r8_t),  dimension(1:n),  intent(in)  :: psi
         type(XMM2r8_t),  dimension(1:n),  intent(in)  :: phi
@@ -2579,7 +2576,7 @@ module eos_sensor_sse
         !dir$ optimize:3
         !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_4x_xmm2r8
         !dir$ attributes forceinline :: scan_mirror_ang_unroll_4x_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_4x_xmm2r8
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: scan_mirror_ang_unroll_4x_xmm2r8
         type(XMM2r8_t),  dimension(1:n),  intent(in)  :: gam0
         type(XMM2r8_t),  dimension(1:n),  intent(in)  :: psi
         type(XMM2r8_t),  dimension(1:n),  intent(in)  :: phi
@@ -2639,7 +2636,7 @@ module eos_sensor_sse
         !dir$ optimize:3
         !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_2x_xmm2r8
         !dir$ attributes forceinline :: scan_mirror_ang_unroll_2x_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_2x_xmm2r8
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: scan_mirror_ang_unroll_2x_xmm2r8
         type(XMM2r8_t),  dimension(1:n),  intent(in)  :: gam0
         type(XMM2r8_t),  dimension(1:n),  intent(in)  :: psi
         type(XMM2r8_t),  dimension(1:n),  intent(in)  :: phi
@@ -2689,11 +2686,11 @@ module eos_sensor_sse
         !dir$ optimize:3
         !dir$ attributes code_align : 32 :: scan_mirror_ang_rolled_xmm2r8
         !dir$ attributes forceinline :: scan_mirror_ang_rolled_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_rolled_xmm2r8
+        !dir$ attributes optimization_parameter:"target_arch=SKYLAKE-AVX512" :: scan_mirror_ang_rolled_xmm2r8
         type(XMM2r8_t),  dimension(1:n),  intent(in)  :: gam0
-        type(YMM8r8_t),  dimension(1:n),  intent(in)  :: psi
+        type(XMM2r8_t),  dimension(1:n),  intent(in)  :: psi
         type(XMM2r8_t),  dimension(1:n),  intent(in)  :: phi
-        type(YMMr8_t),  dimension(1:n),  intent(out) :: gamma
+        type(XMM2r8_t),  dimension(1:n),  intent(out) :: gamma
         integer(kind=i4),                  intent(in)  :: n
         character(len=3),                  intent(in)  :: dir
         type(XMM2r8_t)   , automatic :: ps0
@@ -2735,13 +2732,13 @@ module eos_sensor_sse
         integer(kind=i4),                  intent(in)  :: unroll_cnt
         
              select case (unroll_cnt)
-               case (16)
-                  call scan_mirror_ang_unroll_16x_xmm2r8(gam0,psi,phi,dir,gamma,n)
-               case (8)
-                  call scan_mirror_ang_unroll_8x_xmm2r8(gam0,psi,phi,dir,gamma,n)
                case (4)
-                  call scan_mirror_ang_unroll_4x_xmm2r8(gam0,psi,phi,dir,gamma,n)
+                  call scan_mirror_ang_unroll_16x_xmm2r8(gam0,psi,phi,dir,gamma,n)
+               case (3)
+                  call scan_mirror_ang_unroll_8x_xmm2r8(gam0,psi,phi,dir,gamma,n)
                case (2)
+                  call scan_mirror_ang_unroll_4x_xmm2r8(gam0,psi,phi,dir,gamma,n)
+               case (1)
                   call scan_mirror_ang_unroll_2x_xmm2r8(gam0,psi,phi,dir,gamma,n)
                case (0)
                   call scan_mirror_ang_rolled_xmm2r8(gam0,psi,phi,dir,gamma,n)
@@ -2751,14 +2748,17 @@ module eos_sensor_sse
         
     end subroutine scan_mirror_ang_dispatch_xmm2r8
     
-    
-    !////////////////////////////////////////////////////////////////////////////////////!
-    !////////////////////////////////////////////////////////////////////////////////////!
+   
+
+#if 0
+   
     
     
      !величина расфокусировки
       !Formula 1, p. 59
-    
+
+      
+   
    
     pure function defocus_cof_xmm4r4(l2,alpha,O,inf) result(dc)
         !dir$ optimize:3
