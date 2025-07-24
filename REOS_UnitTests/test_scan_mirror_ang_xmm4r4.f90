@@ -18,7 +18,7 @@
 !SOFTWARE.
 !*/
 
-module mod_test_compute_SN_xmm2r8
+module mod_test_scan_mirror_ang_xmm4r4
 
 
        use mod_kinds,                 only : i1, i4, sp 
@@ -34,21 +34,21 @@ module mod_test_compute_SN_xmm2r8
 #if 0
     ICC and ifort commands
     icc -c -std=c99 GMS_intrinsics_wrappers.c
-    ifort -o test_compute_SN_xmm2r8 -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-avx512 \
-    -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_kinds.f90 GMS_vectypes.f90 GMS_eos_sensor_sse.f90 GMS_intrinsics_wrappers.o test_compute_SN_xmm2r8.f90
+    ifort -o test_scan_mirror_ang_xmm4r4 -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-avx512 \
+    -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_kinds.f90 GMS_vectypes.f90 GMS_eos_sensor_sse.f90 GMS_intrinsics_wrappers.o test_scan_mirror_ang_xmm4r4.f90
     -------------------------------------------------------------------------------------------------------------------------------------------------
-    ifx -o test_compute_SN_xmm2r8 -fp-model fast=2 -ftz -O3  -march=skylake-avx512 \     
-    -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=3  GMS_kinds.f90 GMS_vectypes.f90 GMS_eos_sensor_sse.f90 GMS_intrinsics_wrappers.o test_compute_SN_xmm2r8.f90
+    ifx -o test_scan_mirror_ang_xmm4r4 -fp-model fast=2 -ftz -O3  -march=skylake-avx512 \     
+    -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=3  GMS_kinds.f90 GMS_vectypes.f90 GMS_eos_sensor_sse.f90 GMS_intrinsics_wrappers.o test_scan_mirror_ang_xmm4r4.f90
 
     For assembly only:
     ifort -S   -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-avx512 \
-     -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_kinds.f90 GMS_vectypes.f90 GMS_eos_sensor_sse.f90 GMS_intrinsics_wrappers.o test_compute_SN_xmm2r8.f90
+     -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_kinds.f90 GMS_vectypes.f90 GMS_eos_sensor_sse.f90 GMS_intrinsics_wrappers.o test_scan_mirror_ang_xmm4r4.f90
 #endif
 
       contains 
 
 
-subroutine unit_test_compute_SN_xmm2r8()
+subroutine unit_test_scan_mirror_ang_xmm4r4()
            use iso_c_binding, only : c_int, c_long_long 
            use IFPORT 
            use , intrinsic           :: IEEE_ARITHMETIC
@@ -69,33 +69,34 @@ subroutine unit_test_compute_SN_xmm2r8()
                     end function rdtsc_wrap 
               end interface
               character(len=128),        automatic  :: emsg 
-              character(len=60),         parameter  :: header = "[TEST #1:  compute_SN_xmm2r8 -- START]"
-              character(len=60),         parameter  :: footer = "[TEST #1:  compute_SN_xmm2r8 -- END]  "
-              character(len=40),         parameter  :: OUTFILE = "OUTPUT_compute_SN_xmm2r8.dat"
+              character(len=60),         parameter  :: header = "[TEST #1:  scan_mirror_ang_xmm4r4 -- START]"
+              character(len=60),         parameter  :: footer = "[TEST #1:  scan_mirror_ang_xmm4r4 -- END]  "
+              character(len=40),         parameter  :: OUTFILE = "OUTPUT_scan_mirror_ang_xmm4r4.dat"
               
-              type(XMM2r8_t), allocatable, dimension(:) :: phi 
-              type(XMM2r8_t), allocatable, dimension(:) :: gamma 
-              type(XMM2r8_t), allocatable, dimension(:,:) :: SN 
+              type(XMM4r4_t), allocatable, dimension(:) :: phi 
+              type(XMM4r4_t), allocatable, dimension(:) :: psi 
+              type(XMM4r4_t), allocatable, dimension(:) :: gam0 
+              type(XMM4r4_t), allocatable, dimension(:,:) :: gamma 
               !dir$ attributes align : 16 :: phi 
+              !dir$ attributes align : 16 :: psi 
+              !dir$ attributes align : 16 :: gam0 
               !dir$ attributes align : 16 :: gamma
-              type(XMM2r8_t),            parameter ::  R = XMM2r8_t([10.5_dp,8.5_dp])
-              type(XMM2r8_t),            automatic ::  rand_R 
-              type(XMM2r8_t),            automatic ::  rand_phi 
-              type(XMM2r8_t),            automatic ::  rand_gamma 
-              !dir$ attributes align : 16 :: R 
-              !dir$ attributes align : 16 :: rand_R 
+              type(XMM4r4_t),            automatic ::  rand_phi 
+              type(XMM4r4_t),            automatic ::  rand_psi
+              type(XMM4r4_t),            automatic ::  rand_gam0
               !dir$ attributes align : 16 :: rand_phi 
-              !dir$ attributes align : 16 :: rand_gamma 
-              real(kind=dp),             automatic  :: rnum,tmp  
+              !dir$ attributes align : 16 :: rand_psi 
+              !dir$ attributes align : 16 :: rand_gam0 
+              integer(kind=c_long_long), automatic  :: start,end 
+              integer(kind=c_long_long), automatic  :: start_c,end_c 
+              integer(kind=c_long_long), automatic  :: tsc_elapsed 
               integer(kind=i4),          automatic  :: nvecs 
               integer(kind=i4),          automatic  :: i__,j__ 
               integer(kind=i4),          parameter  :: iounit = 102 
               integer(kind=i4),          automatic  :: ioerr
               logical(kind=i1),          automatic  :: ioflag 
-              integer(kind=c_long_long), automatic  :: start,end 
-              integer(kind=c_long_long), automatic  :: start_c,end_c 
-              integer(kind=c_long_long), automatic  :: tsc_elapsed 
-              
+             
+
 #if 0
               integer(c_int),            parameter :: SIGTRAP = 5 
               integer(c_int),            automatic :: ret_val
@@ -107,23 +108,23 @@ subroutine unit_test_compute_SN_xmm2r8()
               print*, header 
               nvecs = set_random_size()
               allocate(phi(nvecs))
-              allocate(gamma(nvecs))
-              allocate(SN(5,nvecs))
-             
-             
+              allocate(psi(nvecs))
+              allocate(gam0(nvecs))
+              allocate(gamma(5,nvecs))
+                           
               call random_init(.false.,.false.)
               do i__=1, nvecs 
                  call random_number(rand_phi.v)
                  phi(i__)  = rand_phi 
-                 !print*, rand_phi 
-                 call random_number(rand_gamma.v)
-                 gamma(i__) = rand_gamma
-                 !print*, rand_gamma 
+                 call random_number(rand_psi.v)
+                 psi(i__) = rand_psi
+                 call random_number(rand_gam0.v)
+                 gam0(i__) = rand_gam0 
               end do 
 
               do j__=0,4
                  start = rdtsc_wrap()
-                 call compute_SN_dispatch_xmm2r8(R,phi,gamma,SN(j__,:),nvecs,j__)
+                 call scan_mirror_ang_dispatch_xmm4r4(gam0,psi,phi,"pos",gamma(j__,:),nvecs,j__)
                  end         = rdtsc_wrap()
                  start_c     = start-RDTSC_LATENCY
                  end_c       = end-RDTSC_LATENCY
@@ -132,11 +133,11 @@ subroutine unit_test_compute_SN_xmm2r8()
                      print*,"[INVALID-TSC]=", tsc_elapsed
                  else 
                      print*, "[WARNING]: Crude timing measurement!!"
-                     print*,"[TSC]=",tsc_elapsed, "for case: #",j__ 
+                     print*,"[TSC]=",tsc_elapsed, "for case: #", j__ 
                  end if 
               end do 
-                
-#if 1
+              
+#if 1 
               ioerr = 0
               open(UNIT=IOUNIT,FILE=OUTFILE,IOMSG=emsg,ACCESS="SEQUENTIAL",STATUS="NEW")
               ioflag = (ioerr==0)
@@ -145,18 +146,18 @@ subroutine unit_test_compute_SN_xmm2r8()
                  print*, emsg 
                  return 
               else 
-                 write(IOUNIT,'(A60)') "[OUTPUT-START]: compute_SN_xmm2r8 -- field"
-                 write(IOUNIT,'(T14,A3,T36,A3)') "v0","v1"
-                 do i__=1,nvecs                                                                                                                                           
-                    write(IOUNIT,'(2F22.15)') SN(4,i__).v(0),SN(4,i__).v(1)
+                 write(IOUNIT,'(A60)') "[OUTPUT-START]: scan_mirror_ang_xmm4r4 -- field"
+                 do j__=0,4
+                     write(IOUNIT,'(T14,A3,T36,A3,T57,A3,T79,A3)') "v0","v1","v2","v3"
+                     do i__=1,nvecs                                                                                                                                           
+                         write(IOUNIT,'(4F22.15)') gamma(j__,i__).v(0),gamma(j__,i__).v(1),gamma(j__,i__).v(2),gamma(j__,i__).v(3)
+                     end do 
                  end do 
-                 write(IOUNIT,'(A60)') "[OUTPUT-END]:   compute_SN_xmm2r8 -- field"
+                 write(IOUNIT,'(A60)') "[OUTPUT-END]:   scan_mirror_ang_xmm4r4 -- field"
               end if  
               close(IOUNIT,STATUS='KEEP')
 #endif             
-              if(allocated(SN))     deallocate(SN)
-              if(allocated(gamma))  deallocate(gamma)
-              if(allocated(phi))    deallocate(phi)
+             
               print*, footer                
               contains 
 
@@ -172,17 +173,18 @@ subroutine unit_test_compute_SN_xmm2r8()
                        end if 
                        rval=rnum 
                end function set_random_size
-end subroutine unit_test_compute_SN_xmm2r8 
+               
+end subroutine unit_test_scan_mirror_ang_xmm4r4
 
 
 
 
 
-end module mod_test_compute_SN_xmm2r8
+end module mod_test_scan_mirror_ang_xmm4r4 
 
 
 
 program main 
-   use mod_test_compute_SN_xmm2r8
-   call unit_test_compute_SN_xmm2r8()
+   use mod_test_scan_mirror_ang_xmm4r4 
+   call unit_test_scan_mirror_ang_xmm4r4()
 end program main 

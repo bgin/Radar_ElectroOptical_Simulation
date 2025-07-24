@@ -75,7 +75,7 @@ subroutine unit_test_compute_SN_xmm4r4()
               
               type(XMM4r4_t), allocatable, dimension(:) :: phi 
               type(XMM4r4_t), allocatable, dimension(:) :: gamma 
-              type(XMM4r4_t), allocatable, dimension(:) :: SN 
+              type(XMM4r4_t), allocatable, dimension(:,:) :: SN 
               !dir$ attributes align : 16 :: phi 
               !dir$ attributes align : 16 :: gamma
               type(XMM4r4_t),            parameter ::  R = XMM4r4_t([8.5_sp,4.25_sp,1.5_sp,10.0_sp])
@@ -108,7 +108,7 @@ subroutine unit_test_compute_SN_xmm4r4()
               nvecs = set_random_size()
               allocate(phi(nvecs))
               allocate(gamma(nvecs))
-              allocate(SN(nvecs))
+              allocate(SN(5,nvecs))
                            
               call random_init(.false.,.false.)
               do i__=1, nvecs 
@@ -120,7 +120,7 @@ subroutine unit_test_compute_SN_xmm4r4()
 
               do j__=0,4
                  start = rdtsc_wrap()
-                 call compute_SN_dispatch_xmm4r4(R,phi,gamma,SN,nvecs,j__)
+                 call compute_SN_dispatch_xmm4r4(R,phi,gamma,SN(j__,:),nvecs,j__)
                  end         = rdtsc_wrap()
                  start_c     = start-RDTSC_LATENCY
                  end_c       = end-RDTSC_LATENCY
@@ -145,7 +145,7 @@ subroutine unit_test_compute_SN_xmm4r4()
                  write(IOUNIT,'(A60)') "[OUTPUT-START]: compute_SN_xmm4r4 -- field"
                  write(IOUNIT,'(T14,A3,T36,A3,T57,A3,T79,A3)') "v0","v1","v2","v3"
                  do i__=1,nvecs                                                                                                                                           
-                    write(IOUNIT,'(4F22.15)') SN(i__).v(0),SN(i__).v(1),SN(i__).v(2),SN(i__).v(3)
+                    write(IOUNIT,'(4F22.15)') SN(4,i__).v(0),SN(4,i__).v(1),SN(4,i__).v(2),SN(4,i__).v(3)
                  end do 
                  write(IOUNIT,'(A60)') "[OUTPUT-END]:   compute_SN_xmm4r4 -- field"
               end if  
