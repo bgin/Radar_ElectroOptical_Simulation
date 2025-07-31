@@ -3903,7 +3903,7 @@ module eos_sensor_sse
          
     end subroutine circle_dispersion_dispatch_xmm2r8
 
-#if 0
+
     
     !/////////////////////////////////////////////////////////////////////////////!
     !//////////////////////////////////////////////////////////////////////////////!
@@ -3912,9 +3912,8 @@ module eos_sensor_sse
      
     pure function circ_dispers_diam_xmm4r4(l1,l2,alpha,O,inf) result(ratio)
         !dir$ optimize:3
-        !dir$ attributes code_align : 32 :: circ_dispers_diam_xmm4r4
+        
         !dir$ attributes forceinline :: circ_dispers_diam_xmm4r4
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_xmm4r4
         type(XMM4r4_t),     intent(in) :: l1
         type(XMM4r4_t),     intent(in) :: l2
         type(XMM4r4_t),     intent(in) :: alpha
@@ -3923,15 +3922,15 @@ module eos_sensor_sse
         type(XMM4r4_t) :: ratio
         type(XMM4r4_t), automatic :: t0,t1
         !dir$ attributes align : 16:: t0,t1
-        t0    = l1.v+l2.v
+        t0.v    = l1.v+l2.v
         t1    = defocus_cof_xmm4r4(l2,alpha,O,inf)
-        ratio = t1.v/t0.v
+        ratio.v = t1.v/t0.v
      end function circ_dispers_diam_xmm4r4
 
 
      subroutine circ_dispers_diam_unroll_16x_xmm4r4(l1,l2,alpha,O,inf,ratio,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_16x_xmm4r4
+           
            !dir$ attributes forceinline :: circ_dispers_diam_unroll_16x_xmm4r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_16x_xmm4r4
          type(XMM4r4_t),                     intent(in) :: l1
@@ -4003,7 +4002,7 @@ module eos_sensor_sse
    
     subroutine circ_dispers_diam_unroll_8x_xmm4r4(l1,l2,alpha,O,inf,ratio,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_8x_xmm4r4
+          
            !dir$ attributes forceinline :: circ_dispers_diam_unroll_8x_xmm4r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_8x_xmm4r4
          type(XMM4r4_t),                     intent(in) :: l1
@@ -4055,7 +4054,7 @@ module eos_sensor_sse
 
      subroutine circ_dispers_diam_unroll_4x_xmm4r4(l1,l2,alpha,O,inf,ratio,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_4x_xmm4r4
+           
            !dir$ attributes forceinline :: circ_dispers_diam_unroll_4x_xmm4r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_4x_xmm4r4
          type(XMM4r4_t),                     intent(in) :: l1
@@ -4100,7 +4099,7 @@ module eos_sensor_sse
 
      subroutine circ_dispers_diam_unroll_2x_xmm4r4(l1,l2,alpha,O,inf,ratio,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_2x_xmm4r4
+         
            !dir$ attributes forceinline :: circ_dispers_diam_unroll_2x_xmm4r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_2x_xmm4r4
          type(XMM4r4_t),                     intent(in) :: l1
@@ -4139,7 +4138,7 @@ module eos_sensor_sse
 
      subroutine circ_dispers_diam_rolled_xmm4r4(l1,l2,alpha,O,inf,ratio,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: circ_dispers_diam_rolled_xmm4r4
+         
            !dir$ attributes forceinline :: circ_dispers_diam_rolled_xmm4r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_rolled_xmm4r4
          type(XMM4r4_t),                     intent(in) :: l1
@@ -4180,13 +4179,13 @@ module eos_sensor_sse
          integer(kind=i4),                    intent(in) :: unroll_cnt
         
              select case (unroll_cnt)
-                case (16)
-                   call circ_dispers_diam_unroll_16x_xmm4r4(l1,l2,alpha,O,inf,ratio,n)
-                case (8)
-                   call circ_dispers_diam_unroll_8x_xmm4r4(l1,l2,alpha,O,inf,ratio,n)
                 case (4)
-                   call circ_dispers_diam_unroll_4x_xmm4r4(l1,l2,alpha,O,inf,ratio,n)
+                   call circ_dispers_diam_unroll_16x_xmm4r4(l1,l2,alpha,O,inf,ratio,n)
+                case (3)
+                   call circ_dispers_diam_unroll_8x_xmm4r4(l1,l2,alpha,O,inf,ratio,n)
                 case (2)
+                   call circ_dispers_diam_unroll_4x_xmm4r4(l1,l2,alpha,O,inf,ratio,n)
+                case (1)
                    call circ_dispers_diam_unroll_2x_xmm4r4(l1,l2,alpha,O,inf,ratio,n)
                 case (0)
                    call circ_dispers_diam_rolled_xmm4r4(l1,l2,alpha,O,inf,ratio,n)
@@ -4199,9 +4198,9 @@ module eos_sensor_sse
      
     pure function circ_dispers_diam_xmm2r8(l1,l2,alpha,O,inf) result(ratio)
         !dir$ optimize:3
-        !dir$ attributes code_align : 32 :: circ_dispers_diam_xmm2r8
+       
         !dir$ attributes forceinline :: circ_dispers_diam_xmm2r8
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_xmm2r8
+       
         type(XMM2r8_t),     intent(in) :: l1
         type(XMM2r8_t),     intent(in) :: l2
         type(XMM2r8_t),     intent(in) :: alpha
@@ -4210,16 +4209,16 @@ module eos_sensor_sse
         type(XMM2r8_t) :: ratio
         type(XMM2r8_t), automatic :: t0,t1
         !dir$ attributes align : 16:: t0,t1
-        t0    = l1.v+l2.v
+        t0.v    = l1.v+l2.v
         t1    = defocus_cof_xmm2r8(l2,alpha,O,inf)
-        ratio = t1.v/t0.v
+        ratio.v = t1.v/t0.v
      end function circ_dispers_diam_xmm2r8
 
 
      
      subroutine circ_dispers_diam_unroll_16x_xmm2r8(l1,l2,alpha,O,inf,ratio,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_16x_xmm2r8
+       
            !dir$ attributes forceinline :: circ_dispers_diam_unroll_16x_xmm2r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_16x_xmm2r8
          type(XMM2r8_t),                     intent(in) :: l1
@@ -4291,7 +4290,7 @@ module eos_sensor_sse
    
     subroutine circ_dispers_diam_unroll_8x_xmm2r8(l1,l2,alpha,O,inf,ratio,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_8x_xmm2r8
+          
            !dir$ attributes forceinline :: circ_dispers_diam_unroll_8x_xmm2r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_8x_xmm2r8
          type(XMM2r8_t),                     intent(in) :: l1
@@ -4344,7 +4343,7 @@ module eos_sensor_sse
       
      subroutine circ_dispers_diam_unroll_4x_xmm2r8(l1,l2,alpha,O,inf,ratio,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_4x_xmm2r8
+          
            !dir$ attributes forceinline :: circ_dispers_diam_unroll_4x_xmm2r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_4x_xmm2r8
          type(XMM2r8_t),                     intent(in) :: l1
@@ -4389,8 +4388,7 @@ module eos_sensor_sse
 
      subroutine circ_dispers_diam_unroll_2x_xmm2r8(l1,l2,alpha,O,inf,ratio,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_2x_xmm2r8
-           !dir$ attributes forceinline :: circ_dispers_diam_unroll_2x_xmm2r8
+            !dir$ attributes forceinline :: circ_dispers_diam_unroll_2x_xmm2r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_2x_xmm2r8
          type(XMM2r8_t),                     intent(in) :: l1
          type(XMM2r8_t),                     intent(in) :: l2
@@ -4430,7 +4428,6 @@ module eos_sensor_sse
 
      subroutine circ_dispers_diam_rolled_xmm2r8(l1,l2,alpha,O,inf,ratio,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: circ_dispers_diam_rolled_xmm2r8
            !dir$ attributes forceinline :: circ_dispers_diam_rolled_xmm2r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_rolled_xmm2r8
          type(XMM2r8_t),                     intent(in) :: l1
@@ -4461,24 +4458,24 @@ module eos_sensor_sse
 
      subroutine circ_dispers_diam_dispatch_xmm2r8(l1,l2,alpha,O,inf,ratio,n,unroll_cnt) 
           !dir$ optimize:3
-          !dir$ attributes code_align : 32 :: circ_dispers_diam_dispatch_xmm2r8 
+          
          type(XMM2r8_t),                     intent(in) :: l1
          type(XMM2r8_t),                     intent(in) :: l2
          type(XMM2r8_t),    dimension(1:n),  intent(in) :: alpha
          type(XMM2r8_t),                     intent(in) :: O
          logical(kind=i4),                    intent(in) :: inf
-         type(XMM4r4_t),    dimension(1:n),  intent(out):: ratio
+         type(XMM2r8_t),    dimension(1:n),  intent(out):: ratio
          integer(kind=i4),                    intent(in) :: n
          integer(kind=i4),                    intent(in) :: unroll_cnt
         
              select case (unroll_cnt)
-                case (16)
-                   call circ_dispers_diam_unroll_16x_xmm2r8(l1,l2,alpha,O,inf,ratio,n)
-                case (8)
-                   call circ_dispers_diam_unroll_8x_xmm2r8(l1,l2,alpha,O,inf,ratio,n)
                 case (4)
-                   call circ_dispers_diam_unroll_4x_xmm2r8(l1,l2,alpha,O,inf,ratio,n)
+                   call circ_dispers_diam_unroll_16x_xmm2r8(l1,l2,alpha,O,inf,ratio,n)
+                case (3)
+                   call circ_dispers_diam_unroll_8x_xmm2r8(l1,l2,alpha,O,inf,ratio,n)
                 case (2)
+                   call circ_dispers_diam_unroll_4x_xmm2r8(l1,l2,alpha,O,inf,ratio,n)
+                case (1)
                    call circ_dispers_diam_unroll_2x_xmm2r8(l1,l2,alpha,O,inf,ratio,n)
                 case (0)
                    call circ_dispers_diam_rolled_xmm2r8(l1,l2,alpha,O,inf,ratio,n)
@@ -4486,6 +4483,7 @@ module eos_sensor_sse
                    return
              end select
      end subroutine  circ_dispers_diam_dispatch_xmm2r8 
+
 
  
      !/////////////////////////////////////////////////////////////////////////////////////////////!
@@ -4502,9 +4500,9 @@ module eos_sensor_sse
      
     pure function fov_x_axis_xmm4r4(H,delta,gamma) result(ax)
          !dir$ optimize:3
-         !dir$ attributes code_align : 32 :: fov_x_axis_xmm4r4
+       
          !dir$ attributes forceinline :: fov_x_axis_xmm4r4
-         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_xmm4r4
+        
          type(XMM4r4_t),   intent(in) :: H
          type(XMM4r4_t),   intent(in) :: delta
          type(XMM4r4_t),   intent(in) :: gamma
@@ -4512,16 +4510,16 @@ module eos_sensor_sse
          type(XMM4r4_t), parameter :: half = XMM4r4_t(0.5_sp)
          type(XMM4r4_t), automatic :: gamm2,tdel
          !dir$ attributes align : 16:: gamm2,tdel
-         gamm2 = half.v*gamma.v
-         tdel  = tan(delta.v)
-         ax    = H.v*tdel.v/cos(gamm2.v)
+         gamm2.v = half.v*gamma.v
+         tdel.v  = tan(delta.v)
+         ax.v    = H.v*tdel.v/cos(gamm2.v)
     end function fov_x_axis_xmm4r4
 
 
     
     subroutine fov_x_axis_unroll_16x_xmm4r4(H,delta,gamma,ax,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_16x_xmm4r4
+          
            !dir$ attributes forceinline :: fov_x_axis_unroll_16x_xmm4r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_16x_xmm4r4
          type(XMM4r4_t),                  intent(in) :: H
@@ -4533,9 +4531,9 @@ module eos_sensor_sse
          type(XMM4r4_t), automatic :: d8,d9,d10,d11,d12,d13,d14,d15
          !dir$ attributes align : 16:: d0,d1,d2,d3,d4,d5,d6,d7
          !dir$ attributes align : 16:: d8,d9,d10,d11,d12,d13,d14,d15
-         type(XMM4r4_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         type(XMM4r4_t), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
          type(XMM4r4_t), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
-         !dir$ attributes align : 16:: g0,g1,g2,g3,g4,g,g6,g7
+         !dir$ attributes align : 16:: g0,g1,g2,g3,g4,g5,g6,g7
          !dir$ attributes align : 16:: g8,g9,g10,g11,g12,g13,g14,g15
          integer(kind=i4) :: i,m,m1
          m = mod(n,16)
@@ -4611,7 +4609,7 @@ module eos_sensor_sse
 
      subroutine fov_x_axis_unroll_8x_xmm4r4(H,delta,gamma,ax,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_8x_xmm4r4
+           
            !dir$ attributes forceinline :: fov_x_axis_unroll_8x_xmm4r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_8x_xmm4r4
          type(XMM4r4_t),                  intent(in) :: H
@@ -4621,8 +4619,8 @@ module eos_sensor_sse
          integer(kind=i4),                 intent(in)  :: n
          type(XMM4r4_t), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
          !dir$ attributes align : 16:: d0,d1,d2,d3,d4,d5,d6,d7
-         type(XMM4r4_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
-         !dir$ attributes align : 16:: g0,g1,g2,g3,g4,g,g6,g7
+         type(XMM4r4_t), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+         !dir$ attributes align : 16:: g0,g1,g2,g3,g4,g5,g6,g7
          integer(kind=i4) :: i,m,m1
          m = mod(n,8)
          if(m /= 0) then
@@ -4673,7 +4671,7 @@ module eos_sensor_sse
 
      subroutine fov_x_axis_unroll_4x_xmm4r4(H,delta,gamma,ax,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_4x_xmm4r4
+          
            !dir$ attributes forceinline :: fov_x_axis_unroll_4x_xmm4r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_4x_xmm4r4
          type(XMM4r4_t),                  intent(in) :: H
@@ -4723,7 +4721,7 @@ module eos_sensor_sse
 
     subroutine fov_x_axis_unroll_2x_xmm4r4(H,delta,gamma,ax,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_2x_xmm4r4
+          
            !dir$ attributes forceinline :: fov_x_axis_unroll_2x_xmm4r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_2x_xmm4r4
          type(XMM4r4_t),                  intent(in) :: H
@@ -4767,7 +4765,7 @@ module eos_sensor_sse
 
      subroutine fov_x_axis_rolled_xmm4r4(H,delta,gamma,ax,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: fov_x_axis_rolled_xmm4r4
+         
            !dir$ attributes forceinline :: fov_x_axis_rolled_xmm4r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_rolled_xmm4r4
          type(XMM4r4_t),                  intent(in) :: H
@@ -4808,13 +4806,13 @@ module eos_sensor_sse
          integer(kind=i4),                 intent(in)  :: unroll_cnt
         
               select case (unroll_cnt)
-                 case (16)
-                     call fov_x_axis_unroll_16x_xmm4r4(H,delta,gamma,ax,n)
-                 case (8)
-                     call fov_x_axis_unroll_8x_xmm4r4(H,delta,gamma,ax,n)
                  case (4)
-                     call fov_x_axis_unroll_4x_xmm4r4(H,delta,gamma,ax,n)
+                     call fov_x_axis_unroll_16x_xmm4r4(H,delta,gamma,ax,n)
+                 case (3)
+                     call fov_x_axis_unroll_8x_xmm4r4(H,delta,gamma,ax,n)
                  case (2)
+                     call fov_x_axis_unroll_4x_xmm4r4(H,delta,gamma,ax,n)
+                 case (1)
                      call fov_x_axis_unroll_2x_xmm4r4(H,delta,gamma,ax,n)
                  case (0)
                      call fov_x_axis_rolled_xmm4r4(H,delta,gamma,ax,n)
@@ -4827,9 +4825,8 @@ module eos_sensor_sse
      
      pure function fov_x_axis_xmm2r8(H,delta,gamma) result(ax)
          !dir$ optimize:3
-         !dir$ attributes code_align : 32 :: fov_x_axis_xmm2r8
+         
          !dir$ attributes forceinline :: fov_x_axis_xmm2r8
-         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_xmm2r8
          type(XMM2r8_t),   intent(in) :: H
          type(XMM2r8_t),   intent(in) :: delta
          type(XMM2r8_t),   intent(in) :: gamma
@@ -4837,15 +4834,15 @@ module eos_sensor_sse
          type(XMM2r8_t), parameter :: half = XMM2r8_t(0.5_dp)
          type(XMM2r8_t), automatic :: gamm2,tdel
          !dir$ attributes align : 16:: gamm2,tdel
-         gamm2 = half.v*gamma.v
-         tdel  = tan(delta.v)
-         ax    = H.v*tdel.v/cos(gamm2.v)
+         gamm2.v = half.v*gamma.v
+         tdel.v  = tan(delta.v)
+         ax.v    = H.v*tdel.v/cos(gamm2.v)
       end function fov_x_axis_xmm2r8
 
 
       subroutine fov_x_axis_unroll_16x_xmm2r8(H,delta,gamma,ax,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_16x_xmm2r8
+         
            !dir$ attributes forceinline :: fov_x_axis_unroll_16x_xmm2r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_16x_xmm2r8
          type(XMM2r8_t),                  intent(in) :: H
@@ -4857,9 +4854,9 @@ module eos_sensor_sse
          type(XMM2r8_t), automatic :: d8,d9,d10,d11,d12,d13,d14,d15
          !dir$ attributes align : 16:: d0,d1,d2,d3,d4,d5,d6,d7
          !dir$ attributes align : 16:: d8,d9,d10,d11,d12,d13,d14,d15
-         type(XMM2r8_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         type(XMM2r8_t), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
          type(XMM2r8_t), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
-         !dir$ attributes align : 16:: g0,g1,g2,g3,g4,g,g6,g7
+         !dir$ attributes align : 16:: g0,g1,g2,g3,g4,g5,g6,g7
          !dir$ attributes align : 16:: g8,g9,g10,g11,g12,g13,g14,g15
          integer(kind=i4) :: i,m,m1
          m = mod(n,16)
@@ -4936,7 +4933,7 @@ module eos_sensor_sse
 
      subroutine fov_x_axis_unroll_8x_xmm2r8(H,delta,gamma,ax,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_8x_xmm2r8
+          
            !dir$ attributes forceinline :: fov_x_axis_unroll_8x_xmm2r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_8x_xmm2r8
          type(XMM2r8_t),                  intent(in) :: H
@@ -4946,8 +4943,8 @@ module eos_sensor_sse
          integer(kind=i4),                 intent(in)  :: n
          type(XMM4r4_t), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
          !dir$ attributes align : 16:: d0,d1,d2,d3,d4,d5,d6,d7
-         type(XMM2r8_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
-         !dir$ attributes align : 16:: g0,g1,g2,g3,g4,g,g6,g7
+         type(XMM2r8_t), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+         !dir$ attributes align : 16:: g0,g1,g2,g3,g4,g5,g6,g7
          integer(kind=i4) :: i,m,m1
          m = mod(n,8)
          if(m /= 0) then
@@ -4998,7 +4995,7 @@ module eos_sensor_sse
 
      subroutine fov_x_axis_unroll_4x_xmm2r8(H,delta,gamma,ax,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_4x_xmm2r8
+         
            !dir$ attributes forceinline :: fov_x_axis_unroll_4x_xmm2r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_4x_xmm2r8
          type(XMM2r8_t),                  intent(in) :: H
@@ -5047,7 +5044,7 @@ module eos_sensor_sse
 
     subroutine fov_x_axis_unroll_2x_xmm2r8(H,delta,gamma,ax,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_2x_xmm2r8
+         
            !dir$ attributes forceinline :: fov_x_axis_unroll_2x_xmm2r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_2x_xmm2r8
          type(XMM2r8_t),                  intent(in) :: H
@@ -5091,7 +5088,7 @@ module eos_sensor_sse
 
      subroutine fov_x_axis_rolled_xmm2r8(H,delta,gamma,ax,n)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: fov_x_axis_rolled_xmm2r8
+           
            !dir$ attributes forceinline :: fov_x_axis_rolled_xmm2r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_rolled_xmm2r8
          type(XMM2r8_t),                  intent(in) :: H
@@ -5123,7 +5120,7 @@ module eos_sensor_sse
 
      subroutine fov_x_axis_dispatch_xmm2r8(H,delta,gamma,ax,n,unroll_cnt)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: fov_x_axis_dispatch_xmm2r8
+          
          type(XMM2r8_t),                  intent(in) :: H
          type(XMM2r8_t),  dimension(1:n), intent(in)  :: delta
          type(XMM2r8_t),  dimension(1:n), intent(in)  :: gamma
@@ -5132,13 +5129,13 @@ module eos_sensor_sse
          integer(kind=i4),                 intent(in)  :: unroll_cnt
          
               select case (unroll_cnt)
-                 case (16)
-                     call fov_x_axis_unroll_16x_xmm2r8(H,delta,gamma,ax,n)
-                 case (8)
-                     call fov_x_axis_unroll_8x_xmm2r8(H,delta,gamma,ax,n)
                  case (4)
-                     call fov_x_axis_unroll_4x_xmm2r8(H,delta,gamma,ax,n)
+                     call fov_x_axis_unroll_16x_xmm2r8(H,delta,gamma,ax,n)
+                 case (3)
+                     call fov_x_axis_unroll_8x_xmm2r8(H,delta,gamma,ax,n)
                  case (2)
+                     call fov_x_axis_unroll_4x_xmm2r8(H,delta,gamma,ax,n)
+                 case (1)
                      call fov_x_axis_unroll_2x_xmm2r8(H,delta,gamma,ax,n)
                  case (0)
                      call fov_x_axis_rolled_xmm2r8(H,delta,gamma,ax,n)
