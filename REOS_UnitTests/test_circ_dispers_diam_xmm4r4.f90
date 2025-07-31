@@ -18,12 +18,12 @@
 !SOFTWARE.
 !*/
 
-module mod_test_circle_dispersion_xmm2r8
+module mod_test_circ_dispers_diam_xmm4r4
 
 
        use mod_kinds,                 only : i1, i4, sp 
        use iso_c_binding,             only : c_int, c_long_long 
-       use mod_vectypes,              only : XMM2r8_t, Mask2_t
+       use mod_vectypes,              only :  XMM4r4_t, Mask4_t
        use eos_sensor_sse
        implicit none 
 
@@ -34,21 +34,21 @@ module mod_test_circle_dispersion_xmm2r8
 #if 0
     ICC and ifort commands
     icc -c -std=c99 GMS_intrinsics_wrappers.c
-    ifort -o test_circle_dispersion_xmm2r8 -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-avx512 \
-    -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_kinds.f90 GMS_vectypes.f90 GMS_eos_sensor_sse.f90 GMS_intrinsics_wrappers.o test_circle_dispersion_xmm2r8.f90
+    ifort -o test_circ_dispers_diam_xmm4r4 -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-avx512 \
+    -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_kinds.f90 GMS_vectypes.f90 GMS_eos_sensor_sse.f90 GMS_intrinsics_wrappers.o test_circ_dispers_diam_xmm4r4.f90
     -------------------------------------------------------------------------------------------------------------------------------------------------
-    ifx -o test_circle_dispersion_xmm2r8 -fp-model fast=2 -ftz -O3  -march=skylake-avx512 \     
-    -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=3  GMS_kinds.f90 GMS_vectypes.f90 GMS_eos_sensor_sse.f90 GMS_intrinsics_wrappers.o test_circle_dispersion_xmm2r8.f90
+    ifx -o test_circ_dispers_diam_xmm4r4 -fp-model fast=2 -ftz -O3  -march=skylake-avx512 \     
+    -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=3  GMS_kinds.f90 GMS_vectypes.f90 GMS_eos_sensor_sse.f90 GMS_intrinsics_wrappers.o test_circ_dispers_diam_xmm4r4.f90
 
     For assembly only:
     ifort -S   -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-avx512 \
-     -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_kinds.f90 GMS_vectypes.f90 GMS_eos_sensor_sse.f90 GMS_intrinsics_wrappers.o test_circle_dispersion_xmm2r8.f90
+     -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_kinds.f90 GMS_vectypes.f90 GMS_eos_sensor_sse.f90 GMS_intrinsics_wrappers.o test_circ_dispers_diam_xmm4r4.f90
 #endif
 
       contains 
 
 
-subroutine unit_test_circle_dispersion_xmm2r8()
+subroutine unit_test_circ_dispers_diam_xmm4r4()
            use iso_c_binding, only : c_int, c_long_long 
            use IFPORT 
            use , intrinsic           :: IEEE_ARITHMETIC
@@ -69,32 +69,30 @@ subroutine unit_test_circle_dispersion_xmm2r8()
                     end function rdtsc_wrap 
               end interface
               character(len=128),        automatic  :: emsg 
-              character(len=60),         parameter  :: header = "[TEST #1:  circle_dispersion_xmm2r8 -- START]"
-              character(len=60),         parameter  :: footer = "[TEST #1:  circle_dispersion_xmm2r8 -- END]  "
-              character(len=40),         parameter  :: OUTFILE = "OUTPUT_circle_dispersion_xmm2r8.dat"
+              character(len=60),         parameter  :: header = "[TEST #1:  circ_dispers_diam_xmm4r4 -- START]"
+              character(len=60),         parameter  :: footer = "[TEST #1:  circ_dispers_diam_xmm4r4 -- END]  "
+              character(len=40),         parameter  :: OUTFILE = "OUTPUT_circ_dispers_diam_xmm4r4.dat"
               
               
-              type(XMM2r8_t), allocatable, dimension(:) :: alpha
-              type(XMM2r8_t), allocatable, dimension(:,:) :: rho
+              type(XMM4r4_t), allocatable, dimension(:) :: alpha
+              type(XMM4r4_t), allocatable, dimension(:,:) :: ratio
               !dir$ attributes align : 16 :: alpha
-              !dir$ attributes align : 16 :: rho 
-              type(XMM2r8_t),            automatic ::  rand_l2
-              type(XMM2r8_t),            automatic ::  rand_l1
-              type(XMM2r8_t),            automatic ::  rand_alpha
-              type(XMM2r8_t),            automatic ::  rand_O
-              type(XMM2r8_t),            parameter ::  d      = XMM2r8_t(50.0_dp)
-              type(XMM2r8_t),            parameter ::  ref100 = XMM2r8_t(100.0_dp)
-              type(XMM2r8_t),            parameter ::  lo_bound = XMM2r8_t(0.1_dp)
-              type(XMM2r8_t),            parameter ::  vzero   = XMM2r8_t(0.0_dp)
+              !dir$ attributes align : 16 :: ratio 
+              type(XMM4r4_t),            automatic ::  rand_l2
+              type(XMM4r4_t),            automatic ::  rand_l1
+              type(XMM4r4_t),            automatic ::  rand_alpha
+              type(XMM4r4_t),            automatic ::  rand_O
+              type(XMM4r4_t),            parameter ::  ref100 = XMM4r4_t([100.0_sp,100.0_sp,100.0_sp,100.0_sp])
+              type(XMM4r4_t),            parameter ::  lo_bound = XMM4r4_t(0.1_sp)
+              type(XMM4r4_t),            parameter ::  vzero   = XMM4r4_t(0.0_sp)
               !dir$ attributes align : 16 :: rand_l2
               !dir$ attributes align : 16 :: rand_l1
               !dir$ attributes align : 16 :: rand_alpha
               !dir$ attributes align : 16 :: rand_O
-              !dir$ attributes align : 16 :: d 
               !dir$ attributes align : 16 :: ref100 
               !dir$ attributes align : 16 :: vzero 
               !dir$ attributes align : 16 :: lo_bound 
-              type(Mask2_t),             automatic  :: m0_eq_zero,m1_eq_zero,m2_eq_zero
+              type(Mask4_t),             automatic  :: m0_eq_zero,m1_eq_zero,m2_eq_zero
               integer(kind=c_long_long), automatic  :: start,end 
               integer(kind=c_long_long), automatic  :: start_c,end_c 
               integer(kind=c_long_long), automatic  :: tsc_elapsed 
@@ -116,12 +114,12 @@ subroutine unit_test_circle_dispersion_xmm2r8()
               print*, header 
               nvecs = set_random_size()
               allocate(alpha(nvecs))
-              allocate(rho(5,nvecs))
+              allocate(ratio(5,nvecs))
                     
               call random_init(.false.,.false.)
               m0_eq_zero.m = .false.
               m1_eq_zero.m = .false. 
-              m2_eq_zero.m = .false. 
+
               call random_number(rand_l2.v)
               m0_eq_zero.m = (rand_l2.v==vzero.v)
               where(m0_eq_zero.m) 
@@ -130,6 +128,7 @@ subroutine unit_test_circle_dispersion_xmm2r8()
                       rand_l2.v = rand_l2.v*ref100.v
               end where 
 
+              call random_number(rand_l1.v)
               m2_eq_zero.m = (rand_l1.v==vzero.v)
               where(m2_eq_zero.m) 
                       rand_l1.v = lo_bound.v 
@@ -150,7 +149,7 @@ subroutine unit_test_circle_dispersion_xmm2r8()
 
               do j__=0,4
                  start = rdtsc_wrap()
-                 call circle_dispersion_dispatch_xmm2r8(d,rand_l1,rand_l2,alpha,rand_O,.true.,rho(j__,:),nvecs,j__)
+                 call circ_dispers_diam_dispatch_xmm4r4(rand_l1,rand_l2,alpha,rand_O,.true.,ratio(j__,:),nvecs,j__)
                  end         = rdtsc_wrap()
                  start_c     = start-RDTSC_LATENCY
                  end_c       = end-RDTSC_LATENCY
@@ -172,14 +171,14 @@ subroutine unit_test_circle_dispersion_xmm2r8()
                  print*, emsg 
                  return 
               else 
-                 write(IOUNIT,'(A60)') "[OUTPUT-START]: circle_dispersion_xmm2r8 -- field"
+                 write(IOUNIT,'(A60)') "[OUTPUT-START]: circ_dispers_diam_xmm4r4 -- field"
                  do j__=0,4
-                     write(IOUNIT,'(T14,A3,T36,A3)') "v0","v1"
+                     write(IOUNIT,'(T14,A3,T36,A3,T57,A3,T79,A3)') "v0","v1","v2","v3"
                      do i__=1,nvecs                                                                                                                                           
-                         write(IOUNIT,'(4F22.15)') rho(j__,i__).v(0),rho(j__,i__).v(1)
+                         write(IOUNIT,'(4F22.15)') ratio(j__,i__).v(0),ratio(j__,i__).v(1),ratio(j__,i__).v(2),ratio(j__,i__).v(3)
                      end do 
                  end do 
-                 write(IOUNIT,'(A60)') "[OUTPUT-END]:   circle_dispersion_xmm2r8 -- field"
+                 write(IOUNIT,'(A60)') "[OUTPUT-END]:   circ_dispers_diam_xmm4r4 -- field"
               end if  
               close(IOUNIT,STATUS='KEEP')
 #endif             
@@ -200,17 +199,17 @@ subroutine unit_test_circle_dispersion_xmm2r8()
                        rval=rnum 
                end function set_random_size
                
-end subroutine unit_test_circle_dispersion_xmm2r8
+end subroutine unit_test_circ_dispers_diam_xmm4r4
 
 
 
 
 
-end module mod_test_circle_dispersion_xmm2r8 
+end module mod_test_circ_dispers_diam_xmm4r4 
 
 
 
 program main 
-   use mod_test_circle_dispersion_xmm2r8 
-   call unit_test_circle_dispersion_xmm2r8()
+   use mod_test_circ_dispers_diam_xmm4r4 
+   call unit_test_circ_dispers_diam_xmm4r4()
 end program main 
