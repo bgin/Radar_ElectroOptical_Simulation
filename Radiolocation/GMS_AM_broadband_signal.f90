@@ -57,7 +57,7 @@ module mod_AM_broadband_signal
     ! Tab:5 col - Type and etc.. definitions
     ! Tab:10,11 col - Type , function and subroutine code blocks.
 
-    use mod_kinds,     only : i4,sp
+    use mod_kinds,     only : i1,i4,sp
     use omp_lib
     implicit none
     public
@@ -99,9 +99,6 @@ module mod_AM_broadband_signal
 #define AM_BROADBAND_SIGNAL_DEALLOCATE_SAFELY 0
 #endif
 
-#if !defined(AM_BROADBAND_SIGNAL_SPLIT_COMPLEX_DATA)
-#define AM_BROADBAND_SIGNAL_SPLIT_COMPLEX_DATA 1 
-#endif 
 
 #if !defined(AM_BROADBAND_SIGNAL_USE_MKL_FFT)
 #define AM_BROADBAND_SIGNAL_USE_MKL_FFT 0
@@ -109,7 +106,7 @@ module mod_AM_broadband_signal
 
      type, public :: AM_broadband_signal_t 
 
-           character(len=64) :: m_signal_name    ! signal/waveform name plain name
+           character(len=32) :: m_signal_name    ! signal/waveform name plain name
            character(len=32) :: m_envelope_type !trapzeoidal,sine, sine_squared
            character(len=32) :: m_distro_omega   ! statistical distribution type for ambiguity simulation (omega)
            character(len=32) :: m_distro_theta   ! statistical distribution type for ambiguity simulation (theta)
@@ -134,6 +131,8 @@ module mod_AM_broadband_signal
            integer(kind=i4)  :: m_nthets         ! number of time delays (for return signal) (start value)
            integer(kind=i4)  :: m_nthete         ! number of time delays (for return signal) (end value)
            logical(kind=i4)  :: m_sym_dep       ! previous-next symbol dependency (page: 50, formula: 2.7)  
+           logical(kind=i4)  :: m_split_carrier ! split into real/imag parts
+           logical(kind=i4)  :: m_split_envelope ! split into real/imag parts
            logical(kind=i4)  :: m_ft_process     ! Fourier-Transform processing: true for MKL, false for Quadpack numerical integration
            complex(kind=sp)  :: m_A0            ! complex amplitude value                          
            real(kind=sp)     :: m_invT          ! inverse of symbol length
@@ -164,7 +163,7 @@ module mod_AM_broadband_signal
            !dir4 attributes align : 64 :: m_ambiguity 
            !dir$ attributes align : 64 :: m_abs_ambiguity
 #endif 
-#if (AM_BROADBAND_SIGNAL_SPLIT_COMPLEX_DATA) == 1
+
            real(kind=sp),    dimension(:),   allocatable :: m_carrier_i
            real(kind=sp),    dimension(:),   allocatable :: m_carrier_q 
            real(kind=sp),    dimension(:),   allocatable :: m_complex_env_i
@@ -183,7 +182,7 @@ module mod_AM_broadband_signal
            !dir$ attributes align : 64 :: m_env_correl_i 
            !dir$ attributes align : 64 :: m_env_correl_q 
 #endif 
-#endif 
+
            
      end type AM_broadband_signal_t
 
@@ -194,22 +193,21 @@ module mod_AM_broadband_signal
      subroutine create_AM_broadband_signal(AM_signal,sig_name,envelope_type,distro_omega,distro_theta,          &
                                            code_type,id,interval_1,interval_2,interval_3, baude_rate,           &
                                            Ns,Ne,Ts,Te,nfreqs,nfreqe,nomegs,nomege,nthets,nthete,               &
-                                           sym_dep,ft_process,A0,fc)              
+                                           sym_dep,split_carrier,split_envelope,ft_process,A0,fc,alloc_safely)              
                                         
           implicit none 
           character(*), parameter :: sub_name = "create_AM_broadband_signal"
           type(AM_broadband_signal_t),        intent(inout)        :: AM_signal 
-          character(len=64),                  intent(in)           :: sig_name 
-          character(len=32),                  intent(in)           :: envelope_type 
-          character(len=32),                  intent(in)           :: distro_omega 
-          character(len=32),                  intent(in)           :: distro_theta 
-          character(len=4),                   intent(in)           :: code_type 
+          character(len=*),                   intent(in)           :: sig_name 
+          character(len=*),                   intent(in)           :: envelope_type 
+          character(len=*),                   intent(in)           :: distro_omega 
+          character(len=*),                   intent(in)           :: distro_theta 
+          character(len=*),                   intent(in)           :: code_type 
           integer(kind=i4),                   intent(in)           :: id 
           integer(kind=i4),                   intent(in), optional :: interval_1
           integer(kind=i4),                   intent(in), optional :: interval_2 
           integer(kind=i4),                   intent(in), optional :: interval_3 
           integer(kind=i4),                   intent(in)           :: baude_rate  
-          integer(kind=i4),                   intent(in)           :: num_samples 
           integer(kind=i4),                   intent(in)           :: Ns 
           integer(kind=i4),                   intent(in)           :: Ne 
           integer(kind=i4),                   intent(in)           :: Ts 
@@ -226,7 +224,7 @@ module mod_AM_broadband_signal
           logical(kind=i4),                   intent(in)           :: ft_process 
           complex(kind=sp),                   intent(in)           :: A0 
           real(kind=sp),                      intent(in)           :: fc 
-          
+          logical(kind=i4),                   intent(in)           :: alloc_safely
 
           logical(kind=i1), automatic :: trpz_env   
 
@@ -237,7 +235,7 @@ module mod_AM_broadband_signal
           AM_signal.m_distro_theta  = distro_theta 
           AM_signal.m_code_type     = code_type 
           AM_signal.m_id            = id 
-          trpz_env                  = AM_signal.envelope_type .eq. "trapezoidal"
+          trpz_env                  = AM_signal.m_envelope_type .eq. "trapezoidal"
           if(trpz_env  .and. present(interval_1)) AM_signal.m_interval_1 = interval_1 
           if(trpz_env  .and. present(interval_2)) AM_signal.m_interval_2 = interval_2 
           if(trpz_env  .and. present(interval_3)) AM_signal.m_interval_3 = interval_3 
@@ -249,7 +247,7 @@ module mod_AM_broadband_signal
           AM_signal.m_nfreqs        = nfreqs 
           AM_signal.m_nfreqe        = nfreqe 
           AM_signal.m_num_samples   = (AM_signal.m_Te-AM_signal.m_Ts)* &
-                                      (AM_signal.m_Ne-AM_signal.m_Ne) 
+                                      (AM_signal.m_Ne-AM_signal.m_Ns) 
           AM_signal.m_nomegs        = nomegs  
           AM_signal.m_nomege        = nomege 
           AM_signal.m_nthets        = nthets 
@@ -260,83 +258,83 @@ module mod_AM_broadband_signal
           AM_signal.m_ft_process    = ft_process 
           AM_signal.m_A0            = A0 ! Complex amplitude value
           AM_signal.m_fc            = fc 
-          AM_signal.m_fs            = 1.0_sp/real(AM_signal_num_samples,kind=sp) 
+          AM_signal.m_fs            = 1.0_sp/real(AM_signal.m_num_samples,kind=sp) 
           AM_signal.m_sig_width     = 0.0_sp 
           AM_signal.m_sig_energy    = 0.0_sp 
           AM_signal.m_snr           = cmplx(0.0_sp,0.0_sp)
           AM_signal.m_Ps            = 0.0_sp 
-#if (AM_BROADBAND_SIGNAL_ALLOCATE_SAFELY) == 1
-          if(allocated(AM_signal.m_code_seq))    then      
-             deallocate(AM_signal.m_code_seq)   
-             allocate(AM_signal.m_code_seq(AM_signal.m_baude_rate))
-          end if 
-          if(allocated(AM_signal.m_carrier))     then       
-             deallocate(AM_signal.m_carrier)    
-             allocate(AM_signal.m_carrier(AM_signal.m_Ts:AM_signal.m_Te))
-          end if 
-          if(allocated(AM_signal.m_complex_env)) then    
-             deallocate(AM_signal.m_complex_env) 
-             allocate(AM_signal.m_complex_env(AM_signal.m_Ts:AM_signal.m_Te))
-          end if 
-          if(allocated(AM_signal.m_signal))      then        
-             deallocate(AM_signal.m_signal)     
-             allocate(AM_signal.m_signal(AM_signal.m_Ts:AM_signal.m_Te))
-          end if 
-          if(allocated(AM_signal.m_env_spec))    then      
-             deallocate(AM_signal.m_env_spec)   
-             allocate(AM_signal.m_env_spec(AM_signal.m_nfreqs:AM_signal.m_nfreqe))
-          end if 
-          if(allocated(AM_signal.m_samples))     then      
-             deallocate(AM_signal.m_samples)    
-             allocate(AM_signal.m_samples(AM_signal.m_Ns:AM_signal.m_Ne,AM_signal.m_Ts:AM_signal.m_Te))
-          end if 
-          if(allocated(AM_signal.m_env_correl))  then    
-             deallocate(AM_signal.m_env_correl) 
-             allocate(AM_signal.m_env_correl(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
-          end if 
-          if(allocated(AM_signal.m_ambiguity))   then    
-             deallocate(AM_signal.m_ambiguity)  
-             allocate(AM_signal.m_ambiguity(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
-          end if 
-          if(allocated(AM_signal.m_abs_ambiguity)) then 
-             deallocate(AM_signal.m_carrier)    
-             allocate(AM_signal.m_abs_ambiguity(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
-          end if 
-#if (AM_BROADBAND_SIGNAL_SPLIT_COMPLEX_DATA) == 1
-          if(allocated(AM_signal.m_carrier_i))    then 
-             deallocate(AM_signal.m_carrier_i)
-             allocate(AM_signal.m_carrier_i(AM_signal.m_Ts:AM_signal.m_Te))
-          end if 
-          if(allocated(AM_signal.m_carrier_q))    then    
-             deallocate(AM_signal.m_carrier_q)    
-             allocate(AM_signal.m_carrier_q(AM_signal.m_Ts:AM_signal.m_Te))
-          end if 
-          if(allocated(AM_signal.m_complex_env_i)) then 
-             deallocate(AM_signal.m_complex_env_i)
-             allocate(AM_signal.m_complex_env_i(AM_signal.m_Ts:AM_signal.m_Te))
-          end if 
-          if(allocated(AM_signal.m_complex_env_q)) then 
-             deallocate(AM_signal.m_complex_env_q)
-             allocate(AM_signal.m_complex_env_q(AM_signal.m_Ts:AM_signal.m_Te))
-          end if 
-          if(allocated(AM_signal.m_signal_i))      then 
-             deallocate(AM_signal.m_signal_i)     
-             allocate(AM_signal.m_signal_i(AM_signal.m_Ts:AM_signal.m_Te))
-          end if 
-          if(allocated(AM_signal.m_signal_q))      then 
-             deallocate(AM_signal.m_signal_q)     
-             allocate(AM_signal.m_signal_q(AM_signal.m_Ts:AM_signal.m_Te))
-          end if 
-          if(allocated(AM_signal.m_env_correl_i))  then 
-             deallocate(AM_signal.m_env_correl_i) 
-             allocate(AM_signal.m_env_correl_i(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal_m_nthets:AM_signal.m_nthete))
-          end if 
-          if(allocated(AM_signal.m_env_correl_q))  then 
-             deallocate(AM_signal.m_env_correl_q)  
-             allocate(AM_signal.m_env_correl_q(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal_m_nthets:AM_signal.m_nthete))
-          end if 
-#endif
-#else 
+          if(alloc_safely .eq. .true.) then 
+             if(allocated(AM_signal.m_code_seq))    then      
+                deallocate(AM_signal.m_code_seq)   
+                allocate(AM_signal.m_code_seq(AM_signal.m_baude_rate))
+             end if 
+             if(allocated(AM_signal.m_carrier))     then       
+                deallocate(AM_signal.m_carrier)    
+                allocate(AM_signal.m_carrier(AM_signal.m_Ts:AM_signal.m_Te))
+             end if 
+             if(allocated(AM_signal.m_complex_env)) then    
+                deallocate(AM_signal.m_complex_env) 
+                allocate(AM_signal.m_complex_env(AM_signal.m_Ts:AM_signal.m_Te))
+             end if 
+             if(allocated(AM_signal.m_signal))      then        
+                deallocate(AM_signal.m_signal)     
+                allocate(AM_signal.m_signal(AM_signal.m_Ts:AM_signal.m_Te))
+             end if 
+             if(allocated(AM_signal.m_env_spec))    then      
+                deallocate(AM_signal.m_env_spec)   
+                allocate(AM_signal.m_env_spec(AM_signal.m_nfreqs:AM_signal.m_nfreqe))
+             end if 
+             if(allocated(AM_signal.m_samples))     then      
+                deallocate(AM_signal.m_samples)    
+                allocate(AM_signal.m_samples(AM_signal.m_Ns:AM_signal.m_Ne,AM_signal.m_Ts:AM_signal.m_Te))
+             end if 
+             if(allocated(AM_signal.m_env_correl))  then    
+                deallocate(AM_signal.m_env_correl) 
+                allocate(AM_signal.m_env_correl(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
+             end if 
+             if(allocated(AM_signal.m_ambiguity))   then    
+                deallocate(AM_signal.m_ambiguity)  
+                allocate(AM_signal.m_ambiguity(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
+             end if 
+             if(allocated(AM_signal.m_abs_ambiguity)) then 
+                deallocate(AM_signal.m_carrier)    
+                allocate(AM_signal.m_abs_ambiguity(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
+             end if 
+
+             if(allocated(AM_signal.m_carrier_i))    then 
+                deallocate(AM_signal.m_carrier_i)
+                allocate(AM_signal.m_carrier_i(AM_signal.m_Ts:AM_signal.m_Te))
+             end if 
+             if(allocated(AM_signal.m_carrier_q))    then    
+                deallocate(AM_signal.m_carrier_q)    
+                allocate(AM_signal.m_carrier_q(AM_signal.m_Ts:AM_signal.m_Te))
+             end if 
+             if(allocated(AM_signal.m_complex_env_i)) then 
+                deallocate(AM_signal.m_complex_env_i)
+                allocate(AM_signal.m_complex_env_i(AM_signal.m_Ts:AM_signal.m_Te))
+             end if 
+             if(allocated(AM_signal.m_complex_env_q)) then 
+                deallocate(AM_signal.m_complex_env_q)
+                allocate(AM_signal.m_complex_env_q(AM_signal.m_Ts:AM_signal.m_Te))
+             end if 
+             if(allocated(AM_signal.m_signal_i))      then 
+                deallocate(AM_signal.m_signal_i)     
+                allocate(AM_signal.m_signal_i(AM_signal.m_Ts:AM_signal.m_Te))
+             end if 
+             if(allocated(AM_signal.m_signal_q))      then 
+                deallocate(AM_signal.m_signal_q)     
+                allocate(AM_signal.m_signal_q(AM_signal.m_Ts:AM_signal.m_Te))
+             end if 
+             if(allocated(AM_signal.m_env_correl_i))  then 
+                deallocate(AM_signal.m_env_correl_i) 
+                allocate(AM_signal.m_env_correl_i(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
+             end if 
+             if(allocated(AM_signal.m_env_correl_q))  then 
+                deallocate(AM_signal.m_env_correl_q)  
+                allocate(AM_signal.m_env_correl_q(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
+             end if 
+
+         else 
               
              allocate(AM_signal.m_code_seq(AM_signal.m_baude_rate))
              allocate(AM_signal.m_carrier(AM_signal.m_Ts:AM_signal.m_Te))
@@ -347,7 +345,7 @@ module mod_AM_broadband_signal
              allocate(AM_signal.m_env_correl(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
              allocate(AM_signal.m_ambiguity(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
              allocate(AM_signal.m_abs_ambiguity(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
-#if (AM_BROADBAND_SIGNAL_SPLIT_COMPLEX_DATA) == 1
+
           
              allocate(AM_signal.m_carrier_i(AM_signal.m_Ts:AM_signal.m_Te))
              allocate(AM_signal.m_carrier_q(AM_signal.m_Ts:AM_signal.m_Te))
@@ -355,68 +353,66 @@ module mod_AM_broadband_signal
              allocate(AM_signal.m_complex_env_q(AM_signal.m_Ts:AM_signal.m_Te))
              allocate(AM_signal.m_signal_i(AM_signal.m_Ts:AM_signal.m_Te))
              allocate(AM_signal.m_signal_q(AM_signal.m_Ts:AM_signal.m_Te))
-             allocate(AM_signal.m_env_correl_i(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal_m_nthets:AM_signal.m_nthete))
-             allocate(AM_signal.m_env_correl_q(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal_m_nthets:AM_signal.m_nthete))
-          
-#endif         
-#endif
+             allocate(AM_signal.m_env_correl_i(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
+             allocate(AM_signal.m_env_correl_q(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
+         end if           
+        
+
           AM_signal.m_creation_state = .true. 
      end subroutine create_AM_broadband_signal
 
 
-     subroutine destroy_AM_broadband_signal(AM_signal,clear_values)
+     subroutine destroy_AM_broadband_signal(AM_signal,clear_values,dealloc_safely)
           implicit none 
           character(*), parameter :: sub_name = "destroy_AM_broadband_signal"
           type(AM_broadband_signal_t),        intent(inout)        :: AM_signal
           logical(kind=i4),                   intent(in)           :: clear_values 
-
+          logical(kind=i4),                   intent(in)           :: dealloc_safely
           if(AM_signal.m_creation_state .eq. .false.) return 
-#if (AM_BROADBAND_SIGNAL_DEALLOCATE_SAFELY) == 1
-          if(allocated(AM_signal.m_code_seq))      deallocate(AM_signal.m_code_seq) 
-          if(allocated(AM_signal.m_carrier))       deallocate(AM_signal.m_carrier)    
-          if(allocated(AM_signal.m_complex_env))   deallocate(AM_signal.m_complex_env)
-          if(allocated(AM_signal.m_signal))        deallocate(AM_signal.m_signal)     
-          if(allocated(AM_signal.m_env_spec))      deallocate(AM_signal.m_env_spec)   
-          if(allocated(AM_signal.m_samples))       deallocate(AM_signal.m_samples)    
-          if(allocated(AM_signal.m_env_correl))    deallocate(AM_signal.m_env_correl) 
-          if(allocated(AM_signal.m_ambiguity))     deallocate(AM_signal.m_ambiguity)  
-          if(allocated(AM_signal.m_abs_ambiguity)) deallocate(AM_signal.m_carrier)    
-#if (AM_BROADBAND_SIGNAL_SPLIT_COMPLEX_DATA) == 1
-          if(allocated(AM_signal.m_carrier_i))     deallocate(AM_signal.m_carrier_i)    
-          if(allocated(AM_signal.m_carrier_q))     deallocate(AM_signal.m_carrier_q)    
-          if(allocated(AM_signal.m_complex_env_i)) deallocate(AM_signal.m_complex_env_i)
-          if(allocated(AM_signal.m_complex_env_q)) deallocate(AM_signal.m_complex_env_q)
-          if(allocated(AM_signal.m_signal_i))      deallocate(AM_signal.m_signal_i)     
-          if(allocated(AM_signal.m_signal_q))      deallocate(AM_signal.m_signal_q)     
-          if(allocated(AM_signal.m_env_correl_i))  deallocate(AM_signal.m_env_correl_i) 
-          if(allocated(AM_signal.m_env_correl_q))  deallocate(AM_signal.m_env_correl_q) 
-#endif
-#else 
-          deallocate(AM_signal.m_code_seq) 
-          deallocate(AM_signal.m_carrier)    
-          deallocate(AM_signal.m_complex_env)
-          deallocate(AM_signal.m_signal)     
-          deallocate(AM_signal.m_env_spec)   
-          deallocate(AM_signal.m_samples)    
-          deallocate(AM_signal.m_env_correl) 
-          deallocate(AM_signal.m_ambiguity)  
-          deallocate(AM_signal.m_carrier)    
-#if (AM_BROADBAND_SIGNAL_SPLIT_COMPLEX_DATA) == 1
-          deallocate(AM_signal.m_carrier_i)    
-          deallocate(AM_signal.m_carrier_q)    
-          deallocate(AM_signal.m_complex_env_i)
-          deallocate(AM_signal.m_complex_env_q)
-          deallocate(AM_signal.m_signal_i)     
-          deallocate(AM_signal.m_signal_q)     
-          deallocate(AM_signal.m_env_correl_i) 
-          deallocate(AM_signal.m_env_correl_q) 
-#endif
-#endif 
+          if(dealloc_safely .eq. .true.) then 
+              if(allocated(AM_signal.m_code_seq))      deallocate(AM_signal.m_code_seq) 
+              if(allocated(AM_signal.m_carrier))       deallocate(AM_signal.m_carrier)    
+              if(allocated(AM_signal.m_complex_env))   deallocate(AM_signal.m_complex_env)
+              if(allocated(AM_signal.m_signal))        deallocate(AM_signal.m_signal)     
+              if(allocated(AM_signal.m_env_spec))      deallocate(AM_signal.m_env_spec)   
+              if(allocated(AM_signal.m_samples))       deallocate(AM_signal.m_samples)    
+              if(allocated(AM_signal.m_env_correl))    deallocate(AM_signal.m_env_correl) 
+              if(allocated(AM_signal.m_ambiguity))     deallocate(AM_signal.m_ambiguity)  
+              if(allocated(AM_signal.m_abs_ambiguity)) deallocate(AM_signal.m_carrier)    
+              if(allocated(AM_signal.m_carrier_i))     deallocate(AM_signal.m_carrier_i)    
+              if(allocated(AM_signal.m_carrier_q))     deallocate(AM_signal.m_carrier_q)    
+              if(allocated(AM_signal.m_complex_env_i)) deallocate(AM_signal.m_complex_env_i)
+              if(allocated(AM_signal.m_complex_env_q)) deallocate(AM_signal.m_complex_env_q)
+              if(allocated(AM_signal.m_signal_i))      deallocate(AM_signal.m_signal_i)     
+              if(allocated(AM_signal.m_signal_q))      deallocate(AM_signal.m_signal_q)     
+              if(allocated(AM_signal.m_env_correl_i))  deallocate(AM_signal.m_env_correl_i) 
+              if(allocated(AM_signal.m_env_correl_q))  deallocate(AM_signal.m_env_correl_q) 
+
+          else 
+              deallocate(AM_signal.m_code_seq) 
+              deallocate(AM_signal.m_carrier)    
+              deallocate(AM_signal.m_complex_env)
+              deallocate(AM_signal.m_signal)     
+              deallocate(AM_signal.m_env_spec)   
+              deallocate(AM_signal.m_samples)    
+              deallocate(AM_signal.m_env_correl) 
+              deallocate(AM_signal.m_ambiguity)  
+              deallocate(AM_signal.m_carrier)    
+              deallocate(AM_signal.m_carrier_i)    
+              deallocate(AM_signal.m_carrier_q)    
+              deallocate(AM_signal.m_complex_env_i)
+              deallocate(AM_signal.m_complex_env_q)
+              deallocate(AM_signal.m_signal_i)     
+              deallocate(AM_signal.m_signal_q)     
+              deallocate(AM_signal.m_env_correl_i) 
+              deallocate(AM_signal.m_env_correl_q) 
+
+          end if 
           if(clear_values .eq. .true.) then 
              AM_signal.m_signal_name   = ""
              AM_signal.m_envelope_type = ""
              AM_signal.m_distro_omega  = ""
-             AM_signal.m_distro_type   = ""
+             AM_signal.m_distro_theta  = ""
              AM_signal.m_code_type     = ""
              AM_signal.m_id            = 0 
              AM_signal.m_interval_1    = 0
@@ -468,7 +464,6 @@ module mod_AM_broadband_signal
              AM_signal.m_env_correl    = carray_fill    
              AM_signal.m_ambiguity     = carray_fill     
              AM_signal.m_abs_ambiguity = rarray_fill
-#if (AM_BROADBAND_SIGNAL_SPLIT_COMPLEX_DATA) == 1
              AM_signal.m_carrier_i     = rarray_fill     
              AM_signal.m_carrier_q     = rarray_fill     
              AM_signal.m_complex_env_i = rarray_fill 
@@ -477,20 +472,19 @@ module mod_AM_broadband_signal
              AM_signal.m_signal_q      = rarray_fill     
              AM_signal.m_env_correl_i  = rarray_fill  
              AM_signal.m_env_correl_q  = rarray_fill  
-#endif
+
           else 
                 do i__= AM_signal.m_Ts,AM_signal.m_Te 
                    AM_signal.m_carrier(i__)       = carray_fill
                    AM_signal.m_complex_env(i__)   = carray_fill
                    AM_signal.m_signal(i__)        = carray_fill
-#if (AM_BROADBAND_SIGNAL_SPLIT_COMPLEX_DATA) == 1
                    AM_signal.m_carrier_i(i__)     = rarray_fill
                    AM_signal.m_carrier_q(i__)     = rarray_fill
                    AM_signal.m_complex_env_i(i__) = rarray_fill
                    AM_signal.m_complex_env_q(i__) = rarray_fill
                    AM_signal.m_signal_i(i__)      = rarray_fill
                    AM_signal.m_signal_q(i__)      = rarray_fill
-#endif
+
                    do j__= AM_signal.m_Ns,iand(AM_signal.m_Ne-1,inot(3)), 4
                       AM_signal.m_samples(j__+0,i__) = carray_fill
                       AM_signal.m_samples(j__+1,i__) = carray_fill
@@ -507,48 +501,51 @@ module mod_AM_broadband_signal
                 end do 
                
                 do i__= AM_signal.m_nomegs,AM_signal.m_nomege
-                    do j__ = AM_signal.m_nthets,iand(AM_n_thete-1,inot(3)), 4
+                    do j__ = AM_signal.m_nthets,iand(AM_signal.m_nthete-1,inot(3)), 4
                        AM_signal.m_env_correl(j__+0,i__)    = carray_fill
                        AM_signal.m_ambiguity(j__+0,i__)     = carray_fill
                        AM_signal.m_abs_ambiguity(j__+0,i__) = rarray_fill
-#if (AM_BROADBAND_SIGNAL_SPLIT_COMPLEX_DATA) == 1
+
                        AM_signal.m_env_correl_i(j__+0,i__)  = rarray_fill 
                        AM_signal.m_env_correl_q(j__+0,i__)  = rarray_fill
-#endif  
+ 
                        AM_signal.m_env_correl(j__+1,i__)    = carray_fill
                        AM_signal.m_ambiguity(j__+1,i__)     = carray_fill
                        AM_signal.m_abs_ambiguity(j__+1,i__) = rarray_fill
-#if (AM_BROADBAND_SIGNAL_SPLIT_COMPLEX_DATA) == 1
+
                        AM_signal.m_env_correl_i(j__+1,i__)  = rarray_fill 
                        AM_signal.m_env_correl_q(j__+1,i__)  = rarray_fill
-#endif 
+ 
                        AM_signal.m_env_correl(j__+2,i__)    = carray_fill
                        AM_signal.m_ambiguity(j__+2,i__)     = carray_fill
                        AM_signal.m_abs_ambiguity(j__+2,i__) = rarray_fill
-#if (AM_BROADBAND_SIGNAL_SPLIT_COMPLEX_DATA) == 1
+
                        AM_signal.m_env_correl_i(j__+2,i__)  = rarray_fill 
                        AM_signal.m_env_correl_q(j__+2,i__)  = rarray_fill
-#endif 
+
                        AM_signal.m_env_correl(j__+3,i__)    = carray_fill
                        AM_signal.m_ambiguity(j__+3,i__)     = carray_fill
                        AM_signal.m_abs_ambiguity(j__+3,i__) = rarray_fill
-#if (AM_BROADBAND_SIGNAL_SPLIT_COMPLEX_DATA) == 1
+
                        AM_signal.m_env_correl_i(j__+3,i__)  = rarray_fill 
                        AM_signal.m_env_correl_q(j__+3,i__)  = rarray_fill
-#endif 
+ 
                    end do 
                    do k__=j__,AM_signal.m_nthete 
                        AM_signal.m_env_correl(k__,i__)    = carray_fill
                        AM_signal.m_ambiguity(k__,i__)     = carray_fill
                        AM_signal.m_abs_ambiguity(k__,i__) = rarray_fill
-#if (AM_BROADBAND_SIGNAL_SPLIT_COMPLEX_DATA) == 1
+
                        AM_signal.m_env_correl_i(k__,i__)  = rarray_fill 
                        AM_signal.m_env_correl_q(k__,i__)  = rarray_fill
-#endif  
+ 
                    end do 
                 end do 
           end if 
      end subroutine clear_AM_broadband_signal
+
+
+
 
 
 
