@@ -57,7 +57,7 @@ module mod_AM_broadband_signal
     ! Tab:5 col - Type and etc.. definitions
     ! Tab:10,11 col - Type , function and subroutine code blocks.
 
-    use mod_kinds,     only : i1,i4,sp
+    use mod_kinds,     only : i1,i4,i8,sp
     use omp_lib
     implicit none
     public
@@ -126,6 +126,7 @@ module mod_AM_broadband_signal
            logical(kind=i4)  :: m_split_carrier ! split into real/imag parts
            logical(kind=i4)  :: m_split_envelope ! split into real/imag parts
            logical(kind=i4)  :: m_ft_process     ! Fourier-Transform processing: true for MKL, false for Quadpack numerical integration
+           integer(kind=i4)  :: m_order          ! 1 for: (omega,theta), 2 for: (theta,omega)
            complex(kind=sp)  :: m_A0            ! complex amplitude value                          
            real(kind=sp)     :: m_invT          ! inverse of symbol length
            real(kind=sp)     :: m_fc            ! carrier frequency 
@@ -185,7 +186,7 @@ module mod_AM_broadband_signal
      subroutine create_AM_broadband_signal(AM_signal,sig_name,envelope_type,distro_omega,distro_theta,          &
                                            code_type,id,interval_1,interval_2,interval_3, baude_rate,           &
                                            Ns,Ne,Ts,Te,nfreqs,nfreqe,nomegs,nomege,nthets,nthete,               &
-                                           sym_dep,split_carrier,split_envelope,ft_process,A0,fc)              
+                                           sym_dep,split_carrier,split_envelope,ft_process,order,A0,fc)              
                                         
           implicit none 
           character(*), parameter :: sub_name = "create_AM_broadband_signal"
@@ -214,9 +215,10 @@ module mod_AM_broadband_signal
           logical(kind=i4),                   intent(in)           :: split_carrier 
           logical(kind=i4),                   intent(in)           :: split_envelope 
           logical(kind=i4),                   intent(in)           :: ft_process 
+          integer(kind=i4),                   intent(in)           :: order 
           complex(kind=sp),                   intent(in)           :: A0 
           real(kind=sp),                      intent(in)           :: fc 
-          
+         
 
           logical(kind=i1), automatic :: trpz_env   
 
@@ -248,6 +250,7 @@ module mod_AM_broadband_signal
           AM_signal.m_split_carrier = split_carrier 
           AM_signal.m_split_envelope=split_envelope 
           AM_signal.m_ft_process    = ft_process 
+          AM_signal.m_order         = order 
           AM_signal.m_A0            = A0 ! Complex amplitude value
           AM_signal.m_fc            = fc 
           AM_signal.m_fs            = 1.0_sp/real(AM_signal.m_num_samples,kind=sp) 
@@ -262,9 +265,18 @@ module mod_AM_broadband_signal
           allocate(AM_signal.m_signal(AM_signal.m_Ts:AM_signal.m_Te))
           allocate(AM_signal.m_env_spec(AM_signal.m_nfreqs:AM_signal.m_nfreqe))
           allocate(AM_signal.m_samples(AM_signal.m_Ns:AM_signal.m_Ne,AM_signal.m_Ts:AM_signal.m_Te))
-          allocate(AM_signal.m_env_correl(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
-          allocate(AM_signal.m_ambiguity(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
-          allocate(AM_signal.m_abs_ambiguity(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
+          select case (AM_signal.m_order)
+              case (1)
+                  allocate(AM_signal.m_env_correl(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
+                  allocate(AM_signal.m_ambiguity(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
+                  allocate(AM_signal.m_abs_ambiguity(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
+              case (2)
+                  allocate(AM_signal.m_env_correl(AM_signal.m_nthets:AM_signal.m_nthete,AM_signal.m_nomegs:AM_signal.m_nomege))
+                  allocate(AM_signal.m_ambiguity(AM_signal.m_nthets:AM_signal.m_nthete,AM_signal.m_nomegs:AM_signal.m_nomege))
+                  allocate(AM_signal.m_abs_ambiguity(AM_signal.m_nthets:AM_signal.m_nthete,AM_signal.m_nomegs:AM_signal.m_nomege))
+              case default 
+                  STOP "[create_AM_broadband_signal] -- INVALID SWITCH ARGUMENT!!"
+          end select 
 
           allocate(AM_signal.m_carrier_i(AM_signal.m_Ts:AM_signal.m_Te))
           allocate(AM_signal.m_carrier_q(AM_signal.m_Ts:AM_signal.m_Te))
@@ -272,9 +284,16 @@ module mod_AM_broadband_signal
           allocate(AM_signal.m_complex_env_q(AM_signal.m_Ts:AM_signal.m_Te))
           allocate(AM_signal.m_signal_i(AM_signal.m_Ts:AM_signal.m_Te))
           allocate(AM_signal.m_signal_q(AM_signal.m_Ts:AM_signal.m_Te))
-          allocate(AM_signal.m_env_correl_i(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
-          allocate(AM_signal.m_env_correl_q(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
-      
+          select case (AM_signal.m_order)
+             case (1)
+                allocate(AM_signal.m_env_correl_i(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
+                allocate(AM_signal.m_env_correl_q(AM_signal.m_nomegs:AM_signal.m_nomege,AM_signal.m_nthets:AM_signal.m_nthete))
+             case (2)
+                allocate(AM_signal.m_env_correl_i(AM_signal.m_nthets:AM_signal.m_nthete,AM_signal.m_nomegs:AM_signal.m_nomege))
+                allocate(AM_signal.m_env_correl_q(AM_signal.m_nthets:AM_signal.m_nthete,AM_signal.m_nomegs:AM_signal.m_nomege))
+             case default
+                STOP "[create_AM_broadband_signal] -- INVALID SWITCH ARGUMENT!!"
+          end select 
           AM_signal.m_creation_state = .true. 
      end subroutine create_AM_broadband_signal
 
@@ -286,23 +305,23 @@ module mod_AM_broadband_signal
           logical(kind=i4),                   intent(in)           :: clear_values 
          
           if(AM_signal.m_creation_state .eq. .false.) return 
-          deallocate(AM_signal.m_code_seq) 
-          deallocate(AM_signal.m_carrier)    
-          deallocate(AM_signal.m_complex_env)
-          deallocate(AM_signal.m_signal)     
-          deallocate(AM_signal.m_env_spec)   
-          deallocate(AM_signal.m_samples)    
-          deallocate(AM_signal.m_env_correl) 
-          deallocate(AM_signal.m_ambiguity)  
-          deallocate(AM_signal.m_carrier)    
-          deallocate(AM_signal.m_carrier_i)    
-          deallocate(AM_signal.m_carrier_q)    
-          deallocate(AM_signal.m_complex_env_i)
-          deallocate(AM_signal.m_complex_env_q)
-          deallocate(AM_signal.m_signal_i)     
-          deallocate(AM_signal.m_signal_q)     
-          deallocate(AM_signal.m_env_correl_i) 
-          deallocate(AM_signal.m_env_correl_q) 
+          if(allocated(AM_signal.m_code_seq))     deallocate(AM_signal.m_code_seq) 
+          if(allocated(AM_signal.m_carrier))      deallocate(AM_signal.m_carrier)    
+          if(allocated(AM_signal.m_complex_env))  deallocate(AM_signal.m_complex_env)
+          if(allocated(AM_signal.m_signal))       deallocate(AM_signal.m_signal)     
+          if(allocated(AM_signal.m_env_spec))     deallocate(AM_signal.m_env_spec)   
+          if(allocated(AM_signal.m_samples))      deallocate(AM_signal.m_samples)    
+          if(allocated(AM_signal.m_env_correl))   deallocate(AM_signal.m_env_correl) 
+          if(allocated(AM_signal.m_ambiguity))    deallocate(AM_signal.m_ambiguity)  
+          if(allocated(AM_signal.m_carrier))      deallocate(AM_signal.m_carrier)    
+          if(allocated(AM_signal.m_carrier_i))    deallocate(AM_signal.m_carrier_i)    
+          if(allocated(AM_signal.m_carrier_q))    deallocate(AM_signal.m_carrier_q)    
+          if(allocated(AM_signal.m_complex_env_i))deallocate(AM_signal.m_complex_env_i)
+          if(allocated(AM_signal.m_complex_env_q))deallocate(AM_signal.m_complex_env_q)
+          if(allocated(AM_signal.m_signal_i))     deallocate(AM_signal.m_signal_i)     
+          if(allocated(AM_signal.m_signal_q))     deallocate(AM_signal.m_signal_q)     
+          if(allocated(AM_signal.m_env_correl_i)) deallocate(AM_signal.m_env_correl_i) 
+          if(allocated(AM_signal.m_env_correl_q)) deallocate(AM_signal.m_env_correl_q) 
          
           if(clear_values .eq. .true.) then 
              AM_signal.m_signal_name   = ""
@@ -328,6 +347,7 @@ module mod_AM_broadband_signal
              AM_signal.m_nthete        = 0
              AM_signal.m_sym_dep       = .false. 
              AM_signal.m_ft_process    = .false. 
+             AM_signal.m_order         = 0
              AM_signal.m_A0            = cmplx(0.0_sp,0.0_sp)
              AM_signal.m_invT          = 0.0_sp 
              AM_signal.m_fc            = 0.0_sp 
@@ -399,54 +419,459 @@ module mod_AM_broadband_signal
                 do i__=AM_signal.m_nfreqs,AM_signal.m_nfreqe 
                     AM_signal.m_env_spec(i__) = carray_fill
                 end do 
-               
-                do i__= AM_signal.m_nomegs,AM_signal.m_nomege
-                    do j__ = AM_signal.m_nthets,iand(AM_signal.m_nthete-1,inot(3)), 4
-                       AM_signal.m_env_correl(j__+0,i__)    = carray_fill
-                       AM_signal.m_ambiguity(j__+0,i__)     = carray_fill
-                       AM_signal.m_abs_ambiguity(j__+0,i__) = rarray_fill
+          select case (AM_signal.m_order)  
+               case (1) 
+                    do i__= AM_signal.m_nomegs,AM_signal.m_nomege
+                           do j__ = AM_signal.m_nthets,iand(AM_signal.m_nthete-1,inot(3)), 4
+                                  AM_signal.m_env_correl(j__+0,i__)    = carray_fill
+                                  AM_signal.m_ambiguity(j__+0,i__)     = carray_fill
+                                  AM_signal.m_abs_ambiguity(j__+0,i__) = rarray_fill
 
-                       AM_signal.m_env_correl_i(j__+0,i__)  = rarray_fill 
-                       AM_signal.m_env_correl_q(j__+0,i__)  = rarray_fill
+                                  AM_signal.m_env_correl_i(j__+0,i__)  = rarray_fill 
+                                  AM_signal.m_env_correl_q(j__+0,i__)  = rarray_fill
  
-                       AM_signal.m_env_correl(j__+1,i__)    = carray_fill
-                       AM_signal.m_ambiguity(j__+1,i__)     = carray_fill
-                       AM_signal.m_abs_ambiguity(j__+1,i__) = rarray_fill
+                                  AM_signal.m_env_correl(j__+1,i__)    = carray_fill
+                                  AM_signal.m_ambiguity(j__+1,i__)     = carray_fill
+                                  AM_signal.m_abs_ambiguity(j__+1,i__) = rarray_fill
 
-                       AM_signal.m_env_correl_i(j__+1,i__)  = rarray_fill 
-                       AM_signal.m_env_correl_q(j__+1,i__)  = rarray_fill
+                                  AM_signal.m_env_correl_i(j__+1,i__)  = rarray_fill 
+                                  AM_signal.m_env_correl_q(j__+1,i__)  = rarray_fill
  
-                       AM_signal.m_env_correl(j__+2,i__)    = carray_fill
-                       AM_signal.m_ambiguity(j__+2,i__)     = carray_fill
-                       AM_signal.m_abs_ambiguity(j__+2,i__) = rarray_fill
+                                  AM_signal.m_env_correl(j__+2,i__)    = carray_fill
+                                  AM_signal.m_ambiguity(j__+2,i__)     = carray_fill
+                                  AM_signal.m_abs_ambiguity(j__+2,i__) = rarray_fill
 
-                       AM_signal.m_env_correl_i(j__+2,i__)  = rarray_fill 
-                       AM_signal.m_env_correl_q(j__+2,i__)  = rarray_fill
+                                  AM_signal.m_env_correl_i(j__+2,i__)  = rarray_fill 
+                                  AM_signal.m_env_correl_q(j__+2,i__)  = rarray_fill
 
-                       AM_signal.m_env_correl(j__+3,i__)    = carray_fill
-                       AM_signal.m_ambiguity(j__+3,i__)     = carray_fill
-                       AM_signal.m_abs_ambiguity(j__+3,i__) = rarray_fill
+                                  AM_signal.m_env_correl(j__+3,i__)    = carray_fill
+                                  AM_signal.m_ambiguity(j__+3,i__)     = carray_fill
+                                  AM_signal.m_abs_ambiguity(j__+3,i__) = rarray_fill
 
-                       AM_signal.m_env_correl_i(j__+3,i__)  = rarray_fill 
-                       AM_signal.m_env_correl_q(j__+3,i__)  = rarray_fill
+                                  AM_signal.m_env_correl_i(j__+3,i__)  = rarray_fill 
+                                  AM_signal.m_env_correl_q(j__+3,i__)  = rarray_fill
  
-                   end do 
-                   do k__=j__,AM_signal.m_nthete 
-                       AM_signal.m_env_correl(k__,i__)    = carray_fill
-                       AM_signal.m_ambiguity(k__,i__)     = carray_fill
-                       AM_signal.m_abs_ambiguity(k__,i__) = rarray_fill
+                           end do 
+                           do k__=j__,AM_signal.m_nthete 
+                                  AM_signal.m_env_correl(k__,i__)    = carray_fill
+                                  AM_signal.m_ambiguity(k__,i__)     = carray_fill
+                                  AM_signal.m_abs_ambiguity(k__,i__) = rarray_fill
 
-                       AM_signal.m_env_correl_i(k__,i__)  = rarray_fill 
-                       AM_signal.m_env_correl_q(k__,i__)  = rarray_fill
+                                  AM_signal.m_env_correl_i(k__,i__)  = rarray_fill 
+                                  AM_signal.m_env_correl_q(k__,i__)  = rarray_fill
  
-                   end do 
-                end do 
+                           end do 
+                     end do 
+               case (2)
+                     do i__= AM_signal.m_nthets,AM_signal.m_nthete
+                           do j__ = AM_signal.m_nomegs,iand(AM_signal.m_nomege-1,inot(3)), 4
+                                  AM_signal.m_env_correl(j__+0,i__)    = carray_fill
+                                  AM_signal.m_ambiguity(j__+0,i__)     = carray_fill
+                                  AM_signal.m_abs_ambiguity(j__+0,i__) = rarray_fill
+
+                                  AM_signal.m_env_correl_i(j__+0,i__)  = rarray_fill 
+                                  AM_signal.m_env_correl_q(j__+0,i__)  = rarray_fill
+ 
+                                  AM_signal.m_env_correl(j__+1,i__)    = carray_fill
+                                  AM_signal.m_ambiguity(j__+1,i__)     = carray_fill
+                                  AM_signal.m_abs_ambiguity(j__+1,i__) = rarray_fill
+
+                                  AM_signal.m_env_correl_i(j__+1,i__)  = rarray_fill 
+                                  AM_signal.m_env_correl_q(j__+1,i__)  = rarray_fill
+ 
+                                  AM_signal.m_env_correl(j__+2,i__)    = carray_fill
+                                  AM_signal.m_ambiguity(j__+2,i__)     = carray_fill
+                                  AM_signal.m_abs_ambiguity(j__+2,i__) = rarray_fill
+
+                                  AM_signal.m_env_correl_i(j__+2,i__)  = rarray_fill 
+                                  AM_signal.m_env_correl_q(j__+2,i__)  = rarray_fill
+
+                                  AM_signal.m_env_correl(j__+3,i__)    = carray_fill
+                                  AM_signal.m_ambiguity(j__+3,i__)     = carray_fill
+                                  AM_signal.m_abs_ambiguity(j__+3,i__) = rarray_fill
+
+                                  AM_signal.m_env_correl_i(j__+3,i__)  = rarray_fill 
+                                  AM_signal.m_env_correl_q(j__+3,i__)  = rarray_fill
+ 
+                           end do 
+                           do k__=j__,AM_signal.m_nomege 
+                                  AM_signal.m_env_correl(k__,i__)    = carray_fill
+                                  AM_signal.m_ambiguity(k__,i__)     = carray_fill
+                                  AM_signal.m_abs_ambiguity(k__,i__) = rarray_fill
+
+                                  AM_signal.m_env_correl_i(k__,i__)  = rarray_fill 
+                                  AM_signal.m_env_correl_q(k__,i__)  = rarray_fill
+ 
+                           end do 
+                     end do 
+           end select 
+            
           end if 
           
      end subroutine clear_AM_broadband_signal
 
-     
 
+     subroutine copy_create_AM_broadband_signal(this,other)
+          implicit none 
+          character(*), parameter :: sub_name = "copy_create_AM_broadband_signal"
+          type(AM_broadband_signal_t),        intent(out)        :: this
+          type(AM_broadband_signal_t),        intent(in)         :: other 
+          
+             if(this.m_creation_state  .eq. .true. .or. &
+                other.m_creation_state .eq. .false.) return 
+             if(LOC(this) .eq. LOC(other)) return 
+             this.m_signal_name   =    other.m_signal_name
+             this.m_envelope_type =    other.m_envelope_type
+             this.m_distro_omega  =    other.m_distro_omega
+             this.m_distro_theta  =    other.m_distro_theta
+             this.m_code_type     =    other.m_code_type
+             this.m_id            =    other.m_id  
+             this.m_interval_1    =    other.m_interval_1
+             this.m_interval_2    =    other.m_interval_2  
+             this.m_interval_3    =    other.m_interval_3
+             this.m_baude_rate    =    other.m_baude_rate
+             this.m_Ts            =    other.m_Ts 
+             this.m_Te            =    other.m_Te 
+             this.m_Ns            =    other.m_Ns 
+             this.m_Ne            =    other.m_Ne 
+             this.m_nfreqs        =    other.m_nfreqs
+             this.m_nfreqe        =    other.m_nfreqe 
+             this.m_num_samples   =    other.m_num_samples
+             this.m_nomegs        =    other.m_nomegs 
+             this.m_nomege        =    other.m_nomege 
+             this.m_nthets        =    other.m_nthets 
+             this.m_nthete        =    other.m_nthete 
+             this.m_sym_dep       =    other.m_sym_dep  
+             this.m_ft_process    =    other.m_ft_process 
+             this.m_order         =    other.m_order 
+             this.m_A0            =    other.m_A0
+             this.m_invT          =    other.m_invT 
+             this.m_fc            =    other.m_fc  
+             this.m_fs            =    other.m_fs  
+             this.m_sig_width     =    other.m_sig_width 
+             this.m_sig_energy    =    other.m_sig_energy 
+             this.m_snr           =    other.m_snr  
+             this.m_Ps            =    other.m_Ps 
+             
+             allocate(this.m_code_seq(this.m_baude_rate))
+             allocate(this.m_carrier(this.m_Ts:this.m_Te))
+             allocate(this.m_complex_env(this.m_Ts:this.m_Te))
+             allocate(this.m_signal(this.m_Ts:this.m_Te))
+             allocate(this.m_env_spec(this.m_nfreqs:this.m_nfreqe))
+             allocate(this.m_samples(this.m_Ns:this.m_Ne,this.m_Ts:this.m_Te))
+             select case (this.m_order)
+              case (1)
+                    allocate(this.m_env_correl(this.m_nomegs:this.m_nomege,this.m_nthets:this.m_nthete))
+                    allocate(this.m_ambiguity(this.m_nomegs:this.m_nomege,this.m_nthets:this.m_nthete))
+                    allocate(this.m_abs_ambiguity(this.m_nomegs:this.m_nomege,this.m_nthets:this.m_nthete))
+              case (2)
+                    allocate(this.m_env_correl(this.m_nthets:this.m_nthete,this.m_nomegs:this.m_nomege))
+                    allocate(this.m_ambiguity(this.m_nthets:this.m_nthete,this.m_nomegs:this.m_nomege))
+                    allocate(this.m_abs_ambiguity(this.m_nthets:this.m_nthete,this.m_nomegs:this.m_nomege))
+              case default 
+                    STOP "[create_AM_broadband_signal] -- INVALID SWITCH ARGUMENT!!"
+             end select 
+
+             allocate(this.m_carrier_i(this.m_Ts:this.m_Te))
+             allocate(this.m_carrier_q(this.m_Ts:this.m_Te))
+             allocate(this.m_complex_env_i(this.m_Ts:this.m_Te))
+             allocate(this.m_complex_env_q(this.m_Ts:this.m_Te))
+             allocate(this.m_signal_i(this.m_Ts:this.m_Te))
+             allocate(this.m_signal_q(this.m_Ts:this.m_Te))
+             select case (this.m_order)
+                case (1)
+                     allocate(this.m_env_correl_i(this.m_nomegs:this.m_nomege,this.m_nthets:this.m_nthete))
+                     allocate(this.m_env_correl_q(this.m_nomegs:this.m_nomege,this.m_nthets:this.m_nthete))
+                case (2)
+                     allocate(this.m_env_correl_i(this.m_nthets:this.m_nthete,this.m_nomegs:this.m_nomege))
+                     allocate(this.m_env_correl_q(this.m_nthets:this.m_nthete,this.m_nomegs:this.m_nomege))
+                case default
+                     STOP "[create_AM_broadband_signal] -- INVALID SWITCH ARGUMENT!!"
+             end select 
+
+                do i__=1,this.m_baude_rate 
+                   this.m_code_seq(i__) = other.m_code_seq(i__)
+                end do 
+
+                do i__= this.m_Ts,this.m_Te 
+                   this.m_carrier(i__)       = other.m_carrier(i__)
+                   this.m_complex_env(i__)   = other.m_complex_env(i__)
+                   this.m_signal(i__)        = other.m_signal(i__)
+                   this.m_carrier_i(i__)     = other.m_carrier_i(i__)
+                   this.m_carrier_q(i__)     = other.m_carrier_q(i__)
+                   this.m_complex_env_i(i__) = other.m_complex_env_i(i__)
+                   this.m_complex_env_q(i__) = other.m_complex_env_q(i__)
+                   this.m_signal_i(i__)      = other.m_signal_i(i__)
+                   this.m_signal_q(i__)      = other.m_signal_q(i__)
+
+                   do j__= this.m_Ns,iand(this.m_Ne-1,inot(3)), 4
+                      this.m_samples(j__+0,i__) = other.m_samples(j__+0,i__)
+                      this.m_samples(j__+1,i__) = other.m_samples(j__+1,i__)
+                      this.m_samples(j__+2,i__) = other.m_samples(j__+2,i__)
+                      this.m_samples(j__+3,i__) = other.m_samples(j__+3,i__)
+                   end do 
+                   do k__=j__,this.m_Ne 
+                      this.m_samples(k__,i__)   = other.m_samples(k__,i__)
+                   end do 
+                end do 
+                
+                do i__=this.m_nfreqs,this.m_nfreqe 
+                    this.m_env_spec(i__) = other.m_env_spec(i__)
+                end do 
+           select case (this.m_order)  
+               case (1) 
+                    do i__= this.m_nomegs,this.m_nomege
+                           do j__ = this.m_nthets,iand(this.m_nthete-1,inot(3)), 4
+                                  this.m_env_correl(j__+0,i__)    = other.m_env_correl(j__+0,i__) 
+                                  this.m_ambiguity(j__+0,i__)     = other.m_ambiguity(j__+0,i__)
+                                  this.m_abs_ambiguity(j__+0,i__) = other.m_abs_ambiguity(j__+0,i__)
+
+                                  this.m_env_correl_i(j__+0,i__)  = other.m_env_correl_i(j__+0,i__)
+                                  this.m_env_correl_q(j__+0,i__)  = other.m_env_correl_q(j__+0,i__)
+ 
+                                  this.m_env_correl(j__+1,i__)    = other.m_env_correl(j__+1,i__)
+                                  this.m_ambiguity(j__+1,i__)     = other.m_ambiguity(j__+1,i__)
+                                  this.m_abs_ambiguity(j__+1,i__) = other.m_abs_ambiguity(j__+1,i__)
+
+                                  this.m_env_correl_i(j__+1,i__)  = other.m_env_correl_i(j__+1,i__)
+                                  this.m_env_correl_q(j__+1,i__)  = other.m_env_correl_q(j__+1,i__)
+                                  
+                                  this.m_env_correl(j__+2,i__)    = other.m_env_correl(j__+2,i__)
+                                  this.m_ambiguity(j__+2,i__)     = other.m_ambiguity(j__+2,i__)
+                                  this.m_abs_ambiguity(j__+2,i__) = other.m_abs_ambiguity(j__+2,i__)
+
+                                  this.m_env_correl_i(j__+2,i__)  = other.m_env_correl_i(j__+2,i__)
+                                  this.m_env_correl_q(j__+2,i__)  = other.m_env_correl_q(j__+2,i__)
+
+                                  this.m_env_correl(j__+3,i__)    = other.m_env_correl(j__+3,i__)
+                                  this.m_ambiguity(j__+3,i__)     = other.m_ambiguity(j__+3,i__)
+                                  this.m_abs_ambiguity(j__+3,i__) = other.m_abs_ambiguity(j__+3,i__)
+
+                                  this.m_env_correl_i(j__+3,i__)  = other.m_env_correl_i(j__+3,i__)
+                                  this.m_env_correl_q(j__+3,i__)  = other.m_env_correl_q(j__+3,i__)
+ 
+                           end do 
+                           do k__=j__,this.m_nthete 
+                                  this.m_env_correl(k__,i__)    = other.m_env_correl(k__,i__)
+                                  this.m_ambiguity(k__,i__)     = other.m_ambiguity(k__,i__)
+                                  this.m_abs_ambiguity(k__,i__) = other.m_abs_ambiguity(k__,i__)
+
+                                  this.m_env_correl_i(k__,i__)  = other.m_env_correl_i(k__,i__)
+                                  this.m_env_correl_q(k__,i__)  = other.m_env_correl_q(k__,i__)
+ 
+                           end do 
+                     end do 
+               case (2)
+                     do i__= this.m_nthets,this.m_nthete
+                           do j__ = this.m_nomegs,iand(this.m_nomege-1,inot(3)), 4
+                                  this.m_env_correl(j__+0,i__)    = other.m_env_correl(j__+0,i__) 
+                                  this.m_ambiguity(j__+0,i__)     = other.m_ambiguity(j__+0,i__)
+                                  this.m_abs_ambiguity(j__+0,i__) = other.m_abs_ambiguity(j__+0,i__)
+
+                                  this.m_env_correl_i(j__+0,i__)  = other.m_env_correl_i(j__+0,i__)
+                                  this.m_env_correl_q(j__+0,i__)  = other.m_env_correl_q(j__+0,i__)
+ 
+                                  this.m_env_correl(j__+1,i__)    = other.m_env_correl(j__+1,i__)
+                                  this.m_ambiguity(j__+1,i__)     = other.m_ambiguity(j__+1,i__)
+                                  this.m_abs_ambiguity(j__+1,i__) = other.m_abs_ambiguity(j__+1,i__)
+
+                                  this.m_env_correl_i(j__+1,i__)  = other.m_env_correl_i(j__+1,i__)
+                                  this.m_env_correl_q(j__+1,i__)  = other.m_env_correl_q(j__+1,i__)
+                                  
+                                  this.m_env_correl(j__+2,i__)    = other.m_env_correl(j__+2,i__)
+                                  this.m_ambiguity(j__+2,i__)     = other.m_ambiguity(j__+2,i__)
+                                  this.m_abs_ambiguity(j__+2,i__) = other.m_abs_ambiguity(j__+2,i__)
+
+                                  this.m_env_correl_i(j__+2,i__)  = other.m_env_correl_i(j__+2,i__)
+                                  this.m_env_correl_q(j__+2,i__)  = other.m_env_correl_q(j__+2,i__)
+
+                                  this.m_env_correl(j__+3,i__)    = other.m_env_correl(j__+3,i__)
+                                  this.m_ambiguity(j__+3,i__)     = other.m_ambiguity(j__+3,i__)
+                                  this.m_abs_ambiguity(j__+3,i__) = other.m_abs_ambiguity(j__+3,i__)
+
+                                  this.m_env_correl_i(j__+3,i__)  = other.m_env_correl_i(j__+3,i__)
+                                  this.m_env_correl_q(j__+3,i__)  = other.m_env_correl_q(j__+3,i__)
+ 
+                           end do 
+                           do k__=j__,this.m_nomege 
+                                  this.m_env_correl(k__,i__)    = other.m_env_correl(k__,i__)
+                                  this.m_ambiguity(k__,i__)     = other.m_ambiguity(k__,i__)
+                                  this.m_abs_ambiguity(k__,i__) = other.m_abs_ambiguity(k__,i__)
+
+                                  this.m_env_correl_i(k__,i__)  = other.m_env_correl_i(k__,i__)
+                                  this.m_env_correl_q(k__,i__)  = other.m_env_correl_q(k__,i__)
+ 
+                           end do 
+                     end do 
+           end select 
+           this.m_creation_state = other.m_creation_state
+     end subroutine copy_create_AM_broadband_signal
+
+     subroutine check_allocation_stats_real1D(array,name)
+                       implicit none
+                       real(kind=sp), allocatable, dimension(:), intent(in) :: array 
+                       character(len=*),                         intent(in) :: name 
+                       ! Locals
+                       integer(kind=i8), automatic :: vaddr 
+                       integer(kind=i8), automatic :: size 
+                       integer(kind=i4), automatic :: lo_bound
+                       integer(kind=i4), automatic :: hi_bound 
+                       logical(kind=i1), automatic :: is_allocated 
+                       vaddr        = LOC(array)
+                       size         = SIZEOF(array)
+                       lo_bound     = LBOUND(array,DIM=1)
+                       hi_bound     = UBOUND(array,DIM=1)
+                       is_allocated = allocated(array)
+                       print*, "======================INFO==========================="
+                       print*, "Array member name:", name 
+                       print*, "vaddr=",vaddr
+                       print*, "size=",size
+                       print*, "allocated=",is_allocated
+                       print*, "lo_bound=",lo_bound
+                       print*, "hi_bound=",hi_bound 
+                       print*,"======================INFO==========================="
+      end subroutine check_allocation_stats_real1D
+
+      subroutine check_allocation_stats_real2D(array,name)
+                       implicit none
+                       real(kind=sp), allocatable, dimension(:,:), intent(in) :: array 
+                       character(len=*),                           intent(in) :: name 
+                       ! Locals
+                       integer(kind=i8), automatic :: vaddr 
+                       integer(kind=i8), automatic :: size 
+                       integer(kind=i4), dimension(2), automatic :: lo_bound
+                       integer(kind=i4), dimension(2), automatic :: hi_bound 
+                       logical(kind=i1), automatic :: is_allocated 
+                       vaddr        = LOC(array)
+                       size         = SIZEOF(array)
+                       lo_bound     = LBOUND(array)
+                       hi_bound     = UBOUND(array)
+                       is_allocated = allocated(array)
+                       print*,"======================INFO======================"
+                       print*, "Array member name:", name 
+                       print*, "vaddr=",vaddr
+                       print*, "size=",size
+                       print*, "allocated=",is_allocated
+                       print*, "lo_bound=",lo_bound
+                       print*, "hi_bound=",hi_bound 
+                       print*,"======================INFO======================================"
+     end subroutine check_allocation_stats_real2D
+
+     subroutine check_allocation_stats_complex1D(array,name)
+                       implicit none
+                       complex(kind=sp), allocatable, dimension(:), intent(in) :: array 
+                       character(len=*),                            intent(in) :: name 
+                       ! Locals
+                       integer(kind=i8), automatic :: vaddr 
+                       integer(kind=i8), automatic :: size 
+                       integer(kind=i4), automatic :: lo_bound
+                       integer(kind=i4), automatic :: hi_bound 
+                       logical(kind=i1), automatic :: is_allocated 
+                       vaddr        = LOC(array)
+                       size         = SIZEOF(array)
+                       lo_bound     = LBOUND(array,DIM=1)
+                       hi_bound     = UBOUND(array,DIM=1)
+                       is_allocated = allocated(array)
+                       print*,"======================INFO==================="
+                       print*, "Array member name:", name 
+                       print*, "vaddr=",vaddr
+                       print*, "size=",size
+                       print*, "allocated=",is_allocated
+                       print*, "lo_bound=",lo_bound
+                       print*, "hi_bound=",hi_bound 
+                       print*,"======================INFO==================="
+     end subroutine check_allocation_stats_complex1D
+
+     subroutine check_allocation_stats_complex2D(array,name)
+                       implicit none
+                       complex(kind=sp), allocatable, dimension(:,:), intent(in) :: array 
+                       character(len=*),                              intent(in) :: name 
+                       ! Locals
+                       integer(kind=i8), automatic :: vaddr 
+                       integer(kind=i8), automatic :: size 
+                       integer(kind=i4), dimension(2),automatic :: lo_bound
+                       integer(kind=i4), dimension(2),automatic :: hi_bound 
+                       logical(kind=i1), automatic :: is_allocated 
+                       vaddr        = LOC(array)
+                       size         = SIZEOF(array)
+                       lo_bound     = LBOUND(array)
+                       hi_bound     = UBOUND(array)
+                       is_allocated = allocated(array)
+                       print*,"======================INFO======================"
+                       print*, "Array member name:", name 
+                       print*, "vaddr=",vaddr
+                       print*, "size=",size
+                       print*, "allocated=",is_allocated
+                       print*, "lo_bound=",lo_bound
+                       print*, "hi_bound=",hi_bound 
+                       print*,"======================INFO======================"
+     end subroutine check_allocation_stats_complex2D
+
+     
+     !  show allocation status
+     subroutine show_AM_broadband_signal_state(AM_signal)
+         implicit none 
+         character(*), parameter :: sub_name = "show_AM_broadband_signal_state"
+         type(AM_broadband_signal_t),        intent(in)        :: AM_signal
+         integer(kind=i8), automatic :: obj_vaddr
+         integer(kind=i8), automatic :: obj_size 
+         obj_vaddr = LOC(AM_signal)
+         obj_size  = SIZEOF(AM_signal)
+         print*, "[AM_broadband_signal_t] -- INFO:  array members"
+         print*, "AM_signal vaddr:        ", obj_vaddr 
+         print*, "AM_signal size (bytes): ", obj_size 
+         call check_allocation_stats_real1D(AM_signal.m_code_seq,       "m_code_seq")
+         call check_allocation_stats_complex1D(AM_signal.m_carrier,     "m_carrier")
+         call check_allocation_stats_complex1D(AM_signal.m_complex_env, "m_complex_env")
+         call check_allocation_stats_complex1D(AM_signal.m_env_spec,    "m_env_spec")
+         call check_allocation_stats_complex1D(AM_signal.m_signal,      "m_signal")
+         call check_allocation_stats_complex2D(AM_signal.m_samples,     "m_samples")
+         call check_allocation_stats_complex2D(AM_signal.m_env_correl,  "m_env_correl")
+         call check_allocation_stats_complex2D(AM_signal.m_ambiguity,   "m_ambiguity")
+         call check_allocation_stats_real2D(AM_signal.m_abs_ambiguity,  "m_abs_ambiguity")
+         call check_allocation_stats_real1D(AM_signal.m_carrier_i,      "m_carrier_i")
+         call check_allocation_stats_real1D(AM_signal.m_carrier_q,      "m_carrier_q")
+         call check_allocation_stats_real1D(AM_signal.m_complex_env_i,  "m_complex_env_i")
+         call check_allocation_stats_real1D(AM_signal.m_complex_env_q,  "m_complex_env_q")
+         call check_allocation_stats_real1D(AM_signal.m_signal_i,       "m_signal_i")
+         call check_allocation_stats_real1D(AM_signal.m_signal_q,       "m_signal_q")
+         call check_allocation_stats_real2D(AM_signal.m_env_correl_i,   "m_env_correl_i")
+         call check_allocation_stats_real2D(AM_signal.m_env_correl_q,   "m_env_correl_q")
+         print*,"[AM_broadband_signal_t] -- INFO: scalar members"
+         print*, "m_signal_name=",    AM_signal.m_signal_name
+         print*, "m_envelope_type=",  AM_signal.m_envelope_type 
+         print*, "m_distro_omega=",   AM_signal.m_distro_omega
+         print*, "m_distro_theta=",   AM_signal.m_distro_theta
+         print*, "m_code_type=",      AM_signal.m_code_type 
+         print*, "m_id=",             AM_signal.m_id 
+         print*, "m_interval_1=",     AM_signal.m_interval_1  
+         print*, "m_interval_2=",     AM_signal.m_interval_2 
+         print*, "m_interval_3=",     AM_signal.m_interval_3
+         print*, "m_baude_rate=",     AM_signal.m_baude_rate
+         print*, "m_Ns=",             AM_signal.m_Ns 
+         print*, "m_Ne=",             AM_signal.m_Ne 
+         print*, "m_Ts=",             AM_signal.m_Ts 
+         print*, "m_Te=",             AM_signal.m_Te 
+         print*, "m_nfreqs=",         AM_signal.m_nfreqs
+         print*, "m_nfreqe=",         AM_signal.m_nfreqe 
+         print*, "m_num_samples=",    AM_signal.m_num_samples 
+         print*, "m_nomegs=",         AM_signal.m_nomegs 
+         print*, "m_nomege=",         AM_signal.m_nomege 
+         print*, "m_nthets=",         AM_signal.m_nthets 
+         print*, "m_nthete",          AM_signal.m_nthete         
+         print*, "m_sym_dep=",        AM_signal.m_sym_dep        
+         print*, "m_ft_process=",     AM_signal.m_ft_process
+         print*, "m_order=",          AM_signal.m_order 
+         print*, "m_A0=",             AM_signal.m_A0                                
+         print*, "m_invT=",           AM_signal.m_invT           
+         print*, "m_fc=",             AM_signal.m_fc             
+         print*, "m_fs=",             AM_signal.m_fs           
+         print*, "m_sig_width=",      AM_signal.m_sig_width     
+         print*, "m_sig_energy=",     AM_signal.m_sig_energy    
+         print*, "m_snr=",            AM_signal.m_snr           ! signal-to-noise ratio
+         print*, "m_Ps=",             AM_signal.m_Ps ! SEP (symbol error probability)
+         print*, "m_creation_state=", AM_signal.m_creation_state
+     end subroutine show_AM_broadband_signal_state
 
 
 
