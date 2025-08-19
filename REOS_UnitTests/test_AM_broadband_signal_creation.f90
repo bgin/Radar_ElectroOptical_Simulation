@@ -99,6 +99,7 @@ subroutine unit_test_AM_broadband_signal_create()
                baseband_sig.m_split_carrier  = .true. 
                baseband_sig.m_split_envelope = .true. 
                baseband_sig.m_ft_process     = .true.
+               baseband_sig.m_order          = 1
                baseband_sig.m_A0             = cmplx(1.0_sp,0.0_sp)
                baseband_sig.m_fc             = 3.0e+9_sp 
 #endif 
@@ -108,7 +109,7 @@ subroutine unit_test_AM_broadband_signal_create()
                call create_AM_broadband_signal(baseband_sig,"AM_wideband_signal", &
                                                "Sine-squared","Gaussian","Uniform","1,-1",1,0,0,0, &
                                                16,0,15,0,128,0,32,0,64,0,1023,.false.,.false.,.true.,.true.,    &
-                                               A0,3.0e+9_sp)
+                                               1,A0,3.0e+9_sp)
                end         = rdtsc_wrap()
                start_c     = start-RDTSC_LATENCY
                end_c       = end-RDTSC_LATENCY
@@ -143,6 +144,7 @@ subroutine unit_test_AM_broadband_signal_create()
                print*, "m_nthete",          baseband_sig.m_nthete         
                print*, "m_sym_dep=",        baseband_sig.m_sym_dep        
                print*, "m_ft_process=",     baseband_sig.m_ft_process
+               print*, "m_order=",          baseband_sig.m_order 
                print*, "m_A0=",             baseband_sig.m_A0                                
                print*, "m_invT=",           baseband_sig.m_invT           
                print*, "m_fc=",             baseband_sig.m_fc             
@@ -297,7 +299,7 @@ subroutine unit_test_AM_broadband_signal_destroy()
                call create_AM_broadband_signal(baseband_sig,"AM_wideband_signal", &
                                                "Sine-squared","Gaussian","Uniform","1,-1",1,0,0,0, &
                                                16,0,15,0,128,0,32,0,64,0,1023,.false.,.false.,.true.,.true.,    &
-                                               A0,3.0e+9_sp)
+                                               1,A0,3.0e+9_sp)
                end         = rdtsc_wrap()
                start_c     = start-RDTSC_LATENCY
                end_c       = end-RDTSC_LATENCY
@@ -309,6 +311,26 @@ subroutine unit_test_AM_broadband_signal_destroy()
                  print*, "[UNIT-TEST]: create_AM_broadband_signal -- TIMING"
                  print*,"[TSC]=", tsc_elapsed 
                end if 
+#if 1 
+               ! Check allocation status
+               if(allocated(baseband_sig.m_code_seq))     print*, "m_code_seq      -- ALLOCATED." 
+               if(allocated(baseband_sig.m_carrier))      print*, "m_carrier       -- ALLOCATED."     
+               if(allocated(baseband_sig.m_complex_env))  print*, "m_complex_env   -- ALLOCATED."
+               if(allocated(baseband_sig.m_signal))       print*, "m_signal        -- ALLOCATED."  
+               if(allocated(baseband_sig.m_env_spec))     print*, "m_env_spec      -- ALLOCATED."
+               if(allocated(baseband_sig.m_samples))      print*, "m_samples       -- ALLOCATED."      
+               if(allocated(baseband_sig.m_env_correl))   print*, "m_env_correl    -- ALLOCATED."
+               if(allocated(baseband_sig.m_ambiguity))    print*, "m_ambiguity     -- ALLOCATED." 
+               if(allocated(baseband_sig.m_abs_ambiguity))print*, "m_abs_ambiguity -- ALLOCATED."   
+               if(allocated(baseband_sig.m_carrier_i))    print*, "m_carrier_i     -- ALLOCATED."   
+               if(allocated(baseband_sig.m_carrier_q))    print*, "m_carrier_q     -- ALLOCATED."    
+               if(allocated(baseband_sig.m_complex_env_i))print*, "m_complex_env_i -- ALLOCATED."
+               if(allocated(baseband_sig.m_complex_env_q))print*, "m_complex_env_q -- ALLOCATED."
+               if(allocated(baseband_sig.m_signal_i))     print*, "m_signal_i      -- ALLOCATED."        
+               if(allocated(baseband_sig.m_signal_q))     print*, "m_signal_q      -- ALLOCATED."     
+               if(allocated(baseband_sig.m_env_correl_i)) print*, "m_env_correl_i  -- ALLOCATED." 
+               if(allocated(baseband_sig.m_env_correl_q)) print*, "m_env_correl_q  -- ALLOCATED."
+#endif
                start      = rdtsc_wrap()
                call destroy_AM_broadband_signal(baseband_sig,.true.)
                end         = rdtsc_wrap()
@@ -322,7 +344,7 @@ subroutine unit_test_AM_broadband_signal_destroy()
                  print*, "[UNIT-TEST]: destroy_AM_broadband_signal -- TIMING"
                  print*,"[TSC]=", tsc_elapsed 
                end if 
-                print*,"[TEST #2: Dumping object state.]"
+               print*,"[TEST #2: Dumping object state.]"
                print*, "m_signal_name=",    baseband_sig.m_signal_name
                print*, "m_envelope_type=",  baseband_sig.m_envelope_type 
                print*, "m_distro_omega=",   baseband_sig.m_distro_omega
@@ -346,6 +368,7 @@ subroutine unit_test_AM_broadband_signal_destroy()
                print*, "m_nthete",          baseband_sig.m_nthete         
                print*, "m_sym_dep=",        baseband_sig.m_sym_dep        
                print*, "m_ft_process=",     baseband_sig.m_ft_process
+               print*, "m_order=",          baseband_sig.m_order 
                print*, "m_A0=",             baseband_sig.m_A0                                
                print*, "m_invT=",           baseband_sig.m_invT           
                print*, "m_fc=",             baseband_sig.m_fc             
@@ -413,6 +436,7 @@ subroutine unit_test_AM_broadband_signal_clear()
                baseband_sig.m_split_carrier  = .true. 
                baseband_sig.m_split_envelope = .true. 
                baseband_sig.m_ft_process     = .true.
+               baseband_sig.m_order          = 1
                baseband_sig.m_A0             = cmplx(1.0_sp,0.0_sp)
                baseband_sig.m_fc             = 3.0e+9_sp 
 #endif 
@@ -422,7 +446,7 @@ subroutine unit_test_AM_broadband_signal_clear()
                call create_AM_broadband_signal(baseband_sig,"AM_wideband_signal", &
                                                "Sine-squared","Gaussian","Uniform","1,-1",1,0,0,0, &
                                                16,0,15,0,128,0,32,0,64,0,1023,.false.,.false.,.true.,.true.,    &
-                                               A0,3.0e+9_sp)
+                                               1,A0,3.0e+9_sp)
                end         = rdtsc_wrap()
                start_c     = start-RDTSC_LATENCY
                end_c       = end-RDTSC_LATENCY
@@ -435,8 +459,8 @@ subroutine unit_test_AM_broadband_signal_clear()
                  print*,"[TSC]=", tsc_elapsed 
                end if 
                start      = rdtsc_wrap()
-               print*, "m_carrier -- status:", allocated(baseband_sig.m_carrier)
-               print*, "m_signal -- status: ", allocated(baseband_sig.m_signal)
+               !print*, "m_carrier -- status:", allocated(baseband_sig.m_carrier)
+               !print*, "m_signal -- status: ", allocated(baseband_sig.m_signal)
                call clear_AM_broadband_signal(baseband_sig,cmplx(0.0_sp,0.0_sp),0.0_sp,.false.)
                end         = rdtsc_wrap()
                start_c     = start-RDTSC_LATENCY
@@ -473,6 +497,7 @@ subroutine unit_test_AM_broadband_signal_clear()
                print*, "m_nthete",          baseband_sig.m_nthete         
                print*, "m_sym_dep=",        baseband_sig.m_sym_dep        
                print*, "m_ft_process=",     baseband_sig.m_ft_process
+               print*, "m_order=",          baseband_sig.m_order 
                print*, "m_A0=",             baseband_sig.m_A0                                
                print*, "m_invT=",           baseband_sig.m_invT           
                print*, "m_fc=",             baseband_sig.m_fc             
@@ -486,6 +511,97 @@ subroutine unit_test_AM_broadband_signal_clear()
 end subroutine unit_test_AM_broadband_signal_clear
 
 
+subroutine unit_test_AM_broadband_signal_show_state()
+                use iso_c_binding, only : c_int 
+                use IFPORT
+#if 0
+              interface
+                  function raise(sig) bind(C,name="raise")
+                           use iso_c_binding, only : c_int 
+                           integer(c_int) :: raise 
+                           integer(c_int), value :: sig 
+                  end function raise 
+              end interface
+#endif
+
+               interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+               end interface
+               character(len=128),          automatic :: filename 
+               integer(c_int),              parameter :: SIGTRAP = 5 
+               character(len=64),           parameter  :: header = "[TEST #4: show_AM_broadband_signal_state -- START]"
+               character(len=64),           parameter  :: footer = "[TEST #4: show_AM_broadband_signal_state -- END]"
+               integer(kind=c_long_long),   automatic  :: start,end 
+               integer(kind=c_long_long),   automatic  :: start_c,end_c 
+               integer(kind=c_long_long),   automatic  :: tsc_elapsed 
+               type(AM_broadband_signal_t), automatic  :: baseband_sig
+               complex(kind=sp),            automatic  :: A0
+#if 0
+               baseband_sig.m_signal_name    = "Amplitude_Modulated_wideband_signal"
+               baseband_sig.m_envelope_type  = "Sine-squared"
+               baseband_sig.m_distro_omega   = "Gaussian"
+               baseband_sig.m_distro_theta   = "Uniform"
+               baseband_sig.m_code_type      = "1,-1"
+               baseband_sig.m_id             = 1 
+               baseband_sig.m_interval_1     = 0
+               baseband_sig.m_interval_2     = 0
+               baseband_sig.m_interval_3     = 0
+               baseband_sig.m_baude_rate     = 16 
+               baseband_sig.m_Ns             = 0 
+               baseband_sig.m_Ne             = 15 
+               baseband_sig.m_Ts             = 0
+               baseband_sig.m_Te             = 128 
+               baseband_sig.m_nfreqs         = 0
+               baseband_sig.m_nfreqe         = 64 
+               baseband_sig.m_nomegs         = 0
+               baseband_sig.m_nomege         = 63 
+               baseband_sig.m_nthets         =  0
+               baseband_sig.m_nthete         = 1023
+               baseband_sig.m_sym_dep        = .false. 
+               baseband_sig.m_split_carrier  = .true. 
+               baseband_sig.m_split_envelope = .true. 
+               baseband_sig.m_ft_process     = .true.
+               baseband_sig.m_order          = 1
+               baseband_sig.m_A0             = cmplx(1.0_sp,0.0_sp)
+               baseband_sig.m_fc             = 3.0e+9_sp 
+#endif 
+               print*, header 
+               A0 = cmplx(1.0_sp,0.0_sp)
+               start       = rdtsc_wrap()
+               call create_AM_broadband_signal(baseband_sig,"AM_wideband_signal", &
+                                               "Sine-squared","Gaussian","Uniform","1,-1",1,0,0,0, &
+                                               16,0,15,0,128,0,32,0,64,0,1023,.false.,.false.,.true.,.true.,    &
+                                               1,A0,3.0e+9_sp)
+               end         = rdtsc_wrap()
+               start_c     = start-RDTSC_LATENCY
+               end_c       = end-RDTSC_LATENCY
+               tsc_elapsed = end_c-start_c 
+               if(tsc_elapsed<ZERO) then
+                 print*,"[INVALID-TSC]=", tsc_elapsed
+               else 
+                 print*, "[WARNING]: Crude timing measurement!!"
+                 print*, "[UNIT-TEST]: create_AM_broadband_signal -- TIMING"
+                 print*,"[TSC]=", tsc_elapsed 
+               end if 
+               start      = rdtsc_wrap()
+               call show_AM_broadband_signal_state(baseband_sig)
+               end         = rdtsc_wrap()
+               start_c     = start-RDTSC_LATENCY
+               end_c       = end-RDTSC_LATENCY
+               tsc_elapsed = end_c-start_c 
+               if(tsc_elapsed<ZERO) then
+                 print*,"[INVALID-TSC]=", tsc_elapsed
+               else 
+                 print*, "[WARNING]: Crude timing measurement!!"
+                 print*, "[UNIT-TEST]: show_AM_broadband_signal_state -- TIMING"
+                 print*,"[TSC]=", tsc_elapsed 
+               end if 
+               call destroy_AM_broadband_signal(baseband_sig,.true.)
+               print*, footer 
+end subroutine unit_test_AM_broadband_signal_show_state
 
 
 end module mod_test_AM_broadband_signal_creation 
@@ -493,7 +609,8 @@ end module mod_test_AM_broadband_signal_creation
 
 program main 
     use mod_test_AM_broadband_signal_creation
-    !call unit_test_AM_broadband_signal_create()
-    !call unit_test_AM_broadband_signal_destroy()
+    call unit_test_AM_broadband_signal_create()
+    call unit_test_AM_broadband_signal_destroy()
     call unit_test_AM_broadband_signal_clear()
+    call unit_test_AM_broadband_signal_show_state()
 end program main 
