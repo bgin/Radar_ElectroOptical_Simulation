@@ -135,7 +135,8 @@ module mod_AM_broadband_signal
            logical(kind=i4)  :: m_split_envelope ! split into real/imag parts
            logical(kind=i4)  :: m_ft_process     ! Fourier-Transform processing: true for MKL, false for Quadpack numerical integration
            integer(kind=i4)  :: m_order          ! 1 for: (omega,theta), 2 for: (theta,omega)
-           complex(kind=sp)  :: m_A0            ! complex amplitude value                          
+           complex(kind=sp)  :: m_A0            ! complex amplitude value   
+           complex(kind=sp)  :: m_Ac            ! complex carrier amplitude                       
            real(kind=sp)     :: m_invT          ! inverse of symbol length
            real(kind=sp)     :: m_fc            ! carrier frequency 
            real(kind=sp)     :: m_fs            ! sampling frequency 
@@ -194,7 +195,7 @@ module mod_AM_broadband_signal
      subroutine create_AM_broadband_signal(AM_signal,sig_name,envelope_type,distro_omega,distro_theta,          &
                                            code_type,id,interval_1,interval_2,interval_3, baude_rate,           &
                                            Ns,Ne,Ts,Te,nfreqs,nfreqe,nomegs,nomege,nthets,nthete,               &
-                                           sym_dep,split_carrier,split_envelope,ft_process,order,A0,fc)              
+                                           sym_dep,split_carrier,split_envelope,ft_process,order,A0,Ac,fc)              
                                         
           implicit none 
 #if (GMS_DEBUG_ON) == 1
@@ -227,6 +228,7 @@ module mod_AM_broadband_signal
           logical(kind=i4),                   intent(in)           :: ft_process 
           integer(kind=i4),                   intent(in)           :: order 
           complex(kind=sp),                   intent(in)           :: A0 
+          complex(kind=sp),                   intent(in)           :: Ac 
           real(kind=sp),                      intent(in)           :: fc 
          
 
@@ -262,6 +264,7 @@ module mod_AM_broadband_signal
           AM_signal.m_ft_process    = ft_process 
           AM_signal.m_order         = order 
           AM_signal.m_A0            = A0 ! Complex amplitude value
+          Am_signal.m_Ac            = Ac 
           AM_signal.m_fc            = fc 
           AM_signal.m_fs            = 1.0_sp/real(AM_signal.m_num_samples,kind=sp) 
           AM_signal.m_sig_width     = 0.0_sp 
@@ -362,6 +365,7 @@ module mod_AM_broadband_signal
              AM_signal.m_ft_process    = .false. 
              AM_signal.m_order         = 0
              AM_signal.m_A0            = cmplx(0.0_sp,0.0_sp)
+             AM_signal.m_Ac            = cmplx(0.0_sp,0.0_sp)
              AM_signal.m_invT          = 0.0_sp 
              AM_signal.m_fc            = 0.0_sp 
              AM_signal.m_fs            = 0.0_sp 
@@ -564,6 +568,7 @@ module mod_AM_broadband_signal
              this.m_ft_process    =    other.m_ft_process 
              this.m_order         =    other.m_order 
              this.m_A0            =    other.m_A0
+             this.m_Ac            =    other.m_Ac 
              this.m_invT          =    other.m_invT 
              this.m_fc            =    other.m_fc  
              this.m_fs            =    other.m_fs  
@@ -784,6 +789,7 @@ module mod_AM_broadband_signal
              this.m_ft_process    =    other.m_ft_process 
              this.m_order         =    other.m_order 
              this.m_A0            =    other.m_A0
+             this.m_Ac            =    other.m_Ac 
              this.m_invT          =    other.m_invT 
              this.m_fc            =    other.m_fc  
              this.m_fs            =    other.m_fs  
@@ -1103,7 +1109,8 @@ module mod_AM_broadband_signal
          print*, "m_sym_dep=",        AM_signal.m_sym_dep        
          print*, "m_ft_process=",     AM_signal.m_ft_process
          print*, "m_order=",          AM_signal.m_order 
-         print*, "m_A0=",             AM_signal.m_A0                                
+         print*, "m_A0=",             AM_signal.m_A0  
+         print*, "m_Ac=",             AM_signal.m_Ac                               
          print*, "m_invT=",           AM_signal.m_invT           
          print*, "m_fc=",             AM_signal.m_fc             
          print*, "m_fs=",             AM_signal.m_fs           
@@ -1113,18 +1120,19 @@ module mod_AM_broadband_signal
          print*, "m_Ps=",             AM_signal.m_Ps ! SEP (symbol error probability)
          print*, "m_creation_state=", AM_signal.m_creation_state
      end subroutine show_AM_broadband_signal_state
-#if 0
+
      ! Start of computational subroutines
      ! SIgnal derived type is completely decomposed
-     subroutine modulate_AM_broadband_signal(baude_rate,                  &
+     subroutine modulate_AM_broadband_signal(envelope_type,               &
+                                             baude_rate,                  &
                                              Ns,                          &
                                              Ne,                          &
                                              Ts,                          &
                                              Te,                          &
                                              A0,                          &
+                                             Ac,                          &
                                              invT,                        &
                                              fc,                          &
-                                             fs,                          &
                                              code_seq,                    &
                                              carrier,                     &
                                              complex_env,                 &
@@ -1135,19 +1143,202 @@ module mod_AM_broadband_signal
                                              signal_i,                    &
                                              signal_q,                    &
                                              complex_env_i,               &
-                                             complex_env_q)
-
+                                             complex_env_q,               &
+                                             ioerr)
+          use omp_lib
+#if (GMS_DEBUG_ON) == 1
+          interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+               end interface
+#endif 
           implicit none 
 #if (GMS_DEBUG_ON) == 1
           character(*), parameter :: sub_name = "modulate_AM_broadband_signal"
 #endif 
-          integer(kind=i4),           intent(in), value :: baude_rate 
-          integer(kind=i4),           intent(in), value :: Ns 
-          integer(kind=i4),           intent(in), value :: Ne 
-
+          character(len=*),                         intent(in), value :: envelope_type 
+          integer(kind=i4),                         intent(in), value :: baude_rate 
+          integer(kind=i4),                         intent(in), value :: Ns 
+          integer(kind=i4),                         intent(in), value :: Ne 
+          integer(kind=i4),                         intent(in), value :: Ts 
+          integer(kind=i4),                         intent(in), value :: Te 
+          complex(kind=sp),                         intent(in), value :: A0 
+          complex(kind=sp),                         intent(in), value :: Ac ! carrier amplitude 
+          real(kind=sp),                            intent(in), value :: invT 
+          real(kind=sp),                            intent(in), value :: fc 
+          real(kind=sp),    dimension(1:baude_rate),intent(in)        :: code_seq 
+          complex(kind=sp), dimension(Ts:Te),       intent(out)       :: carrier 
+          complex(kind=sp), dimension(Ts:Te),       intent(out)       :: complex_env 
+          complex(kind=sp), dimension(Ts:Te),       intent(out)       :: signal 
+          complex(kind=sp), dimension(Ns:Ne,Ts:Te), intent(out)       :: samples 
+          real(kind=sp),    dimension(Ts:Te),       intent(out)       :: carrier_i 
+          real(kind=sp),    dimension(Ts:Te),       intent(out)       :: carrier_q 
+          real(kind=sp),    dimension(Ts:Te),       intent(out)       :: signal_i 
+          real(kind=sp),    dimension(Ts:Te),       intent(out)       :: signal_q 
+          real(kind=sp),    dimension(Ts:Te),       intent(out)       :: complex_env_i 
+          real(kind=sp),    dimension(Ts:Te),       intent(out)       :: complex_env_q 
+          integer(kind=i4),                         intent(out)       :: ioerr 
+          ! Locals
+          
+          complex(kind=sp), automatic :: c_amp 
+          complex(kind=sp), automatic :: yc_t 
+          complex(kind=sp), automatic :: ctmp 
+          complex(kind=sp), automatic :: sig_sum 
+          complex(kind=sp), parameter :: j = cmplx(0.0_sp,1.0_sp)
+          real(kind=sp),    parameter :: C6283185307179586476925286766559 = &
+                                               6.283185307179586476925286766559_sp
+          real(kind=sp),    parameter :: C314159265358979323846264338328 = &
+                                               3.14159265358979323846264338328_sp
+          real(kind=sp),    automatic :: r_t 
+          real(kind=sp),    automatic :: r_k 
+          real(kind=sp),    automatic :: h_spread
+          real(kind=sp),    automatic :: v_spread
+          real(kind=sp),    automatic :: r_Ts
+          real(kind=sp),    automatic :: r_Te 
+          real(kind=sp),    automatic :: t0
+          real(kind=sp),    automatic :: t1
+          real(kind=sp),    automatic :: t2 
+          real(kind=sp),    automatic :: t3 
+          real(kind=sp),    automatic :: arg 
+          real(kind=sp),    automatic :: r_seq 
+          integer(kind=i4), automatic :: i__,j__,k__ 
+          ! Exec code 
+#if (GMS_DEBUG_ON) == 1
+          print*, "File:     ", __FILE__
+          print*, "Procedure:", sub_name 
+          print*, "LOC:      ", __LINE__ 
+          print*, "TSC:      ", rdtsc_wrap()
+          
+#endif 
+           
+          select case (envelope_type)
+               case ("Trapezoidal")
+                  r_Ts     = real(Ts,kind=sp)
+                  r_Te     = real(Te,kind=sp)
+                  h_spread = r_Te-r_Ts   
+                  v_spread = real(A0)
+                  c_amp    = A0/C314159265358979323846264338328
+                  t0       = C314159265358979323846264338328/(r_Te-r_Ts)
+!dir$ assume_aligned code_seq:64
+!dir$ assume_aligned carrier:64
+!dir$ assume_aligned complex_env:64
+!dir$ assume_aligned signal:64
+!dir$ assume_aligned samples:64
+!dir$ assume_aligned carrier_i:64
+!dir$ assume_aligned carrier_q:64
+!dir$ assume_aligned signal_i:64
+!dir$ assume_aligned signal_q:64
+!dir$ assume_aligned complex_env_i:64
+!dir$ assume_aligned complex_env_q:64
+                  do i__ = Ts,Te 
+                     r_t          = real(i__,kind=sp)
+                     carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc)
+                     sig_sum      = cmplx(0.0_sp,0.0_sp)
+!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum) 
+                     do j__ = Ns,Ne 
+                        r_k              = real(j__,kind=sp)
+                        r_seq            = code_seq(j__)
+                        arg              = t0*(r_t-r_k)+h_spread
+                        t1               = asin(sin(arg))
+                        t2               = acos(cos(arg))
+                        t3               = (t1+t2)-v_spread*0.5_sp+v_spread 
+                        yc_t             = c_amp*t3 
+                        ctmp             = yc_t*r_seq
+                        sig_sum          = sig_sum+ctmp
+                        samples(j__,i__) = ctmp
+                     end do 
+                     complex_env(i__) = sig_sum
+                     signal(i__)      = sig_sum*carrier(i__)
+                     carrier_i        = real(carrier(i__))
+                     carrier_q        = aimag(carrier(i__))
+                     signal_i         = real(signal(i__))
+                     signal_q         = aimag(signal(i__))
+                     complex_env_i    = real(complex_env(i__))
+                     complex_env_q    = aimag(complex_env(i__))
+                  end do 
+               case ("Sine_squared")
+!dir$ assume_aligned code_seq:64
+!dir$ assume_aligned carrier:64
+!dir$ assume_aligned complex_env:64
+!dir$ assume_aligned signal:64
+!dir$ assume_aligned samples:64
+!dir$ assume_aligned carrier_i:64
+!dir$ assume_aligned carrier_q:64
+!dir$ assume_aligned signal_i:64
+!dir$ assume_aligned signal_q:64
+!dir$ assume_aligned complex_env_i:64
+!dir$ assume_aligned complex_env_q:64
+                   do i__ = Ts,Te 
+                      r_t          = real(i__,kind=sp)
+                      carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc)
+                      sig_sum      = cmplx(0.0_sp,0.0_sp)
+!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                      do j__ = Ns,Ne 
+                         r_k              = real(j__,kind=sp)
+                         r_seq            = code_seq(j__)
+                         arg              = C6283185307179586476925286766559*r_t-r_k*invT
+                         t0               = 1.0_sp-cos(arg)
+                         yc_t             = A0*0.5_sp*t0 
+                         ctmp             = yc_t*r_seq
+                         sig_sum          = sig_sum+ctmp
+                         samples(j__,i__) = ctmp
+                      end do 
+                       complex_env(i__) = sig_sum
+                       signal(i__)      = sig_sum*carrier(i__)
+                       carrier_i        = real(carrier(i__))
+                       carrier_q        = aimag(carrier(i__))
+                       signal_i         = real(signal(i__))
+                       signal_q         = aimag(signal(i__))
+                       complex_env_i    = real(complex_env(i__))
+                       complex_env_q    = aimag(complex_env(i__))
+                   end do    
+               case ("Sine")
+!dir$ assume_aligned code_seq:64
+!dir$ assume_aligned carrier:64
+!dir$ assume_aligned complex_env:64
+!dir$ assume_aligned signal:64
+!dir$ assume_aligned samples:64
+!dir$ assume_aligned carrier_i:64
+!dir$ assume_aligned carrier_q:64
+!dir$ assume_aligned signal_i:64
+!dir$ assume_aligned signal_q:64
+!dir$ assume_aligned complex_env_i:64
+!dir$ assume_aligned complex_env_q:64
+                   do i__ = Ts,Te 
+                      r_t          = real(i__,kind=sp)
+                      carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc)
+                      sig_sum      = cmplx(0.0_sp,0.0_sp)
+!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                      do j__ = Ns,Ne 
+                         r_k              = real(j__,kind=sp)
+                         r_seq            = code_seq(j__)
+                         arg              = C314159265358979323846264338328*r_t-r_k*invT
+                         t0               = sin(arg)
+                         yc_t             = A0*t0 
+                         ctmp             = yc_t*r_seq
+                         sig_sum          = sig_sum+ctmp
+                         samples(j__,i__) = ctmp
+                      end do 
+                       complex_env(i__) = sig_sum
+                       signal(i__)      = sig_sum*carrier(i__)
+                       carrier_i        = real(carrier(i__))
+                       carrier_q        = aimag(carrier(i__))
+                       signal_i         = real(signal(i__))
+                       signal_q         = aimag(signal(i__))
+                       complex_env_i    = real(complex_env(i__))
+                       complex_env_q    = aimag(complex_env(i__))
+                   end do 
+               case default 
+                   print*, "Invalid switch variable: ", envelope_type 
+                   ioerr = -1
+                   return 
+            end select 
+            ioerr = 0                  
      end subroutine modulate_AM_broadband_signal
 
-#endif
+
 
 
 
