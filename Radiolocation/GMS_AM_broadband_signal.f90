@@ -108,6 +108,36 @@ module mod_AM_broadband_signal
 #define AM_BROADBAND_SIGNAL_EXEC_TRACE 1
 #endif 
 
+     ! Helper derived type for holding random-distribution parameters
+     type, public :: rand_distro_params_t 
+           SEQUENCE
+           real(kind=sp)    :: random_gamma_s_r
+           real(kind=sp)    :: random_gamma_s_i
+           logical(kind=i4) :: random_gamma_first 
+           real(kind=sp)    :: random_gamma1_s_r
+           real(kind=sp)    :: random_gamma1_s_i
+           logical(kind=i4) :: random_gamma1_first 
+           real(kind=sp)    :: random_gamma2_s_r
+           real(kind=sp)    :: random_gamma2_s_i
+           logical(kind=i4) :: random_gamma2_first
+           integer(kind=i4) :: rand_chisq_ndf 
+           logical(kind=i4) :: rand_chisq_first 
+           real(kind=sp)    :: random_weibull_a_r 
+           real(kind=sp)    :: random_weibull_a_i 
+           real(kind=sp)    :: random_beta_aa_r 
+           real(kind=sp)    :: random_beta_aa_i
+           real(kind=sp)    :: random_beta_bb_r 
+           real(kind=sp)    :: random_beta_bb_i 
+           logical(kind=i4) :: random_beta_first 
+           real(kind=sp)    :: rand_poisson_mu_r 
+           real(kind=sp)    :: rand_poisson_mu_i
+           logical(kind=i4) :: rand_poisson_first
+           real(kind=sp)    :: rand_von_Misses_k_r 
+           real(kind=sp)    :: rand_von_Misses_k_i 
+           logical(kind=i4) :: rand_von_Misses_first 
+
+     end type rand_distro_params_t 
+
      type, public :: AM_broadband_signal_t 
 
            character(len=32) :: m_signal_name    ! signal/waveform name plain name
@@ -1501,7 +1531,747 @@ module mod_AM_broadband_signal
      end subroutine modulate_AM_broadband_signal
 
 
-
+     ! Start of computational subroutines
+     ! Signal derived type is completely decomposed
+     subroutine modulate_add_noise_AM_broadband_signal(envelope_type,               &
+                                                       baude_rate,                  &
+                                                       Ns,                          &
+                                                       Ne,                          &
+                                                       Ts,                          &
+                                                       Te,                          &
+                                                       A0,                          &
+                                                       Ac,                          &
+                                                       invT,                        &
+                                                       fc,                          &
+                                                       r_scale,                     &
+                                                       i_scale,                     &
+                                                       rd_params,                   &
+                                                       which_distro,                &
+                                                       code_seq,                    &
+                                                       carrier,                     &
+                                                       complex_env,                 &
+                                                       signal,                      &
+                                                       samples,                     &
+                                                       carrier_i,                   &
+                                                       carrier_q,                   &
+                                                       signal_i,                    &
+                                                       signal_q,                    &
+                                                       complex_env_i,               &
+                                                       complex_env_q,               &
+                                                       ioerr)
+          use omp_lib
+          use rand_scalar_distributions
+          implicit none
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+               end interface
+#endif 
+           
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          character(*), parameter :: sub_name = "modulate_add_noise_AM_broadband_signal"
+#endif 
+          character(len=*),                         intent(in), value :: envelope_type 
+          integer(kind=i4),                         intent(in), value :: baude_rate 
+          integer(kind=i4),                         intent(in), value :: Ns 
+          integer(kind=i4),                         intent(in), value :: Ne 
+          integer(kind=i4),                         intent(in), value :: Ts 
+          integer(kind=i4),                         intent(in), value :: Te 
+          complex(kind=sp),                         intent(in), value :: A0 
+          complex(kind=sp),                         intent(in), value :: Ac ! carrier amplitude 
+          real(kind=sp),                            intent(in), value :: invT 
+          real(kind=sp),                            intent(in), value :: fc 
+          real(kind=sp),                            intent(in), value :: scale_r 
+          real(kind=sp),                            intent(in), value :: scale_i
+          type(rand_distro_params_t),               intent(in)        :: rd_params 
+          character(len=*),                         intent(in),       :: which_distro 
+          real(kind=sp),    dimension(1:baude_rate),intent(in)        :: code_seq 
+          complex(kind=sp), dimension(Ts:Te),       intent(out)       :: carrier 
+          complex(kind=sp), dimension(Ts:Te),       intent(out)       :: complex_env 
+          complex(kind=sp), dimension(Ts:Te),       intent(out)       :: signal 
+          complex(kind=sp), dimension(Ns:Ne,Ts:Te), intent(out)       :: samples 
+          real(kind=sp),    dimension(Ts:Te),       intent(out)       :: carrier_i 
+          real(kind=sp),    dimension(Ts:Te),       intent(out)       :: carrier_q 
+          real(kind=sp),    dimension(Ts:Te),       intent(out)       :: signal_i 
+          real(kind=sp),    dimension(Ts:Te),       intent(out)       :: signal_q 
+          real(kind=sp),    dimension(Ts:Te),       intent(out)       :: complex_env_i 
+          real(kind=sp),    dimension(Ts:Te),       intent(out)       :: complex_env_q 
+          integer(kind=i4),                         intent(out)       :: ioerr 
+          ! Locals
+          
+          complex(kind=sp), automatic :: c_amp 
+          complex(kind=sp), automatic :: yc_t 
+          complex(kind=sp), automatic :: ctmp 
+          complex(kind=sp), automatic :: sig_sum 
+          complex(kind=sp), automatic :: c_scale 
+          complex(kind=sp), automatic :: c_rand_i 
+          complex(kind=sp), automatic :: c_rand_j 
+          complex(kind=sp), parameter :: j = cmplx(0.0_sp,1.0_sp)
+          real(kind=sp),    parameter :: C6283185307179586476925286766559 = &
+                                               6.283185307179586476925286766559_sp
+          real(kind=sp),    parameter :: C314159265358979323846264338328 = &
+                                               3.14159265358979323846264338328_sp
+          real(kind=sp),    automatic :: r_phase
+          real(kind=sp),    automatic :: rand_r 
+          real(kind=sp),    automatic :: t_i_re 
+          real(kind=sp),    automatic :: t_i_im 
+          real(kind=sp),    automatic :: t_j_re
+          real(kind=sp),    automatic :: t_j_im
+          real(kind=sp),    automatic :: r_t 
+          real(kind=sp),    automatic :: r_k 
+          real(kind=sp),    automatic :: h_spread
+          real(kind=sp),    automatic :: v_spread
+          real(kind=sp),    automatic :: r_Ts
+          real(kind=sp),    automatic :: r_Te 
+          real(kind=sp),    automatic :: t0
+          real(kind=sp),    automatic :: t1
+          real(kind=sp),    automatic :: t2 
+          real(kind=sp),    automatic :: t3 
+          real(kind=sp),    automatic :: arg 
+          real(kind=sp),    automatic :: r_seq 
+          integer(kind=i4), automatic :: trunc_r
+          integer(kind=i4), automatic :: i__,j__,k__ 
+          ! Exec code 
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          print*, "File:     ", __FILE__
+          print*, "Procedure:", sub_name 
+          print*, "LOC:      ", __LINE__ 
+          print*, "TSC-Start:", rdtsc_wrap()
+          
+#endif 
+           
+          select case (envelope_type)
+               case ("Trapezoidal")
+                  r_Ts     = real(Ts,kind=sp)
+                  r_Te     = real(Te,kind=sp)
+                  h_spread = r_Te-r_Ts   
+                  v_spread = real(A0)
+                  t0       = C314159265358979323846264338328/(r_Te-r_Ts)
+                  r_phase  = 0.0_sp 
+                  call random_seed()
+                  call random_number(rand_r)
+                  trunc_r = floor(2.0_sp*rand_r)
+                  if(trunc_r .eq. 1)  then 
+                     r_phase = rand_r*C314159265358979323846264338328
+                  else if(trunc_r .eq. 0) then 
+                    r_phase = -C314159265358979323846264338328*rand_r
+                  end if 
+                  print*, "random-phase=", r_phase 
+                  if(which_distro .eq. "random_normal") then 
+                     c_scale = cmplx(scale_r,scale_i)
+                     c_amp   = A0/C314159265358979323846264338328
+!dir$ assume_aligned code_seq:64
+!dir$ assume_aligned carrier:64
+!dir$ assume_aligned complex_env:64
+!dir$ assume_aligned signal:64
+!dir$ assume_aligned samples:64
+!dir$ assume_aligned carrier_i:64
+!dir$ assume_aligned carrier_q:64
+!dir$ assume_aligned signal_i:64
+!dir$ assume_aligned signal_q:64
+!dir$ assume_aligned complex_env_i:64
+!dir$ assume_aligned complex_env_q:64
+                     do i__ = Ts,Te 
+                         t_i_re       = random_normal_clamped()
+                         t_i_im       = random_normal_clamped()
+                         c_rand_i     = cmplx(t_i_re,t_i_im)
+                         Ac           = Ac+c_rand_i*c_scale 
+                         r_t          = real(i__,kind=sp)
+                         carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                         sig_sum      = cmplx(0.0_sp,0.0_sp)
+!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum) 
+                         do j__ = Ns,Ne 
+                            t_j_re           = random_normal_clamped()
+                            t_j_im           = random_normal_clamped()
+                            c_rand_j         = cmplx(t_j_re,t_j_im)
+                            r_k              = real(j__,kind=sp)
+                            r_seq            = code_seq(j__)
+                            arg              = t0*(r_t-r_k)+h_spread
+                            t1               = asin(sin(arg))
+                            t2               = acos(cos(arg))
+                            t3               = (t1+t2)-v_spread*0.5_sp+v_spread 
+                            c_amp            = c_amp+c_rand_j*c_scale 
+                            yc_t             = c_amp*t3 
+                            ctmp             = yc_t*r_seq
+                            sig_sum          = sig_sum+ctmp
+                            samples(j__,i__) = ctmp
+                         end do 
+                         complex_env(i__) = sig_sum
+                         signal(i__)      = sig_sum*carrier(i__)
+                         carrier_i        = real(carrier(i__))
+                         carrier_q        = aimag(carrier(i__))
+                         signal_i         = real(signal(i__))
+                         signal_q         = aimag(signal(i__))
+                         complex_env_i    = real(complex_env(i__))
+                         complex_env_q    = aimag(complex_env(i__))
+                     end do 
+                  else if(which_distro .eq. "rand_exponential_clamped") then 
+                     c_scale = cmplx(scale_r,scale_i)
+                     c_amp   = A0/C314159265358979323846264338328
+!dir$ assume_aligned code_seq:64
+!dir$ assume_aligned carrier:64
+!dir$ assume_aligned complex_env:64
+!dir$ assume_aligned signal:64
+!dir$ assume_aligned samples:64
+!dir$ assume_aligned carrier_i:64
+!dir$ assume_aligned carrier_q:64
+!dir$ assume_aligned signal_i:64
+!dir$ assume_aligned signal_q:64
+!dir$ assume_aligned complex_env_i:64
+!dir$ assume_aligned complex_env_q:64
+                     do i__ = Ts,Te 
+                         t_i_re       = random_exponential_clamped()
+                         t_i_im       = random_exponential_clamped()
+                         c_rand_i     = cmplx(t_i_re,t_i_im)
+                         Ac           = Ac+c_rand_i*c_scale 
+                         r_t          = real(i__,kind=sp)
+                         carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                         sig_sum      = cmplx(0.0_sp,0.0_sp)
+!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum) 
+                         do j__ = Ns,Ne 
+                            t_j_re           = random_exponential_clamped()
+                            t_j_im           = random_exponential_clamped()
+                            c_rand_j         = cmplx(t_j_re,t_j_im)
+                            r_k              = real(j__,kind=sp)
+                            r_seq            = code_seq(j__)
+                            arg              = t0*(r_t-r_k)+h_spread
+                            t1               = asin(sin(arg))
+                            t2               = acos(cos(arg))
+                            t3               = (t1+t2)-v_spread*0.5_sp+v_spread 
+                            c_amp            = c_amp+c_rand_j*c_scale 
+                            yc_t             = c_amp*t3 
+                            ctmp             = yc_t*r_seq
+                            sig_sum          = sig_sum+ctmp
+                            samples(j__,i__) = ctmp
+                         end do 
+                         complex_env(i__) = sig_sum
+                         signal(i__)      = sig_sum*carrier(i__)
+                         carrier_i        = real(carrier(i__))
+                         carrier_q        = aimag(carrier(i__))
+                         signal_i         = real(signal(i__))
+                         signal_q         = aimag(signal(i__))
+                         complex_env_i    = real(complex_env(i__))
+                         complex_env_q    = aimag(complex_env(i__))
+                     end do 
+                  else if (which_distro .eq. "rand_weibull_clamped") then 
+                         c_scale = cmplx(scale_r,scale_i)
+                         c_amp   = A0/C314159265358979323846264338328
+!dir$ assume_aligned code_seq:64
+!dir$ assume_aligned carrier:64
+!dir$ assume_aligned complex_env:64
+!dir$ assume_aligned signal:64
+!dir$ assume_aligned samples:64
+!dir$ assume_aligned carrier_i:64
+!dir$ assume_aligned carrier_q:64
+!dir$ assume_aligned signal_i:64
+!dir$ assume_aligned signal_q:64
+!dir$ assume_aligned complex_env_i:64
+!dir$ assume_aligned complex_env_q:64
+                     do i__ = Ts,Te 
+                         t_i_re       = random_Weibull_clamped(rd_params.random_weibull_a_r)
+                         t_i_im       = random_Weibull_clamped(rd_params.random_weibull_a_i)
+                         c_rand_i     = cmplx(t_i_re,t_i_im)
+                         Ac           = Ac+c_rand_i*c_scale 
+                         r_t          = real(i__,kind=sp)
+                         carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                         sig_sum      = cmplx(0.0_sp,0.0_sp)
+!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum) 
+                         do j__ = Ns,Ne 
+                            t_j_re           = random_Weibull_clamped(rd_params.random_weibull_a_r)
+                            t_j_im           = random_Weibull_clamped(rd_params.random_weibull_a_i)
+                            c_rand_j         = cmplx(t_j_re,t_j_im)
+                            r_k              = real(j__,kind=sp)
+                            r_seq            = code_seq(j__)
+                            arg              = t0*(r_t-r_k)+h_spread
+                            t1               = asin(sin(arg))
+                            t2               = acos(cos(arg))
+                            t3               = (t1+t2)-v_spread*0.5_sp+v_spread 
+                            c_amp            = c_amp+c_rand_j*c_scale 
+                            yc_t             = c_amp*t3 
+                            ctmp             = yc_t*r_seq
+                            sig_sum          = sig_sum+ctmp
+                            samples(j__,i__) = ctmp
+                         end do 
+                         complex_env(i__) = sig_sum
+                         signal(i__)      = sig_sum*carrier(i__)
+                         carrier_i        = real(carrier(i__))
+                         carrier_q        = aimag(carrier(i__))
+                         signal_i         = real(signal(i__))
+                         signal_q         = aimag(signal(i__))
+                         complex_env_i    = real(complex_env(i__))
+                         complex_env_q    = aimag(complex_env(i__))
+                     end do 
+                  else if (which_distro .eq. "random_beta_clamped") then 
+                          c_scale = cmplx(scale_r,scale_i)
+                          c_amp   = A0/C314159265358979323846264338328
+!dir$ assume_aligned code_seq:64
+!dir$ assume_aligned carrier:64
+!dir$ assume_aligned complex_env:64
+!dir$ assume_aligned signal:64
+!dir$ assume_aligned samples:64
+!dir$ assume_aligned carrier_i:64
+!dir$ assume_aligned carrier_q:64
+!dir$ assume_aligned signal_i:64
+!dir$ assume_aligned signal_q:64
+!dir$ assume_aligned complex_env_i:64
+!dir$ assume_aligned complex_env_q:64
+                     do i__ = Ts,Te 
+                         t_i_re       = random_beta_clamped(rd_params.random_beta_aa_r, &
+                                                            rd_params.random_beta_aa_i, &
+                                                            rd_params.random_beta_first)
+                         t_i_im       = random_beta_clamped(rd_params.random_beta_bb_r, &
+                                                            rd_params.random_beta_bb_i, &
+                                                            rd_params.random_beta_first)
+                         c_rand_i     = cmplx(t_i_re,t_i_im)
+                         Ac           = Ac+c_rand_i*c_scale 
+                         r_t          = real(i__,kind=sp)
+                         carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                         sig_sum      = cmplx(0.0_sp,0.0_sp)
+!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum) 
+                         do j__ = Ns,Ne 
+                            t_j_re           = random_beta_clamped(rd_params.random_beta_aa_r, &
+                                                                   rd_params.random_beta_aa_i, &
+                                                                   rd_params.random_beta_first)
+                            t_j_im           = random_beta_clamped(rd_params.random_beta_bb_r, &
+                                                                   rd_params.random_beta_bb_i, &
+                                                                   rd_params.random_beta_first)
+                            c_rand_j         = cmplx(t_j_re,t_j_im)
+                            r_k              = real(j__,kind=sp)
+                            r_seq            = code_seq(j__)
+                            arg              = t0*(r_t-r_k)+h_spread
+                            t1               = asin(sin(arg))
+                            t2               = acos(cos(arg))
+                            t3               = (t1+t2)-v_spread*0.5_sp+v_spread 
+                            c_amp            = c_amp+c_rand_j*c_scale 
+                            yc_t             = c_amp*t3 
+                            ctmp             = yc_t*r_seq
+                            sig_sum          = sig_sum+ctmp
+                            samples(j__,i__) = ctmp
+                         end do 
+                         complex_env(i__) = sig_sum
+                         signal(i__)      = sig_sum*carrier(i__)
+                         carrier_i        = real(carrier(i__))
+                         carrier_q        = aimag(carrier(i__))
+                         signal_i         = real(signal(i__))
+                         signal_q         = aimag(signal(i__))
+                         complex_env_i    = real(complex_env(i__))
+                         complex_env_q    = aimag(complex_env(i__))
+                     end do 
+                  end if 
+               case ("Sine_squared")
+                     r_phase  = 0.0_sp 
+                     call random_seed()
+                     call random_number(rand_r)
+                     trunc_r = floor(2.0_sp*rand_r)
+                     if(trunc_r .eq. 1)  then 
+                        r_phase = rand_r*C314159265358979323846264338328
+                     else if(trunc_r .eq. 0) then 
+                        r_phase = -C314159265358979323846264338328*rand_r
+                     end if 
+                     print*,"random_phase=", r_phase 
+                     if(which_distro .eq. "random_normal") then 
+                        c_scale = cmplx(scale_r,scale_i)
+!dir$ assume_aligned code_seq:64
+!dir$ assume_aligned carrier:64
+!dir$ assume_aligned complex_env:64
+!dir$ assume_aligned signal:64
+!dir$ assume_aligned samples:64
+!dir$ assume_aligned carrier_i:64
+!dir$ assume_aligned carrier_q:64
+!dir$ assume_aligned signal_i:64
+!dir$ assume_aligned signal_q:64
+!dir$ assume_aligned complex_env_i:64
+!dir$ assume_aligned complex_env_q:64
+                        do i__ = Ts,Te 
+                           t_i_re       = random_normal_clamped()
+                           t_i_im       = random_normal_clamped()
+                           c_rand_i     = cmplx(t_i_re,t_i_im)
+                           Ac           = Ac+c_rand_i*c_scale
+                           r_t          = real(i__,kind=sp)
+                           carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                           sig_sum      = cmplx(0.0_sp,0.0_sp)
+!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                           do j__ = Ns,Ne 
+                              t_j_re           = random_normal_clamped()
+                              t_j_im           = random_normal_clamped()
+                              c_rand_j         = cmplx(t_j_re,t_j_im)
+                              r_k              = real(j__,kind=sp)
+                              r_seq            = code_seq(j__)
+                              arg              = C6283185307179586476925286766559*r_t-r_k*invT
+                              A0               = A0+c_rand_j*c_scale 
+                              t0               = 1.0_sp-cos(arg)
+                              yc_t             = A0*0.5_sp*t0 
+                              ctmp             = yc_t*r_seq
+                              sig_sum          = sig_sum+ctmp
+                              samples(j__,i__) = ctmp
+                           end do 
+                           complex_env(i__) = sig_sum
+                           signal(i__)      = sig_sum*carrier(i__)
+                           carrier_i        = real(carrier(i__))
+                           carrier_q        = aimag(carrier(i__))
+                           signal_i         = real(signal(i__))
+                           signal_q         = aimag(signal(i__))
+                           complex_env_i    = real(complex_env(i__))
+                           complex_env_q    = aimag(complex_env(i__))
+                       end do  
+                     else if (which_distro .eq. "rand_exponential_clamped") then 
+                        c_scale = cmplx(scale_r,scale_i)
+!dir$ assume_aligned code_seq:64
+!dir$ assume_aligned carrier:64
+!dir$ assume_aligned complex_env:64
+!dir$ assume_aligned signal:64
+!dir$ assume_aligned samples:64
+!dir$ assume_aligned carrier_i:64
+!dir$ assume_aligned carrier_q:64
+!dir$ assume_aligned signal_i:64
+!dir$ assume_aligned signal_q:64
+!dir$ assume_aligned complex_env_i:64
+!dir$ assume_aligned complex_env_q:64
+                        do i__ = Ts,Te 
+                           t_i_re       = random_exponential_clamped()
+                           t_i_im       = random_exponential_clamped()
+                           c_rand_i     = cmplx(t_i_re,t_i_im)
+                           Ac           = Ac+c_rand_i*c_scale
+                           r_t          = real(i__,kind=sp)
+                           carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                           sig_sum      = cmplx(0.0_sp,0.0_sp)
+!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                           do j__ = Ns,Ne 
+                              t_j_re           = random_exponential_clamped()
+                              t_j_im           = random_exponential_clamped()
+                              c_rand_j         = cmplx(t_j_re,t_j_im)
+                              r_k              = real(j__,kind=sp)
+                              r_seq            = code_seq(j__)
+                              arg              = C6283185307179586476925286766559*r_t-r_k*invT
+                              A0               = A0+c_rand_j*c_scale 
+                              t0               = 1.0_sp-cos(arg)
+                              yc_t             = A0*0.5_sp*t0 
+                              ctmp             = yc_t*r_seq
+                              sig_sum          = sig_sum+ctmp
+                              samples(j__,i__) = ctmp
+                           end do 
+                           complex_env(i__) = sig_sum
+                           signal(i__)      = sig_sum*carrier(i__)
+                           carrier_i        = real(carrier(i__))
+                           carrier_q        = aimag(carrier(i__))
+                           signal_i         = real(signal(i__))
+                           signal_q         = aimag(signal(i__))
+                           complex_env_i    = real(complex_env(i__))
+                           complex_env_q    = aimag(complex_env(i__))
+                       end do  
+                     else if (which_distro .eq. "rand_weibull_clamped")
+                        c_scale = cmplx(scale_r,scale_i)
+!dir$ assume_aligned code_seq:64
+!dir$ assume_aligned carrier:64
+!dir$ assume_aligned complex_env:64
+!dir$ assume_aligned signal:64
+!dir$ assume_aligned samples:64
+!dir$ assume_aligned carrier_i:64
+!dir$ assume_aligned carrier_q:64
+!dir$ assume_aligned signal_i:64
+!dir$ assume_aligned signal_q:64
+!dir$ assume_aligned complex_env_i:64
+!dir$ assume_aligned complex_env_q:64
+                        do i__ = Ts,Te 
+                           t_i_re       = random_Weibull_clamped(rd_params.random_weibull_a_r)
+                           t_i_im       = random_Weibull_clamped(rd_params.random_weibull_a_i)
+                           c_rand_i     = cmplx(t_i_re,t_i_im)
+                           Ac           = Ac+c_rand_i*c_scale
+                           r_t          = real(i__,kind=sp)
+                           carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                           sig_sum      = cmplx(0.0_sp,0.0_sp)
+!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                           do j__ = Ns,Ne 
+                              t_j_re           = random_Weibull_clamped(rd_params.random_weibull_a_r)
+                              t_j_im           = random_Weibull_clamped(rd_params.random_weibull_a_i)
+                              c_rand_j         = cmplx(t_j_re,t_j_im)
+                              r_k              = real(j__,kind=sp)
+                              r_seq            = code_seq(j__)
+                              arg              = C6283185307179586476925286766559*r_t-r_k*invT
+                              A0               = A0+c_rand_j*c_scale 
+                              t0               = 1.0_sp-cos(arg)
+                              yc_t             = A0*0.5_sp*t0 
+                              ctmp             = yc_t*r_seq
+                              sig_sum          = sig_sum+ctmp
+                              samples(j__,i__) = ctmp
+                           end do 
+                           complex_env(i__) = sig_sum
+                           signal(i__)      = sig_sum*carrier(i__)
+                           carrier_i        = real(carrier(i__))
+                           carrier_q        = aimag(carrier(i__))
+                           signal_i         = real(signal(i__))
+                           signal_q         = aimag(signal(i__))
+                           complex_env_i    = real(complex_env(i__))
+                           complex_env_q    = aimag(complex_env(i__))
+                       end do  
+                     else if (which_distro .eq. "random_beta_clamped") then 
+                         c_scale = cmplx(scale_r,scale_i)
+!dir$ assume_aligned code_seq:64
+!dir$ assume_aligned carrier:64
+!dir$ assume_aligned complex_env:64
+!dir$ assume_aligned signal:64
+!dir$ assume_aligned samples:64
+!dir$ assume_aligned carrier_i:64
+!dir$ assume_aligned carrier_q:64
+!dir$ assume_aligned signal_i:64
+!dir$ assume_aligned signal_q:64
+!dir$ assume_aligned complex_env_i:64
+!dir$ assume_aligned complex_env_q:64
+                        do i__ = Ts,Te 
+                           t_i_re       = random_beta_clamped(rd_params.random_beta_aa_r, &
+                                                              rd_params.random_beta_bb_r, &
+                                                              rd_params.random_beta_first)
+                           t_i_im       = random_beta_clamped(rd_params.random_beta_aa_i, &
+                                                              rd_params.random_beta_bb_i, &
+                                                              rd_params.random_beta_first)
+                           c_rand_i     = cmplx(t_i_re,t_i_im)
+                           Ac           = Ac+c_rand_i*c_scale
+                           r_t          = real(i__,kind=sp)
+                           carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                           sig_sum      = cmplx(0.0_sp,0.0_sp)
+!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                           do j__ = Ns,Ne 
+                              t_j_re           = random_beta_clamped(rd_params.random_beta_aa_r, &
+                                                                     rd_params.random_beta_bb_r, &
+                                                                     rd_params.random_beta_first)
+                              t_j_im           = random_beta_clamped(rd_params.random_beta_aa_i, &
+                                                              rd_params.random_beta_bb_i, &
+                                                              rd_params.random_beta_first)
+                              c_rand_j         = cmplx(t_j_re,t_j_im)
+                              r_k              = real(j__,kind=sp)
+                              r_seq            = code_seq(j__)
+                              arg              = C6283185307179586476925286766559*r_t-r_k*invT
+                              A0               = A0+c_rand_j*c_scale 
+                              t0               = 1.0_sp-cos(arg)
+                              yc_t             = A0*0.5_sp*t0 
+                              ctmp             = yc_t*r_seq
+                              sig_sum          = sig_sum+ctmp
+                              samples(j__,i__) = ctmp
+                           end do 
+                           complex_env(i__) = sig_sum
+                           signal(i__)      = sig_sum*carrier(i__)
+                           carrier_i        = real(carrier(i__))
+                           carrier_q        = aimag(carrier(i__))
+                           signal_i         = real(signal(i__))
+                           signal_q         = aimag(signal(i__))
+                           complex_env_i    = real(complex_env(i__))
+                           complex_env_q    = aimag(complex_env(i__))
+                       end do  
+                     end if
+               case ("Sine")
+                     r_phase  = 0.0_sp 
+                     call random_seed()
+                     call random_number(rand_r)
+                     trunc_r = floor(2.0_sp*rand_r)
+                     if(trunc_r .eq. 1)  then 
+                        r_phase = rand_r*C314159265358979323846264338328
+                     else if(trunc_r .eq. 0) then 
+                        r_phase = -C314159265358979323846264338328*rand_r
+                     end if 
+                     print*,"random_phase=", r_phase 
+                     if(which_distro .eq. "random_normal") then 
+                        c_scale = cmplx(scale_r,scale_i)
+!dir$ assume_aligned code_seq:64
+!dir$ assume_aligned carrier:64
+!dir$ assume_aligned complex_env:64
+!dir$ assume_aligned signal:64
+!dir$ assume_aligned samples:64
+!dir$ assume_aligned carrier_i:64
+!dir$ assume_aligned carrier_q:64
+!dir$ assume_aligned signal_i:64
+!dir$ assume_aligned signal_q:64
+!dir$ assume_aligned complex_env_i:64
+!dir$ assume_aligned complex_env_q:64
+                        do i__ = Ts,Te 
+                           t_i_re       = random_normal_clamped()
+                           t_i_im       = random_normal_clamped()
+                           c_rand_i     = cmplx(t_i_re,t_i_im)
+                           Ac           = Ac+c_rand_i*c_scale
+                           r_t          = real(i__,kind=sp)
+                           carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                           sig_sum      = cmplx(0.0_sp,0.0_sp)
+!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                           do j__ = Ns,Ne 
+                              t_j_re           = random_normal_clamped()
+                              t_j_im           = random_normal_clamped()
+                              c_rand_j         = cmplx(t_j_re,t_j_im)
+                              r_k              = real(j__,kind=sp)
+                              r_seq            = code_seq(j__)
+                              arg              = C314159265358979323846264338328*r_t-r_k*invT
+                              A0               = A0+c_rand_j*c_scale 
+                              t0               = sin(arg)
+                              yc_t             = A0*t0 
+                              ctmp             = yc_t*r_seq
+                              sig_sum          = sig_sum+ctmp
+                              samples(j__,i__) = ctmp
+                           end do 
+                           complex_env(i__) = sig_sum
+                           signal(i__)      = sig_sum*carrier(i__)
+                           carrier_i        = real(carrier(i__))
+                           carrier_q        = aimag(carrier(i__))
+                           signal_i         = real(signal(i__))
+                           signal_q         = aimag(signal(i__))
+                           complex_env_i    = real(complex_env(i__))
+                           complex_env_q    = aimag(complex_env(i__))
+                        end do 
+                     else if (which_distro .eq. "rand_exponential_clamped") then 
+                              c_scale = cmplx(scale_r,scale_i)
+!dir$ assume_aligned code_seq:64
+!dir$ assume_aligned carrier:64
+!dir$ assume_aligned complex_env:64
+!dir$ assume_aligned signal:64
+!dir$ assume_aligned samples:64
+!dir$ assume_aligned carrier_i:64
+!dir$ assume_aligned carrier_q:64
+!dir$ assume_aligned signal_i:64
+!dir$ assume_aligned signal_q:64
+!dir$ assume_aligned complex_env_i:64
+!dir$ assume_aligned complex_env_q:64
+                              do i__ = Ts,Te 
+                                 t_i_re       = random_exponential_clamped()
+                                 t_i_im       = random_exponential_clamped()
+                                 c_rand_i     = cmplx(t_i_re,t_i_im)
+                                 Ac           = Ac+c_rand_i*c_scale
+                                 r_t          = real(i__,kind=sp)
+                                 carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                                 sig_sum      = cmplx(0.0_sp,0.0_sp)
+!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                                 do j__ = Ns,Ne 
+                                    t_j_re           = random_exponential_clamped()
+                                    t_j_im           = random_exponential_clamped()
+                                    c_rand_j         = cmplx(t_j_re,t_j_im)
+                                    r_k              = real(j__,kind=sp)
+                                    r_seq            = code_seq(j__)
+                                    arg              = C314159265358979323846264338328*r_t-r_k*invT
+                                    A0               = A0+c_rand_j*c_scale 
+                                    t0               = sin(arg)
+                                    yc_t             = A0*t0 
+                                    ctmp             = yc_t*r_seq
+                                    sig_sum          = sig_sum+ctmp
+                                    samples(j__,i__) = ctmp
+                                 end do 
+                                 complex_env(i__) = sig_sum
+                                 signal(i__)      = sig_sum*carrier(i__)
+                                 carrier_i        = real(carrier(i__))
+                                 carrier_q        = aimag(carrier(i__))
+                                 signal_i         = real(signal(i__))
+                                 signal_q         = aimag(signal(i__))
+                                 complex_env_i    = real(complex_env(i__))
+                                 complex_env_q    = aimag(complex_env(i__))
+                           end do     
+                     else if (which_distro .eq. "rand_weibull_clamped") then 
+                              c_scale = cmplx(scale_r,scale_i)
+!dir$ assume_aligned code_seq:64
+!dir$ assume_aligned carrier:64
+!dir$ assume_aligned complex_env:64
+!dir$ assume_aligned signal:64
+!dir$ assume_aligned samples:64
+!dir$ assume_aligned carrier_i:64
+!dir$ assume_aligned carrier_q:64
+!dir$ assume_aligned signal_i:64
+!dir$ assume_aligned signal_q:64
+!dir$ assume_aligned complex_env_i:64
+!dir$ assume_aligned complex_env_q:64
+                              do i__ = Ts,Te 
+                                 t_i_re       = random_Weibull_clamped(rd_params.random_weibull_a_r)
+                                 t_i_im       = random_Weibull_clamped(rd_params.random_weibull_a_i)
+                                 c_rand_i     = cmplx(t_i_re,t_i_im)
+                                 Ac           = Ac+c_rand_i*c_scale
+                                 r_t          = real(i__,kind=sp)
+                                 carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                                 sig_sum      = cmplx(0.0_sp,0.0_sp)
+!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                                 do j__ = Ns,Ne 
+                                    t_j_re           = random_Weibull_clamped(rd_params.random_weibull_a_r)
+                                    t_j_im           = random_Weibull_clamped(rd_params.random_weibull_a_i)
+                                    c_rand_j         = cmplx(t_j_re,t_j_im)
+                                    r_k              = real(j__,kind=sp)
+                                    r_seq            = code_seq(j__)
+                                    arg              = C314159265358979323846264338328*r_t-r_k*invT
+                                    A0               = A0+c_rand_j*c_scale 
+                                    t0               = sin(arg)
+                                    yc_t             = A0*t0 
+                                    ctmp             = yc_t*r_seq
+                                    sig_sum          = sig_sum+ctmp
+                                    samples(j__,i__) = ctmp
+                                 end do 
+                                 complex_env(i__) = sig_sum
+                                 signal(i__)      = sig_sum*carrier(i__)
+                                 carrier_i        = real(carrier(i__))
+                                 carrier_q        = aimag(carrier(i__))
+                                 signal_i         = real(signal(i__))
+                                 signal_q         = aimag(signal(i__))
+                                 complex_env_i    = real(complex_env(i__))
+                                 complex_env_q    = aimag(complex_env(i__))
+                           end do     
+                     else if (which_distro .eq. "rand_beta_clamped") then 
+                              c_scale = cmplx(scale_r,scale_i)
+!dir$ assume_aligned code_seq:64
+!dir$ assume_aligned carrier:64
+!dir$ assume_aligned complex_env:64
+!dir$ assume_aligned signal:64
+!dir$ assume_aligned samples:64
+!dir$ assume_aligned carrier_i:64
+!dir$ assume_aligned carrier_q:64
+!dir$ assume_aligned signal_i:64
+!dir$ assume_aligned signal_q:64
+!dir$ assume_aligned complex_env_i:64
+!dir$ assume_aligned complex_env_q:64
+                              do i__ = Ts,Te 
+                                 t_i_re       = random_beta_clamped(rd_params.random_beta_aa_r,  &
+                                                                    rd_params.random_beta_bb_r,  &
+                                                                    rd_params.random_beta_first)
+                                 t_i_im       = random_beta_clamped(rd_params.random_beta_aa_i,  &
+                                                                    rd_params.random_beta_bb_i,  &
+                                                                    rd_params.random_beta_first)
+                                 c_rand_i     = cmplx(t_i_re,t_i_im)
+                                 Ac           = Ac+c_rand_i*c_scale
+                                 r_t          = real(i__,kind=sp)
+                                 carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                                 sig_sum      = cmplx(0.0_sp,0.0_sp)
+!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                                 do j__ = Ns,Ne 
+                                    t_j_re           = random_beta_clamped(rd_params.random_beta_aa_r,  &
+                                                                           rd_params.random_beta_bb_r,  &
+                                                                           rd_params.random_beta_first)
+                                    t_j_im           = random_beta_clamped(rd_params.random_beta_aa_i,  &
+                                                                           rd_params.random_beta_bb_i,  &
+                                                                           rd_params.random_beta_first)
+                                    c_rand_j         = cmplx(t_j_re,t_j_im)
+                                    r_k              = real(j__,kind=sp)
+                                    r_seq            = code_seq(j__)
+                                    arg              = C314159265358979323846264338328*r_t-r_k*invT
+                                    A0               = A0+c_rand_j*c_scale 
+                                    t0               = sin(arg)
+                                    yc_t             = A0*t0 
+                                    ctmp             = yc_t*r_seq
+                                    sig_sum          = sig_sum+ctmp
+                                    samples(j__,i__) = ctmp
+                                 end do 
+                                 complex_env(i__) = sig_sum
+                                 signal(i__)      = sig_sum*carrier(i__)
+                                 carrier_i        = real(carrier(i__))
+                                 carrier_q        = aimag(carrier(i__))
+                                 signal_i         = real(signal(i__))
+                                 signal_q         = aimag(signal(i__))
+                                 complex_env_i    = real(complex_env(i__))
+                                 complex_env_q    = aimag(complex_env(i__))
+                           end do     
+                     end if 
+               case default 
+                   print*, "Invalid switch variable: ", envelope_type 
+                   ioerr = -1
+                   return 
+            end select 
+            ioerr = 0    
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          print*, "[EXECUTION-TRACE: END]"
+          print*, "TSC-End:", rdtsc_wrap()
+#endif              
+     end subroutine modulate_add_noise_AM_broadband_signal
 
 
 
