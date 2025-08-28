@@ -104,6 +104,10 @@ module mod_AM_broadband_signal
 #define AM_BROADBAND_SIGNAL_USE_MKL_FFT 0
 #endif 
 
+#if !defined(AM_BROADBAND_SIGNAL_EXEC_TRACE)
+#define AM_BROADBAND_SIGNAL_EXEC_TRACE 1
+#endif 
+
      type, public :: AM_broadband_signal_t 
 
            character(len=32) :: m_signal_name    ! signal/waveform name plain name
@@ -195,10 +199,19 @@ module mod_AM_broadband_signal
      subroutine create_AM_broadband_signal(AM_signal,sig_name,envelope_type,distro_omega,distro_theta,          &
                                            code_type,id,interval_1,interval_2,interval_3, baude_rate,           &
                                            Ns,Ne,Ts,Te,nfreqs,nfreqe,nomegs,nomege,nthets,nthete,               &
-                                           sym_dep,split_carrier,split_envelope,ft_process,order,A0,Ac,fc)              
+                                           sym_dep,split_carrier,split_envelope,ft_process,order,A0,Ac,fc)  
+          implicit none   
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+               end interface
+#endif           
                                         
-          implicit none 
-#if (GMS_DEBUG_ON) == 1
+          
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
           character(*), parameter :: sub_name = "create_AM_broadband_signal"
 #endif 
           type(AM_broadband_signal_t),        intent(out)          :: AM_signal 
@@ -230,9 +243,15 @@ module mod_AM_broadband_signal
           complex(kind=sp),                   intent(in)           :: A0 
           complex(kind=sp),                   intent(in)           :: Ac 
           real(kind=sp),                      intent(in)           :: fc 
-         
-
           logical(kind=i1), automatic :: trpz_env   
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          print*, "[EXECUTION-TRACE: START]"
+          print*, "File:     ", __FILE__
+          print*, "Procedure:", sub_name 
+          print*, "LOC:      ", __LINE__ 
+          print*, "TSC-Start:", rdtsc_wrap()
+#endif 
+         
 
           if(AM_signal.m_creation_state .eq. .true.) return 
           AM_signal.m_signal_name   = sig_name 
@@ -308,18 +327,38 @@ module mod_AM_broadband_signal
                 STOP "[create_AM_broadband_signal] -- INVALID SWITCH ARGUMENT!!"
           end select 
           AM_signal.m_creation_state = .true. 
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          print*, "[EXECUTION-TRACE: END]"
+          print*, "TSC-End:", rdtsc_wrap()
+#endif
      end subroutine create_AM_broadband_signal
 
 #if (AM_BROADBAND_SIGNAL_USE_EXPLICIT_DEALLOCATION) == 1
 
      subroutine destroy_AM_broadband_signal(AM_signal,clear_values)
           implicit none 
-#if (GMS_DEBUG_ON) == 1
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+               end interface
+#endif 
+          
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
           character(*), parameter :: sub_name = "destroy_AM_broadband_signal"
 #endif 
           type(AM_broadband_signal_t),        intent(inout)        :: AM_signal
           logical(kind=i4),                   intent(in)           :: clear_values 
-         
+
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          print*, "[EXECUTION-TRACE: START]"
+          print*, "File:     ", __FILE__
+          print*, "Procedure:", sub_name 
+          print*, "LOC:      ", __LINE__ 
+          print*, "TSC-Start:", rdtsc_wrap()
+#endif          
           if(AM_signal.m_creation_state .eq. .false.) return 
           if(allocated(AM_signal.m_code_seq))     deallocate(AM_signal.m_code_seq) 
           if(allocated(AM_signal.m_carrier))      deallocate(AM_signal.m_carrier)    
@@ -375,13 +414,26 @@ module mod_AM_broadband_signal
              AM_signal.m_Ps            = -1.0_sp 
           end if 
           AM_signal.m_creation_state   = .false.
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          print*, "[EXECUTION-TRACE: END]"
+          print*, "TSC-End:", rdtsc_wrap()
+#endif          
      end subroutine destroy_AM_broadband_signal
 #endif 
 
 
      subroutine clear_AM_broadband_signal(AM_signal,carray_fill,rarray_fill,use_memset)
           implicit none 
-#if (GMS_DEBUG_ON) == 1
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+               end interface
+#endif 
+          
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
           character(*), parameter :: sub_name = "clear_AM_broadband_signal"
 #endif 
           type(AM_broadband_signal_t),        intent(inout)        :: AM_signal
@@ -389,6 +441,14 @@ module mod_AM_broadband_signal
           real(kind=sp),                      intent(in)           :: rarray_fill 
           logical(kind=i4),                   intent(in)           :: use_memset
           integer(kind=i4), automatic :: i__,j__,k__ 
+
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          print*, "[EXECUTION-TRACE: START]"
+          print*, "File:     ", __FILE__
+          print*, "Procedure:", sub_name 
+          print*, "LOC:      ", __LINE__ 
+          print*, "TSC-Start:", rdtsc_wrap()
+#endif 
           if(AM_signal.m_creation_state .eq. .false.) return 
           if(use_memset .eq. .true.) then 
              AM_signal.m_code_seq      = rarray_fill
@@ -527,19 +587,38 @@ module mod_AM_broadband_signal
            end select 
             
           end if 
-          
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          print*, "[EXECUTION-TRACE: END]"
+          print*, "TSC-End:", rdtsc_wrap()
+#endif          
      end subroutine clear_AM_broadband_signal
 
 
      subroutine copy_create_AM_broadband_signal(this,other)
-          implicit none 
-#if (GMS_DEBUG_ON) == 1
+          implicit none
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+               end interface
+#endif 
+           
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
           character(*), parameter :: sub_name = "copy_create_AM_broadband_signal"
 #endif 
           type(AM_broadband_signal_t),        intent(out)        :: this
           type(AM_broadband_signal_t),        intent(in)         :: other 
           integer(kind=i4), automatic :: i__,j__,k__ 
 
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          print*, "[EXECUTION-TRACE: START]"
+          print*, "File:     ", __FILE__
+          print*, "Procedure:", sub_name 
+          print*, "LOC:      ", __LINE__ 
+          print*, "TSC-Start:", rdtsc_wrap()
+#endif
              if(this.m_creation_state  .eq. .true. .or. &
                 other.m_creation_state .eq. .false.) return 
              if(LOC(this) .eq. LOC(other)) return 
@@ -729,19 +808,39 @@ module mod_AM_broadband_signal
                      end do 
            end select 
            this.m_creation_state = other.m_creation_state
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          print*, "[EXECUTION-TRACE: END]"
+          print*, "TSC-End:", rdtsc_wrap()
+#endif
      end subroutine copy_create_AM_broadband_signal
 
      
      ! The destination i.e. this-object is in existing (created) state!!.
      subroutine copy_assign_AM_broadband_signal(this,other)
-          implicit none 
-#if (GMS_DEBUG_ON) == 1
+          implicit none
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+               end interface
+#endif 
+           
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
           character(*), parameter :: sub_name = "copy_create_AM_broadband_signal"
 #endif 
           type(AM_broadband_signal_t),        intent(inout)        :: this
           type(AM_broadband_signal_t),        intent(in)         :: other 
           integer(kind=i4), automatic :: i__,j__,k__ 
 
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          print*, "[EXECUTION-TRACE: START]"
+          print*, "File:     ", __FILE__
+          print*, "Procedure:", sub_name 
+          print*, "LOC:      ", __LINE__ 
+          print*, "TSC-Start:", rdtsc_wrap()
+#endif
              if(this.m_creation_state  .eq. .false. .or. &
                 other.m_creation_state .eq. .false.) return 
              if(LOC(this) .eq. LOC(other)) return 
@@ -950,6 +1049,10 @@ module mod_AM_broadband_signal
                      end do 
            end select 
            this.m_creation_state = other.m_creation_state  
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          print*, "[EXECUTION-TRACE: END]"
+          print*, "TSC-End:", rdtsc_wrap()
+#endif
      end subroutine copy_assign_AM_broadband_signal
 
      subroutine check_allocation_stats_real1D(array,name)
@@ -1055,13 +1158,30 @@ module mod_AM_broadband_signal
      
      !  show allocation status
      subroutine show_AM_broadband_signal_state(AM_signal)
-         implicit none 
-#if (GMS_DEBUG_ON) == 1
+          implicit none
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+               end interface
+#endif 
+          
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
          character(*), parameter :: sub_name = "show_AM_broadband_signal_state"
 #endif 
          type(AM_broadband_signal_t),        intent(in)        :: AM_signal
          integer(kind=i8), automatic :: obj_vaddr
          integer(kind=i8), automatic :: obj_size 
+
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          print*, "[EXECUTION-TRACE: START]"
+          print*, "File:     ", __FILE__
+          print*, "Procedure:", sub_name 
+          print*, "LOC:      ", __LINE__ 
+          print*, "TSC-Start:", rdtsc_wrap()
+#endif
          obj_vaddr = LOC(AM_signal)
          obj_size  = SIZEOF(AM_signal)
          print*, "[AM_broadband_signal_t] -- INFO:  array members"
@@ -1119,10 +1239,14 @@ module mod_AM_broadband_signal
          print*, "m_snr=",            AM_signal.m_snr           ! signal-to-noise ratio
          print*, "m_Ps=",             AM_signal.m_Ps ! SEP (symbol error probability)
          print*, "m_creation_state=", AM_signal.m_creation_state
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          print*, "[EXECUTION-TRACE: END]"
+          print*, "TSC-End:", rdtsc_wrap()
+#endif
      end subroutine show_AM_broadband_signal_state
 
      ! Start of computational subroutines
-     ! SIgnal derived type is completely decomposed
+     ! Signal derived type is completely decomposed
      subroutine modulate_AM_broadband_signal(envelope_type,               &
                                              baude_rate,                  &
                                              Ns,                          &
@@ -1146,7 +1270,8 @@ module mod_AM_broadband_signal
                                              complex_env_q,               &
                                              ioerr)
           use omp_lib
-#if (GMS_DEBUG_ON) == 1
+          implicit none
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
           interface 
                    function rdtsc_wrap() bind(C,name="rdtsc_wrap")
                             use iso_c_binding, only : c_long_long 
@@ -1154,8 +1279,8 @@ module mod_AM_broadband_signal
                     end function rdtsc_wrap 
                end interface
 #endif 
-          implicit none 
-#if (GMS_DEBUG_ON) == 1
+           
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
           character(*), parameter :: sub_name = "modulate_AM_broadband_signal"
 #endif 
           character(len=*),                         intent(in), value :: envelope_type 
@@ -1191,6 +1316,8 @@ module mod_AM_broadband_signal
                                                6.283185307179586476925286766559_sp
           real(kind=sp),    parameter :: C314159265358979323846264338328 = &
                                                3.14159265358979323846264338328_sp
+          real(kind=sp),    automatic :: r_phase
+          real(kind=sp),    automatic :: rand_r 
           real(kind=sp),    automatic :: r_t 
           real(kind=sp),    automatic :: r_k 
           real(kind=sp),    automatic :: h_spread
@@ -1203,13 +1330,14 @@ module mod_AM_broadband_signal
           real(kind=sp),    automatic :: t3 
           real(kind=sp),    automatic :: arg 
           real(kind=sp),    automatic :: r_seq 
+          integer(kind=i4), automatic :: trunc_r
           integer(kind=i4), automatic :: i__,j__,k__ 
           ! Exec code 
-#if (GMS_DEBUG_ON) == 1
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
           print*, "File:     ", __FILE__
           print*, "Procedure:", sub_name 
           print*, "LOC:      ", __LINE__ 
-          print*, "TSC:      ", rdtsc_wrap()
+          print*, "TSC-Start:", rdtsc_wrap()
           
 #endif 
            
@@ -1221,6 +1349,16 @@ module mod_AM_broadband_signal
                   v_spread = real(A0)
                   c_amp    = A0/C314159265358979323846264338328
                   t0       = C314159265358979323846264338328/(r_Te-r_Ts)
+                  r_phase  = 0.0_sp 
+                  call random_seed()
+                  call random_number(rand_r)
+                  trunc_r = floor(2.0_sp*rand_r)
+                  if(trunc_r .eq. 1)  then 
+                     r_phase = rand_r*C314159265358979323846264338328
+                  else if(trunc_r .eq. 0) then 
+                    r_phase = -C314159265358979323846264338328*rand_r
+                  end if 
+                  print*, "random-phase=", r_phase 
 !dir$ assume_aligned code_seq:64
 !dir$ assume_aligned carrier:64
 !dir$ assume_aligned complex_env:64
@@ -1234,7 +1372,7 @@ module mod_AM_broadband_signal
 !dir$ assume_aligned complex_env_q:64
                   do i__ = Ts,Te 
                      r_t          = real(i__,kind=sp)
-                     carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc)
+                     carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
                      sig_sum      = cmplx(0.0_sp,0.0_sp)
 !$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum) 
                      do j__ = Ns,Ne 
@@ -1259,6 +1397,16 @@ module mod_AM_broadband_signal
                      complex_env_q    = aimag(complex_env(i__))
                   end do 
                case ("Sine_squared")
+                     r_phase  = 0.0_sp 
+                     call random_seed()
+                     call random_number(rand_r)
+                     trunc_r = floor(2.0_sp*rand_r)
+                     if(trunc_r .eq. 1)  then 
+                        r_phase = rand_r*C314159265358979323846264338328
+                     else if(trunc_r .eq. 0) then 
+                        r_phase = -C314159265358979323846264338328*rand_r
+                     end if 
+                     print*,"random_phase=", r_phase 
 !dir$ assume_aligned code_seq:64
 !dir$ assume_aligned carrier:64
 !dir$ assume_aligned complex_env:64
@@ -1272,7 +1420,7 @@ module mod_AM_broadband_signal
 !dir$ assume_aligned complex_env_q:64
                    do i__ = Ts,Te 
                       r_t          = real(i__,kind=sp)
-                      carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc)
+                      carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
                       sig_sum      = cmplx(0.0_sp,0.0_sp)
 !$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
                       do j__ = Ns,Ne 
@@ -1295,6 +1443,16 @@ module mod_AM_broadband_signal
                        complex_env_q    = aimag(complex_env(i__))
                    end do    
                case ("Sine")
+                     r_phase  = 0.0_sp 
+                     call random_seed()
+                     call random_number(rand_r)
+                     trunc_r = floor(2.0_sp*rand_r)
+                     if(trunc_r .eq. 1)  then 
+                        r_phase = rand_r*C314159265358979323846264338328
+                     else if(trunc_r .eq. 0) then 
+                        r_phase = -C314159265358979323846264338328*rand_r
+                     end if 
+                     print*,"random_phase=", r_phase 
 !dir$ assume_aligned code_seq:64
 !dir$ assume_aligned carrier:64
 !dir$ assume_aligned complex_env:64
@@ -1308,7 +1466,7 @@ module mod_AM_broadband_signal
 !dir$ assume_aligned complex_env_q:64
                    do i__ = Ts,Te 
                       r_t          = real(i__,kind=sp)
-                      carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc)
+                      carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
                       sig_sum      = cmplx(0.0_sp,0.0_sp)
 !$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
                       do j__ = Ns,Ne 
@@ -1335,8 +1493,15 @@ module mod_AM_broadband_signal
                    ioerr = -1
                    return 
             end select 
-            ioerr = 0                  
+            ioerr = 0    
+#if (AM_BROADBAND_SIGNAL_EXEC_TRACE) == 1
+          print*, "[EXECUTION-TRACE: END]"
+          print*, "TSC-End:", rdtsc_wrap()
+#endif              
      end subroutine modulate_AM_broadband_signal
+
+
+
 
 
 
