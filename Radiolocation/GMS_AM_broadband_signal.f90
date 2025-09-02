@@ -1350,6 +1350,10 @@ module mod_AM_broadband_signal
           real(kind=sp),    automatic :: rand_r 
           real(kind=sp),    automatic :: r_t 
           real(kind=sp),    automatic :: r_k 
+          real(kind=sp),    automatic :: Tp_i 
+          real(kind=sp),    automatic :: Tp_j 
+          real(kind=sp),    automatic :: fs_i
+          real(kind=sp),    automatic :: fs_j
           real(kind=sp),    automatic :: h_spread
           real(kind=sp),    automatic :: v_spread
           real(kind=sp),    automatic :: r_Ts
@@ -1373,6 +1377,10 @@ module mod_AM_broadband_signal
            
           select case (envelope_type)
                case ("Trapezoidal")
+                  fs_i     = 0.0_sp 
+                  fs_j     = 0.0_sp 
+                  Tp_i     = 1.0_sp/real(2.0_sp*(Te-Ts),kind=sp)
+                  Tp_j     = 1.0_sp/real(2.0_sp*(Ne-Ns),kind=sp)
                   r_Ts     = real(Ts,kind=sp)
                   r_Te     = real(Te,kind=sp)
                   h_spread = r_Te-r_Ts   
@@ -1402,13 +1410,15 @@ module mod_AM_broadband_signal
 !dir$ assume_aligned complex_env_q:64
                   do i__ = Ts,Te 
                      r_t          = real(i__,kind=sp)
-                     carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                     fs_i         = r_t*Tp_i 
+                     carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*fc*fs_i+r_phase)
                      sig_sum      = cmplx(0.0_sp,0.0_sp)
 !$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum) 
                      do j__ = Ns,Ne 
                         r_k              = real(j__,kind=sp)
+                        fs_j             = r_k*Tp_j
                         r_seq            = code_seq(j__)
-                        arg              = t0*(r_t-r_k)+h_spread
+                        arg              = t0*(fs_i-fs_j)+h_spread
                         t1               = asin(sin(arg))
                         t2               = acos(cos(arg))
                         t3               = (t1+t2)-v_spread*0.5_sp+v_spread 
@@ -1427,6 +1437,10 @@ module mod_AM_broadband_signal
                      complex_env_q    = aimag(complex_env(i__))
                   end do 
                case ("Sine_squared")
+                     fs_i     = 0.0_sp 
+                     fs_j     = 0.0_sp 
+                     Tp_i     = 1.0_sp/real(2.0_sp*(Te-Ts),kind=sp)
+                     Tp_j     = 1.0_sp/real(2.0_sp*(Ne-Ns),kind=sp)
                      r_phase  = 0.0_sp 
                      call random_seed()
                      call random_number(rand_r)
@@ -1450,13 +1464,15 @@ module mod_AM_broadband_signal
 !dir$ assume_aligned complex_env_q:64
                    do i__ = Ts,Te 
                       r_t          = real(i__,kind=sp)
-                      carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                      fs_i         = r_t*Tp_i 
+                      carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*fc*fs_i+r_phase)
                       sig_sum      = cmplx(0.0_sp,0.0_sp)
 !$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
                       do j__ = Ns,Ne 
                          r_k              = real(j__,kind=sp)
+                         fs_j             = r_k*Tp_j
                          r_seq            = code_seq(j__)
-                         arg              = C6283185307179586476925286766559*r_t-r_k*invT
+                         arg              = C6283185307179586476925286766559*fs_i-fs_j 
                          t0               = 1.0_sp-cos(arg)
                          yc_t             = A0*0.5_sp*t0 
                          ctmp             = yc_t*r_seq
@@ -1473,6 +1489,10 @@ module mod_AM_broadband_signal
                        complex_env_q    = aimag(complex_env(i__))
                    end do    
                case ("Sine")
+                     fs_i     = 0.0_sp 
+                     fs_j     = 0.0_sp 
+                     Tp_i     = 1.0_sp/real(2.0_sp*(Te-Ts),kind=sp)
+                     Tp_j     = 1.0_sp/real(2.0_sp*(Ne-Ns),kind=sp)
                      r_phase  = 0.0_sp 
                      call random_seed()
                      call random_number(rand_r)
@@ -1496,13 +1516,15 @@ module mod_AM_broadband_signal
 !dir$ assume_aligned complex_env_q:64
                    do i__ = Ts,Te 
                       r_t          = real(i__,kind=sp)
-                      carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                      fs_i         = r_t*Tp_i
+                      carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*fc*fs_i+r_phase)
                       sig_sum      = cmplx(0.0_sp,0.0_sp)
 !$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
                       do j__ = Ns,Ne 
                          r_k              = real(j__,kind=sp)
+                         fs_j             = r_k*Tp_j 
                          r_seq            = code_seq(j__)
-                         arg              = C314159265358979323846264338328*r_t-r_k*invT
+                         arg              = C314159265358979323846264338328*fs_i-fs_j 
                          t0               = sin(arg)
                          yc_t             = A0*t0 
                          ctmp             = yc_t*r_seq
@@ -1543,8 +1565,8 @@ module mod_AM_broadband_signal
                                                        Ac,                          &
                                                        invT,                        &
                                                        fc,                          &
-                                                       r_scale,                     &
-                                                       i_scale,                     &
+                                                       scale_r,                     &
+                                                       scale_i,                     &
                                                        rd_params,                   &
                                                        which_distro,                &
                                                        code_seq,                    &
@@ -1580,14 +1602,14 @@ module mod_AM_broadband_signal
           integer(kind=i4),                         intent(in), value :: Ne 
           integer(kind=i4),                         intent(in), value :: Ts 
           integer(kind=i4),                         intent(in), value :: Te 
-          complex(kind=sp),                         intent(in), value :: A0 
-          complex(kind=sp),                         intent(in), value :: Ac ! carrier amplitude 
+          complex(kind=sp),                         intent(in)        :: A0 
+          complex(kind=sp),                         intent(inout)     :: Ac ! carrier amplitude 
           real(kind=sp),                            intent(in), value :: invT 
           real(kind=sp),                            intent(in), value :: fc 
           real(kind=sp),                            intent(in), value :: scale_r 
           real(kind=sp),                            intent(in), value :: scale_i
           type(rand_distro_params_t),               intent(in)        :: rd_params 
-          character(len=*),                         intent(in),       :: which_distro 
+          character(len=*),                         intent(in)        :: which_distro 
           real(kind=sp),    dimension(1:baude_rate),intent(in)        :: code_seq 
           complex(kind=sp), dimension(Ts:Te),       intent(out)       :: carrier 
           complex(kind=sp), dimension(Ts:Te),       intent(out)       :: complex_env 
@@ -1603,6 +1625,7 @@ module mod_AM_broadband_signal
           ! Locals
           
           complex(kind=sp), automatic :: c_amp 
+          complex(kind=sp), automatic :: A0_cpy
           complex(kind=sp), automatic :: yc_t 
           complex(kind=sp), automatic :: ctmp 
           complex(kind=sp), automatic :: sig_sum 
@@ -1622,6 +1645,10 @@ module mod_AM_broadband_signal
           real(kind=sp),    automatic :: t_j_im
           real(kind=sp),    automatic :: r_t 
           real(kind=sp),    automatic :: r_k 
+          real(kind=sp),    automatic :: fs_i 
+          real(kind=sp),    automatic :: fs_j 
+          real(kind=sp),    automatic :: Tp_i 
+          real(kind=sp),    automatic :: Tp_j 
           real(kind=sp),    automatic :: h_spread
           real(kind=sp),    automatic :: v_spread
           real(kind=sp),    automatic :: r_Ts
@@ -1645,6 +1672,19 @@ module mod_AM_broadband_signal
            
           select case (envelope_type)
                case ("Trapezoidal")
+#if 0
+%equation
+a = 10  %Amplitude
+m = 5   %Time Period
+l = 5   %Horizontal Spread
+c = 2   %Vertical Spread
+x = 0:.1:10 %Sample Points
+Trapezoidal_Wave = a/pi*(asin(sin((pi/m)*x+l))+acos(cos((pi/m)*x+l)))-a/2+c;
+#endif
+                  fs_i     = 0.0_sp 
+                  fs_j     = 0.0_sp 
+                  Tp_i     = 1.0_sp/real(2.0_sp*(Te-Ts),kind=sp)
+                  Tp_j     = 1.0_sp/real(2.0_sp*(Ne-Ns),kind=sp)
                   r_Ts     = real(Ts,kind=sp)
                   r_Te     = real(Te,kind=sp)
                   h_spread = r_Te-r_Ts   
@@ -1662,7 +1702,7 @@ module mod_AM_broadband_signal
                   print*, "random-phase=", r_phase 
                   if(which_distro .eq. "random_normal") then 
                      c_scale = cmplx(scale_r,scale_i)
-                     c_amp   = A0/C314159265358979323846264338328
+                     !c_amp   = A0/C314159265358979323846264338328
 !dir$ assume_aligned code_seq:64
 !dir$ assume_aligned carrier:64
 !dir$ assume_aligned complex_env:64
@@ -1680,16 +1720,19 @@ module mod_AM_broadband_signal
                          c_rand_i     = cmplx(t_i_re,t_i_im)
                          Ac           = Ac+c_rand_i*c_scale 
                          r_t          = real(i__,kind=sp)
-                         carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                         fs_i         = r_t*Tp_i 
+                         carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*fc*fs_i+r_phase)
                          sig_sum      = cmplx(0.0_sp,0.0_sp)
-!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum) 
+                         c_amp        = cmplx(0.0_sp,0.0_sp)
                          do j__ = Ns,Ne 
                             t_j_re           = random_normal_clamped()
+                            c_amp            = A0/C314159265358979323846264338328
                             t_j_im           = random_normal_clamped()
                             c_rand_j         = cmplx(t_j_re,t_j_im)
                             r_k              = real(j__,kind=sp)
+                            fs_j             = r_k*Tp_j 
                             r_seq            = code_seq(j__)
-                            arg              = t0*(r_t-r_k)+h_spread
+                            arg              = t0*(fs_i-fs_j)+h_spread
                             t1               = asin(sin(arg))
                             t2               = acos(cos(arg))
                             t3               = (t1+t2)-v_spread*0.5_sp+v_spread 
@@ -1710,7 +1753,7 @@ module mod_AM_broadband_signal
                      end do 
                   else if(which_distro .eq. "rand_exponential_clamped") then 
                      c_scale = cmplx(scale_r,scale_i)
-                     c_amp   = A0/C314159265358979323846264338328
+                     
 !dir$ assume_aligned code_seq:64
 !dir$ assume_aligned carrier:64
 !dir$ assume_aligned complex_env:64
@@ -1728,16 +1771,19 @@ module mod_AM_broadband_signal
                          c_rand_i     = cmplx(t_i_re,t_i_im)
                          Ac           = Ac+c_rand_i*c_scale 
                          r_t          = real(i__,kind=sp)
-                         carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                         fs_i         = r_t*Tp_i 
+                         carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*fc*fs_i+r_phase)
                          sig_sum      = cmplx(0.0_sp,0.0_sp)
-!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum) 
+                         c_amp        = cmplx(0.0_sp,0.0_sp)
                          do j__ = Ns,Ne 
                             t_j_re           = random_exponential_clamped()
+                            c_amp            = A0/C314159265358979323846264338328
                             t_j_im           = random_exponential_clamped()
                             c_rand_j         = cmplx(t_j_re,t_j_im)
                             r_k              = real(j__,kind=sp)
+                            fs_j             = r_k*Tp_j
                             r_seq            = code_seq(j__)
-                            arg              = t0*(r_t-r_k)+h_spread
+                            arg              = t0*(fs_i-fs_j)+h_spread
                             t1               = asin(sin(arg))
                             t2               = acos(cos(arg))
                             t3               = (t1+t2)-v_spread*0.5_sp+v_spread 
@@ -1758,7 +1804,7 @@ module mod_AM_broadband_signal
                      end do 
                   else if (which_distro .eq. "rand_weibull_clamped") then 
                          c_scale = cmplx(scale_r,scale_i)
-                         c_amp   = A0/C314159265358979323846264338328
+                        
 !dir$ assume_aligned code_seq:64
 !dir$ assume_aligned carrier:64
 !dir$ assume_aligned complex_env:64
@@ -1776,16 +1822,19 @@ module mod_AM_broadband_signal
                          c_rand_i     = cmplx(t_i_re,t_i_im)
                          Ac           = Ac+c_rand_i*c_scale 
                          r_t          = real(i__,kind=sp)
-                         carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                         fs_i         = r_t*Tp_i 
+                         carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*fc*fs_i+r_phase)
                          sig_sum      = cmplx(0.0_sp,0.0_sp)
-!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum) 
+                         c_amp        = cmplx(0.0_sp,0.0_sp)
                          do j__ = Ns,Ne 
                             t_j_re           = random_Weibull_clamped(rd_params.random_weibull_a_r)
+                            c_amp            = A0/C314159265358979323846264338328
                             t_j_im           = random_Weibull_clamped(rd_params.random_weibull_a_i)
                             c_rand_j         = cmplx(t_j_re,t_j_im)
                             r_k              = real(j__,kind=sp)
+                            fs_j             = r_k*Tp_j 
                             r_seq            = code_seq(j__)
-                            arg              = t0*(r_t-r_k)+h_spread
+                            arg              = t0*(fs_i-fs_j)+h_spread
                             t1               = asin(sin(arg))
                             t2               = acos(cos(arg))
                             t3               = (t1+t2)-v_spread*0.5_sp+v_spread 
@@ -1806,7 +1855,7 @@ module mod_AM_broadband_signal
                      end do 
                   else if (which_distro .eq. "random_beta_clamped") then 
                           c_scale = cmplx(scale_r,scale_i)
-                          c_amp   = A0/C314159265358979323846264338328
+                          
 !dir$ assume_aligned code_seq:64
 !dir$ assume_aligned carrier:64
 !dir$ assume_aligned complex_env:64
@@ -1828,20 +1877,23 @@ module mod_AM_broadband_signal
                          c_rand_i     = cmplx(t_i_re,t_i_im)
                          Ac           = Ac+c_rand_i*c_scale 
                          r_t          = real(i__,kind=sp)
-                         carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                         fs_i         = r_t*Tp_i 
+                         carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*fc*fs_i+r_phase)
                          sig_sum      = cmplx(0.0_sp,0.0_sp)
-!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum) 
+                         c_amp        = cmplx(0.0_sp,0.0_sp)
                          do j__ = Ns,Ne 
                             t_j_re           = random_beta_clamped(rd_params.random_beta_aa_r, &
                                                                    rd_params.random_beta_aa_i, &
                                                                    rd_params.random_beta_first)
+                            c_amp            = A0/C314159265358979323846264338328
                             t_j_im           = random_beta_clamped(rd_params.random_beta_bb_r, &
                                                                    rd_params.random_beta_bb_i, &
                                                                    rd_params.random_beta_first)
                             c_rand_j         = cmplx(t_j_re,t_j_im)
                             r_k              = real(j__,kind=sp)
+                            fs_j             = r_k*Tp_j
                             r_seq            = code_seq(j__)
-                            arg              = t0*(r_t-r_k)+h_spread
+                            arg              = t0*(fs_i-fs_j)+h_spread
                             t1               = asin(sin(arg))
                             t2               = acos(cos(arg))
                             t3               = (t1+t2)-v_spread*0.5_sp+v_spread 
@@ -1862,6 +1914,10 @@ module mod_AM_broadband_signal
                      end do 
                   end if 
                case ("Sine_squared")
+                     fs_i     = 0.0_sp 
+                     fs_j     = 0.0_sp 
+                     Tp_i     = 1.0_sp/real(2.0_sp*(Te-Ts),kind=sp)
+                     Tp_j     = 1.0_sp/real(2.0_sp*(Ne-Ns),kind=sp)
                      r_phase  = 0.0_sp 
                      call random_seed()
                      call random_number(rand_r)
@@ -1891,19 +1947,21 @@ module mod_AM_broadband_signal
                            c_rand_i     = cmplx(t_i_re,t_i_im)
                            Ac           = Ac+c_rand_i*c_scale
                            r_t          = real(i__,kind=sp)
-                           carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                           fs_i         = r_t*Tp_i 
+                           carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*fc*fs_i+r_phase)
                            sig_sum      = cmplx(0.0_sp,0.0_sp)
-!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                           A0_cpy       = A0
                            do j__ = Ns,Ne 
                               t_j_re           = random_normal_clamped()
                               t_j_im           = random_normal_clamped()
                               c_rand_j         = cmplx(t_j_re,t_j_im)
                               r_k              = real(j__,kind=sp)
+                              fs_j             = r_k*Tp_j
                               r_seq            = code_seq(j__)
-                              arg              = C6283185307179586476925286766559*r_t-r_k*invT
-                              A0               = A0+c_rand_j*c_scale 
+                              arg              = C6283185307179586476925286766559*fs_i*fs_j
+                              A0_cpy           = A0_cpy+c_rand_j*c_scale 
                               t0               = 1.0_sp-cos(arg)
-                              yc_t             = A0*0.5_sp*t0 
+                              yc_t             = A0_cpy*0.5_sp*t0 
                               ctmp             = yc_t*r_seq
                               sig_sum          = sig_sum+ctmp
                               samples(j__,i__) = ctmp
@@ -1936,19 +1994,21 @@ module mod_AM_broadband_signal
                            c_rand_i     = cmplx(t_i_re,t_i_im)
                            Ac           = Ac+c_rand_i*c_scale
                            r_t          = real(i__,kind=sp)
-                           carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                           fs_i         = r_t*Tp_i 
+                           carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*fc*fs_i+r_phase)
                            sig_sum      = cmplx(0.0_sp,0.0_sp)
-!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                           A0_cpy       = A0 
                            do j__ = Ns,Ne 
                               t_j_re           = random_exponential_clamped()
                               t_j_im           = random_exponential_clamped()
                               c_rand_j         = cmplx(t_j_re,t_j_im)
                               r_k              = real(j__,kind=sp)
+                              fs_j             = r_k*Tp_j 
                               r_seq            = code_seq(j__)
-                              arg              = C6283185307179586476925286766559*r_t-r_k*invT
-                              A0               = A0+c_rand_j*c_scale 
+                              arg              = C6283185307179586476925286766559*fs_i-fs_j 
+                              A0_cpy           = A0_cpy+c_rand_j*c_scale 
                               t0               = 1.0_sp-cos(arg)
-                              yc_t             = A0*0.5_sp*t0 
+                              yc_t             = A0_cpy*0.5_sp*t0 
                               ctmp             = yc_t*r_seq
                               sig_sum          = sig_sum+ctmp
                               samples(j__,i__) = ctmp
@@ -1962,7 +2022,7 @@ module mod_AM_broadband_signal
                            complex_env_i    = real(complex_env(i__))
                            complex_env_q    = aimag(complex_env(i__))
                        end do  
-                     else if (which_distro .eq. "rand_weibull_clamped")
+                     else if (which_distro .eq. "rand_weibull_clamped") then 
                         c_scale = cmplx(scale_r,scale_i)
 !dir$ assume_aligned code_seq:64
 !dir$ assume_aligned carrier:64
@@ -1981,19 +2041,21 @@ module mod_AM_broadband_signal
                            c_rand_i     = cmplx(t_i_re,t_i_im)
                            Ac           = Ac+c_rand_i*c_scale
                            r_t          = real(i__,kind=sp)
-                           carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                           fs_i         = r_t*Tp_i 
+                           carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*fc*fs_i+r_phase)
                            sig_sum      = cmplx(0.0_sp,0.0_sp)
-!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                           A0_cpy       = A0 
                            do j__ = Ns,Ne 
                               t_j_re           = random_Weibull_clamped(rd_params.random_weibull_a_r)
                               t_j_im           = random_Weibull_clamped(rd_params.random_weibull_a_i)
                               c_rand_j         = cmplx(t_j_re,t_j_im)
                               r_k              = real(j__,kind=sp)
+                              fs_j             = r_k*Tp_j 
                               r_seq            = code_seq(j__)
-                              arg              = C6283185307179586476925286766559*r_t-r_k*invT
-                              A0               = A0+c_rand_j*c_scale 
+                              arg              = C6283185307179586476925286766559*fs_i-fs_j 
+                              A0_cpy           = A0_cpy+c_rand_j*c_scale 
                               t0               = 1.0_sp-cos(arg)
-                              yc_t             = A0*0.5_sp*t0 
+                              yc_t             = A0_cpy*0.5_sp*t0 
                               ctmp             = yc_t*r_seq
                               sig_sum          = sig_sum+ctmp
                               samples(j__,i__) = ctmp
@@ -2030,9 +2092,10 @@ module mod_AM_broadband_signal
                            c_rand_i     = cmplx(t_i_re,t_i_im)
                            Ac           = Ac+c_rand_i*c_scale
                            r_t          = real(i__,kind=sp)
-                           carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                           fs_i         = r_t*Tp_i 
+                           carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*fc*fs_i+r_phase)
                            sig_sum      = cmplx(0.0_sp,0.0_sp)
-!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                           A0_cpy       = A0 
                            do j__ = Ns,Ne 
                               t_j_re           = random_beta_clamped(rd_params.random_beta_aa_r, &
                                                                      rd_params.random_beta_bb_r, &
@@ -2042,11 +2105,12 @@ module mod_AM_broadband_signal
                                                               rd_params.random_beta_first)
                               c_rand_j         = cmplx(t_j_re,t_j_im)
                               r_k              = real(j__,kind=sp)
+                              fs_j             = r_k*Tp_j 
                               r_seq            = code_seq(j__)
-                              arg              = C6283185307179586476925286766559*r_t-r_k*invT
-                              A0               = A0+c_rand_j*c_scale 
+                              arg              = C6283185307179586476925286766559*fs_i-fs_j 
+                              A0_cpy           = A0_cpy+c_rand_j*c_scale 
                               t0               = 1.0_sp-cos(arg)
-                              yc_t             = A0*0.5_sp*t0 
+                              yc_t             = A0_cpy*0.5_sp*t0 
                               ctmp             = yc_t*r_seq
                               sig_sum          = sig_sum+ctmp
                               samples(j__,i__) = ctmp
@@ -2062,6 +2126,10 @@ module mod_AM_broadband_signal
                        end do  
                      end if
                case ("Sine")
+                     fs_i     = 0.0_sp 
+                     fs_j     = 0.0_sp 
+                     Tp_i     = 1.0_sp/real(2.0_sp*(Te-Ts),kind=sp)
+                     Tp_j     = 1.0_sp/real(2.0_sp*(Ne-Ns),kind=sp)
                      r_phase  = 0.0_sp 
                      call random_seed()
                      call random_number(rand_r)
@@ -2091,19 +2159,21 @@ module mod_AM_broadband_signal
                            c_rand_i     = cmplx(t_i_re,t_i_im)
                            Ac           = Ac+c_rand_i*c_scale
                            r_t          = real(i__,kind=sp)
-                           carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                           fs_i         = r_t*Tp_i 
+                           carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*fc*fs_i+r_phase)
                            sig_sum      = cmplx(0.0_sp,0.0_sp)
-!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                           A0_cpy       = A0 
                            do j__ = Ns,Ne 
                               t_j_re           = random_normal_clamped()
                               t_j_im           = random_normal_clamped()
                               c_rand_j         = cmplx(t_j_re,t_j_im)
                               r_k              = real(j__,kind=sp)
+                              fs_j             = r_k*Tp_j 
                               r_seq            = code_seq(j__)
-                              arg              = C314159265358979323846264338328*r_t-r_k*invT
-                              A0               = A0+c_rand_j*c_scale 
+                              arg              = C314159265358979323846264338328*fs_i-fs_j 
+                              A0_cpy           = A0_cpy+c_rand_j*c_scale 
                               t0               = sin(arg)
-                              yc_t             = A0*t0 
+                              yc_t             = A0_cpy*t0 
                               ctmp             = yc_t*r_seq
                               sig_sum          = sig_sum+ctmp
                               samples(j__,i__) = ctmp
@@ -2136,19 +2206,21 @@ module mod_AM_broadband_signal
                                  c_rand_i     = cmplx(t_i_re,t_i_im)
                                  Ac           = Ac+c_rand_i*c_scale
                                  r_t          = real(i__,kind=sp)
-                                 carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                                 fs_i         = r_t*Tp_i 
+                                 carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*fc*fs_i+r_phase)
                                  sig_sum      = cmplx(0.0_sp,0.0_sp)
-!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                                 A0_cpy       = A0 
                                  do j__ = Ns,Ne 
                                     t_j_re           = random_exponential_clamped()
                                     t_j_im           = random_exponential_clamped()
                                     c_rand_j         = cmplx(t_j_re,t_j_im)
                                     r_k              = real(j__,kind=sp)
+                                    fs_j             = r_k*Tp_j 
                                     r_seq            = code_seq(j__)
-                                    arg              = C314159265358979323846264338328*r_t-r_k*invT
-                                    A0               = A0+c_rand_j*c_scale 
+                                    arg              = C314159265358979323846264338328*fs_i-fs_j 
+                                    A0_cpy           = A0_cpy+c_rand_j*c_scale 
                                     t0               = sin(arg)
-                                    yc_t             = A0*t0 
+                                    yc_t             = A0_cpy*t0 
                                     ctmp             = yc_t*r_seq
                                     sig_sum          = sig_sum+ctmp
                                     samples(j__,i__) = ctmp
@@ -2181,19 +2253,21 @@ module mod_AM_broadband_signal
                                  c_rand_i     = cmplx(t_i_re,t_i_im)
                                  Ac           = Ac+c_rand_i*c_scale
                                  r_t          = real(i__,kind=sp)
-                                 carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                                 fs_i         = r_t*Tp_i 
+                                 carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*fc*fs_i+r_phase)
                                  sig_sum      = cmplx(0.0_sp,0.0_sp)
-!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                                 A0_cpy       = A0 
                                  do j__ = Ns,Ne 
                                     t_j_re           = random_Weibull_clamped(rd_params.random_weibull_a_r)
                                     t_j_im           = random_Weibull_clamped(rd_params.random_weibull_a_i)
                                     c_rand_j         = cmplx(t_j_re,t_j_im)
                                     r_k              = real(j__,kind=sp)
+                                    fs_j             = r_k*Tp_j 
                                     r_seq            = code_seq(j__)
-                                    arg              = C314159265358979323846264338328*r_t-r_k*invT
-                                    A0               = A0+c_rand_j*c_scale 
+                                    arg              = C314159265358979323846264338328*fs_i-fs_j 
+                                    A0_cpy           = A0_cpy+c_rand_j*c_scale 
                                     t0               = sin(arg)
-                                    yc_t             = A0*t0 
+                                    yc_t             = A0_cpy*t0 
                                     ctmp             = yc_t*r_seq
                                     sig_sum          = sig_sum+ctmp
                                     samples(j__,i__) = ctmp
@@ -2230,9 +2304,10 @@ module mod_AM_broadband_signal
                                  c_rand_i     = cmplx(t_i_re,t_i_im)
                                  Ac           = Ac+c_rand_i*c_scale
                                  r_t          = real(i__,kind=sp)
-                                 carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*r_t*fc+r_phase)
+                                 fs_i         = r_t*Tp_i 
+                                 carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*fc*fs_i+r_phase)
                                  sig_sum      = cmplx(0.0_sp,0.0_sp)
-!$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum)
+                                 A0_cpy       = A0 
                                  do j__ = Ns,Ne 
                                     t_j_re           = random_beta_clamped(rd_params.random_beta_aa_r,  &
                                                                            rd_params.random_beta_bb_r,  &
@@ -2242,11 +2317,12 @@ module mod_AM_broadband_signal
                                                                            rd_params.random_beta_first)
                                     c_rand_j         = cmplx(t_j_re,t_j_im)
                                     r_k              = real(j__,kind=sp)
+                                    fs_j             = r_k*Tp_j 
                                     r_seq            = code_seq(j__)
-                                    arg              = C314159265358979323846264338328*r_t-r_k*invT
-                                    A0               = A0+c_rand_j*c_scale 
+                                    arg              = C314159265358979323846264338328*fs_i-fs_j 
+                                    A0_cpy           = A0_cpy+c_rand_j*c_scale 
                                     t0               = sin(arg)
-                                    yc_t             = A0*t0 
+                                    yc_t             = A0_cpy*t0 
                                     ctmp             = yc_t*r_seq
                                     sig_sum          = sig_sum+ctmp
                                     samples(j__,i__) = ctmp
