@@ -1383,9 +1383,9 @@ module mod_AM_broadband_signal
                   Tp_j     = 1.0_sp/real(2.0_sp*(Ne-Ns),kind=sp)
                   r_Ts     = real(Ts,kind=sp)
                   r_Te     = real(Te,kind=sp)
-                  h_spread = r_Te-r_Ts   
+                  h_spread = (r_Te-r_Ts)/8.0_sp   
                   v_spread = real(A0)
-                  c_amp    = A0/C314159265358979323846264338328
+                  
                   t0       = C314159265358979323846264338328/(r_Te-r_Ts)
                   r_phase  = 0.0_sp 
                   call random_seed()
@@ -1396,7 +1396,7 @@ module mod_AM_broadband_signal
                   else if(trunc_r .eq. 0) then 
                     r_phase = -C314159265358979323846264338328*rand_r
                   end if 
-                  print*, "random-phase=", r_phase 
+                  !print*, "random-phase=", r_phase 
 !dir$ assume_aligned code_seq:64
 !dir$ assume_aligned carrier:64
 !dir$ assume_aligned complex_env:64
@@ -1413,9 +1413,11 @@ module mod_AM_broadband_signal
                      fs_i         = r_t*Tp_i 
                      carrier(i__) = Ac*exp(j*C6283185307179586476925286766559*fc*fs_i+r_phase)
                      sig_sum      = cmplx(0.0_sp,0.0_sp)
+                     c_amp        = cmplx(0.0_sp,0.0_sp)
 !$omp simd linear(j__:1) aligned(code_seq,samples:64) reduction(+:sig_sum) 
                      do j__ = Ns,Ne 
                         r_k              = real(j__,kind=sp)
+                        c_amp            = A0*0.318309886183790671537767526745_sp
                         fs_j             = r_k*Tp_j
                         r_seq            = code_seq(j__)
                         arg              = t0*(fs_i-fs_j)+h_spread
@@ -1427,14 +1429,14 @@ module mod_AM_broadband_signal
                         sig_sum          = sig_sum+ctmp
                         samples(j__,i__) = ctmp
                      end do 
-                     complex_env(i__) = sig_sum
-                     signal(i__)      = sig_sum*carrier(i__)
-                     carrier_i        = real(carrier(i__))
-                     carrier_q        = aimag(carrier(i__))
-                     signal_i         = real(signal(i__))
-                     signal_q         = aimag(signal(i__))
-                     complex_env_i    = real(complex_env(i__))
-                     complex_env_q    = aimag(complex_env(i__))
+                     complex_env(i__)      = sig_sum
+                     signal(i__)           = sig_sum*carrier(i__)
+                     carrier_i(i__)        = real(carrier(i__))
+                     carrier_q(i__)        = aimag(carrier(i__))
+                     signal_i(i__)         = real(signal(i__))
+                     signal_q(i__)         = aimag(signal(i__))
+                     complex_env_i(i__)    = real(complex_env(i__))
+                     complex_env_q(i__)    = aimag(complex_env(i__))
                   end do 
                case ("Sine_squared")
                      fs_i     = 0.0_sp 
@@ -1479,14 +1481,14 @@ module mod_AM_broadband_signal
                          sig_sum          = sig_sum+ctmp
                          samples(j__,i__) = ctmp
                       end do 
-                       complex_env(i__) = sig_sum
-                       signal(i__)      = sig_sum*carrier(i__)
-                       carrier_i        = real(carrier(i__))
-                       carrier_q        = aimag(carrier(i__))
-                       signal_i         = real(signal(i__))
-                       signal_q         = aimag(signal(i__))
-                       complex_env_i    = real(complex_env(i__))
-                       complex_env_q    = aimag(complex_env(i__))
+                       complex_env(i__)      = sig_sum
+                       signal(i__)           = sig_sum*carrier(i__)
+                       carrier_i(i__)        = real(carrier(i__))
+                       carrier_q(i__)        = aimag(carrier(i__))
+                       signal_i(i__)         = real(signal(i__))
+                       signal_q(i__)         = aimag(signal(i__))
+                       complex_env_i(i__)    = real(complex_env(i__))
+                       complex_env_q(i__)    = aimag(complex_env(i__))
                    end do    
                case ("Sine")
                      fs_i     = 0.0_sp 
@@ -1531,14 +1533,14 @@ module mod_AM_broadband_signal
                          sig_sum          = sig_sum+ctmp
                          samples(j__,i__) = ctmp
                       end do 
-                       complex_env(i__) = sig_sum
-                       signal(i__)      = sig_sum*carrier(i__)
-                       carrier_i        = real(carrier(i__))
-                       carrier_q        = aimag(carrier(i__))
-                       signal_i         = real(signal(i__))
-                       signal_q         = aimag(signal(i__))
-                       complex_env_i    = real(complex_env(i__))
-                       complex_env_q    = aimag(complex_env(i__))
+                       complex_env(i__)      = sig_sum
+                       signal(i__)           = sig_sum*carrier(i__)
+                       carrier_i(i__)        = real(carrier(i__))
+                       carrier_q(i__)        = aimag(carrier(i__))
+                       signal_i(i__)         = real(signal(i__))
+                       signal_q(i__)         = aimag(signal(i__))
+                       complex_env_i(i__)    = real(complex_env(i__))
+                       complex_env_q(i__)    = aimag(complex_env(i__))
                    end do 
                case default 
                    print*, "Invalid switch variable: ", envelope_type 
@@ -1742,14 +1744,14 @@ Trapezoidal_Wave = a/pi*(asin(sin((pi/m)*x+l))+acos(cos((pi/m)*x+l)))-a/2+c;
                             sig_sum          = sig_sum+ctmp
                             samples(j__,i__) = ctmp
                          end do 
-                         complex_env(i__) = sig_sum
-                         signal(i__)      = sig_sum*carrier(i__)
-                         carrier_i        = real(carrier(i__))
-                         carrier_q        = aimag(carrier(i__))
-                         signal_i         = real(signal(i__))
-                         signal_q         = aimag(signal(i__))
-                         complex_env_i    = real(complex_env(i__))
-                         complex_env_q    = aimag(complex_env(i__))
+                         complex_env(i__)      = sig_sum
+                         signal(i__)           = sig_sum*carrier(i__)
+                         carrier_i(i__)        = real(carrier(i__))
+                         carrier_q(i__)        = aimag(carrier(i__))
+                         signal_i(i__)         = real(signal(i__))
+                         signal_q(i__)         = aimag(signal(i__))
+                         complex_env_i(i__)    = real(complex_env(i__))
+                         complex_env_q(i__)    = aimag(complex_env(i__))
                      end do 
                   else if(which_distro .eq. "rand_exponential_clamped") then 
                      c_scale = cmplx(scale_r,scale_i)
@@ -1793,14 +1795,14 @@ Trapezoidal_Wave = a/pi*(asin(sin((pi/m)*x+l))+acos(cos((pi/m)*x+l)))-a/2+c;
                             sig_sum          = sig_sum+ctmp
                             samples(j__,i__) = ctmp
                          end do 
-                         complex_env(i__) = sig_sum
-                         signal(i__)      = sig_sum*carrier(i__)
-                         carrier_i        = real(carrier(i__))
-                         carrier_q        = aimag(carrier(i__))
-                         signal_i         = real(signal(i__))
-                         signal_q         = aimag(signal(i__))
-                         complex_env_i    = real(complex_env(i__))
-                         complex_env_q    = aimag(complex_env(i__))
+                         complex_env(i__)      = sig_sum
+                         signal(i__)           = sig_sum*carrier(i__)
+                         carrier_i(i__)        = real(carrier(i__))
+                         carrier_q(i__)        = aimag(carrier(i__))
+                         signal_i(i__)         = real(signal(i__))
+                         signal_q(i__)         = aimag(signal(i__))
+                         complex_env_i(i__)    = real(complex_env(i__))
+                         complex_env_q(i__)    = aimag(complex_env(i__))
                      end do 
                   else if (which_distro .eq. "rand_weibull_clamped") then 
                          c_scale = cmplx(scale_r,scale_i)
@@ -1844,14 +1846,14 @@ Trapezoidal_Wave = a/pi*(asin(sin((pi/m)*x+l))+acos(cos((pi/m)*x+l)))-a/2+c;
                             sig_sum          = sig_sum+ctmp
                             samples(j__,i__) = ctmp
                          end do 
-                         complex_env(i__) = sig_sum
-                         signal(i__)      = sig_sum*carrier(i__)
-                         carrier_i        = real(carrier(i__))
-                         carrier_q        = aimag(carrier(i__))
-                         signal_i         = real(signal(i__))
-                         signal_q         = aimag(signal(i__))
-                         complex_env_i    = real(complex_env(i__))
-                         complex_env_q    = aimag(complex_env(i__))
+                         complex_env(i__)      = sig_sum
+                         signal(i__)           = sig_sum*carrier(i__)
+                         carrier_i(i__)        = real(carrier(i__))
+                         carrier_q(i__)        = aimag(carrier(i__))
+                         signal_i(i__)         = real(signal(i__))
+                         signal_q(i__)         = aimag(signal(i__))
+                         complex_env_i(i__)    = real(complex_env(i__))
+                         complex_env_q(i__)    = aimag(complex_env(i__))
                      end do 
                   else if (which_distro .eq. "random_beta_clamped") then 
                           c_scale = cmplx(scale_r,scale_i)
@@ -1903,14 +1905,14 @@ Trapezoidal_Wave = a/pi*(asin(sin((pi/m)*x+l))+acos(cos((pi/m)*x+l)))-a/2+c;
                             sig_sum          = sig_sum+ctmp
                             samples(j__,i__) = ctmp
                          end do 
-                         complex_env(i__) = sig_sum
-                         signal(i__)      = sig_sum*carrier(i__)
-                         carrier_i        = real(carrier(i__))
-                         carrier_q        = aimag(carrier(i__))
-                         signal_i         = real(signal(i__))
-                         signal_q         = aimag(signal(i__))
-                         complex_env_i    = real(complex_env(i__))
-                         complex_env_q    = aimag(complex_env(i__))
+                         complex_env(i__)      = sig_sum
+                         signal(i__)           = sig_sum*carrier(i__)
+                         carrier_i(i__)        = real(carrier(i__))
+                         carrier_q(i__)        = aimag(carrier(i__))
+                         signal_i(i__)         = real(signal(i__))
+                         signal_q(i__)         = aimag(signal(i__))
+                         complex_env_i(i__)    = real(complex_env(i__))
+                         complex_env_q(i__)    = aimag(complex_env(i__))
                      end do 
                   end if 
                case ("Sine_squared")
@@ -1966,14 +1968,14 @@ Trapezoidal_Wave = a/pi*(asin(sin((pi/m)*x+l))+acos(cos((pi/m)*x+l)))-a/2+c;
                               sig_sum          = sig_sum+ctmp
                               samples(j__,i__) = ctmp
                            end do 
-                           complex_env(i__) = sig_sum
-                           signal(i__)      = sig_sum*carrier(i__)
-                           carrier_i        = real(carrier(i__))
-                           carrier_q        = aimag(carrier(i__))
-                           signal_i         = real(signal(i__))
-                           signal_q         = aimag(signal(i__))
-                           complex_env_i    = real(complex_env(i__))
-                           complex_env_q    = aimag(complex_env(i__))
+                           complex_env(i__)      = sig_sum
+                           signal(i__)           = sig_sum*carrier(i__)
+                           carrier_i(i__)        = real(carrier(i__))
+                           carrier_q(i__)        = aimag(carrier(i__))
+                           signal_i(i__)         = real(signal(i__))
+                           signal_q(i__)         = aimag(signal(i__))
+                           complex_env_i(i__)    = real(complex_env(i__))
+                           complex_env_q(i__)    = aimag(complex_env(i__))
                        end do  
                      else if (which_distro .eq. "rand_exponential_clamped") then 
                         c_scale = cmplx(scale_r,scale_i)
@@ -2013,14 +2015,14 @@ Trapezoidal_Wave = a/pi*(asin(sin((pi/m)*x+l))+acos(cos((pi/m)*x+l)))-a/2+c;
                               sig_sum          = sig_sum+ctmp
                               samples(j__,i__) = ctmp
                            end do 
-                           complex_env(i__) = sig_sum
-                           signal(i__)      = sig_sum*carrier(i__)
-                           carrier_i        = real(carrier(i__))
-                           carrier_q        = aimag(carrier(i__))
-                           signal_i         = real(signal(i__))
-                           signal_q         = aimag(signal(i__))
-                           complex_env_i    = real(complex_env(i__))
-                           complex_env_q    = aimag(complex_env(i__))
+                           complex_env(i__)      = sig_sum
+                           signal(i__)           = sig_sum*carrier(i__)
+                           carrier_i(i__)        = real(carrier(i__))
+                           carrier_q(i__)        = aimag(carrier(i__))
+                           signal_i(i__)         = real(signal(i__))
+                           signal_q(i__)         = aimag(signal(i__))
+                           complex_env_i(i__)    = real(complex_env(i__))
+                           complex_env_q(i__)    = aimag(complex_env(i__))
                        end do  
                      else if (which_distro .eq. "rand_weibull_clamped") then 
                         c_scale = cmplx(scale_r,scale_i)
@@ -2060,14 +2062,14 @@ Trapezoidal_Wave = a/pi*(asin(sin((pi/m)*x+l))+acos(cos((pi/m)*x+l)))-a/2+c;
                               sig_sum          = sig_sum+ctmp
                               samples(j__,i__) = ctmp
                            end do 
-                           complex_env(i__) = sig_sum
-                           signal(i__)      = sig_sum*carrier(i__)
-                           carrier_i        = real(carrier(i__))
-                           carrier_q        = aimag(carrier(i__))
-                           signal_i         = real(signal(i__))
-                           signal_q         = aimag(signal(i__))
-                           complex_env_i    = real(complex_env(i__))
-                           complex_env_q    = aimag(complex_env(i__))
+                           complex_env(i__)      = sig_sum
+                           signal(i__)           = sig_sum*carrier(i__)
+                           carrier_i(i__)        = real(carrier(i__))
+                           carrier_q(i__)        = aimag(carrier(i__))
+                           signal_i(i__)         = real(signal(i__))
+                           signal_q(i__)         = aimag(signal(i__))
+                           complex_env_i(i__)    = real(complex_env(i__))
+                           complex_env_q(i__)    = aimag(complex_env(i__))
                        end do  
                      else if (which_distro .eq. "random_beta_clamped") then 
                          c_scale = cmplx(scale_r,scale_i)
@@ -2115,14 +2117,14 @@ Trapezoidal_Wave = a/pi*(asin(sin((pi/m)*x+l))+acos(cos((pi/m)*x+l)))-a/2+c;
                               sig_sum          = sig_sum+ctmp
                               samples(j__,i__) = ctmp
                            end do 
-                           complex_env(i__) = sig_sum
-                           signal(i__)      = sig_sum*carrier(i__)
-                           carrier_i        = real(carrier(i__))
-                           carrier_q        = aimag(carrier(i__))
-                           signal_i         = real(signal(i__))
-                           signal_q         = aimag(signal(i__))
-                           complex_env_i    = real(complex_env(i__))
-                           complex_env_q    = aimag(complex_env(i__))
+                           complex_env(i__)      = sig_sum
+                           signal(i__)           = sig_sum*carrier(i__)
+                           carrier_i(i__)        = real(carrier(i__))
+                           carrier_q(i__)        = aimag(carrier(i__))
+                           signal_i(i__)         = real(signal(i__))
+                           signal_q(i__)         = aimag(signal(i__))
+                           complex_env_i(i__)    = real(complex_env(i__))
+                           complex_env_q(i__)    = aimag(complex_env(i__))
                        end do  
                      end if
                case ("Sine")
@@ -2178,14 +2180,14 @@ Trapezoidal_Wave = a/pi*(asin(sin((pi/m)*x+l))+acos(cos((pi/m)*x+l)))-a/2+c;
                               sig_sum          = sig_sum+ctmp
                               samples(j__,i__) = ctmp
                            end do 
-                           complex_env(i__) = sig_sum
-                           signal(i__)      = sig_sum*carrier(i__)
-                           carrier_i        = real(carrier(i__))
-                           carrier_q        = aimag(carrier(i__))
-                           signal_i         = real(signal(i__))
-                           signal_q         = aimag(signal(i__))
-                           complex_env_i    = real(complex_env(i__))
-                           complex_env_q    = aimag(complex_env(i__))
+                           complex_env(i__)      = sig_sum
+                           signal(i__)           = sig_sum*carrier(i__)
+                           carrier_i(i__)        = real(carrier(i__))
+                           carrier_q(i__)        = aimag(carrier(i__))
+                           signal_i(i__)         = real(signal(i__))
+                           signal_q(i__)         = aimag(signal(i__))
+                           complex_env_i(i__)    = real(complex_env(i__))
+                           complex_env_q(i__)    = aimag(complex_env(i__))
                         end do 
                      else if (which_distro .eq. "rand_exponential_clamped") then 
                               c_scale = cmplx(scale_r,scale_i)
@@ -2225,14 +2227,14 @@ Trapezoidal_Wave = a/pi*(asin(sin((pi/m)*x+l))+acos(cos((pi/m)*x+l)))-a/2+c;
                                     sig_sum          = sig_sum+ctmp
                                     samples(j__,i__) = ctmp
                                  end do 
-                                 complex_env(i__) = sig_sum
-                                 signal(i__)      = sig_sum*carrier(i__)
-                                 carrier_i        = real(carrier(i__))
-                                 carrier_q        = aimag(carrier(i__))
-                                 signal_i         = real(signal(i__))
-                                 signal_q         = aimag(signal(i__))
-                                 complex_env_i    = real(complex_env(i__))
-                                 complex_env_q    = aimag(complex_env(i__))
+                                 complex_env(i__)      = sig_sum
+                                 signal(i__)           = sig_sum*carrier(i__)
+                                 carrier_i(i__)        = real(carrier(i__))
+                                 carrier_q(i__)        = aimag(carrier(i__))
+                                 signal_i(i__)         = real(signal(i__))
+                                 signal_q(i__)         = aimag(signal(i__))
+                                 complex_env_i(i__)    = real(complex_env(i__))
+                                 complex_env_q(i__)    = aimag(complex_env(i__))
                            end do     
                      else if (which_distro .eq. "rand_weibull_clamped") then 
                               c_scale = cmplx(scale_r,scale_i)
@@ -2272,14 +2274,14 @@ Trapezoidal_Wave = a/pi*(asin(sin((pi/m)*x+l))+acos(cos((pi/m)*x+l)))-a/2+c;
                                     sig_sum          = sig_sum+ctmp
                                     samples(j__,i__) = ctmp
                                  end do 
-                                 complex_env(i__) = sig_sum
-                                 signal(i__)      = sig_sum*carrier(i__)
-                                 carrier_i        = real(carrier(i__))
-                                 carrier_q        = aimag(carrier(i__))
-                                 signal_i         = real(signal(i__))
-                                 signal_q         = aimag(signal(i__))
-                                 complex_env_i    = real(complex_env(i__))
-                                 complex_env_q    = aimag(complex_env(i__))
+                                 complex_env(i__)      = sig_sum
+                                 signal(i__)           = sig_sum*carrier(i__)
+                                 carrier_i(i__)        = real(carrier(i__))
+                                 carrier_q(i__)        = aimag(carrier(i__))
+                                 signal_i(i__)         = real(signal(i__))
+                                 signal_q(i__)         = aimag(signal(i__))
+                                 complex_env_i(i__)    = real(complex_env(i__))
+                                 complex_env_q(i__)    = aimag(complex_env(i__))
                            end do     
                      else if (which_distro .eq. "rand_beta_clamped") then 
                               c_scale = cmplx(scale_r,scale_i)
@@ -2327,14 +2329,14 @@ Trapezoidal_Wave = a/pi*(asin(sin((pi/m)*x+l))+acos(cos((pi/m)*x+l)))-a/2+c;
                                     sig_sum          = sig_sum+ctmp
                                     samples(j__,i__) = ctmp
                                  end do 
-                                 complex_env(i__) = sig_sum
-                                 signal(i__)      = sig_sum*carrier(i__)
-                                 carrier_i        = real(carrier(i__))
-                                 carrier_q        = aimag(carrier(i__))
-                                 signal_i         = real(signal(i__))
-                                 signal_q         = aimag(signal(i__))
-                                 complex_env_i    = real(complex_env(i__))
-                                 complex_env_q    = aimag(complex_env(i__))
+                                 complex_env(i__)      = sig_sum
+                                 signal(i__)           = sig_sum*carrier(i__)
+                                 carrier_i(i__)        = real(carrier(i__))
+                                 carrier_q(i__)        = aimag(carrier(i__))
+                                 signal_i(i__)         = real(signal(i__))
+                                 signal_q(i__)         = aimag(signal(i__))
+                                 complex_env_i(i__)    = real(complex_env(i__))
+                                 complex_env_q(i__)    = aimag(complex_env(i__))
                            end do     
                      end if 
                case default 
