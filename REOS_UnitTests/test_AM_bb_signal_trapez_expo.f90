@@ -17,7 +17,7 @@
 !SOFTWARE.
 !*/
 
-module mod_test_AM_broadband_signal_modulation 
+module mod_test_AM_bb_signal_trapez_expo
 
 
        use mod_kinds,                 only : i4, i8, sp 
@@ -32,21 +32,21 @@ module mod_test_AM_broadband_signal_modulation
 #if 0
     ICC and ifort commands
     icc -c -std=c99 GMS_intrinsics_wrappers.c
-    ifort -o test_AM_broadband_signal_modulation -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-avx512 \
-     -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_kinds.f90  GMS_intrinsics_wrappers.o GMS_rand_distributions.f90 GMS_AM_broadband_signal.f90 test_AM_broadband_signal_modulate.f90
+    ifort -o test_AM_bb_signal_trapez_expo -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-avx512 \
+     -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_kinds.f90  GMS_intrinsics_wrappers.o GMS_rand_distributions.f90 GMS_AM_broadband_signal.f90 test_AM_bb_signal_trapez_expo.f90
     -------------------------------------------------------------------------------------------------------------------------------------------------
-    ifx -o test_AM_broadband_signal_modulation -fp-model fast=2 -ftz -O3  -march=skylake-avx512      -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=3 \ 
-    GMS_kinds.f90 GMS_intrinsics_wrappers.o GMS_AM_broadband_signal.f90 test_AM_broadband_signal_modulate.f90
+    ifx -o test_AM_bb_signal_trapez_expo -fp-model fast=2 -ftz -O3  -march=skylake-avx512      -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=3 \ 
+    GMS_kinds.f90 GMS_intrinsics_wrappers.o GMS_rand_distributions.f90 GMS_AM_broadband_signal.f90 test_AM_bb_signal_trapez_normal.f90
 
     For assembly only:
     ifort -S   -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-avx512 \
-     -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_kinds.f90 GMS_intrinsics_wrappers.o GMS_AM_broadband_signal.f90 test_AM_broadband_signal_modulate.f90
+     -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_kinds.f90 GMS_intrinsics_wrappers.o GMS_rand_distributions.f90 GMS_AM_broadband_signal.f90 test_AM_bb_signal_trapez_expo.f90
 #endif
 
       contains 
 
 
-subroutine unit_test_AM_broadband_signal_modulation()
+subroutine unit_test_AM_bb_signal_trapez_expo()
                 use iso_c_binding, only : c_int 
                 use IFPORT
 #if 0
@@ -70,19 +70,21 @@ subroutine unit_test_AM_broadband_signal_modulation()
                integer(c_int),              parameter :: SIGTRAP = 5 
 #endif
                character(len=256),          automatic  :: emsg
-               character(len=80),           parameter  :: OUTFILE_RE = "OUTPUT_cenv_trapez_re.csv"
-               character(len=80),           parameter  :: OUTFILE_IM = "OUTPUT_cenv_trapez_im.csv"
-               character(len=64),           parameter  :: header = "[TEST #1: modulate_AM_broadband_signal -- START]"
-               character(len=64),           parameter  :: footer = "[TEST #1: modulate_AM_broadband_signal -- END]"
+               character(len=80),           parameter  :: OUTFILE = "OUTPUT_modulate_add_noise_trapez_expo_noise.csv"
+               character(len=64),           parameter  :: header = "[TEST #2: modulate_add_noise_AM_broadband_signal -- START]"
+               character(len=64),           parameter  :: footer = "[TEST #2: modulate_add_noise_AM_broadband_signal -- END]"
+               integer(kind=i4),            parameter  :: iounit = 102 
                integer(kind=c_long_long),   automatic  :: start,end 
                integer(kind=c_long_long),   automatic  :: start_c,end_c 
                integer(kind=c_long_long),   automatic  :: tsc_elapsed 
-               integer(kind=i4),            parameter  :: iounit = 102 
                type(AM_broadband_signal_t), automatic  :: baseband_sig
+               type(rand_distro_params_t),  automatic  :: rd_params
                complex(kind=sp),            automatic  :: A0
                complex(kind=sp),            automatic  :: Ac 
                integer(kind=i4),            automatic  :: i__ 
                real(kind=sp),               automatic  :: rand_r 
+               real(kind=sp),               automatic  :: r_scale 
+               real(kind=sp),               automatic  :: i_scale 
                integer(kind=i4),            automatic  :: trunc_r 
                integer(kind=i4),            automatic  :: ioerr !0 == success, -1,-2,... equal failure
                integer(kind=i4),            automatic  :: filerr
@@ -117,8 +119,8 @@ subroutine unit_test_AM_broadband_signal_modulation()
                baseband_sig.m_fc             = 3.0e+9_sp 
 #endif 
                print*, header 
-               A0 = cmplx(1.0_sp,1.0_sp)
-               Ac = cmplx(1.5_sp,1.25_sp)
+               A0 = cmplx(0.001_sp,0.001_sp)
+               Ac = cmplx(0.005_sp,0.005_sp)
                start       = rdtsc_wrap()
                call create_AM_broadband_signal(baseband_sig,"AM_wideband_signal", &
                                                "Trapezoidal","Gaussian","Uniform","1,-1",1,0,0,0, &
@@ -135,6 +137,10 @@ subroutine unit_test_AM_broadband_signal_modulation()
                  print*, "create_AM_broadband_signal"
                  print*,"[TSC]=", tsc_elapsed 
                end if 
+               rd_params.random_weibull_a_r = 1.12_sp 
+               rd_params.random_weibull_a_i = 1.54_sp 
+               r_scale = 0.002_sp 
+               i_scale = 0.004_sp 
                baseband_sig.m_invT = 1.0_sp/real(baseband_sig.m_Te-baseband_sig.m_Ts)
                call random_seed()
                do i__=1,baseband_sig.m_baude_rate
@@ -148,30 +154,34 @@ subroutine unit_test_AM_broadband_signal_modulation()
                end do 
                print*, baseband_sig.m_code_seq
                ioerr = 1
-               print*,"[UNIT-TEST #1] -- Calling: modulate_AM_broadband_signal."
+               print*,"[UNIT-TEST #1] -- Calling: modulate_add_noise_AM_broadband_signal."
                start   = rdtsc_wrap()
-               call modulate_AM_broadband_signal(baseband_sig.m_envelope_type,     &
-                                                 baseband_sig.m_baude_rate,        &
-                                                 baseband_sig.m_Ns,                &
-                                                 baseband_sig.m_Ne,                &
-                                                 baseband_sig.m_Ts,                &
-                                                 baseband_sig.m_Te,                &
-                                                 baseband_sig.m_A0,                &
-                                                 baseband_sig.m_Ac,                &
-                                                 baseband_sig.m_invT,              &
-                                                 baseband_sig.m_fc,                &
-                                                 baseband_sig.m_code_seq,          &
-                                                 baseband_sig.m_carrier,           &
-                                                 baseband_sig.m_complex_env,       &
-                                                 baseband_sig.m_signal,            &
-                                                 baseband_sig.m_samples,           &
-                                                 baseband_sig.m_carrier_i,         &
-                                                 baseband_sig.m_carrier_q,         &
-                                                 baseband_sig.m_signal_i,          &
-                                                 baseband_sig.m_signal_q,          &
-                                                 baseband_sig.m_complex_env_i,     &
-                                                 baseband_sig.m_complex_env_q,     &
-                                                 ioerr)
+               call modulate_add_noise_AM_broadband_signal(baseband_sig.m_envelope_type,     &
+                                                           baseband_sig.m_baude_rate,        &
+                                                           baseband_sig.m_Ns,                &
+                                                           baseband_sig.m_Ne,                &
+                                                           baseband_sig.m_Ts,                &
+                                                           baseband_sig.m_Te,                &
+                                                           baseband_sig.m_A0,                &
+                                                           baseband_sig.m_Ac,                &
+                                                           baseband_sig.m_invT,              &
+                                                           baseband_sig.m_fc,                &
+                                                           r_scale,                          &
+                                                           i_scale,                          &
+                                                           rd_params,                        &
+                                                           "random_exponential_clamped",     &
+                                                           baseband_sig.m_code_seq,          &
+                                                           baseband_sig.m_carrier,           &
+                                                           baseband_sig.m_complex_env,       &
+                                                           baseband_sig.m_signal,            &
+                                                           baseband_sig.m_samples,           &
+                                                           baseband_sig.m_carrier_i,         &
+                                                           baseband_sig.m_carrier_q,         &
+                                                           baseband_sig.m_signal_i,          &
+                                                           baseband_sig.m_signal_q,          &
+                                                           baseband_sig.m_complex_env_i,     &
+                                                           baseband_sig.m_complex_env_q,     &
+                                                           ioerr)
                end         = rdtsc_wrap()
                start_c     = start-RDTSC_LATENCY
                end_c       = end-RDTSC_LATENCY
@@ -180,51 +190,38 @@ subroutine unit_test_AM_broadband_signal_modulation()
                  print*,"[INVALID-TSC]=", tsc_elapsed
                else 
                  print*, "[WARNING]: Crude timing measurement!!"
-                 print*, "modulate_AM_broadband_signal"
+                 print*, "modulate_add_noise_AM_broadband_signal"
                  print*,"[TSC]=", tsc_elapsed 
                end if 
+               !print*, baseband_sig.m_carrier 
 #if 1 
               filerr = 0
-              open(UNIT=IOUNIT,FILE=OUTFILE_RE,IOMSG=emsg,ACCESS="SEQUENTIAL",STATUS="NEW")
+              open(UNIT=IOUNIT,FILE=OUTFILE,IOMSG=emsg,ACCESS="SEQUENTIAL",STATUS="NEW")
               ioflag = (filerr==0)
               if(.not.ioflag) then 
                  print*, "[ERROR] -- OPEN failed an error message is as follows:"
                  print*, emsg 
                  return 
               else 
-                 !write(IOUNIT,'(A80)') "[OUTPUT-START]: modulate_add_noise_AM_broadband_signal"
-                 !write(IOUNIT,'(T14,A3,T36,A3)') "re","im"
+                 write(IOUNIT,'(A80)') "[OUTPUT-START]: modulate_add_noise_AM_broadband_signal"
+                 write(IOUNIT,'(T14,A3,T36,A3)') "re","im"
                  do i__=baseband_sig.m_Ts,baseband_sig.m_Te
-                    write(IOUNIT,'(1F22.15)') baseband_sig.m_complex_env_i(i__)
+                    write(IOUNIT,'(2F22.15)') baseband_sig.m_signal(i__),baseband_sig.m_signal(i__)
                 end do 
-                 !write(IOUNIT,'(A80)') "[OUTPUT-END]: modulate_add_noise_AM_broadband_signal"
-              end if  
-              open(UNIT=IOUNIT,FILE=OUTFILE_IM,IOMSG=emsg,ACCESS="SEQUENTIAL",STATUS="NEW")
-              ioflag = (filerr==0)
-              if(.not.ioflag) then 
-                 print*, "[ERROR] -- OPEN failed an error message is as follows:"
-                 print*, emsg 
-                 return 
-              else 
-                 !write(IOUNIT,'(A80)') "[OUTPUT-START]: modulate_add_noise_AM_broadband_signal"
-                 !write(IOUNIT,'(T14,A3,T36,A3)') "re","im"
-                 do i__=baseband_sig.m_Ts,baseband_sig.m_Te
-                    write(IOUNIT,'(1F22.15)') baseband_sig.m_complex_env_q(i__)
-                end do 
-                 !write(IOUNIT,'(A80)') "[OUTPUT-END]: modulate_add_noise_AM_broadband_signal"
+                 write(IOUNIT,'(A80)') "[OUTPUT-END]: modulate_add_noise_AM_broadband_signal"
               end if  
               close(IOUNIT,STATUS='KEEP')
 #endif 
                call destroy_AM_broadband_signal(baseband_sig,.true.)
                print*, footer 
-end subroutine unit_test_AM_broadband_signal_modulation
+end subroutine unit_test_AM_bb_signal_trapez_expo
 
 
 
-end module mod_test_AM_broadband_signal_modulation
+end module mod_test_AM_bb_signal_trapez_expo
 
 
 program main 
-   use mod_test_AM_broadband_signal_modulation
-   call unit_test_AM_broadband_signal_modulation()
+   use mod_test_AM_bb_signal_trapez_expo
+   call unit_test_AM_bb_signal_trapez_expo()
 end program main 
