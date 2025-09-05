@@ -65,7 +65,7 @@ subroutine unit_test_AM_bb_signal_trapez_normal()
                             integer(c_long_long) :: rdtsc_wrap 
                     end function rdtsc_wrap 
                end interface
-               character(len=128),          automatic :: filename 
+               !character(len=128),          automatic :: filename 
 #if 0
                integer(c_int),              parameter :: SIGTRAP = 5 
 #endif
@@ -233,6 +233,156 @@ subroutine unit_test_AM_bb_signal_trapez_normal()
                print*, footer 
 end subroutine unit_test_AM_bb_signal_trapez_normal
 
+#if 0
+# damped_sine_commands.txt
+#
+# Usage:
+#  gnuplot < damped_sine_commands.txt
+#
+set term png
+set output "damped_sine.png"
+set xlabel "Distance Rho"
+set ylabel "Correlation C(Rho)"
+set title "Damped sine correlation"
+set grid
+set style data lines
+plot "damped_sine_data.txt" using 1:2 lw 3 linecolor rgb "blue"
+quit
+#endif
+
+subroutine trapezoidal_wave_single()
+           
+           real(kind=sp), dimension(100) :: samples 
+           character(len=256),          automatic  :: emsg
+           character(len=80),           parameter  :: OUTFILE_RE = "Trapezoidal_wave_test_2.txt"
+           real(kind=sp), automatic       :: a 
+           real(kind=sp), automatic       :: m 
+           real(kind=sp), automatic       :: l 
+           real(kind=sp), automatic       :: c 
+           real(kind=sp), automatic       :: t_as 
+           real(kind=sp), automatic       :: t_ac 
+           real(kind=sp), automatic       :: arg 
+           real(kind=sp), automatic       :: t_i 
+           real(kind=sp), automatic       :: tx 
+           real(kind=sp), automatic       :: pim,api 
+           integer(kind=i4),automatic     :: i__ 
+           integer(kind=i4),automatic     :: n_samples
+           integer(kind=i4),automatic     :: filerr
+           
+           logical(kind=i1),automatic     :: ioflag
+           real(kind=sp), parameter       :: C0318309886183790671537767526745 = & 
+                                                0.318309886183790671537767526745_sp
+           integer(kind=i4),            parameter  :: iounit = 102 
+           n_samples = 100
+           a         = 10.0_sp 
+           api       = a/3.14159265358979323846264338328_sp
+           m         = 5.0_sp 
+           l         = 5.0_sp 
+           c         = 2.0_sp 
+           pim       = 3.14159265358979323846264338328_sp/m
+           
+           do i__=0,n_samples-1 
+              t_i  = real(i__,kind=sp)
+              !tx   = t_i*Tp_i 
+              !print*, tx 
+              arg  = pim*t_i+l 
+              t_as = asin(sin(arg))
+              t_ac = acos(cos(arg))
+              samples(i__) = api*(t_as+t_ac)-5.0_sp+c 
+            end do 
+            !print*, samples 
+#if 1
+              filerr = 0
+              open(UNIT=IOUNIT,FILE=OUTFILE_RE,IOMSG=emsg,ACCESS="SEQUENTIAL",STATUS="NEW")
+              ioflag = (filerr==0)
+              if(.not.ioflag) then 
+                 print*, "[ERROR] -- OPEN failed an error message is as follows:"
+                 print*, emsg 
+                 return 
+              else 
+                 !write(IOUNIT,'(A80)') "[OUTPUT-START]: modulate_add_noise_AM_broadband_signal"
+                 !write(IOUNIT,'(T14,A3,T36,A3)') "re","im"
+                 do i__=0,n_samples-1
+                    write(IOUNIT,'(1F22.15)') samples(i__)
+                end do 
+                 !write(IOUNIT,'(A80)') "[OUTPUT-END]: modulate_add_noise_AM_broadband_signal"
+              end if 
+              close(IOUNIT,STATUS='KEEP')
+#endif  
+end subroutine trapezoidal_wave_single
+
+
+subroutine trapezoidal_wave_summed()
+           
+           real(kind=sp), dimension(100) :: samples 
+           character(len=256),          automatic  :: emsg
+           character(len=80),           parameter  :: OUTFILE_RE = "Trapezoidal_wave_summed_test_1.txt"
+           real(kind=sp), automatic       :: a
+           real(kind=sp), automatic       :: m 
+           real(kind=sp), automatic       :: l 
+           real(kind=sp), automatic       :: c 
+           real(kind=sp), automatic       :: t_as 
+           real(kind=sp), automatic       :: t_ac 
+           real(kind=sp), automatic       :: arg 
+           real(kind=sp), automatic       :: t_i 
+           real(kind=sp), automatic       :: t_j 
+           real(kind=sp), automatic       :: tx 
+           real(kind=sp), automatic       :: pim,api 
+           real(kind=sp), automatic       :: sum 
+           integer(kind=i4),automatic     :: i__ 
+           integer(kind=i4),automatic     :: j__ 
+           integer(kind=i4),automatic     :: n_samples
+           integer(kind=i4),automatic     :: n_waves 
+           integer(kind=i4),automatic     :: filerr
+           
+           logical(kind=i1),automatic     :: ioflag
+           real(kind=sp), parameter       :: C0318309886183790671537767526745 = & 
+                                                0.318309886183790671537767526745_sp
+           integer(kind=i4),            parameter  :: iounit = 102 
+           n_samples = 100
+           n_waves   = 10 
+           a         = 10.0_sp 
+           api       = a/3.14159265358979323846264338328_sp
+           m         = 5.0_sp 
+           l         = 5.0_sp 
+           c         = 2.0_sp 
+           pim       = 3.14159265358979323846264338328_sp/m
+           !sum       = 0.0_sp 
+           do i__=0,n_samples-1
+                t_i  = real(i__,kind=sp)
+               
+                sum = 0.0_sp 
+                do j__=1,n_waves 
+                   t_j = real(j__,kind=sp) 
+                   arg  = pim*t_i+l 
+                   t_as = asin(sin(arg))
+                   t_ac = acos(cos(arg))
+                   sum  = sum+api*(t_as+t_ac)-5.0_sp+c 
+                end do 
+                samples(i__) = sum 
+           end do 
+          
+            !print*, samples 
+#if 1
+              filerr = 0
+              open(UNIT=IOUNIT,FILE=OUTFILE_RE,IOMSG=emsg,ACCESS="SEQUENTIAL",STATUS="NEW")
+              ioflag = (filerr==0)
+              if(.not.ioflag) then 
+                 print*, "[ERROR] -- OPEN failed an error message is as follows:"
+                 print*, emsg 
+                 return 
+              else 
+                 !write(IOUNIT,'(A80)') "[OUTPUT-START]: modulate_add_noise_AM_broadband_signal"
+                 !write(IOUNIT,'(T14,A3,T36,A3)') "re","im"
+                 do i__=0,n_samples-1
+                    write(IOUNIT,'(1F22.15)') samples(i__)
+                end do 
+                 !write(IOUNIT,'(A80)') "[OUTPUT-END]: modulate_add_noise_AM_broadband_signal"
+              end if 
+              close(IOUNIT,STATUS='KEEP')
+#endif  
+end subroutine trapezoidal_wave_summed 
+
 
 
 end module mod_test_AM_bb_signal_trapez_normal
@@ -240,5 +390,7 @@ end module mod_test_AM_bb_signal_trapez_normal
 
 program main 
    use mod_test_AM_bb_signal_trapez_normal
-   call unit_test_AM_bb_signal_trapez_normal()
+   !call unit_test_AM_bb_signal_trapez_normal()
+   !call trapezoidal_wave_single()
+   call trapezoidal_wave_summed()
 end program main 
