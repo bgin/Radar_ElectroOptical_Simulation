@@ -87,13 +87,29 @@ module mod_trapezoid_waveform
 
 !===========================================================================================================================================================================!
 
-!#define TRAPEZOID_WAVEFORM_SAFE_ALLOC(mem,size) if(allocated(mem)) deallocate(mem); allocate(mem size)
-!#define TRAPEZOID_WAVEFORM_SAFE_DEALLOC(mem)    if(allocated(mem)) deallocate(mem)
+#define TRAPEZOID_WAVEFORM_SAFE_ALLOC(mem,size) if(allocated(mem)) deallocate(mem); allocate(mem size)
+#define TRAPEZOID_WAVEFORM_SAFE_DEALLOC(mem)    if(allocated(mem)) deallocate(mem)
 
-      ! Static arrays dimensioning
-      integer(kind=i4), parameter, private :: MAX_WAVES  = 256
-      integer(kind=i4), parameter, private :: MAX_PARAMS = 256
+#if !defined(TRAPEZOID_WAVEFORM_EXEC_TRACE)
+#define TRAPEZOID_WAVEFORM_EXEC_TRACE 1
+#endif
 
+#if !defined(TRAPEZOID_WAVEFORM_USE_EXPLICIT_DEALLOCATION)
+#define TRAPEZOID_WAVEFORM_USE_EXPLICIT_DEALLOCATION 1 
+#endif 
+
+#define TRAPEZOID_WAVEFORM_TRACE_START  \
+print*, "[EXECUTION-TRACE: START]";     \
+print*, "File:     ", __FILE__ ;        \
+print*, "Procedure:", sub_name ;        \
+print*, "LOC:      ", __LINE__ ;        \
+print*, "TSC-Start:", rdtsc_wrap()
+
+#define TRAPEZOID_WAVEFORM_TRACE_END \
+print*, "[EXECUTION-TRACE: END]" ;    \
+print*, "TSC-End:", rdtsc_wrap()
+
+     
       ! Helper derived type for holding random-distribution parameters
      type, public :: tw_pdf_params_t 
            SEQUENCE
@@ -126,23 +142,193 @@ module mod_trapezoid_waveform
 
       type, public :: trapezoid_waveform_t 
             
-            integer(kind=i4)                         :: n_samples 
-            integer(kind=i4)                         :: n_waves 
-            integer(kind=i4)                         :: n_param_a 
-            integer(kind=i4)                         :: n_param_l
-            integer(kind=i4)                         :: n_param_c 
-            integer(kind=i4)                         :: n_param_m 
-            real(kind=sp), dimension(MAX_WAVES)      :: trapezoid_waves 
-            real(kind=sp), dimension(MAX_PARAMS)     :: params_a 
-            real(kind=sp), dimension(MAX_PARAMS)     :: params_l 
-            real(kind=sp), dimension(MAX_PARAMS)     :: params_c 
-            real(kind=sp), dimension(MAX_PARAMS)     :: params_m 
-            type(tw_pdf_params_t)                    :: pdf_params 
-            real(kind=sp), dimension(:), allocatable :: samples
+            integer(kind=i4)                         :: n_samples__
+            integer(kind=i4)                         :: n_waves__ 
+            integer(kind=i4)                         :: n_param_a__ 
+            integer(kind=i4)                         :: n_param_l__
+            integer(kind=i4)                         :: n_param_c__ 
+            integer(kind=i4)                         :: n_param_m__ 
+            logical(kind=i4)                         :: build_state__ 
+            real(kind=sp), dimension(:), allocatable :: tw_samples__
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-            !dir$ attribute align : 64 :: samples   
+            !dir$ attribute align : 64 :: tw_samples
 #endif          
       end type trapezoid_waveform_t
+
+
+      contains 
+
+      subroutine construct(trapezw,n_samples,n_waves,n_param_a, &
+                           n_param_l,n_param_c,n_param_m)
+                 implicit none   
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+          interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+               end interface
+#endif           
+                            
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+          character(*), parameter :: sub_name = "construct"
+#endif 
+               type(trapezoid_waveform_t),    intent(out)      :: trapezw  
+               integer(kind=i4),              intent(in),value :: n_samples
+               integer(kind=i4),              intent(in),value :: n_waves 
+               integer(kind=i4),              intent(in),value :: n_param_a 
+               integer(kind=i4),              intent(in),value :: n_param_l 
+               integer(kind=i4),              intent(in),value :: n_param_c 
+               integer(kind=i4),              intent(in),value :: n_param_m 
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+      TRAPEZOID_WAVEFORM_TRACE_START
+#endif        
+               if(trapezw.build_state__ .eq. .true.) return     
+               trapezw.n_samples__ = n_samples 
+               trapezw.n_waves__   = n_waves 
+               trapezw.n_param_a__ = n_param_a 
+               trapezw.n_param_l__ = n_param_l 
+               trapezw.n_param_c__ = n_param_c 
+               trapezw.n_param_m__ = n_param_m 
+               TRAPEZOID_WAVEFORM_SAFE_ALLOC(trapezw.tw_samples__, (trapezw.n_samples__))
+               trapezw.build_state__ = .true. 
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+      TRAPEZOID_WAVEFORM_TRACE_END
+#endif
+      end subroutine construct 
+
+      subroutine destroy(trapezw,clear_values)
+          implicit none   
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+          interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+               end interface
+#endif           
+                            
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+          character(*), parameter :: sub_name = "destroy"
+#endif 
+           type(trapezoid_waveform_t),       intent(inout)     ::    trapezw
+           logical(kind=i4),                 intent(in), value ::    clear_values 
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+     TRAPEZOID_WAVEFORM_TRACE_START
+#endif
+            if(trapezw.build_state__ .eq. .false.) return 
+            TRAPEZOID_WAVEFORM_SAFE_DEALLOC(trapezw.tw_samples__)
+            if(clear_values .eq. .true.) then 
+               trapezw.n_samples__ = 0 
+               trapezw.n_waves__   = 0
+               trapezw.n_param_a__ = 0
+               trapezw.n_param_l__ = 0
+               trapezw.n_param_c__ = 0
+               trapezw.n_param_m__ = 0 
+             end if 
+             trapezw.build_state__ = .false. 
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+      TRAPEZOID_WAVEFORM_TRACE_END
+#endif 
+      end subroutine destroy 
+
+      subroutine clear(trapezw,fill,use_memset)
+          implicit none   
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+          interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+               end interface
+#endif           
+                            
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+          character(*), parameter :: sub_name = "clear"
+#endif 
+           type(trapezoid_waveform_t),       intent(inout)     ::  trapezw
+           real(kind=sp),                    intent(in),value  ::  fill 
+           logical(kind=i4),                 intent(in),value  ::  use_memset 
+           integer(kind=i4), automatic :: i__,j__ 
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+     TRAPEZOID_WAVEFORM_TRACE_START
+#endif
+            if(trapezw.build_state__ .eq. .false.) return  
+            if(use_memset .eq. .true.) then 
+               trapezw.tw_samples__ = fill 
+            else 
+               do i__=1,iand(trapezw.n_samples__-1,inot(3)),4
+                  trapezw.tw_samples__(i__+0) = fill 
+                  trapezw.tw_samples__(i__+1) = fill 
+                  trapezw.tw_samples__(i__+2) = fill 
+                  trapezw.tw_samples__(i__+3) = fill 
+               end do 
+               do j__=i__,trapezw.n_samples__ 
+                   trapezw.tw_samples__(j__) = fill 
+               end do 
+            end if   
+            trapezw.n_samples__ = 0 
+            trapezw.n_waves__   = 0
+            trapezw.n_param_a__ = 0
+            trapezw.n_param_l__ = 0
+            trapezw.n_param_c__ = 0
+            trapezw.n_param_m__ = 0    
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+     TRAPEZOID_WAVEFORM_TRACE_END
+#endif                
+      end subroutine clear 
+
+
+      subroutine copy(this,other)
+          implicit none   
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+          interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+               end interface
+#endif           
+                            
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+          character(*), parameter :: sub_name = "copy"
+#endif 
+           type(trapezoid_waveform_t),    intent(out) :: this 
+           type(trapezoid_waveform_t),    intent(in)  :: other 
+           integer(kind=i4), automatic :: i__,j__ 
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+     TRAPEZOID_WAVEFORM_TRACE_START
+#endif
+           if(LOC(this)==LOC(other)) return 
+           if(this.build_state__ .eq. .true. .or. &
+              other.build_state__.eq. .false.) return 
+           this.n_samples__ = other.n_samples__ 
+           this.n_waves__   = other.n_waves__ 
+           this.n_param_a__ = other.n_param_a__ 
+           this.n_param_c__ = other.n_param_c__
+           this.n_param_l__ = other.n_param_l__ 
+           this.n_param_m__ = other.n_param_m__
+           TRAPEZOID_WAVEFORM_SAFE_ALLOC(this.tw_samples__, (this.n_samples__))
+            
+           do i__=1,iand(this.n_samples__-1,inot(3)),4
+                  this.tw_samples__(i__+0) = other.tw_samples__(i__+0)
+                  this.tw_samples__(i__+1) = other.tw_samples__(i__+1)
+                  this.tw_samples__(i__+2) = other.tw_samples__(i__+2) 
+                  this.tw_samples__(i__+3) = other.tw_samples__(i__+3) 
+           end do 
+           do j__=i__,this.n_samples__ 
+                   this.tw_samples__(j__) = other.tw_samples__(j__)
+           end do    
+           this.build_state__ = .true. 
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+     TRAPEZOID_WAVEFORM_TRACE_END
+#endif               
+      end subroutine copy 
+
+
+
+
+
 
 
 
