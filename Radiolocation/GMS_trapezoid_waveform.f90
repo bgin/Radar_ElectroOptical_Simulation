@@ -325,6 +325,274 @@ print*, "TSC-End:", rdtsc_wrap()
 #endif               
       end subroutine copy 
 
+      subroutine show(trapezw)
+          implicit none   
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+          interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+               end interface
+#endif           
+                            
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+          character(*), parameter :: sub_name = "show"
+#endif 
+          type(trapezoid_waveform_t),   intent(in) :: trapezw 
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+          TRAPEZOID_WAVEFORM_TRACE_START
+#endif        
+          print*, "object-vaddr=", LOC(trapezw)
+          print*, "object-size =", SIZEOF(trapezw), "bytes"
+          call check_allocation_stats_real1D(trapezw.tw_samples__,"tw_samples__")
+          print*, "[INFO]: trapezoid_waveform_t -- scalar members:"
+          print*, "n_samples__=", trapezw.n_samples__ 
+          print*, "n_waves__  =", trapezw.n_waves__
+          print*, "n_param_a__=", trapezw.n_param_a__
+          print*, "n_param_l__=", trapezw.n_param_l__
+          print*, "n_param_c__=", trapezw.n_param_c__
+          print*, "n_param_m__=", trapezw.n_param_m__
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+          TRAPEZOID_WAVEFORM_TRACE_END
+#endif
+          contains 
+          subroutine check_allocation_stats_real1D(array,name)
+                       implicit none
+                       real(kind=sp), allocatable, dimension(:), intent(in) :: array 
+                       character(len=*),                         intent(in) :: name 
+                       ! Locals
+                       integer(kind=i8), automatic :: vaddr 
+                       integer(kind=i8), automatic :: size 
+                       integer(kind=i4), automatic :: lo_bound
+                       integer(kind=i4), automatic :: hi_bound 
+                       logical(kind=i1), automatic :: is_allocated 
+                       vaddr        = LOC(array)
+                       size         = SIZEOF(array)
+                       lo_bound     = LBOUND(array,DIM=1)
+                       hi_bound     = UBOUND(array,DIM=1)
+                       is_allocated = allocated(array)
+                       print*, "======================INFO==========================="
+                       print*, "Array member name:", name 
+                       print*, "vaddr=",vaddr
+                       print*, "size=",size
+                       print*, "allocated=",is_allocated
+                       print*, "lo_bound=",lo_bound
+                       print*, "hi_bound=",hi_bound 
+                       print*,"======================INFO==========================="
+      end subroutine check_allocation_stats_real1D
+      end subroutine show 
+
+      subroutine single_trapezoid_wave(samples,n_samp,a,l,c,m)
+                                       
+                   implicit none   
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+                   interface 
+                      function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                       end function rdtsc_wrap 
+                   end interface
+#endif           
+                            
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+                   character(*), parameter :: sub_name = "single_trapezoid_wave"
+#endif 
+                   real(kind=sp),  dimension(n_samp), intent(out)       :: samples 
+                   integer(kind=i4),                  intent(in), value :: n_samp
+                   real(kind=sp),                     intent(in), value :: a 
+                   real(kind=sp),                     intent(in), value :: l 
+                   real(kind=sp),                     intent(in), value :: c 
+                   real(kind=sp),                     intent(in), value :: m 
+                   real(kind=sp),  parameter :: C314159265358979323846264338328 =  &
+                                                3.14159265358979323846264338328_sp 
+                   real(kind=sp),    automatic :: a_over_PI 
+                   real(kind=sp),    automatic :: PI_over_m 
+                   real(kind=sp),    automatic :: t__i 
+                   real(kind=sp),    automatic :: arg 
+                   real(kind=sp),    automatic :: t_as
+                   real(kind=sp),    automatic :: t_ac 
+                   integer(kind=i4), automatic :: i__ 
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+                   TRAPEZOID_WAVEFORM_TRACE_START
+#endif      
+                   a_over_PI = a/C314159265358979323846264338328 
+                   PI_over_m = C314159265358979323846264338328/m 
+                   do i__ = 0, n_samp-1 
+                      t__i   = real(i__,kind=sp)
+                      arg    = PI_over_m*t__i+l 
+                      t_as   = asin(sin(arg))
+                      t_ac   = acos(cos(arg))
+                      samples(i__) = a_over_PI*(t_as+t_ac)-5.0_sp+c 
+                   end do
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+                   TRAPEZOID_WAVEFORM_TRACE_END
+#endif 
+      end subroutine single_trapezoid_wave
+
+      subroutine series_of_trapezoid_wave(samples,n_samp,n_waves,a,l,c,m,shaping)
+                   implicit none   
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+                   interface 
+                      function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                       end function rdtsc_wrap 
+                   end interface
+#endif           
+                            
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+                   character(*), parameter :: sub_name = "series_of_trapezoid_wave"
+#endif 
+                   real(kind=sp),  dimension(n_samp), intent(out)       :: samples 
+                   integer(kind=i4),                  intent(in), value :: n_samp
+                   integer(kind=i4),                  intent(in), value :: n_waves 
+                   real(kind=sp),                     intent(in), value :: a 
+                   real(kind=sp),                     intent(in), value :: l 
+                   real(kind=sp),                     intent(in), value :: c 
+                   real(kind=sp),                     intent(in), value :: m 
+                   integer(kind=i4),                  intent(in), value :: shaping
+                   real(kind=sp),  parameter :: C314159265358979323846264338328 =  &
+                                                3.14159265358979323846264338328_sp 
+                   real(kind=sp),    automatic :: a_over_PI 
+                   real(kind=sp),    automatic :: PI_over_m 
+                   real(kind=sp),    automatic :: t__i 
+                   real(kind=sp),    automatic :: t__j 
+                   real(kind=sp),    automatic :: arg 
+                   real(kind=sp),    automatic :: t_as
+                   real(kind=sp),    automatic :: t_ac 
+                   real(kind=sp),    automatic :: sum 
+                   integer(kind=i4), automatic :: i__ 
+                   integer(kind=i4), automatic :: j__ 
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+                   TRAPEZOID_WAVEFORM_TRACE_START
+#endif      
+                   a_over_PI = a/C314159265358979323846264338328 
+                   PI_over_m = C314159265358979323846264338328/m 
+                   select case (shaping)
+                        case (0)
+                             do i__ = 0, n_samp-1 
+                                  t__i = real(i__,kind=sp)
+                                  sum  = 0.0_sp 
+                                  do j__ = 1, n_waves 
+                                      arg  = PI_over_m*t__i+l 
+                                      t_as = asin(sin(arg))
+                                      t_ac = acos(cos(arg))
+                                      sum  = sum+a_over_PI*(t_as+t_ac)-5.0_sp+c 
+                                  end do 
+                                  samples(i__) = sum 
+                             end do 
+                         case (1)
+                              do i__ = 0, n_samp-1 
+                                  t__i = real(i__,kind=sp)
+                                  sum  = 0.0_sp 
+                                  do j__ = 1, n_waves 
+                                     t__j = real(j__,kind=sp)
+                                      arg  = PI_over_m*(t__i+t__j)+l 
+                                      t_as = asin(sin(arg))
+                                      t_ac = acos(cos(arg))
+                                      sum  = sum+a_over_PI*(t_as+t_ac)-5.0_sp+c 
+                                  end do 
+                                  samples(i__) = sum 
+                             end do 
+                         case (2)
+                             do i__ = 0, n_samp-1 
+                                  t__i = real(i__,kind=sp)
+                                  sum  = 0.0_sp 
+                                  do j__ = 1, n_waves 
+                                     t__j = real(j__,kind=sp)
+                                      arg  = PI_over_m*t__i*t__j+l 
+                                      t_as = asin(sin(arg))
+                                      t_ac = acos(cos(arg))
+                                      sum  = sum+a_over_PI*(t_as+t_ac)-5.0_sp+c 
+                                  end do 
+                                  samples(i__) = sum 
+                             end do 
+                         case default 
+                             return 
+                   end select 
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+                   TRAPEZOID_WAVEFORM_TRACE_END
+#endif
+      end subroutine series_of_trapezoid_wave
+
+      subroutine series_of_trapezoid_wave_coded(samples,code_seq,n_samp,n_waves,a,l,c,m,sequence)
+                   implicit none   
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+                   interface 
+                      function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                       end function rdtsc_wrap 
+                   end interface
+#endif           
+                            
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+                   character(*), parameter :: sub_name = "series_of_trapezoid_wave_coded"
+#endif 
+                   real(kind=sp),  dimension(n_samp), intent(out)       :: samples 
+                   real(kind=sp),  dimension(n_samp), intent(in)        :: code_seq 
+                   integer(kind=i4),                  intent(in), value :: n_samp
+                   integer(kind=i4),                  intent(in), value :: n_waves 
+                   real(kind=sp),                     intent(in), value :: a 
+                   real(kind=sp),                     intent(in), value :: l 
+                   real(kind=sp),                     intent(in), value :: c 
+                   real(kind=sp),                     intent(in), value :: m 
+                   integer(kind=i4),                  intent(in), value :: sequence  
+                   real(kind=sp),  parameter :: C314159265358979323846264338328 =  &
+                                                3.14159265358979323846264338328_sp 
+                   real(kind=sp),    automatic :: a_over_PI 
+                   real(kind=sp),    automatic :: PI_over_m 
+                   real(kind=sp),    automatic :: t__i 
+                   real(kind=sp),    automatic :: t__j 
+                   real(kind=sp),    automatic :: arg 
+                   real(kind=sp),    automatic :: t_as
+                   real(kind=sp),    automatic :: t_ac 
+                   real(kind=sp),    automatic :: code_val 
+                   real(kind=sp),    automatic :: sum 
+                   integer(kind=i4), automatic :: i__ 
+                   integer(kind=i4), automatic :: j__ 
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+                   TRAPEZOID_WAVEFORM_TRACE_START
+#endif      
+                   a_over_PI = a/C314159265358979323846264338328 
+                   PI_over_m = C314159265358979323846264338328/m 
+                   select case (sequence)
+                      case (0) ! code_sequence processed by samples loop 
+                          do i__ = 0, n_samp-1 
+                                  t__i = real(i__,kind=sp)
+                                  code_val = code_seq(i__)
+                                  sum      = 0.0_sp 
+                                  do j__ = 1, n_waves 
+                                     t__j = real(j__,kind=sp)
+                                      arg  = PI_over_m*t__i*t__j+l 
+                                      t_as = asin(sin(arg))
+                                      t_ac = acos(cos(arg))
+                                      sum  = sum+(code_val*a_over_PI*(t_as+t_ac)-5.0_sp+c) 
+                                  end do 
+                                  samples(i__) = sum 
+                          end do 
+                       case (1) ! code sequence processed by single wave summation loop 
+                          do i__ = 0, n_samp-1 
+                                  t__i = real(i__,kind=sp)
+                                  sum  = 0.0_sp 
+                                  do j__ = 1, n_waves 
+                                      t__j     = real(j__,kind=sp)
+                                      code_val = code_seq(j__)
+                                      arg      = PI_over_m*t__i*t__j+l 
+                                      t_as     = asin(sin(arg))
+                                      t_ac     = acos(cos(arg))
+                                      sum      = sum+(code_val*a_over_PI*(t_as+t_ac)-5.0_sp+c)
+                                  end do 
+                                  samples(i__) = sum 
+                             end do 
+                       case default 
+                              return 
+                    end select 
+#if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
+                   TRAPEZOID_WAVEFORM_TRACE_END
+#endif
+        end subroutine series_of_trapezoid_wave_coded          
 
 
 
