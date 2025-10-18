@@ -1,0 +1,69 @@
+program dense_mnist
+
+  use nf, only: dense, input, network, sgd, label_digits, load_mnist, corr, relu, softmax, dropout
+
+  implicit none
+
+  type(network) :: net
+  real, allocatable :: training_images(:,:), training_labels(:)
+  real, allocatable :: validation_images(:,:), validation_labels(:)
+  integer :: n, num_epochs
+
+  call load_mnist(training_images, training_labels, &
+                  validation_images, validation_labels)
+
+  print '("MNIST")'
+  print '(60("="))'
+
+  net = network([ &
+    input(784), &
+    dense(64, relu()), &
+    dropout(0.2), &
+    dense(10, softmax()) &
+  ])
+  num_epochs = 10
+
+  call net % print_info()
+
+  print '(a,f5.2,a)', 'Initial accuracy: ', accuracy( &
+    net, validation_images, label_digits(validation_labels)) * 100, ' %'
+
+  epochs: do n = 1, num_epochs
+
+    call net % train( &
+      training_images, &
+      label_digits(training_labels), &
+      batch_size=128, &
+      epochs=1, &
+      optimizer=sgd(learning_rate=3.) &
+    )
+
+    block
+      real, allocatable :: output_metrics(:,:)
+      real, allocatable :: mean_metrics(:)
+      ! 2 metrics; 1st is default loss function (quadratic), other is Pearson corr.
+      output_metrics = net % evaluate(validation_images, label_digits(validation_labels), metric=corr())
+      mean_metrics = sum(output_metrics, 1) / size(output_metrics, 1)
+      print '(a,i2,3(a,f6.3))', 'Epoch ', n, ' done, Accuracy: ', &
+        accuracy(net, validation_images, label_digits(validation_labels)) * 100, &
+        '%, Loss: ', mean_metrics(1), ', Pearson correlation: ', mean_metrics(2)
+    end block
+
+  end do epochs
+
+contains
+
+  real function accuracy(net, x, y)
+    type(network), intent(in out) :: net
+    real, intent(in) :: x(:,:), y(:,:)
+    integer :: i, good
+    good = 0
+    do i = 1, size(x, dim=2)
+      if (all(maxloc(net % predict(x(:,i))) == maxloc(y(:,i)))) then
+        good = good + 1
+      end if
+    end do
+    accuracy = real(good) / size(x, dim=2)
+  end function accuracy
+
+end program dense_mnist
