@@ -1,6 +1,16 @@
 # REOS — Radar and Electro-Optical Simulation Framework
 
-**REOS** is a scientific and engineering simulation framework written in Modern Fortran (Fortran 90/2003+) and C99. It provides numerical solvers, electromagnetic scattering models, atmospheric propagation routines, and signal processing kernels for radar and electro-optical/infrared (EO/IR) system design.
+**REOS** is a modular source library of scientific and engineering simulation routines written in Modern Fortran (Fortran 90/2003+) and C99. It provides numerical solvers, electromagnetic scattering models, atmospheric propagation routines, and hardware-accelerated signal processing kernels for radar and electro-optical/infrared (EO/IR) system modeling.
+
+---
+
+## Project Philosophy & Design
+
+REOS is structured as a **collection of decoupled, reusable source modules** rather than a single monolithic executable with a unified entry point:
+
+* **Library-First Source Tree:** Each top-level directory acts as a standalone domain or computational building block (e.g., `Antenna/`, `MoM/`, `Radiative Transfer/`, `SIMD-kernels/`). Users compile and link only the specific modules required for their simulation target.
+* **Standalone Applications (`apps/`):** Concrete, end-to-end simulation executables and complex system models are intended to reside in a dedicated `apps/` directory, consuming the core library modules as dependencies.
+* **Minimal External Dependencies:** Routines rely primarily on standard Fortran 90/2003+ (`ISO_C_BINDING`), C99, OpenMP, and vendor SIMD/GPU intrinsics rather than heavy third-party frameworks.
 
 ---
 
@@ -13,7 +23,7 @@
 * **Radar Systems & Waveforms:** Transceiver modeling, antenna radiation patterns, radio altimeter tracking loops, and baseband pulse synthesis/analysis.
 
 ### 2. Electro-Optical & Infrared (EO/IR) Simulation
-* **Radiative Transfer & Atmosphere:** Models for electromagnetic wave refraction, molecular absorption attenuation, and laser/IR beam propagation through turbulent media (scintillation, thermal blooming).
+* **Radiative Transfer & Atmosphere:** Electromagnetic wave refraction, molecular absorption attenuation, and laser/IR beam propagation through turbulent media (scintillation, thermal blooming).
 * **Sensor & Detector Modeling:** Passive and active IR detector response, optical transmission profiles, and photon-to-electron conversion.
 * **Optical Signal Processing:** Background noise estimation, clutter filtering, and raw digitized sample handling.
 
@@ -25,8 +35,6 @@
 ---
 
 ## Repository Structure
-
-The codebase is organized as a modular library of standalone computational components:
 
 | Directory | Description |
 | :--- | :--- |
@@ -41,31 +49,44 @@ The codebase is organized as a modular library of standalone computational compo
 | `FFT/` & `dsp/` | Fast Fourier Transforms, digital filtering, and waveform signal processing. |
 | `Statistics/` & `estimation_lib/` | Statistical distributions, stochastic modeling, and state estimation filters. |
 | `SIMD-kernels/` & `LibSIMD/` | Vectorized mathematical and physical kernels (SSE, AVX, AVX2, AVX-512). |
-| `SIMD Intrinsics Fortran bindings/` | ISO_C_BINDING interfaces exposing C SIMD intrinsics to Fortran. |
+| `SIMD Intrinsics Fortran bindings/` | `ISO_C_BINDING` interfaces exposing C SIMD intrinsics to Fortran. |
 | `CUDA bindings/` & `GPU/` | CUDA/AMDGPU kernels and Fortran device interfaces. |
 | `blas-kernels/` | Optimized Basic Linear Algebra Subprograms routines. |
 | `ML-NN/ nn-fortran/` | Neural network modules integrated for Fortran workflows. |
 | `Hardware/`, `Profiling/`, `Sys/` | Low-level system utilities, hardware timing, and performance profiling tools. |
 | `REOS_UnitTests/` & `REOS_PerfTests/` | Verification test suites and hardware benchmarks. |
 
-> *Note: Detailed file-by-file documentation for specific subsystems (such as the Radiolocation component) can be found inside the `Docs/` directory.*
+> *Note: Detailed component documentation (such as the file-level breakdown for `Radiolocation/`) is maintained inside the `Docs/` directory.*
 
 ---
 
-## Requirements & Compilation
+## Toolchain & Usage
 
-REOS is designed for x86_64 Linux and Windows HPC environments. Because components are structured as modular libraries and kernels, verify that your toolchain supports Fortran/C interoperability (`ISO_C_BINDING`) and your target instruction set.
+Because REOS is organized as a modular source collection without a single top-level build script, integrate modules directly into your application's build pipeline (`Make`, `CMake`, `fpm`, or direct compiler invocation).
 
-### Supported Toolchains
-* **Compilers:** Intel oneAPI (`ifx` / `ifort` / `icx`) or GNU Compiler Collection (`gfortran >= 10.0`, `gcc`).
-* **Parallel Runtimes:** OpenMP, NVIDIA CUDA Toolkit (`>= 11.8`), or AMD ROCm.
-* **Architecture Flags:** Enable target vector extensions when compiling SIMD modules (e.g., `-mavx2`, `-mavx512f`, or `-xHost`).
+### Compiler & Runtime Requirements
+* **Fortran / C Compilers:** Intel oneAPI (`ifx` / `ifort` / `icx`) or GNU Compiler Collection (`gfortran >= 10.0`, `gcc`).
+* **Parallel & GPU Runtimes (Optional):** OpenMP, NVIDIA CUDA Toolkit (`>= 11.8`), or AMD ROCm.
+* **Target ISA Flags:** Pass the appropriate vector architecture flags for the SIMD modules you link (e.g., `-mavx2`, `-mavx512f`, or `-xHost`).
 
-*(Insert your actual build script, Makefile command, or compiler invocation example here—for example, how to compile a standalone test from `REOS_UnitTests/`.)*
+### Example: Compiling a Standalone Driver
+To build a custom program or test driver, compile the required type definitions and dependencies first, followed by your entry-point file:
+
+```bash
+# Example using gfortran with OpenMP and AVX2 enabled
+gfortran -O3 -fopenmp -mavx2 \
+  Common/GMS_kinds.f90 \
+  Radiolocation/GMS_radar_types.f90 \
+  Radiolocation/GMS_radio_refractivity.f90 \
+  apps/my_simulation_driver.f90 \
+  -o my_simulation
+```
+
+*(Note: File paths above are illustrative; inspect module `USE` statements within each subsystem to resolve exact dependency chains.)*
 
 ---
 
 ## License
 
-This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details, and [third_party_licences.txt](third_party_licences.txt) for third-party component attributions.
+This project is distributed under the **MIT License**. See [LICENSE](LICENSE) for details, and [third_party_licences.txt](third_party_licences.txt) for third-party component attributions.
 
