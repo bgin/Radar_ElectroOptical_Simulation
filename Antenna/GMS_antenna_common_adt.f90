@@ -450,7 +450,7 @@ module antenna_common_adt
     
     
    ! Average of radiation pattern of 2D (single) array (2.110)
-    type, public :: RPf2100_t
+    type, public :: RPf2110_t
           integer(kind=i4) :: ntf2110  ! number of theta values 2D array (2.110)
           integer(kind=i4) :: npf2110  ! number of phi values 2D array (2.110)
 #if (ANTENNA_COMMON_ADT_USE_PRECISION_REAL8) == 1              
@@ -460,7 +460,7 @@ module antenna_common_adt
           real(kind=sp), dimension(:,:), allocatable :: rp
           !dir$ attributes align : 64 :: rp
 #endif
-    end type RPf2100_t
+    end type RPf2110_t
     
   ! Average of radiation pattern of 1D (single) array (2.110a)
     type, public :: RPf2100a_t
