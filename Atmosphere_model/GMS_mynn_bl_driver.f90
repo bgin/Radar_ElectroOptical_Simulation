@@ -344,9 +344,6 @@ subroutine construct(mw,args_holder,ier)
     integer(kind=i4), automatic :: i_dim_diff
     integer(kind=i4), automatic :: k_dim_diff 
     integer(kind=i4), automatic :: j_dim_diff
-#if (MYNN_BL_DRIVER_EXEC_TRACE) == 1
-     MYNN_BL_DRIVER_TRACE_START
-#endif 
     ier = -9999
     if(mw.m_is_derived_type_built == .true.) then 
        ier = -1
@@ -367,6 +364,9 @@ subroutine construct(mw,args_holder,ier)
        ier = -4
        return 
     end if 
+#if (MYNN_BL_DRIVER_EXEC_TRACE) == 1
+     MYNN_BL_DRIVER_TRACE_START
+#endif 
     mw.m_initflag          = args_holder.initflag
     mw.m_grav_settling     = args_holder.grav_settling
     mw.m_bl_mynn_tkebudget = args_holder.bl_mynn_tkebudget
@@ -471,6 +471,97 @@ subroutine construct(mw,args_holder,ier)
 #endif 
     ier = 0
 end subroutine construct 
+
+subroutine destroy(mw,ier)
+     implicit none   
+#if (MYNN_BL_DRIVER_EXEC_TRACE) == 1
+            interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+            end interface
+#endif           
+                            
+#if (MYNN_BL_DRIVER_EXEC_TRACE) == 1
+          character(*), parameter :: sub_name = "destroy"
+#endif 
+    type(mynn_bl_driver_wrapper_t),     intent(inout)   :: mw
+    integer(kind=i4),                   intent(inout)   :: ier 
+#if (MYNN_BL_DRIVER_EXEC_TRACE) == 1
+     MYNN_BL_DRIVER_TRACE_START
+#endif
+    ier = -9999
+    if(mw.m_is_derived_type_built == .false.) ier = -1; return 
+#if (MYNN_BL_DRIVER_EXEC_TRACE) == 1
+     MYNN_BL_DRIVER_TRACE_START
+#endif
+    if(allocated(mw.m_dz)) deallocate(mw.m_dz)
+    if(allocated(mw.m_u)) deallocate(mw.m_u)
+    if(allocated(mw.m_v)) deallocate(mw.m_v)
+    if(allocated(mw.m_w)) deallocate(mw.m_w)
+    if(allocated(mw.m_th)) deallocate(mw.m_th)
+    if(allocated(mw.m_qv)) deallocate(mw.m_qv)
+    if(allocated(mw.m_p)) deallocate(mw.m_p)
+    if(allocated(mw.m_exner)) deallocate(mw.m_exner)
+    if(allocated(mw.m_rho)) deallocate(mw.m_rho)
+    if(allocated(mw.m_qc)) deallocate(mw.m_qc)
+    if(allocated(mw.m_qi)) deallocate(mw.m_qi)
+    if(allocated(mw.m_qni)) deallocate(mw.m_qni)
+    if(allocated(mw.m_qnc)) deallocate(mw.m_qnc)
+    if(allocated(mw.m_xland)) deallocate(mw.m_xland)
+    if(allocated(mw.m_ust)) deallocate(mw.m_ust)
+    if(allocated(mw.m_ch)) deallocate(mw.m_ch)
+    if(allocated(mw.m_rmol)) deallocate(mw.m_rmol)
+    if(allocated(mw.m_ts)) deallocate(mw.m_ts)
+    if(allocated(mw.m_qsfc)) deallocate(mw.m_qsfc)
+    if(allocated(mw.m_qcg)) deallocate(mw.m_qcg)
+    if(allocated(mw.m_ps)) deallocate(mw.m_ps)
+    if(allocated(mw.m_hfx)) deallocate(mw.m_hfx)
+    if(allocated(mw.m_qfx)) deallocate(mw.m_qfx)
+    if(allocated(mw.m_wspd)) deallocate(mw.m_wspd)
+    if(allocated(mw.m_uoce)) deallocate(mw.m_uoce)
+    if(allocated(mw.m_voce)) deallocate(mw.m_voce)
+    if(allocated(mw.m_vdfg)) deallocate(mw.m_vdfg)
+    if(allocated(mw.m_Qke)) deallocate(mw.m_Qke)
+    if(allocated(mw.m_Tsq)) deallocate(mw.m_Tsq)
+    if(allocated(mw.m_Qsq)) deallocate(mw.m_Qsq)
+    if(allocated(mw.m_Cov)) deallocate(mw.m_Cov)
+    if(allocated(mw.m_tke_pbl)) deallocate(mw.m_tke_pbl)
+    if(allocated(mw.m_qke_adv)) deallocate(mw.m_qke_adv)
+    if(allocated(mw.m_RUBLTEN)) deallocate(mw.m_RUBLTEN)
+    if(allocated(mw.m_RVBLTEN)) deallocate(mw.m_RVBLTEN)
+    if(allocated(mw.m_RTHBLTEN)) deallocate(mw.m_RTHBLTEN)
+    if(allocated(mw.m_RQVBLTEN)) deallocate(mw.m_RQVBLTEN)
+    if(allocated(mw.m_RQCBLTEN)) deallocate(mw.m_RQCBLTEN)
+    if(allocated(mw.m_RQIBLTEN)) deallocate(mw.m_RQIBLTEN)
+    if(allocated(mw.m_RQNBLTEN)) deallocate(mw.m_RQNBLTEN)
+    if(allocated(mw.m_exch_h)) deallocate(mw.m_exch_h)
+    if(allocated(mw.m_exch_m)) deallocate(mw.m_exch_m)
+    if(allocated(mw.m_edmf_a)) deallocate(mw.m_edmf_a)
+    if(allocated(mw.m_edmf_w)) deallocate(mw.m_edmf_w)
+    if(allocated(mw.m_edmf_qt)) deallocate(mw.m_edmf_qt)
+    if(allocated(mw.m_edmf_thl)) deallocate(mw.m_edmf_thl)
+    if(allocated(mw.m_edmf_ent)) deallocate(mw.m_edmf_ent)
+    if(allocated(mw.m_edmf_qc)) deallocate(mw.m_edmf_qc)
+    if(allocated(mw.m_Pblh)) deallocate(mw.m_Pblh)
+    if(allocated(mw.m_wstar)) deallocate(mw.m_wstar)
+    if(allocated(mw.m_delta)) deallocate(mw.m_delta)
+    if(allocated(mw.m_KPBL)) deallocate(mw.m_KPBL)
+    if(allocated(mw.m_el_pbl)) deallocate(mw.m_el_pbl)
+    if(allocated(mw.m_qWT)) deallocate(mw.m_qWT)
+    if(allocated(mw.m_qSHEAR)) deallocate(mw.m_qSHEAR)
+    if(allocated(mw.m_qBUOY)) deallocate(mw.m_qBUOY)
+    if(allocated(mw.m_qDISS)) deallocate(mw.m_qDISS)
+    if(allocated(mw.m_dqke)) deallocate(mw.m_dqke)
+    if(allocated(mw.m_qc_bl)) deallocate(mw.m_qc_bl)
+    if(allocated(mw.m_cldfra_bl)) deallocate(mw.m_cldfra_bl)
+    mw.m_is_derived_type_built = .false.
+#if (MYNN_BL_DRIVER_EXEC_TRACE) == 1
+     MYNN_BL_DRIVER_TRACE_START
+#endif
+    ier = 0
+end subroutine destroy 
 
 
 
