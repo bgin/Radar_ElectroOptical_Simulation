@@ -97,7 +97,7 @@ module mod_mynn_bl_driver
 #define MYNN_BL_DRIVER_WRF_CHEM 0
 #endif 
 
-#define MYNN_BL_DRIVER_TRACE_START\
+#define MYNN_BL_DRIVER_TRACE_START \
 print*, "[EXECUTION-TRACE: START]";\
 print*, "File:     ", __FILE__ ;\
 print*, "Procedure:", sub_name ;\
@@ -202,10 +202,10 @@ type, public :: mynn_bl_driver_wrapper_t
     real(kind=sp), dimension(:,:,:), allocatable :: m_exner 
     real(kind=sp), dimension(:,:,:), allocatable :: m_rho 
     real(kind=sp), dimension(:,:,:), allocatable :: m_T3D
-    real(kind=sp), dimension(:,:),   allocatable :: m_qc
-    real(kind=sp), dimension(:,:),   allocatable :: m_qi 
-    real(kind=sp), dimension(:,:),   allocatable :: m_qni 
-    real(kind=sp), dimension(:,:),   allocatable :: m_qnc 
+    real(kind=sp), dimension(:,:,:), allocatable :: m_qc
+    real(kind=sp), dimension(:,:,:), allocatable :: m_qi 
+    real(kind=sp), dimension(:,:,:), allocatable :: m_qni 
+    real(kind=sp), dimension(:,:,:), allocatable :: m_qnc 
     real(kind=sp), dimension(:,:),   allocatable :: m_xland 
     real(kind=sp), dimension(:,:),   allocatable :: m_ust 
     real(kind=sp), dimension(:,:),   allocatable :: m_ch 
@@ -221,12 +221,12 @@ type, public :: mynn_bl_driver_wrapper_t
     real(kind=sp), dimension(:,:),   allocatable :: m_voce 
     real(kind=sp), dimension(:,:),   allocatable :: m_vdfg 
     real(kind=sp), dimension(:,:),   allocatable :: m_znt 
-    real(kind=sp), dimension(:,:),   allocatable :: m_Qke 
-    real(kind=sp), dimension(:,:),   allocatable :: m_Tsq 
-    real(kind=sp), dimension(:,:),   allocatable :: m_Qsq 
-    real(kind=sp), dimension(:,:),   allocatable :: m_Cov 
-    real(kind=sp), dimension(:,:),   allocatable :: m_tke_pbl 
-    real(kind=sp), dimension(:,:),   allocatable :: m_qke_adv 
+    real(kind=sp), dimension(:,:,:), allocatable :: m_Qke 
+    real(kind=sp), dimension(:,:,:), allocatable :: m_Tsq 
+    real(kind=sp), dimension(:,:,:), allocatable :: m_Qsq 
+    real(kind=sp), dimension(:,:,:), allocatable :: m_Cov 
+    real(kind=sp), dimension(:,:,:), allocatable :: m_tke_pbl 
+    real(kind=sp), dimension(:,:,:), allocatable :: m_qke_adv 
     real(kind=sp), dimension(:,:,:), allocatable :: m_RUBLTEN 
     real(kind=sp), dimension(:,:,:), allocatable :: m_RVBLTEN 
     real(kind=sp), dimension(:,:,:), allocatable :: m_RTHBLTEN 
@@ -296,7 +296,7 @@ type, public :: mynn_bl_driver_wrapper_t
     !dir$ attributes align : 64 :: m_RQVBLTEN 
     !dir$ attributes align : 64 :: m_RQCBLTEN 
     !dir$ attributes align : 64 :: m_RQIBLTEN
-    !dir$ attributes align : 64 :: m_RQNBLTEN 
+    !dir$ attributes align : 64 :: m_RQNIBLTEN 
     !dir$ attributes align : 64 :: m_exch_h
     !dir$ attributes align : 64 :: m_exch_m
     !dir$ attributes align : 64 :: m_edmf_a
@@ -344,7 +344,9 @@ subroutine construct(mw,args_holder,ier)
     integer(kind=i4), automatic :: i_dim_diff
     integer(kind=i4), automatic :: k_dim_diff 
     integer(kind=i4), automatic :: j_dim_diff
-    ier = -9999
+    if(ier .le. 0_i4) then 
+       ier = -9999
+    end if 
     if(mw.m_is_derived_type_built == .true.) then 
        ier = -1
        return 
@@ -371,7 +373,7 @@ subroutine construct(mw,args_holder,ier)
     mw.m_grav_settling     = args_holder.grav_settling
     mw.m_bl_mynn_tkebudget = args_holder.bl_mynn_tkebudget
     mw.m_bl_mynn_cloudpdf  = args_holder.bl_mynn_cloudpdf
-    mw.m_bl_mixlength      = args_holder.bl_mynn_mixlength
+    mw.m_bl_mixlength      = args_holder.bl_mixlength
 	mw.m_bl_mynn_edmf      = args_holder.bl_mynn_edmf
 	mw.m_bl_mynn_tkeadvect = args_holder.bl_mynn_tkeadvect
 	mw.m_bl_mynn_edmf_mom  = args_holder.bl_mynn_edmf_mom
@@ -413,7 +415,8 @@ subroutine construct(mw,args_holder,ier)
     if(allocated(mw.m_qv)) deallocate(mw.m_qv); allocate(mw.m_qv(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
     if(allocated(mw.m_p)) deallocate(mw.m_p);   allocate(mw.m_p(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
     if(allocated(mw.m_exner)) deallocate(mw.m_exner); allocate(mw.m_exner(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
-    if(allocated(mw.m_rho)) deallocate(mw.m_rho); allocate(mw.m_T3D(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
+    if(allocated(mw.m_rho)) deallocate(mw.m_rho); allocate(mw.m_rho(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
+    if(allocated(mw.m_T3D)) deallocate(mw.m_T3D); allocate(mw.m_T3D(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
     if(allocated(mw.m_qc)) deallocate(mw.m_qc); allocate(mw.m_qc(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
     if(allocated(mw.m_qi)) deallocate(mw.m_qi); allocate(mw.m_qi(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
     if(allocated(mw.m_qni)) deallocate(mw.m_qni); allocate(mw.m_qni(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
@@ -432,6 +435,7 @@ subroutine construct(mw,args_holder,ier)
     if(allocated(mw.m_uoce)) deallocate(mw.m_uoce); allocate(mw.m_uoce(mw.m_IMS:mw.m_IME,mw.m_JMS:mw.m_JME))
     if(allocated(mw.m_voce)) deallocate(mw.m_voce); allocate(mw.m_voce(mw.m_IMS:mw.m_IME,mw.m_JMS:mw.m_JME))
     if(allocated(mw.m_vdfg)) deallocate(mw.m_vdfg); allocate(mw.m_vdfg(mw.m_IMS:mw.m_IME,mw.m_JMS:mw.m_JME))
+    if(allocated(mw.m_znt)) deallocate(mw.m_znt); allocate(mw.m_znt(mw.m_IMS:mw.m_IME,mw.m_JMS:mw.m_JME))
     if(allocated(mw.m_Qke)) deallocate(mw.m_Qke); allocate(mw.m_Qke(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
     if(allocated(mw.m_Tsq)) deallocate(mw.m_Tsq); allocate(mw.m_Tsq(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
     if(allocated(mw.m_Qsq)) deallocate(mw.m_Qsq); allocate(mw.m_Qsq(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
@@ -444,7 +448,7 @@ subroutine construct(mw,args_holder,ier)
     if(allocated(mw.m_RQVBLTEN)) deallocate(mw.m_RQVBLTEN); allocate(mw.m_RQVBLTEN(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
     if(allocated(mw.m_RQCBLTEN)) deallocate(mw.m_RQCBLTEN); allocate(mw.m_RQCBLTEN(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
     if(allocated(mw.m_RQIBLTEN)) deallocate(mw.m_RQIBLTEN); allocate(mw.m_RQIBLTEN(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
-    if(allocated(mw.m_RQNBLTEN)) deallocate(mw.m_RQNBLTEN); allocate(mw.m_RQNBLTEN(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
+    if(allocated(mw.m_RQNIBLTEN)) deallocate(mw.m_RQNIBLTEN); allocate(mw.m_RQNIBLTEN(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
     if(allocated(mw.m_exch_h)) deallocate(mw.m_exch_h); allocate(mw.m_exch_h(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
     if(allocated(mw.m_exch_m)) deallocate(mw.m_exch_m); allocate(mw.m_exch_m(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
     if(allocated(mw.m_edmf_a)) deallocate(mw.m_edmf_a); allocate(mw.m_edmf_a(mw.m_IMS:mw.m_IME,mw.m_KMS:mw.m_KME,mw.m_JMS:mw.m_JME))
@@ -492,7 +496,10 @@ subroutine destroy(mw,ier)
      MYNN_BL_DRIVER_TRACE_START
 #endif
     ier = -9999
-    if(mw.m_is_derived_type_built == .false.) ier = -1; return 
+    if(mw.m_is_derived_type_built == .false.) then 
+        ier = -1 
+        return
+    end if  
 #if (MYNN_BL_DRIVER_EXEC_TRACE) == 1
      MYNN_BL_DRIVER_TRACE_START
 #endif
@@ -505,6 +512,7 @@ subroutine destroy(mw,ier)
     if(allocated(mw.m_p)) deallocate(mw.m_p)
     if(allocated(mw.m_exner)) deallocate(mw.m_exner)
     if(allocated(mw.m_rho)) deallocate(mw.m_rho)
+    if(allocated(mw.m_T3D)) deallocate(mw.m_T3D)
     if(allocated(mw.m_qc)) deallocate(mw.m_qc)
     if(allocated(mw.m_qi)) deallocate(mw.m_qi)
     if(allocated(mw.m_qni)) deallocate(mw.m_qni)
@@ -523,6 +531,7 @@ subroutine destroy(mw,ier)
     if(allocated(mw.m_uoce)) deallocate(mw.m_uoce)
     if(allocated(mw.m_voce)) deallocate(mw.m_voce)
     if(allocated(mw.m_vdfg)) deallocate(mw.m_vdfg)
+    if(allocated(mw.m_znt)) deallocate(mw.m_znt)
     if(allocated(mw.m_Qke)) deallocate(mw.m_Qke)
     if(allocated(mw.m_Tsq)) deallocate(mw.m_Tsq)
     if(allocated(mw.m_Qsq)) deallocate(mw.m_Qsq)
@@ -535,7 +544,7 @@ subroutine destroy(mw,ier)
     if(allocated(mw.m_RQVBLTEN)) deallocate(mw.m_RQVBLTEN)
     if(allocated(mw.m_RQCBLTEN)) deallocate(mw.m_RQCBLTEN)
     if(allocated(mw.m_RQIBLTEN)) deallocate(mw.m_RQIBLTEN)
-    if(allocated(mw.m_RQNBLTEN)) deallocate(mw.m_RQNBLTEN)
+    if(allocated(mw.m_RQNIBLTEN)) deallocate(mw.m_RQNIBLTEN)
     if(allocated(mw.m_exch_h)) deallocate(mw.m_exch_h)
     if(allocated(mw.m_exch_m)) deallocate(mw.m_exch_m)
     if(allocated(mw.m_edmf_a)) deallocate(mw.m_edmf_a)
@@ -575,7 +584,7 @@ subroutine copy_create(this,other,ier)
 #endif           
                             
 #if (MYNN_BL_DRIVER_EXEC_TRACE) == 1
-          character(*), parameter :: sub_name = "destroy"
+          character(*), parameter :: sub_name = "copy_create"
 #endif 
     type(mynn_bl_driver_wrapper_t), intent(inout) :: this 
     type(mynn_bl_driver_wrapper_t), intent(in)    :: other 
@@ -583,9 +592,18 @@ subroutine copy_create(this,other,ier)
     ! locals
     integer(kind=i4), automatic :: i,j,k 
     ! Exec code 
-    if(this.m_is_derived_type_built .eq. .true.)   ier = -1; return 
-    if(other.m_is_derived_type_built .eq. .false.) ier = -2; return 
-    if(LOC(this) .eq. LOC(other))                  ier = -3; return 
+    if(this.m_is_derived_type_built .eq. .true.)  then 
+       ier = -1
+       return
+    end if  
+    if(other.m_is_derived_type_built .eq. .false.) then 
+       ier = -2
+       return
+    end if  
+    if(LOC(this) .eq. LOC(other)) then               
+       ier = -3 
+       return
+    end if  
 #if (MYNN_BL_DRIVER_EXEC_TRACE) == 1
      MYNN_BL_DRIVER_TRACE_START
 #endif
@@ -593,7 +611,7 @@ subroutine copy_create(this,other,ier)
     this.m_grav_settling     = other.m_grav_settling
     this.m_bl_mynn_tkebudget = other.m_bl_mynn_tkebudget
     this.m_bl_mynn_cloudpdf  = other.m_bl_mynn_cloudpdf
-    this.m_bl_mixlength      = other.m_bl_mynn_mixlength
+    this.m_bl_mixlength      = other.m_bl_mixlength
 	this.m_bl_mynn_edmf      = other.m_bl_mynn_edmf
 	this.m_bl_mynn_tkeadvect = other.m_bl_mynn_tkeadvect
 	this.m_bl_mynn_edmf_mom  = other.m_bl_mynn_edmf_mom
@@ -635,7 +653,8 @@ subroutine copy_create(this,other,ier)
     if(allocated(this.m_qv)) deallocate(this.m_qv); allocate(this.m_qv(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
     if(allocated(this.m_p)) deallocate(this.m_p);   allocate(this.m_p(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
     if(allocated(this.m_exner)) deallocate(this.m_exner); allocate(this.m_exner(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
-    if(allocated(this.m_rho)) deallocate(this.m_rho); allocate(this.m_T3D(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_rho)) deallocate(this.m_rho); allocate(this.m_rho(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_T3D)) deallocate(this.m_T3D); allocate(this.m_T3D(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
     if(allocated(this.m_qc)) deallocate(this.m_qc); allocate(this.m_qc(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
     if(allocated(this.m_qi)) deallocate(this.m_qi); allocate(this.m_qi(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
     if(allocated(this.m_qni)) deallocate(this.m_qni); allocate(this.m_qni(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
@@ -654,6 +673,7 @@ subroutine copy_create(this,other,ier)
     if(allocated(this.m_uoce)) deallocate(this.m_uoce); allocate(this.m_uoce(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
     if(allocated(this.m_voce)) deallocate(this.m_voce); allocate(this.m_voce(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
     if(allocated(this.m_vdfg)) deallocate(this.m_vdfg); allocate(this.m_vdfg(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_znt)) deallocate(this.m_znt); allocate(this.m_znt(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
     if(allocated(this.m_Qke)) deallocate(this.m_Qke); allocate(this.m_Qke(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
     if(allocated(this.m_Tsq)) deallocate(this.m_Tsq); allocate(this.m_Tsq(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
     if(allocated(this.m_Qsq)) deallocate(this.m_Qsq); allocate(this.m_Qsq(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
@@ -666,7 +686,7 @@ subroutine copy_create(this,other,ier)
     if(allocated(this.m_RQVBLTEN)) deallocate(this.m_RQVBLTEN); allocate(this.m_RQVBLTEN(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
     if(allocated(this.m_RQCBLTEN)) deallocate(this.m_RQCBLTEN); allocate(this.m_RQCBLTEN(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
     if(allocated(this.m_RQIBLTEN)) deallocate(this.m_RQIBLTEN); allocate(this.m_RQIBLTEN(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
-    if(allocated(this.m_RQNBLTEN)) deallocate(this.m_RQNBLTEN); allocate(this.m_RQNBLTEN(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_RQNIBLTEN)) deallocate(this.m_RQNIBLTEN); allocate(this.m_RQNIBLTEN(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
     if(allocated(this.m_exch_h)) deallocate(this.m_exch_h); allocate(this.m_exch_h(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
     if(allocated(this.m_exch_m)) deallocate(this.m_exch_m); allocate(this.m_exch_m(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
     if(allocated(this.m_edmf_a)) deallocate(this.m_edmf_a); allocate(this.m_edmf_a(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
@@ -702,7 +722,7 @@ subroutine copy_create(this,other,ier)
              this.m_rho(i,k,j)       = other.m_rho(i,k,j)
              this.m_T3D(i,k,j)       = other.m_T3D(i,k,j)
              this.m_qc(i,k,j)        = other.m_qc(i,k,j)
-             this.m_qi(i,k,j)        = other.m_qo(i,k,j)
+             this.m_qi(i,k,j)        = other.m_qi(i,k,j)
              this.m_qni(i,k,j)       = other.m_qni(i,k,j)
              this.m_qnc(i,k,j)       = other.m_qnc(i,k,j)
              this.m_Qke(i,k,j)       = other.m_Qke(i,k,j)
@@ -752,7 +772,7 @@ subroutine copy_create(this,other,ier)
           this.m_wspd(i,j)   = other.m_wspd(i,j)
           this.m_uoce(i,j)   = other.m_uoce(i,j)
           this.m_voce(i,j)   = other.m_voce(i,j)
-          this.m_xvdfg(i,j)  = other.m_vdfg(i,j)
+          this.m_vdfg(i,j)  = other.m_vdfg(i,j)
           this.m_znt(i,j)    = other.m_znt(i,j)
           this.m_Pblh(i,j)   = other.m_Pblh(i,j)
           this.m_wstar(i,j)  = other.m_wstar(i,j)
@@ -816,22 +836,6 @@ subroutine allocation_status_array3D(array,name)
     print*, "hi_bound=",hi_bound 
     print*,"======================INFO======================================"
 end subroutine allocation_status_array3D
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 end module mod_mynn_bl_driver
 
