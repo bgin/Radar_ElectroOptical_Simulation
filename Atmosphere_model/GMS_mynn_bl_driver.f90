@@ -767,6 +767,57 @@ subroutine copy_create(this,other,ier)
     ier = 0
 end subroutine copy_create
 
+subroutine allocation_status_array2D(array,name)
+    implicit none
+    real(kind=sp), allocatable, dimension(:,:), intent(in) :: array 
+    character(len=*),                           intent(in) :: name 
+                       ! Locals
+    integer(kind=i8), automatic :: vaddr 
+    integer(kind=i8), automatic :: size 
+    integer(kind=i4), dimension(2), automatic :: lo_bound
+    integer(kind=i4), dimension(2), automatic :: hi_bound 
+    logical(kind=i1), automatic :: is_allocated 
+    vaddr        = LOC(array)
+    size         = SIZEOF(array)
+    lo_bound     = LBOUND(array)
+    hi_bound     = UBOUND(array)
+    is_allocated = allocated(array)
+    print*,"======================INFO======================"
+    print*, "Array member name:", name 
+    print*, "vaddr=",vaddr
+    print*, "size=",size
+    print*, "allocated=",is_allocated
+    print*, "lo_bound=",lo_bound
+    print*, "hi_bound=",hi_bound 
+    print*,"======================INFO======================================"
+end subroutine allocation_status_array2D
+
+subroutine allocation_status_array3D(array,name)
+    implicit none
+    real(kind=sp), allocatable, dimension(:,:,:), intent(in) :: array 
+    character(len=*),                           intent(in) :: name 
+                       ! Locals
+    integer(kind=i8), automatic :: vaddr 
+    integer(kind=i8), automatic :: size 
+    integer(kind=i4), dimension(3), automatic :: lo_bound
+    integer(kind=i4), dimension(3), automatic :: hi_bound 
+    logical(kind=i1), automatic :: is_allocated 
+    vaddr        = LOC(array)
+    size         = SIZEOF(array)
+    lo_bound     = LBOUND(array)
+    hi_bound     = UBOUND(array)
+    is_allocated = allocated(array)
+    print*,"======================INFO======================"
+    print*, "Array member name:", name 
+    print*, "vaddr=",vaddr
+    print*, "size=",size
+    print*, "allocated=",is_allocated
+    print*, "lo_bound=",lo_bound
+    print*, "hi_bound=",hi_bound 
+    print*,"======================INFO======================================"
+end subroutine allocation_status_array3D
+
+
 
 
 
