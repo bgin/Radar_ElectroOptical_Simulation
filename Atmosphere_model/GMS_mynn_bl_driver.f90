@@ -558,12 +558,214 @@ subroutine destroy(mw,ier)
     if(allocated(mw.m_cldfra_bl)) deallocate(mw.m_cldfra_bl)
     mw.m_is_derived_type_built = .false.
 #if (MYNN_BL_DRIVER_EXEC_TRACE) == 1
-     MYNN_BL_DRIVER_TRACE_START
+     MYNN_BL_DRIVER_TRACE_END
 #endif
     ier = 0
 end subroutine destroy 
 
-
+subroutine copy_create(this,other,ier)
+    implicit none   
+#if (MYNN_BL_DRIVER_EXEC_TRACE) == 1
+            interface 
+                   function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+                    end function rdtsc_wrap 
+            end interface
+#endif           
+                            
+#if (MYNN_BL_DRIVER_EXEC_TRACE) == 1
+          character(*), parameter :: sub_name = "destroy"
+#endif 
+    type(mynn_bl_driver_wrapper_t), intent(inout) :: this 
+    type(mynn_bl_driver_wrapper_t), intent(in)    :: other 
+    integer(kind=i4),               intent(inout) :: ier 
+    ! locals
+    integer(kind=i4), automatic :: i,j,k 
+    ! Exec code 
+    if(this.m_is_derived_type_built .eq. .true.)   ier = -1; return 
+    if(other.m_is_derived_type_built .eq. .false.) ier = -2; return 
+    if(LOC(this) .eq. LOC(other))                  ier = -3; return 
+#if (MYNN_BL_DRIVER_EXEC_TRACE) == 1
+     MYNN_BL_DRIVER_TRACE_START
+#endif
+    this.m_initflag          = other.m_initflag
+    this.m_grav_settling     = other.m_grav_settling
+    this.m_bl_mynn_tkebudget = other.m_bl_mynn_tkebudget
+    this.m_bl_mynn_cloudpdf  = other.m_bl_mynn_cloudpdf
+    this.m_bl_mixlength      = other.m_bl_mynn_mixlength
+	this.m_bl_mynn_edmf      = other.m_bl_mynn_edmf
+	this.m_bl_mynn_tkeadvect = other.m_bl_mynn_tkeadvect
+	this.m_bl_mynn_edmf_mom  = other.m_bl_mynn_edmf_mom
+	this.m_bl_mynn_edmf_tke  = other.m_bl_mynn_edmf_tke 
+    this.m_bl_mynn_edmf_part = other.m_bl_mynn_edmf_part 
+	this.m_bl_mynn_cloudmix  = other.m_bl_mynn_cloudmix
+	this.m_bl_mynn_mixqt     = other.m_bl_mynn_mixqt
+	this.m_icloud_bl         = other.m_icloud_bl
+	this.m_FLAG_QI           = other.m_FLAG_QI
+	this.m_FLAG_QNI          = other.m_FLAG_QNI
+	this.m_FLAG_QC           = other.m_FLAG_QC
+	this.m_FLAG_QNC          = other.m_FLAG_QNC
+    this.m_IDS               = other.m_IDS 
+	this.m_IDE               = other.m_IDE
+	this.m_JDS               = other.m_JDS
+	this.m_JDE               = other.m_JDE 
+	this.m_KDS               = other.m_KDS 
+	this.m_KDE               = other.m_KDE 
+	this.m_IMS               = other.m_IMS 
+	this.m_IME               = other.m_IME 
+    this.m_JMS               = other.m_JMS
+	this.m_JME               = other.m_JME
+	this.m_KMS               = other.m_KMS
+	this.m_KME               = other.m_KME
+	this.m_ITS               = other.m_ITS
+    this.m_ITE               = other.m_ITE
+	this.m_JTS               = other.m_JTS
+	this.m_JTE               = other.m_JTE
+	this.m_KTS               = other.m_KTS
+	this.m_KTE               = other.m_KTE 
+    this.m_delt              = other.m_delt 
+    this.m_dx                = other.m_dx 
+     ! Allocation
+    if(allocated(this.m_dz)) deallocate(this.m_dz); allocate(this.m_dz(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_u)) deallocate(this.m_u);   allocate(this.m_u(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_v)) deallocate(this.m_v);   allocate(this.m_v(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_w)) deallocate(this.m_w);   allocate(this.m_w(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_th)) deallocate(this.m_th); allocate(this.m_th(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_qv)) deallocate(this.m_qv); allocate(this.m_qv(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_p)) deallocate(this.m_p);   allocate(this.m_p(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_exner)) deallocate(this.m_exner); allocate(this.m_exner(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_rho)) deallocate(this.m_rho); allocate(this.m_T3D(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_qc)) deallocate(this.m_qc); allocate(this.m_qc(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_qi)) deallocate(this.m_qi); allocate(this.m_qi(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_qni)) deallocate(this.m_qni); allocate(this.m_qni(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_qnc)) deallocate(this.m_qnc); allocate(this.m_qnc(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_xland)) deallocate(this.m_xland); allocate(this.m_xland(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_ust)) deallocate(this.m_ust); allocate(this.m_ust(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_ch)) deallocate(this.m_ch); allocate(this.m_ch(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_rmol)) deallocate(this.m_rmol); allocate(this.m_rmol(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_ts)) deallocate(this.m_ts); allocate(this.m_ts(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_qsfc)) deallocate(this.m_qsfc); allocate(this.m_qsfc(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_qcg)) deallocate(this.m_qcg); allocate(this.m_qcg(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_ps)) deallocate(this.m_ps); allocate(this.m_ps(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_hfx)) deallocate(this.m_hfx); allocate(this.m_hfx(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_qfx)) deallocate(this.m_qfx); allocate(this.m_qfx(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_wspd)) deallocate(this.m_wspd); allocate(this.m_wspd(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_uoce)) deallocate(this.m_uoce); allocate(this.m_uoce(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_voce)) deallocate(this.m_voce); allocate(this.m_voce(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_vdfg)) deallocate(this.m_vdfg); allocate(this.m_vdfg(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_Qke)) deallocate(this.m_Qke); allocate(this.m_Qke(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_Tsq)) deallocate(this.m_Tsq); allocate(this.m_Tsq(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_Qsq)) deallocate(this.m_Qsq); allocate(this.m_Qsq(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_Cov)) deallocate(this.m_Cov); allocate(this.m_Cov(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_tke_pbl)) deallocate(this.m_tke_pbl); allocate(this.m_tke_pbl(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_qke_adv)) deallocate(this.m_qke_adv); allocate(this.m_qke_adv(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_RUBLTEN)) deallocate(this.m_RUBLTEN); allocate(this.m_RUBLTEN(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_RVBLTEN)) deallocate(this.m_RVBLTEN); allocate(this.m_RVBLTEN(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_RTHBLTEN)) deallocate(this.m_RTHBLTEN); allocate(this.m_RTHBLTEN(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_RQVBLTEN)) deallocate(this.m_RQVBLTEN); allocate(this.m_RQVBLTEN(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_RQCBLTEN)) deallocate(this.m_RQCBLTEN); allocate(this.m_RQCBLTEN(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_RQIBLTEN)) deallocate(this.m_RQIBLTEN); allocate(this.m_RQIBLTEN(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_RQNBLTEN)) deallocate(this.m_RQNBLTEN); allocate(this.m_RQNBLTEN(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_exch_h)) deallocate(this.m_exch_h); allocate(this.m_exch_h(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_exch_m)) deallocate(this.m_exch_m); allocate(this.m_exch_m(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_edmf_a)) deallocate(this.m_edmf_a); allocate(this.m_edmf_a(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_edmf_w)) deallocate(this.m_edmf_w); allocate(this.m_edmf_w(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_edmf_qt)) deallocate(this.m_edmf_qt); allocate(this.m_edmf_qt(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_edmf_thl)) deallocate(this.m_edmf_thl); allocate(this.m_edmf_thl(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_edmf_ent)) deallocate(this.m_edmf_ent); allocate(this.m_edmf_ent(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_edmf_qc)) deallocate(this.m_edmf_qc); allocate(this.m_edmf_qc(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_Pblh)) deallocate(this.m_Pblh); allocate(this.m_Pblh(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_wstar)) deallocate(this.m_wstar); allocate(this.m_wstar(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_delta)) deallocate(this.m_delta); allocate(this.m_delta(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_KPBL)) deallocate(this.m_KPBL); allocate(this.m_KPBL(this.m_IMS:this.m_IME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_el_pbl)) deallocate(this.m_el_pbl); allocate(this.m_el_pbl(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_qWT)) deallocate(this.m_qWT); allocate(this.m_qWT(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_qSHEAR)) deallocate(this.m_qSHEAR); allocate(this.m_qSHEAR(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_qBUOY)) deallocate(this.m_qBUOY); allocate(this.m_qBUOY(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_qDISS)) deallocate(this.m_qDISS); allocate(this.m_qDISS(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_dqke)) deallocate(this.m_dqke); allocate(this.m_dqke(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_qc_bl)) deallocate(this.m_qc_bl); allocate(this.m_qc_bl(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    if(allocated(this.m_cldfra_bl)) deallocate(this.m_cldfra_bl); allocate(this.m_cldfra_bl(this.m_IMS:this.m_IME,this.m_KMS:this.m_KME,this.m_JMS:this.m_JME))
+    ! Copy
+    do j=this.m_JTS, this.m_JTE 
+       do k=this.m_KTS, this.m_KTE 
+          do i=this.m_ITS, this.m_ITE 
+             this.m_dz(i,k,j)        = other.m_dz(i,k,j)
+             this.m_u(i,k,j)         = other.m_u(i,k,j)
+             this.m_v(i,k,j)         = other.m_v(i,k,j) 
+             this.m_w(i,k,j)         = other.m_w(i,k,j)
+             this.m_th(i,k,j)        = other.m_th(i,k,j)
+             this.m_qv(i,k,j)        = other.m_qv(i,k,j)
+             this.m_p(i,k,j)         = other.m_p(i,k,j)
+             this.m_exner(i,k,j)     = other.m_exner(i,k,j)
+             this.m_rho(i,k,j)       = other.m_rho(i,k,j)
+             this.m_T3D(i,k,j)       = other.m_T3D(i,k,j)
+             this.m_qc(i,k,j)        = other.m_qc(i,k,j)
+             this.m_qi(i,k,j)        = other.m_qo(i,k,j)
+             this.m_qni(i,k,j)       = other.m_qni(i,k,j)
+             this.m_qnc(i,k,j)       = other.m_qnc(i,k,j)
+             this.m_Qke(i,k,j)       = other.m_Qke(i,k,j)
+             this.m_Tsq(i,k,j)       = other.m_Tsq(i,k,j)
+             this.m_Qsq(i,k,j)       = other.m_Qsq(i,k,j)
+             this.m_Cov(i,k,j)       = other.m_Cov(i,k,j)
+             this.m_tke_pbl(i,k,j)   = other.m_tke_pbl(i,k,j)
+             this.m_qke_adv(i,k,j)   = other.m_qke_adv(i,k,j)
+             this.m_RUBLTEN(i,k,j)   = other.m_RUBLTEN(i,k,j)
+             this.m_RVBLTEN(i,k,j)   = other.m_RVBLTEN(i,k,j)
+             this.m_RTHBLTEN(i,k,j)  = other.m_RTHBLTEN(i,k,j)
+             this.m_RQVBLTEN(i,k,j)  = other.m_RQVBLTEN(i,k,j)
+             this.m_RQCBLTEN(i,k,j)  = other.m_RQCBLTEN(i,k,j)
+             this.m_RQIBLTEN(i,k,j)  = other.m_RQIBLTEN(i,k,j)
+             this.m_RQNIBLTEN(i,k,j) = other.m_RQNIBLTEN(i,k,j)
+             this.m_exch_h(i,k,j)    = other.m_exch_h(i,k,j)
+             this.m_exch_m(i,k,j)    = other.m_exch_m(i,k,j)
+             this.m_edmf_a(i,k,j)    = other.m_edmf_a(i,k,j)
+             this.m_edmf_w(i,k,j)    = other.m_edmf_w(i,k,j)
+             this.m_edmf_qt(i,k,j)   = other.m_edmf_qt(i,k,j)
+             this.m_edmf_thl(i,k,j)  = other.m_edmf_thl(i,k,j)
+             this.m_edmf_ent(i,k,j)  = other.m_edmf_ent(i,k,j)
+             this.m_edmf_qc(i,k,j)   = other.m_edmf_qc(i,k,j)
+             this.m_el_pbl(i,k,j)    = other.m_el_pbl(i,k,j)
+             this.m_qWT(i,k,j)       = other.m_qWT(i,k,j)
+             this.m_qSHEAR(i,k,j)    = other.m_qSHEAR(i,k,j)
+             this.m_qBUOY(i,k,j)     = other.m_qBUOY(i,k,j)
+             this.m_qDISS(i,k,j)     = other.m_qDISS(i,k,j)
+             this.m_dqke(i,k,j)      = other.m_dqke(i,k,j)
+             this.m_qc_bl(i,k,j)     = other.m_qc_bl(i,k,j)
+             this.m_cldfra_bl(i,k,j) = other.m_cldfra_bl(i,k,j)
+         end do 
+       end do 
+    end do 
+    do j=this.m_JTS, this.m_JTE 
+       do i=this.m_ITS, this.m_ITE 
+          this.m_xland(i,j)  = other.m_xland(i,j)
+          this.m_ust(i,j)    = other.m_ust(i,j)
+          this.m_ch(i,j)     = other.m_ch(i,j)
+          this.m_rmol(i,j)   = other.m_rmol(i,j)
+          this.m_ts(i,j)     = other.m_ts(i,j)
+          this.m_qsfc(i,j)   = other.m_qsfc(i,j)
+          this.m_qcg(i,j)    = other.m_qcg(i,j)
+          this.m_ps(i,j)     = other.m_ps(i,j)
+          this.m_hfx(i,j)    = other.m_hfx(i,j)
+          this.m_qfx(i,j)    = other.m_qfx(i,j)
+          this.m_wspd(i,j)   = other.m_wspd(i,j)
+          this.m_uoce(i,j)   = other.m_uoce(i,j)
+          this.m_voce(i,j)   = other.m_voce(i,j)
+          this.m_xvdfg(i,j)  = other.m_vdfg(i,j)
+          this.m_znt(i,j)    = other.m_znt(i,j)
+          this.m_Pblh(i,j)   = other.m_Pblh(i,j)
+          this.m_wstar(i,j)  = other.m_wstar(i,j)
+          this.m_delta(i,j)  = other.m_delta(i,j)
+          this.m_KPBL(i,j)   = other.m_KPBL(i,j)
+       end do 
+    end do 
+#if (MYNN_BL_DRIVER_EXEC_TRACE) == 1
+     MYNN_BL_DRIVER_TRACE_END 
+#endif
+    this.m_is_derived_type_built = .true.
+    ier = 0
+end subroutine copy_create
 
 
 
