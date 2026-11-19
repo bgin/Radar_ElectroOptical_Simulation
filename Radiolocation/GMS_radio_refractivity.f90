@@ -130,7 +130,7 @@ module radio_refractivity_ref
                num    = (b_wat-td)*t
                den    = t+c_wat
                ef_wat = C1+C0001*(7.2_sp+P*(0.00320_sp+0.0000059_sp*tt))
-               es      = ef_wat*a*exp(num/den)
+               es      = ef_wat*a_wat*exp(num/den)
                e      = H*es*0.01_sp
 
             else if(water_or_ice == 1) then 
@@ -139,7 +139,7 @@ module radio_refractivity_ref
                num    = (b_ice-td)*t
                den    = t+c_ice 
                ef_ice = C1+C0001*(2.2_sp+P*(0.00382_sp+0.0000064_sp*tt))
-               es      = ef_ice*a*exp(num/den)
+               es      = ef_ice*a_wat*exp(num/den)
                e      = H*es*0.01_sp 
             end if 
       end function water_vapour_pressure_e_r4
@@ -176,7 +176,7 @@ module radio_refractivity_ref
                num    = (b_wat-td)*t
                den    = t+c_wat
                ef_wat = C1+C0001*(7.2_dp+P*(0.00320_dp+0.0000059_dp*tt))
-               es      = ef_wat*a*exp(num/den)
+               es      = ef_wat*a_wat*exp(num/den)
                e      = H*es*0.01_dp
 
             else if(water_or_ice == 1) then
@@ -185,7 +185,7 @@ module radio_refractivity_ref
                num    = (b_ice-td)*t
                den    = t+c_ice 
                ef_ice = C1+C0001*(2.2_dp+P*(0.00382_dp+0.0000064_dp*tt))
-               es      = ef_ice*a*exp(num/den)
+               es      = ef_ice*a_ice*exp(num/den)
                e      = H*es*0.01_dp 
             end if 
       end function water_vapour_pressure_e_r8
@@ -207,8 +207,8 @@ module radio_refractivity_ref
             real(kind=sp) :: n
             real(kind=sp), automatic :: PdT, eT, eTT, e, n_tmp
             e   = water_vapour_pressure_e_r4(tc,P,H,water_or_ice)
-            PdT = 76.6_sp*PdT/Tk 
-            eT  = 72.0_sp*e/Tk 
+            PdT = (76.6_sp*PdT)/Tk 
+            eT  = (72.0_sp*e)/Tk 
             eTT = 3750000.0_sp*(e/(Tk*Tk)) 
             n_tmp   = PdT+eT+eTT 
             n   = 1.0_sp+n_tmp*0.000001_sp
