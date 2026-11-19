@@ -717,42 +717,42 @@ SUBROUTINE compute_idealized_terrain ( config_flags,                 &
         ENDDO
      ENDDO
 
-!#if (IDEALIZED_TOPOG_VERBOSE) == 1
-!   write(*,'(A,I3,A,F5.1)') "REOS[compute_idealized_terrain]: adding bumps to the flat plate with width=",width," and height=",height
-!#endif 
-!     ista = (ide-ids)/2+ids-width
-!     iend = (ide-ids)/2+ids+width
-!     DO i=its,ite
-!        IF ((i .GE. ista) .AND. (i .LE. iend)) THEN
-!           DO j=jts,jte
-!              jsta = width*(j/width)
-!              jend = jsta+width
-!              IF ((j .NE. jde) .AND. (i .NE. ista) .AND. (j .NE. jsta)) THEN
-!                 ibm_ht_u(i,j) = height*(1.0-ABS((ide-ids)/2.0+ids-(i-0.5))/width)*(1.0-ABS(jsta+width/2.0-j)/(width/2.0))
-!              ENDIF
-!              IF ((i .NE. ide) .AND. (i .NE. ista) .AND. (j .NE. jsta)) THEN
-!                 ibm_ht_v(i,j) = height*(1.0-ABS((ide-ids)/2.0+ids-i)/width)*(1.0-ABS(jsta+width/2.0-(j-0.5))/(width/2.0))
-!              ENDIF
-!              IF ((j .NE. jde) .AND. (i .NE. ista)) THEN
-!                 ibm_ht_w(i,j) = height*(1.0-ABS((ide-ids)/2.0+ids-i)/width)*(1.0-ABS(jsta+width/2.0-j)/(width/2.0))
-!              ENDIF
-!              ibm_ht_c(i,j) = height*(1.0-ABS((ide-ids)/2.0+ids-(i-0.5))/width)*(1.0-ABS(jsta+width/2.0-(j-0.5))/(width/2.0))
-!           ENDDO
-!        ENDIF
-!     ENDDO
-!     DO i=its,ite
-!        DO j=jts,jte
-!           IF ((i .LT. ids+config_flags%spec_bdy_width) .OR. &
-!               (i .GE. ide-config_flags%spec_bdy_width) .OR. &
-!               (j .LT. jds+config_flags%spec_bdy_width) .OR. &
-!               (j .GE. jde-config_flags%spec_bdy_width)) THEN
-!              IF (i .NE. ide) ibm_ht_u(i,j) = 0.0
-!              IF (j .NE. jde) ibm_ht_v(i,j) = 0.0
-!              IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 0.0
-!              ibm_ht_c(i,j) = 0.0
-!           ENDIF
-!        ENDDO
-!     ENDDO
+#if (IDEALIZED_TOPOG_VERBOSE) == 1
+   write(*,'(A,I3,A,F5.1)') "REOS[compute_idealized_terrain]: adding bumps to the flat plate with width=",width," and height=",height
+#endif 
+     ista = (ide-ids)/2+ids-width
+     iend = (ide-ids)/2+ids+width
+     DO i=its,ite
+        IF ((i .GE. ista) .AND. (i .LE. iend)) THEN
+           DO j=jts,jte
+              jsta = width*(j/width)
+              jend = jsta+width
+              IF ((j .NE. jde) .AND. (i .NE. ista) .AND. (j .NE. jsta)) THEN
+                 ibm_ht_u(i,j) = height*(1.0-ABS((ide-ids)/2.0+ids-(i-0.5))/width)*(1.0-ABS(jsta+width/2.0-j)/(width/2.0))
+              ENDIF
+              IF ((i .NE. ide) .AND. (i .NE. ista) .AND. (j .NE. jsta)) THEN
+                 ibm_ht_v(i,j) = height*(1.0-ABS((ide-ids)/2.0+ids-i)/width)*(1.0-ABS(jsta+width/2.0-(j-0.5))/(width/2.0))
+              ENDIF
+              IF ((j .NE. jde) .AND. (i .NE. ista)) THEN
+                 ibm_ht_w(i,j) = height*(1.0-ABS((ide-ids)/2.0+ids-i)/width)*(1.0-ABS(jsta+width/2.0-j)/(width/2.0))
+              ENDIF
+              ibm_ht_c(i,j) = height*(1.0-ABS((ide-ids)/2.0+ids-(i-0.5))/width)*(1.0-ABS(jsta+width/2.0-(j-0.5))/(width/2.0))
+           ENDDO
+        ENDIF
+     ENDDO
+     DO i=its,ite
+        DO j=jts,jte
+           IF ((i .LT. ids+config_flags%spec_bdy_width) .OR. &
+               (i .GE. ide-config_flags%spec_bdy_width) .OR. &
+               (j .LT. jds+config_flags%spec_bdy_width) .OR. &
+               (j .GE. jde-config_flags%spec_bdy_width)) THEN
+              IF (i .NE. ide) ibm_ht_u(i,j) = 0.0
+              IF (j .NE. jde) ibm_ht_v(i,j) = 0.0
+              IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 0.0
+              ibm_ht_c(i,j) = 0.0
+           ENDIF
+        ENDDO
+     ENDDO
 
   ELSEIF (config_flags%ideal_terrain .EQ. 112) THEN    
     DO j=jts,jte
@@ -777,13 +777,13 @@ SUBROUTINE compute_idealized_terrain ( config_flags,                 &
 
     DO j=jts,jte
     DO i=its,ite
-!       IF ( ((i .GE. 10*(30/10)) .AND. (i .LE. ide-10*(30/10))) .AND. &
-!            ((j .GE. 10*(34/10)) .AND. (j .LE. jde-10*(34/10))) ) THEN
-!          IF (j .NE. jde) ibm_ht_u(i,j) = 0.0
-!          IF (i .NE. ide) ibm_ht_v(i,j) = 0.0
-!          IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 0.0
-!          ibm_ht_c(i,j) = 0.0
-!       ENDIF
+       IF ( ((i .GE. 10*(30/10)) .AND. (i .LE. ide-10*(30/10))) .AND. &
+            ((j .GE. 10*(34/10)) .AND. (j .LE. jde-10*(34/10))) ) THEN
+          IF (j .NE. jde) ibm_ht_u(i,j) = 0.0
+          IF (i .NE. ide) ibm_ht_v(i,j) = 0.0
+          IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 0.0
+          ibm_ht_c(i,j) = 0.0
+       ENDIF
        IF ( (i .LE. 5) .OR. (i .GE. 10*ide/10-6 ) .OR. &
             (j .LE. 5) .OR. (j .GE. 10*jde/10-6 ) ) THEN
           IF (j .NE. jde) ibm_ht_u(i,j) = 0.0
@@ -819,13 +819,13 @@ SUBROUTINE compute_idealized_terrain ( config_flags,                 &
 
     DO j=jts,jte
     DO i=its,ite
-!       IF ( ((i .GE. 10*(30/10)) .AND. (i .LE. ide-10*(30/10))) .AND. &
-!            ((j .GE. 10*(34/10)) .AND. (j .LE. jde-10*(34/10))) ) THEN
-!          IF (j .NE. jde) ibm_ht_u(i,j) = 0.0
-!          IF (i .NE. ide) ibm_ht_v(i,j) = 0.0
-!          IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 0.0
-!          ibm_ht_c(i,j) = 0.0
-!       ENDIF
+       IF ( ((i .GE. 10*(30/10)) .AND. (i .LE. ide-10*(30/10))) .AND. &
+            ((j .GE. 10*(34/10)) .AND. (j .LE. jde-10*(34/10))) ) THEN
+          IF (j .NE. jde) ibm_ht_u(i,j) = 0.0
+          IF (i .NE. ide) ibm_ht_v(i,j) = 0.0
+          IF ((i .NE. ide) .AND. (j .NE. jde)) ibm_ht_w(i,j) = 0.0
+          ibm_ht_c(i,j) = 0.0
+       ENDIF
        IF ( (i .LE. 5) .OR. (i .GE. 10*ide/10-6 ) .OR. &
             (j .LE. 5) .OR. (j .GE. 10*jde/10-6 ) ) THEN
           IF (j .NE. jde) ibm_ht_u(i,j) = 0.0
@@ -910,16 +910,16 @@ SUBROUTINE compute_idealized_terrain ( config_flags,                 &
 
            !! the height function at u and v levels could be specified by with an 
            !! equation or by averaging.  These are the equations.
-           !if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+((float(i-icm)-0.5)/xa)**2)
-           !if (i /= ide) ibm_ht_v(i,j) = offset + hm/(1.+(float(i-icm)/xa)**2)   
-           !if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm/(1.+(float(i-icm)/xa)**2)
-           !ibm_ht_c(i,j) = offset + hm/(1.+((float(i-icm)-0.5)/xa)**2)
+           if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+((float(i-icm)-0.5)/xa)**2)
+           if (i /= ide) ibm_ht_v(i,j) = offset + hm/(1.+(float(i-icm)/xa)**2)   
+           if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm/(1.+(float(i-icm)/xa)**2)
+           ibm_ht_c(i,j) = offset + hm/(1.+((float(i-icm)-0.5)/xa)**2)
 
            ! hill in the y direction
-           ! if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+(float(j-jcm)/xa)**2)
-           ! if (i /= ide) ibm_ht_v(i,j) = offset + hm/(1.+((float(j-jcm)-0.5)/xa)**2)
-           ! ibm_ht_w(i,j) = offset + hm/(1.+(float(j-jcm)/xa)**2)
-           ! ibm_ht_c(i,j) = offset + hm/(1.+((float(j-jcm)-0.5)/xa)**2)
+            if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+(float(j-jcm)/xa)**2)
+            if (i /= ide) ibm_ht_v(i,j) = offset + hm/(1.+((float(j-jcm)-0.5)/xa)**2)
+            ibm_ht_w(i,j) = offset + hm/(1.+(float(j-jcm)/xa)**2)
+            ibm_ht_c(i,j) = offset + hm/(1.+((float(j-jcm)-0.5)/xa)**2)
 
            ! hill in the x direction
            x_dist = (-ide/2.)*config_flags%dx + i*config_flags%dx
@@ -929,12 +929,12 @@ SUBROUTINE compute_idealized_terrain ( config_flags,                 &
            if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+(x_dist/xa)**2)
            ibm_ht_c(i,j) = offset + hm/(1.+(x_dist/xa)**2)
            ! hill in the y direction
-           ! y_dist = (-jde/2.)*config_flags%dy + j*config_flags%dy
-           ! if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm/(1.+(y_dist/xa)**2)
-           ! if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+(y_dist/xa)**2)
-           ! y_dist = (-jde/2.)*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-           ! if (i /= ide) ibm_ht_v(i,j) = offset + hm/(1.+(y_dist/xa)**2)
-           ! ibm_ht_c(i,j) = offset + hm/(1.+(y_dist/xa)**2)
+            y_dist = (-jde/2.)*config_flags%dy + j*config_flags%dy
+            if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm/(1.+(y_dist/xa)**2)
+            if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+(y_dist/xa)**2)
+            y_dist = (-jde/2.)*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+            if (i /= ide) ibm_ht_v(i,j) = offset + hm/(1.+(y_dist/xa)**2)
+            ibm_ht_c(i,j) = offset + hm/(1.+(y_dist/xa)**2)
 
         ENDDO
         ENDDO
@@ -944,16 +944,16 @@ SUBROUTINE compute_idealized_terrain ( config_flags,                 &
 
            !! the height function at u and v levels could be specified by with an 
            !! equation or by averaging.  These are the equations.
-           !if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+((float(i-icm)-0.5)/xa)**2)
-           !if (i /= ide) ibm_ht_v(i,j) = offset + hm/(1.+(float(i-icm)/xa)**2)   
-           !if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm/(1.+(float(i-icm)/xa)**2)
-           !ibm_ht_c(i,j) = offset + hm/(1.+((float(i-icm)-0.5)/xa)**2)
+           if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+((float(i-icm)-0.5)/xa)**2)
+           if (i /= ide) ibm_ht_v(i,j) = offset + hm/(1.+(float(i-icm)/xa)**2)   
+           if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm/(1.+(float(i-icm)/xa)**2)
+           ibm_ht_c(i,j) = offset + hm/(1.+((float(i-icm)-0.5)/xa)**2)
 
            ! hill in the y direction
-           ! if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+(float(j-jcm)/xa)**2)
-           ! if (i /= ide) ibm_ht_v(i,j) = offset + hm/(1.+((float(j-jcm)-0.5)/xa)**2)
-           ! ibm_ht_w(i,j) = offset + hm/(1.+(float(j-jcm)/xa)**2)
-           ! ibm_ht_c(i,j) = offset + hm/(1.+((float(j-jcm)-0.5)/xa)**2)
+            if (j /= jde) ibm_ht_u(i,j) = offset + hm/(1.+(float(j-jcm)/xa)**2)
+            if (i /= ide) ibm_ht_v(i,j) = offset + hm/(1.+((float(j-jcm)-0.5)/xa)**2)
+            ibm_ht_w(i,j) = offset + hm/(1.+(float(j-jcm)/xa)**2)
+            ibm_ht_c(i,j) = offset + hm/(1.+((float(j-jcm)-0.5)/xa)**2)
 
            x_dist = (-jde/2.)*config_flags%dy + j*config_flags%dy
            if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm/(1.+(x_dist/xa)**2)
@@ -968,12 +968,12 @@ SUBROUTINE compute_idealized_terrain ( config_flags,                 &
         DO j=jts,jte
         DO i=its,ite
            ! use this for gaussian bump
-           !if (j /= jde) ibm_ht_u(i,j) = hm/(1.+((float(i-icm)-0.5)/xa)**2+(float(j-jcm)/xa)**2)
-           !if (i /= ide) ibm_ht_v(i,j) = hm/(1.+(float(i-icm)/xa)**2+((float(j-jcm)-0.5)/xa)**2) 
-           !if ((i /= ide) .AND. (j /= jde)) then
-           !    ibm_ht_w(i,j) = hm/(1.+(float(i-icm)/xa)**2+(float(j-jcm)/xa)**2)
-           !endif 
-           !ibm_ht_c(i,j) = hm/(1.+((float(i-icm)-0.5)/xa)**2+((float(j-jcm)-0.5)/xa)**2)
+           if (j /= jde) ibm_ht_u(i,j) = hm/(1.+((float(i-icm)-0.5)/xa)**2+(float(j-jcm)/xa)**2)
+           if (i /= ide) ibm_ht_v(i,j) = hm/(1.+(float(i-icm)/xa)**2+((float(j-jcm)-0.5)/xa)**2) 
+           if ((i /= ide) .AND. (j /= jde)) then
+               ibm_ht_w(i,j) = hm/(1.+(float(i-icm)/xa)**2+(float(j-jcm)/xa)**2)
+           endif 
+           ibm_ht_c(i,j) = hm/(1.+((float(i-icm)-0.5)/xa)**2+((float(j-jcm)-0.5)/xa)**2)
 
            x_dist = (-ide/2.0)*config_flags%dx + i*config_flags%dx
            y_dist = (-jde/2.0)*config_flags%dy + j*config_flags%dy
@@ -1163,208 +1163,208 @@ SUBROUTINE compute_idealized_terrain ( config_flags,                 &
      ENDDO 
 
 !  ! This is for the 3d array of cubes case
-!  xa = 30.
-!  hm = 150.
-!  offset = 25.
-!  DO j=jts,jte
-!  DO i=its,ite  
-!     ! set the base terrain
-!     if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset
-!     if (i /= ide) ibm_ht_v(i,j) = offset
-!     if (j /= jde) ibm_ht_u(i,j) = offset
-!     ibm_ht_c(i,j) = offset	 
-!
-!     icm = ide/4.
-!     jcm = jde/4.  
-!     x_dist = -icm*config_flags%dx + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
-!     endif
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
-!     endif	 
-!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
-!     endif	 
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  ibm_ht_c(i,j) = offset + hm
-!     endif
-!
-!     icm = ide/4.
-!     jcm = jde/2.  
-!     x_dist = -icm*config_flags%dx + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
-!     endif
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
-!     endif	 
-!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
-!     endif	 
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  ibm_ht_c(i,j) = offset + hm
-!     endif	 
-!
-!     icm = ide/4.
-!     jcm = 3*jde/4.  
-!     x_dist = -icm*config_flags%dx + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
-!     endif
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
-!     endif	 
-!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
-!     endif	 
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  ibm_ht_c(i,j) = offset + hm
-!     endif   
-!
-!     icm = ide/2.
-!     jcm = jde/4.  
-!     x_dist = -icm*config_flags%dx + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
-!     endif
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
-!     endif	 
-!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
-!     endif	 
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  ibm_ht_c(i,j) = offset + hm
-!     endif
-!
-!     icm = ide/2.
-!     jcm = jde/2.  
-!     x_dist = -icm*config_flags%dx + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
-!     endif
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
-!     endif	 
-!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
-!     endif	 
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  ibm_ht_c(i,j) = offset + hm
-!     endif	 
-!
-!     icm = ide/2.
-!     jcm = 3*jde/4.  
-!     x_dist = -icm*config_flags%dx + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
-!     endif
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
-!     endif	 
-!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
-!     endif	 
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  ibm_ht_c(i,j) = offset + hm
-!     endif   
-!
-!     icm = 3*ide/4.
-!     jcm = jde/4.  
-!     x_dist = -icm*config_flags%dx + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
-!     endif
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
-!     endif	 
-!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
-!     endif	 
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  ibm_ht_c(i,j) = offset + hm
-!     endif
-!
-!     icm = 3*ide/4.
-!     jcm = jde/2.  
-!     x_dist = -icm*config_flags%dx + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
-!     endif
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
-!     endif	 
-!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
-!     endif	 
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  ibm_ht_c(i,j) = offset + hm
-!     endif	 
-!
-!     icm = 3*ide/4.
-!     jcm = 3*jde/4.  
-!     x_dist = -icm*config_flags%dx + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
-!     endif
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
-!     endif	 
-!     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
-!     y_dist = -jcm*config_flags%dy + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
-!     endif	 
-!     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
-!     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
-!	  ibm_ht_c(i,j) = offset + hm
-!     endif		   
-!
-!   ENDDO      
-!   ENDDO	  
+  xa = 30.
+  hm = 150.
+  offset = 25.
+  DO j=jts,jte
+  DO i=its,ite  
+      !set the base terrain
+     if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset
+     if (i /= ide) ibm_ht_v(i,j) = offset
+     if (j /= jde) ibm_ht_u(i,j) = offset
+     ibm_ht_c(i,j) = offset	 
+
+     icm = ide/4.
+     jcm = jde/4.  
+     x_dist = -icm*config_flags%dx + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+     endif
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+     endif	 
+     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+     endif	 
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  ibm_ht_c(i,j) = offset + hm
+     endif
+
+     icm = ide/4.
+     jcm = jde/2.  
+     x_dist = -icm*config_flags%dx + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+     endif
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+     endif	 
+     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+     endif	 
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  ibm_ht_c(i,j) = offset + hm
+     endif	 
+
+     icm = ide/4.
+     jcm = 3*jde/4.  
+     x_dist = -icm*config_flags%dx + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+     endif
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+     endif	 
+     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+     endif	 
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  ibm_ht_c(i,j) = offset + hm
+     endif   
+
+     icm = ide/2.
+     jcm = jde/4.  
+     x_dist = -icm*config_flags%dx + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+     endif
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+     endif	 
+     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+     endif	 
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  ibm_ht_c(i,j) = offset + hm
+     endif
+
+     icm = ide/2.
+     jcm = jde/2.  
+     x_dist = -icm*config_flags%dx + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+     endif
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+     endif	 
+     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+     endif	 
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  ibm_ht_c(i,j) = offset + hm
+     endif	 
+
+     icm = ide/2.
+     jcm = 3*jde/4.  
+     x_dist = -icm*config_flags%dx + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+     endif
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+     endif	 
+     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+     endif	 
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  ibm_ht_c(i,j) = offset + hm
+     endif   
+
+     icm = 3*ide/4.
+     jcm = jde/4.  
+     x_dist = -icm*config_flags%dx + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+     endif
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+     endif	 
+     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+     endif	 
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  ibm_ht_c(i,j) = offset + hm
+     endif
+
+     icm = 3*ide/4.
+     jcm = jde/2.  
+     x_dist = -icm*config_flags%dx + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+     endif
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+     endif	 
+     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+     endif	 
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  ibm_ht_c(i,j) = offset + hm
+     endif	 
+
+     icm = 3*ide/4.
+     jcm = 3*jde/4.  
+     x_dist = -icm*config_flags%dx + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + hm
+     endif
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (i /= ide) ibm_ht_v(i,j) = offset + hm
+     endif	 
+     x_dist = -icm*config_flags%dx - config_flags%dx/2. + i*config_flags%dx
+     y_dist = -jcm*config_flags%dy + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  if (j /= jde) ibm_ht_u(i,j) = offset + hm
+     endif	 
+     y_dist = -jcm*config_flags%dy - config_flags%dy/2. + j*config_flags%dy
+     if ((ABS(x_dist)<=xa).AND.(ABS(y_dist)<=xa)) then
+	  ibm_ht_c(i,j) = offset + hm
+     endif		   
+
+   ENDDO      
+   ENDDO	  
   ELSEIF (config_flags%ideal_terrain .EQ. 6) THEN
      hm = 1500.0
      DO j=jts,jte
@@ -1447,35 +1447,35 @@ SUBROUTINE compute_idealized_terrain ( config_flags,                 &
         if (j .eq. jts) write(*,*) "i=",i,"xdist=",x_dist,"ht_u=",ibm_ht_u(i,j)
      ENDDO
      ENDDO 
-     ! offset = 100.
-     ! DO j=jts,jte
-     ! DO i=its,ite 
+      offset = 100.
+      DO j=jts,jte
+      DO i=its,ite 
      !    ! 0.0875 for 5 degree slope comparing with WRF 0.5774 for a 30 degree slope
      !    ! calculate x with x=0 as the middle of the domain
-     !    x_dist = (-ide/2.)*config_flags%dx + i*config_flags%dx
-     !    if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + 0.0875*ABS(x_dist)
-     !    if (i /= ide) ibm_ht_v(i,j) = offset + 0.0875*ABS(x_dist)
-     !    ! calculate x with x=0 as the middle of the domain
-     !    x_dist = (-ide/2.)*config_flags%dx - config_flags%dx/2 + i*config_flags%dx
-     !    if (j /= jde) ibm_ht_u(i,j) = offset + 0.0875*ABS(x_dist)
-     !    ibm_ht_c(i,j) = offset + 0.0875*ABS(x_dist)
-     ! ENDDO
-     ! ENDDO 
+         x_dist = (-ide/2.)*config_flags%dx + i*config_flags%dx
+         if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j) = offset + 0.0875*ABS(x_dist)
+         if (i /= ide) ibm_ht_v(i,j) = offset + 0.0875*ABS(x_dist)
+         ! calculate x with x=0 as the middle of the domain
+         x_dist = (-ide/2.)*config_flags%dx - config_flags%dx/2 + i*config_flags%dx
+         if (j /= jde) ibm_ht_u(i,j) = offset + 0.0875*ABS(x_dist)
+         ibm_ht_c(i,j) = offset + 0.0875*ABS(x_dist)
+      ENDDO
+      ENDDO 
      ! !KAL flatten the terrain at the east/west boundary- for using periodic boundary conditions and comparing to IBM
-     ! DO j=jts,jte 
-     !    if (j /= jde) ibm_ht_w(1,j) = ibm_ht_w(2,j)
-     !    if (j /= jde) ibm_ht_w(ite-1,j) = ibm_ht_w(ite-2,j) 
-     !    ibm_ht_v(1,j) = ibm_ht_v(2,j)
-     !    ibm_ht_v(ite-1,j) = ibm_ht_v(ite-2,j) 
-     !    if (j /= jde) ibm_ht_u(1,j) = ibm_ht_w(2,j)
-     !    if (j /= jde) ibm_ht_u(2,j) = ibm_ht_w(2,j)
-     !    if (j /= jde) ibm_ht_u(ite,j) = ibm_ht_w(ite-2,j) 
-     !    if (j /= jde) ibm_ht_u(ite-1,j) = ibm_ht_w(ite-2,j)      
-     !    ibm_ht_c(1,j) = ibm_ht_w(2,j)
-     !    ibm_ht_c(2,j) = ibm_ht_w(2,j)
-     !    ibm_ht_c(ite,j) = ibm_ht_w(ite-2,j) 
-     !    ibm_ht_c(ite-1,j) = ibm_ht_w(ite-2,j)     
-     ! ENDDO 
+      DO j=jts,jte 
+         if (j /= jde) ibm_ht_w(1,j) = ibm_ht_w(2,j)
+         if (j /= jde) ibm_ht_w(ite-1,j) = ibm_ht_w(ite-2,j) 
+         ibm_ht_v(1,j) = ibm_ht_v(2,j)
+         ibm_ht_v(ite-1,j) = ibm_ht_v(ite-2,j) 
+         if (j /= jde) ibm_ht_u(1,j) = ibm_ht_w(2,j)
+         if (j /= jde) ibm_ht_u(2,j) = ibm_ht_w(2,j)
+         if (j /= jde) ibm_ht_u(ite,j) = ibm_ht_w(ite-2,j) 
+         if (j /= jde) ibm_ht_u(ite-1,j) = ibm_ht_w(ite-2,j)      
+         ibm_ht_c(1,j) = ibm_ht_w(2,j)
+         ibm_ht_c(2,j) = ibm_ht_w(2,j)
+         ibm_ht_c(ite,j) = ibm_ht_w(ite-2,j) 
+         ibm_ht_c(ite-1,j) = ibm_ht_w(ite-2,j)     
+      ENDDO 
   ELSEIF (config_flags%ideal_terrain .EQ. 81) THEN
      !RSA sinusoidal valley case
      offset = 550.0
@@ -1548,16 +1548,16 @@ SUBROUTINE compute_idealized_terrain ( config_flags,                 &
      !                        ims, ime, jms, jme, kms, kme, &
      !                        its, ite, jts, jte, kts, kte )
 
-     offset = 0.0    
-     DO j=jts,jte
-     DO i=its,ite
-        if (j /= jde) ibm_ht_u(i,j)= offset + ibm_ht_u(i,j)
-        if (i /= ide) ibm_ht_v(i,j)= offset + ibm_ht_v(i,j)
-        if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j)=offset + ibm_ht_w(i,j)
-        ibm_ht_c(i,j) = offset + ibm_ht_c(i,j)
-     ENDDO
-     ENDDO     		   			   
-
+     !offset = 0.0    
+     !DO j=jts,jte
+     !DO i=its,ite
+     !   if (j /= jde) ibm_ht_u(i,j)= offset + ibm_ht_u(i,j)
+      !  if (i /= ide) ibm_ht_v(i,j)= offset + ibm_ht_v(i,j)
+     !   if ((i /= ide) .AND. (j /= jde)) ibm_ht_w(i,j)=offset + ibm_ht_w(i,j)
+      !  ibm_ht_c(i,j) = offset + ibm_ht_c(i,j)
+     !ENDDO
+     !ENDDO     		   			   
+     return 
   ELSEIF (config_flags%ideal_terrain .EQ. 12) THEN
      !This is for the 2d isolated ridge case
 !     xa = 48.0
