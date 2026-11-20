@@ -35,7 +35,7 @@ module mod_test_mynn_bl_driver
     ifort -o test_mynn_bl_driver -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-avx512 \
      -fopenmp -qopenmp -fpp -falign-functions=32 -Wall -qopt-report=5 GMS_kinds.f90  GMS_intrinsics_wrappers.o GMS_mynn_bl_driver.f90 test_mynn_bl_driver.f90
     -------------------------------------------------------------------------------------------------------------------------------------------------
-    ifx -o test_AM_broadband_signal_creation -fp-model fast=2 -ftz -O3  -march=skylake-avx512      -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=3 \ 
+    ifx -o test_mynn_bl_driver  -fp-model fast=2 -ftz -O3  -march=skylake-avx512      -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=3 \ 
     GMS_kinds.f90 GMS_kinds.f90  GMS_intrinsics_wrappers.o GMS_mynn_bl_driver.f90 test_mynn_bl_driver.f90
 
     For assembly only:
