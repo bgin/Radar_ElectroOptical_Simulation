@@ -286,5 +286,69 @@ subroutine clear_samples(this,r8_def,use_memset,ier)
 #endif 
 end subroutine clear_samples 
 
+subroutine copy_create(this,other,use_memset,ier)
+     implicit none   
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       interface 
+              function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                  use iso_c_binding, only : c_long_long 
+                  integer(c_long_long) :: rdtsc_wrap 
+              end function rdtsc_wrap 
+       end interface
+#endif           
+                            
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       character(*), parameter :: sub_name = "copy_create"
+#endif 
+    type(rand_pm_gaussian_signal_r8_t), intent(inout)     :: this
+    type(rand_pm_gaussian_signal_r8_t), intent(in)        :: other 
+    logical(kind=i4),                   intent(in), value :: use_memset 
+    integer(kind=i4),                   intent(inout)     :: ier 
+    integer(kind=i4), automatic :: i,j 
+    ! Exec code 
+    ier = -9999_i4 
+    if(this.m_build_state .eq. .false.) then 
+       ier = -1_i4
+       return 
+    end if 
+    if(other.m_build_state .eq. .false.) then 
+       ier = -2_i4
+       return 
+    end if 
+    if(allocated(other.m_signal_samples) .eq. .false.) then 
+       ier = -3_i4 
+       return 
+    end if 
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       RAND_PM_GAUSSIAN_SIGNAL_TRACE_START
+#endif
+    this.m_nsamples      = other.m_nsamples 
+    this.m_num_gaussians = other.m_num_gaussians
+    this.m_tstart        = other.m_tstart 
+    this.m_tend          = other.m_tend  
+    this.m_min_sigma     = other.m_min_sigma  
+    this.m_max_sigma     = other.m_max_sigma  
+    this.m_max_amplitude = other.m_max_amplitude 
+    RAND_PM_GAUSSIAN_SIGNAL_SAFE_ALLOC(this.m_signal_samples, (this.m_nsamples))
+    if(use_memset .eq. .true.) then 
+       this.m_signal_samples = other.m_signal_samples 
+    else 
+       do i=1,iand(this.m_nsamples,inot(3_i4)),4_i4
+            this.m_signal_samples(i+0_i4) = other.m_signal_samples(i+0_i4)
+            this.m_signal_samples(i+1_i4) = other.m_signal_samples(i+1_i4)
+            this.m_signal_samples(i+2_i4) = other.m_signal_samples(i+2_i4)
+            this.m_signal_samples(i+3_i4) = other.m_signal_samples(i+3_i4)
+       end do 
+       do j=i,this.m_nsamples 
+          this.m_signal_samples(j) = other.m_signal_samples(j)
+       end do 
+    end if 
+    this.m_build_state = .true. 
+    ier = 0
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       RAND_PM_GAUSSIAN_SIGNAL_TRACE_END 
+#endif 
+end subroutine copy_create
+
 end module mod_rand_pm_gaussian_signal
 
