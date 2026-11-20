@@ -257,7 +257,7 @@ print*, "TSC-End:", rdtsc_wrap()
             if(use_memset .eq. .true.) then 
                trapezw.tw_samples__ = fill 
             else 
-               do i__=1,iand(trapezw.n_samples__-1,inot(3)),4
+               do i__=1,iand(trapezw.n_samples__,inot(3)),4
                   trapezw.tw_samples__(i__+0) = fill 
                   trapezw.tw_samples__(i__+1) = fill 
                   trapezw.tw_samples__(i__+2) = fill 
@@ -266,13 +266,7 @@ print*, "TSC-End:", rdtsc_wrap()
                do j__=i__,trapezw.n_samples__ 
                    trapezw.tw_samples__(j__) = fill 
                end do 
-            end if   
-            trapezw.n_samples__ = 0 
-            trapezw.n_waves__   = 0
-            trapezw.n_param_a__ = 0
-            trapezw.n_param_l__ = 0
-            trapezw.n_param_c__ = 0
-            trapezw.n_param_m__ = 0    
+            end if     
 #if (TRAPEZOID_WAVEFORM_EXEC_TRACE) == 1
      TRAPEZOID_WAVEFORM_TRACE_END
 #endif                
