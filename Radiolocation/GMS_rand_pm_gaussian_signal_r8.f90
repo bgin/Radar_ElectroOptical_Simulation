@@ -236,5 +236,55 @@ subroutine destroy(this,to_clear_values,ier)
 #endif 
 end subroutine destroy
 
+subroutine clear_samples(this,r8_def,use_memset,ier)
+     implicit none   
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       interface 
+              function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                  use iso_c_binding, only : c_long_long 
+                  integer(c_long_long) :: rdtsc_wrap 
+              end function rdtsc_wrap 
+       end interface
+#endif           
+                            
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       character(*), parameter :: sub_name = "clear_samples"
+#endif 
+    type(rand_pm_gaussian_signal_r8_t), intent(inout)     :: this
+    real(kind=dp),                      intent(in), value :: r8_def
+    logical(kind=i4),                   intent(in), value :: use_memset 
+    integer(kind=i4),                   intent(inout)     :: ier 
+    integer(kind=i4), automatic :: i,j 
+    ier = -9999_i4
+    if(this.m_build_state .eq. .false.) then 
+       ier = -1_i4
+       return 
+    end if 
+    if(allocated(this.m_signal_samples) .eq. .false.) then 
+       ier = -2_i4 
+       return 
+    end if 
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       RAND_PM_GAUSSIAN_SIGNAL_TRACE_START
+#endif 
+    if(use_memset .eq. .true.) then 
+       this.m_signal_samples = r8_def 
+    else 
+       do i=1_i4,iand(this.m_nsamples,inot(3_i4)),4_i4
+            this.m_signal_samples(i+0_i4) = r8_def 
+            this.m_signal_samples(i+1_i4) = r8_def 
+            this.m_signal_samples(i+2_i4) = r8_def 
+            this.m_signal_samples(i+3_i4) = r8_def
+       end do 
+       do j=i,this.m_nsamples 
+            this.m_signal_samples(j) = r8_def
+       end do 
+    endif 
+    ier = 0_i4 
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       RAND_PM_GAUSSIAN_SIGNAL_TRACE_END 
+#endif 
+end subroutine clear_samples 
+
 end module mod_rand_pm_gaussian_signal
 
