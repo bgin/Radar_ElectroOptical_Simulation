@@ -160,6 +160,9 @@ subroutine construct(this,nsamples,num_gaussians,tstart,  &
           ier = -1
           return 
        end if 
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       RAND_PM_GAUSSIAN_SIGNAL_TRACE_START
+#endif 
        this.m_nsamples = nsamples 
        if(num_gaussians .gt. 1000_i4) then 
           this.m_num_gaussians = 1000_i4 
@@ -182,8 +185,56 @@ subroutine construct(this,nsamples,num_gaussians,tstart,  &
        RAND_PM_GAUSSIAN_SIGNAL_SAFE_ALLOC(this.m_signal_samples, (this.m_nsamples))
        this.m_build_state = .true. 
        ier = 0
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE)
+       RAND_PM_GAUSSIAN_SIGNAL_TRACE_END
+#endif 
 end subroutine construct 
 
+subroutine destroy(this,to_clear_values,ier)
+     implicit none   
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       interface 
+              function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                  use iso_c_binding, only : c_long_long 
+                  integer(c_long_long) :: rdtsc_wrap 
+              end function rdtsc_wrap 
+       end interface
+#endif           
+                            
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       character(*), parameter :: sub_name = "destroy"
+#endif 
+    type(rand_pm_gaussian_signal_r8_t), intent(inout)     :: this 
+    logical(kind=i4),                   intent(in), value :: to_clear_values
+    integer(kind=i4),                   intent(inout)     :: ier 
+    ! Exec code 
+    ier = -9999
+    if(this.m_build_state .eq. .true.) then 
+       ier = -1 
+       return 
+    end if 
+    if(allocated(this.m_signal_samples) .eq. .false.) then 
+       ier = -2 
+       return  
+    end if 
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       RAND_PM_GAUSSIAN_SIGNAL_TRACE_START
+#endif 
+    RAND_PM_GAUSSIAN_SIGNAL_SAFE_DEALLOC(this.m_signal_samples) 
+    if(to_clear_values .eq. .true.) then 
+       this.m_nsamples = 0_i4 
+       this.m_num_gaussians = 0_i4 
+       this.m_tstart        = 0.0_dp 
+       this.m_tend          = 0.0_dp 
+       this.m_min_sigma     = 0.0_dp 
+       this.m_max_sigma     = 0.0_dp 
+       this.m_max_amplitude = 0.0_dp
+    endif 
+    this.m_build_state = .false. 
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       RAND_PM_GAUSSIAN_SIGNAL_TRACE_END 
+#endif 
+end subroutine destroy
 
 end module mod_rand_pm_gaussian_signal
 
