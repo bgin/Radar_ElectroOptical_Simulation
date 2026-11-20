@@ -58,7 +58,7 @@ module mod_rand_pm_gaussian_signal
     ! Tab:5 col - Type and etc.. definitions
     ! Tab:10,11 col - Type , function and subroutine code blocks.
 
-    use mod_kinds,     only : i1,i4,dp
+    use mod_kinds,     only : i1,i4,i8,dp
     use omp_lib
     implicit none
     public
@@ -349,6 +349,131 @@ subroutine copy_create(this,other,use_memset,ier)
        RAND_PM_GAUSSIAN_SIGNAL_TRACE_END 
 #endif 
 end subroutine copy_create
+
+subroutine copy_assign(this,other,use_memset,ier)
+     implicit none   
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       interface 
+              function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                  use iso_c_binding, only : c_long_long 
+                  integer(c_long_long) :: rdtsc_wrap 
+              end function rdtsc_wrap 
+       end interface
+#endif           
+                            
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       character(*), parameter :: sub_name = "copy_assign"
+#endif 
+    type(rand_pm_gaussian_signal_r8_t), intent(inout)     :: this
+    type(rand_pm_gaussian_signal_r8_t), intent(in)        :: other 
+    logical(kind=i4),                   intent(in), value :: use_memset 
+    integer(kind=i4),                   intent(inout)     :: ier 
+    integer(kind=i4), automatic :: i,j 
+    ! Exec code 
+    ier = -9999_i4 
+    if(this.m_build_state .eq. .false.) then 
+       ier = -1_i4
+       return 
+    end if 
+    if(other.m_build_state .eq. .false.) then 
+       ier = -2_i4
+       return 
+    end if 
+    if(allocated(other.m_signal_samples) .eq. .false.) then 
+       ier = -3_i4 
+       return 
+    end if 
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       RAND_PM_GAUSSIAN_SIGNAL_TRACE_START
+#endif
+    this.m_nsamples      = other.m_nsamples 
+    this.m_num_gaussians = other.m_num_gaussians
+    this.m_tstart        = other.m_tstart 
+    this.m_tend          = other.m_tend  
+    this.m_min_sigma     = other.m_min_sigma  
+    this.m_max_sigma     = other.m_max_sigma  
+    this.m_max_amplitude = other.m_max_amplitude 
+    if(use_memset .eq. .true.) then 
+       this.m_signal_samples = other.m_signal_samples 
+    else 
+       do i=1,iand(this.m_nsamples,inot(3_i4)),4_i4
+            this.m_signal_samples(i+0_i4) = other.m_signal_samples(i+0_i4)
+            this.m_signal_samples(i+1_i4) = other.m_signal_samples(i+1_i4)
+            this.m_signal_samples(i+2_i4) = other.m_signal_samples(i+2_i4)
+            this.m_signal_samples(i+3_i4) = other.m_signal_samples(i+3_i4)
+       end do 
+       do j=i,this.m_nsamples 
+          this.m_signal_samples(j) = other.m_signal_samples(j)
+       end do 
+    end if 
+    this.m_build_state = .true. 
+    ier = 0
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       RAND_PM_GAUSSIAN_SIGNAL_TRACE_END 
+#endif 
+end subroutine copy_assign 
+
+subroutine show(this,ier)
+     implicit none   
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       interface 
+              function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                  use iso_c_binding, only : c_long_long 
+                  integer(c_long_long) :: rdtsc_wrap 
+              end function rdtsc_wrap 
+       end interface
+#endif           
+                            
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       character(*), parameter :: sub_name = "show"
+#endif 
+    type(rand_pm_gaussian_signal_r8_t), intent(in)        :: this
+    integer(kind=i4),                   intent(inout)     :: ier 
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       RAND_PM_GAUSSIAN_SIGNAL_TRACE_START
+#endif
+    ier = -9999
+    print*, "object-vaddr=", LOC(this)
+    print*, "object-size =", SIZEOF(this), "bytes"
+    call check_allocation_stats_real1D(this.m_signal_samples,"m_nsamples")
+    print*, "[INFO]: Random Phase Modulated Gaussian SIgnal -- Scalar Members:"
+    print*, "m_nsamples           =",  this.m_nsamples  
+    print*, "m_num_gaussians      =",  this.m_num_gaussians
+    print*, "m_tstart             =",  this.m_tstart 
+    print*, "m_tend               =",  this.m_tend 
+    print*, "this.m_min_sigma     =",  this.m_min_sigma
+    print*, "this.m_max_sigma     =",  this.m_max_sigma 
+    print*, "this.m_max_amplitude =",  this.m_max_amplitude  
+    ier = 0
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       RAND_PM_GAUSSIAN_SIGNAL_TRACE_END 
+#endif
+    contains 
+    subroutine check_allocation_stats_real1D(array,name)
+                       implicit none
+                       real(kind=dp), allocatable, dimension(:), intent(in) :: array 
+                       character(len=*),                         intent(in) :: name 
+                       ! Locals
+                       integer(kind=i8), automatic :: vaddr 
+                       integer(kind=i8), automatic :: size 
+                       integer(kind=i4), automatic :: lo_bound
+                       integer(kind=i4), automatic :: hi_bound 
+                       logical(kind=i1), automatic :: is_allocated 
+                       vaddr        = LOC(array)
+                       size         = SIZEOF(array)
+                       lo_bound     = LBOUND(array,DIM=1)
+                       hi_bound     = UBOUND(array,DIM=1)
+                       is_allocated = allocated(array)
+                       print*, "======================INFO==========================="
+                       print*, "Array member name:", name 
+                       print*, "vaddr=",vaddr
+                       print*, "size=",size
+                       print*, "allocated=",is_allocated
+                       print*, "lo_bound=",lo_bound
+                       print*, "hi_bound=",hi_bound 
+                       print*,"======================INFO==========================="
+    end subroutine check_allocation_stats_real1D
+end subroutine show 
 
 end module mod_rand_pm_gaussian_signal
 
