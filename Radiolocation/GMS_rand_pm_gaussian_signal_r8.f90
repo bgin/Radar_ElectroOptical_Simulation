@@ -211,7 +211,7 @@ subroutine destroy(this,to_clear_values,ier)
     integer(kind=i4),                   intent(inout)     :: ier 
     ! Exec code 
     ier = -9999
-    if(this.m_build_state .eq. .true.) then 
+    if(this.m_build_state .eq. .false.) then 
        ier = -1 
        return 
     end if 
@@ -233,6 +233,7 @@ subroutine destroy(this,to_clear_values,ier)
        this.m_max_amplitude = 0.0_dp
     endif 
     this.m_build_state = .false. 
+    ier = 0
 #if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
        RAND_PM_GAUSSIAN_SIGNAL_TRACE_END 
 #endif 
