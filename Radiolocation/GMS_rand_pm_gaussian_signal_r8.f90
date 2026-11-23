@@ -171,7 +171,7 @@ subroutine construct(this,nsamples,num_gaussians,tstart,  &
        else 
           this.m_num_gaussians = num_gaussians 
        end if 
-       if(tstart .ge. 0.0_dp) then 
+       if(tstart .lt. 0.0_dp) then 
           this.m_tstart = 0.0_dp 
        else 
           this.m_tstart  = tstart 
@@ -478,40 +478,6 @@ subroutine show(this,ier)
     end subroutine check_allocation_stats_real1D
 end subroutine show 
 
-#if 0
-program random_range_example
-    implicit none
-
-    ! Variables for random number generation
-    real(4) :: r, scaled_r
-    real(4), parameter :: lower_bound = 1.0_4
-    real(4), parameter :: upper_bound = 10.0_4
-
-    ! Variables for seeding the PRNG
-    integer :: seed_size, clock_count, i
-    integer, allocatable :: seed(:)
-
-    ! 1. Initialize the random seed using the system clock
-    ! (Ensures a different sequence on every program run)
-    call random_seed(size = seed_size)
-    allocate(seed(seed_size))
-    call system_clock(count = clock_count)
-    seed = clock_count + 37 * [(i - 1, i = 1, seed_size)]
-    call random_seed(put = seed)
-    deallocate(seed)
-
-    ! 2. Generate a random real(4) in the half-open interval [0.0, 1.0)
-    call random_number(r)
-
-    ! 3. Scale and shift to the desired range [1.0, 10.0)
-    scaled_r = lower_bound + (upper_bound - lower_bound) * r
-
-    print *, "Raw random number [0, 1):      ", r
-    print *, "Scaled random number [1, 10):  ", scaled_r
-
-end program random_range_example
-
-#endif 
 
 subroutine generate(this,ier)
        implicit none   
@@ -582,7 +548,7 @@ subroutine generate(this,ier)
         scaled_rsigma = sigma_lo+(sigma_hi-sigma_lo)*randn_sigma 
         gc_store(i).two_sigma_sq = 2.0_dp*scaled_rsigma*scaled_rsigma 
      end do 
-     dt = this.m_tend-this.m_tstart/real(this.m_nsamples-1_i4,kind=dp) 
+     dt = (this.m_tend-this.m_tstart)/real(this.m_nsamples,kind=dp)
      do j=1, this.m_nsamples 
        t_j = real(j,kind=dp)
        t   = this.m_tstart+t_j*dt 
@@ -601,6 +567,104 @@ subroutine generate(this,ier)
      deallocate(seed)
      ier = 0 
 end subroutine generate 
+
+subroutine generate_simd(this,ier)
+       implicit none   
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       interface 
+              function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                  use iso_c_binding, only : c_long_long 
+                  integer(c_long_long) :: rdtsc_wrap 
+              end function rdtsc_wrap 
+       end interface
+#endif           
+                            
+#if (RAND_PM_GAUSSIAN_SIGNAL_EXEC_TRACE) == 1
+       character(*), parameter :: sub_name = "generate_simd"
+#endif 
+    type(rand_pm_gaussian_signal_r8_t), intent(inout)     :: this
+    integer(kind=i4),                   intent(inout)     :: ier 
+    !type :: gaussian_components_t 
+    !   real(kind=dp) :: amplitude 
+    !   real(kind=dp) :: mu 
+     !  real(kind=dp) :: two_sigma_sq 
+    !end type gaussian_components_t
+    !type(gaussian_components_t), dimension(1:MAX_BUF_SIZE) :: gc_store 
+!#if defined(__INTEL_COMPILER) || defined(__ICC)
+   !    !dir$ attribute align : 64 :: gc_store
+!#endif
+     real(kind=dp), dimension(1:MAX_BUF_SIZE) :: amplitude_store
+     real(kind=dp), dimension(1:MAX_BUF_SIZE) :: mu_store 
+     real(kind=dp), dimension(1:MAX_BUF_SIZE) :: two_sigma_sq_store 
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+       !dir$ attribute align : 64 :: amplitude_store
+       !dir$ attribute align : 64 :: mu_store 
+       !dir$ attribute align : 64 :: two_sigma_sq_store
+#endif
+     integer(kind=i4),allocatable :: seed(:)
+     real(kind=dp), parameter    :: sqrt2PI = 2.506628274631000502415765284811_dp 
+     real(kind=dp), automatic    :: padding,dt
+     real(kind=dp), automatic    :: randn_mu,randn_sigma,randn_amp 
+     real(kind=dp), automatic    :: scaled_rmu,scaled_rsigma,scaled_ramp
+     real(kind=dp), automatic    :: mu_lo,mu_hi 
+     real(kind=dp), automatic    :: sigma_lo,sigma_hi 
+     real(kind=dp), automatic    :: amp_lo,amp_hi
+     real(kind=dp), automatic    :: t_j,t,phase_accumulator  
+     real(kind=dp), automatic    :: tmu,diff,tamplitude,tsigma
+     real(kind=dp), automatic    :: normalization,exp_val
+     integer(kind=i4),automatic  :: seed_size, clock_count, ii
+     integer(kind=i4), automatic :: i,j,k 
+     ier = -9999_i4 
+     if(this.m_num_gaussians .gt. MAX_BUF_SIZE) then 
+        ier = -1_i4 
+        return 
+     end if       
+     call random_seed(size = seed_size)
+     allocate(seed(seed_size))
+     call system_clock(count = clock_count)
+     seed = clock_count + 37_i4 * [(ii - 1, ii = 1, seed_size)]
+     call random_seed(put = seed)
+     padding  = 3.0_dp*this.m_max_sigma
+     mu_lo    = this.m_tstart-padding
+     mu_hi    = this.m_tend+padding 
+     sigma_lo = this.m_min_sigma 
+     sigma_hi = this.m_max_sigma
+     amp_lo   = -this.m_max_amplitude 
+     amp_hi   = this.m_max_amplitude 
+     randn_amp   = 0.0_dp 
+     randn_mu    = 0.0_dp 
+     randn_sigma = 0.0_dp 
+     do i=1, MAX_BUF_SIZE 
+        call random_number(randn_amp)
+        scaled_ramp = amp_lo+(amp_hi-amp_lo)*randn_amp
+        amplitude_store(i) = scaled_ramp
+        call random_number(randn_mu)
+        scaled_rmu = mu_lo+(mu_hi-mu_lo)*randn_mu
+        mu_store(i) = scaled_rmu 
+        call random_number(randn_sigma)
+        scaled_rsigma = sigma_lo+(sigma_hi-sigma_lo)*randn_sigma 
+        two_sigma_sq_store(i) = 2.0_dp*scaled_rsigma*scaled_rsigma 
+     end do 
+     dt = (this.m_tend-this.m_tstart)/real(this.m_nsamples,kind=dp)
+     do j=1, this.m_nsamples 
+       t_j = real(j,kind=dp)
+       t   = this.m_tstart+t_j*dt 
+       phase_accumulator = 0.0_dp 
+!omp simd linear(k:1) aligned(mu_store,amplitude_store,tw_sigma_sq_store:64) reduction(+:phase_accumulator)
+       do k=1,this.m_num_gaussians
+          tmu     = mu_store(k) 
+          diff    = t-tmu 
+          tamplitude = amplitude_store(k) 
+          tsigma  = two_sigma_sq_store(k) 
+          normalization = 1.0_dp/(tsigma*sqrt2PI) 
+          exp_val = exp(-(diff*diff)/tsigma)
+          phase_accumulator = phase_accumulator+(tamplitude*exp_val)
+       end do 
+       this.m_signal_samples(j) = phase_accumulator 
+     end do 
+     deallocate(seed)
+     ier = 0 
+end subroutine generate_simd 
 
 end module mod_rand_pm_gaussian_signal
 
