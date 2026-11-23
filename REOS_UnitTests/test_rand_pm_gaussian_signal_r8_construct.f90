@@ -104,9 +104,90 @@ subroutine unit_test_construct()
     print*, footer 
 end subroutine unit_test_construct 
 
+subroutine unit_test_destroy()
+    use iso_c_binding, only : c_int 
+    use IFPORT
+#if 0
+              interface
+                  function raise(sig) bind(C,name="raise")
+                           use iso_c_binding, only : c_int 
+                           integer(c_int) :: raise 
+                           integer(c_int), value :: sig 
+                  end function raise 
+              end interface
+#endif
+
+    interface 
+        function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                            use iso_c_binding, only : c_long_long 
+                            integer(c_long_long) :: rdtsc_wrap 
+        end function rdtsc_wrap 
+    end interface
+    character(len=64),           parameter     :: header = "[UNIT-TEST] #1: unit_test_destroy -- START]"
+    character(len=64),           parameter     :: footer = "[UNIT-TEST] #1: unit_test_destroy -- END]"
+    integer(kind=c_long_long),   automatic     :: start,end 
+    integer(kind=c_long_long),   automatic     :: start_c,end_c 
+    integer(kind=c_long_long),   automatic     :: tsc_elapsed 
+    integer(kind=i4),            automatic     :: ier 
+    type(rand_pm_gaussian_signal_r8_t), automatic :: test_signal 
+    integer(kind=i4),            parameter     :: num_samples   = 1024_i4 
+    integer(kind=i4),             parameter     :: num_gaussians = 64_i4
+    real(kind=dp), automatic :: tstart,tend,min_sigma,max_sigma,max_amplitude 
+    tstart    = 0.0_dp
+    tend      = 10.0_dp
+    min_sigma = 0.05_dp
+    max_sigma = 0.5_dp
+    max_amplitude = 2.54_dp
+    print*, header 
+    print*, "[UNIT-TEST]: [1] -- unit_test_destroy: creation of rand_pm_gaussian_signal_r8_t, STARTED."
+    start = rdtsc_wrap()
+    call construct(test_signal,num_samples,num_gaussians,tstart,tend,min_sigma,max_sigma,max_amplitude,ier)
+    end   = rdtsc_wrap()
+    start_c     = start-RDTSC_LATENCY
+    end_c       = end-RDTSC_LATENCY
+    tsc_elapsed = end_c-start_c 
+    if(tsc_elapsed<ZERO) then
+        print*,"[INVALID-TSC]=", tsc_elapsed
+    else 
+        print*, "[WARNING]: Crude timing measurement!!"
+        print*,"[TSC]=", tsc_elapsed 
+    end if
+    if(ier .ne. 0) then 
+       if(ier .eq. -9999) print*, "[UNIT-TEST]: [1] unit_test_destroy: execution did not process past prologue!!"
+       if(ier .eq. -1)    print*, "[UNIT-TEST]: [1] unit_test_destroy: derived type already created!!"
+    else if(ier .eq. 0) then 
+       print*, "[UNIT-TEST]: [1] unit_test_destroy: execution did reached end!!"
+       print*, "ier=", ier
+    end if 
+    print*, "[UNIT-TEST]: [1] -- unit_test_destroy: creation of rand_pm_gaussian_signal_r8_t, ENDED."
+    print*, "[UNIT-TEST]: [2] -- unit_test_destroy: destroying the rand_pm_gaussian_signal_r8_t, STARTED."
+    start = rdtsc_wrap()
+    call destroy(test_signal,.true.,ier)
+    end   = rdtsc_wrap()
+    start_c     = start-RDTSC_LATENCY
+    end_c       = end-RDTSC_LATENCY
+    tsc_elapsed = end_c-start_c 
+    if(tsc_elapsed<ZERO) then
+        print*,"[INVALID-TSC]=", tsc_elapsed
+    else 
+        print*, "[WARNING]: Crude timing measurement!!"
+        print*,"[TSC]=", tsc_elapsed 
+    end if
+    if(ier .ne. 0) then 
+       if(ier .eq. -9999) print*, "[UNIT-TEST]: [2] unit_test_destroy: execution did not process past prologue!!"
+       if(ier .eq. -1)    print*, "[UNIT-TEST]: [2] unit_test_destroy: derived type already created!!"
+       if(ier .eq. -2)    print*, "[UNIT-TEST]: [2] unit_test_destroy: allocatable array is not allocated!!"
+    else if(ier .eq. 0) then 
+       print*, "[UNIT-TEST]: [2] unit_test_destroy: execution did reach end!!"
+       print*, "ier=", ier
+    end if
+    print*, footer 
+end subroutine unit_test_destroy 
+
 end module mod_test_rand_pm_gaussian_signal_construct 
 
 program main 
     use mod_test_rand_pm_gaussian_signal_construct 
     call unit_test_construct()
+    call unit_test_destroy()
 end program 
