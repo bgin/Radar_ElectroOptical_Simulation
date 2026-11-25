@@ -38,7 +38,7 @@ module mod_test_rand_pm_gaussian_signal_construct
      GMS_kinds.f90  GMS_intrinsics_wrappers.o GMS_rand_pm_gaussian_signal_r8.f90 test_rand_pm_gaussian_signal_r8.f90
 
     For assembly only:
-    ifort -S  test_avx_cvec4_add -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-avx512 \
+    ifort -S  test_rand_pm_gaussian_signal -fp-model fast=2 -ftz -O3 -ggdb  -march=skylake-avx512 \
      -fopenmp -qopenmp -fpp -falign-functions=32 -qopt-report=5 GMS_kinds.f90  GMS_intrinsics_wrappers.o GMS_rand_pm_gaussian_signal_r8.f90 test_rand_pm_gaussian_signal_r8.f90
 #endif
 
