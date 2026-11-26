@@ -1757,7 +1757,7 @@ module atmos_refraction
              res = 0.5_dp*(1.0_dp+erf(x*C0707106781186547524400844362105))
        end function prob_integral_r8
 
-       !формулу (3.35) для расчета регулярной
+       !формулa (3.35) для расчета регулярной
        !рефракции оптических волн в земной атмосфере.
        ! formula 3.37, page: 68
        elemental function analytic_sol_L1_f337_r4(beta,dn0,z0,H) result(L1)
@@ -1910,7 +1910,7 @@ module atmos_refraction
             real(kind=sp),  intent(in) :: beta  ! beta coefficient
             real(kind=sp),  intent(in) :: z0    ! angle of ray incoming to receiver
             real(kind=sp),  intent(in) :: H     ! height of raditaing source over the earth surface
-            real(kind=sp) :: L2 
+            real(kind=sp) :: L3 
             real(kind=sp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_sp
             real(kind=sp), parameter :: a = 6378.0_sp
             real(kind=sp), automatic :: sba, ctgz0
@@ -1927,7 +1927,7 @@ module atmos_refraction
             phi1   = prob_integral_r4(sqrt(bactgz0+tbH))
             phi2   = prob_integral_r4(sqrt(bactgz0))
             t1     = phi1-phi2 
-            L2     = t0*exp1*t1 
+            L3     = t0*exp1*t1 
        end function analytic_sol_L3_f342_r4
 
          !формулa (3.35) для расчета регулярной
@@ -1944,7 +1944,7 @@ module atmos_refraction
             real(kind=dp),  intent(in) :: beta  ! beta coefficient
             real(kind=dp),  intent(in) :: z0    ! angle of ray incoming to receiver
             real(kind=dp),  intent(in) :: H     ! height of raditaing source over the earth surface
-            real(kind=dp) :: L2 
+            real(kind=dp) :: L3 
             real(kind=dp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_dp
             real(kind=dp), parameter :: a = 6378.0_dp
             real(kind=dp), automatic :: sba, ctgz0
@@ -1961,7 +1961,7 @@ module atmos_refraction
             phi1   = prob_integral_r8(sqrt(bactgz0+tbH))
             phi2   = prob_integral_r8(sqrt(bactgz0))
             t1     = phi1-phi2 
-            L2     = t0*exp1*t1 
+            L3     = t0*exp1*t1 
        end function analytic_sol_L3_f342_r8
 
 
