@@ -2065,7 +2065,7 @@ module atmos_refraction
             real(kind=sp), automatic :: earg, exp1, t0, t1, strm 
             sba  = sqrt(beta*a)
             tgz0 = tan(z0)
-            ctgz0= 1.0_sp/tan(z0)
+            ctgz0= 1.0_sp/tgz0
             earg = beta*a/(2.0_sp*tgz0*tgz0)
             exp1 = exp(earg)
             t0   = dn0*(sba/tgz0)*exp1 
@@ -2125,7 +2125,7 @@ module atmos_refraction
             real(kind=sp), automatic :: earg, exp1, t0, t1, strm 
             sba  = sqrt(2.0_sp*beta*a)
             tgz0 = tan(z0)
-            ctgz0= 1.0_sp/tan(z0)
+            ctgz0= 1.0_sp/tgz0;
             earg = beta*a/(tgz0*tgz0)
             exp1 = exp(earg)
             t0   = dn0*(sba/tgz0)*exp1 
@@ -2153,7 +2153,7 @@ module atmos_refraction
             real(kind=dp), automatic :: earg, exp1, t0, t1, strm 
             sba  = sqrt(2.0_dp*beta*a)
             tgz0 = tan(z0)
-            ctgz0= 1.0_dp/tan(z0)
+            ctgz0= 1.0_dp/tgz
             earg = beta*a/(tgz0*tgz0)
             exp1 = exp(earg)
             t0   = dn0*(sba/tgz0)*exp1 
