@@ -1880,7 +1880,7 @@ module atmos_refraction
             real(kind=dp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_dp
             real(kind=dp), parameter :: a = 6378.0_dp
             real(kind=dp), automatic :: sba, ctgz0
-            real(kind=dp), automatic :: sctgz0, tbh, phi1, phi2 
+            real(kind=dp), automatic :: sctgz0, tbH, phi1, phi2 
             real(kind=dp), automatic :: exp1, bactgz0, t0, t1  
             sba    = sqrt(beta*a)
             ctgz0  = 1.0_dp/tan(z0)
@@ -1914,7 +1914,7 @@ module atmos_refraction
             real(kind=sp), parameter :: C1253314137315500251207882642406 = 1.253314137315500251207882642406_sp
             real(kind=sp), parameter :: a = 6378.0_sp
             real(kind=sp), automatic :: sba, ctgz0
-            real(kind=sp), automatic :: sctgz0, tbh, phi1, phi2 
+            real(kind=sp), automatic :: sctgz0, tbH, phi1, phi2 
             real(kind=sp), automatic :: exp1, bactgz0, t0, t1  
             sba    = sqrt(2.0_sp*beta*a)
             ctgz0  = 1.0_sp/tan(z0)
