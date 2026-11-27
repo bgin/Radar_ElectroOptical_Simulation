@@ -88,7 +88,7 @@ module mod_pm_bb_cmplx_cos_signal_c4
 #define PM_BB_CMPLX_COS_SIGNAL_C4_SAFE_DEALLOC(mem)    if(allocated(mem)) deallocate(mem)
 
 #if !defined(PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE)
-#define PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE 1
+#define PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE 0
 #endif
 
 #if !defined(PM_BB_CMPLX_COS_SIGNAL_C4_USE_EXPLICIT_DEALLOCATION)
@@ -221,14 +221,19 @@ subroutine destroy(this,to_clear_values,ier)
     logical(kind=i4),                  intent(in)       :: to_clear_values 
     integer(kind=i4),                  intent(inout)    :: ier 
     ier = -9999_i4
-    if(this.m_build_state .eq. .true.) then 
-        ier = -1_i4
-        return 
-    end if
-    if(allocated(this.m_signal_samples) .eq. .true. ) then 
-        ier = -2_i4
+    if((this.m_build_state .eq. .false.) .AND. &
+       (allocated(this.m_signal_samples) .eq. .false.)) then
+        ier = -1_i4 
         return 
     end if 
+    !if(this.m_build_state .eq. .false.) then 
+    !    ier = -1_i4
+    !    return 
+    !end if
+    !if(allocated(this.m_signal_samples) .eq. .false. ) then 
+    !    ier = -2_i4
+    !    return 
+    !end if 
 #if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
        PM_BB_CMPLX_COS_SIGNAL_C4_TRACE_START
 #endif
@@ -323,16 +328,20 @@ subroutine copy_create(this,other,use_memset,ier)
     complex(kind=sp), automatic :: c3 
     integer(kind=i4), automatic :: i,j 
     ier = -9999_i4 
+    if(LOC(this) .eq. LOC(other)) then 
+       ier = -1_i4 
+       return 
+    end if 
     if(this.m_build_state .eq. .true.) then 
-       ier = -1_i4
+       ier = -2_i4
        return 
     end if 
     if(other.m_build_state .eq. .false.) then 
-       ier = -2_i4 
+       ier = -3_i4 
        return 
     end if 
     if(allocated(other.m_signal_samples) .eq. .false.) then 
-       ier = -3_i4 
+       ier = -4_i4 
        return 
     end if 
 #if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
@@ -395,20 +404,24 @@ subroutine copy_assign(this,other,use_memset,ier)
     complex(kind=sp), automatic :: c3 
     integer(kind=i4), automatic :: i,j 
     ier = -9999_i4 
+    if(LOC(this) .eq. LOC(other)) then 
+       ier = -1_i4 
+       return 
+    end if 
     if(this.m_build_state .eq. .false.) then 
-       ier = -1_i4
+       ier = -2_i4
        return 
     end if 
     if(other.m_build_state .eq. .false.) then 
-       ier = -2_i4 
-       return 
-    end if 
-    if(allocated(other.m_signal_samples) .eq. .false.) then 
        ier = -3_i4 
        return 
     end if 
-    if(allocated(this.m_signal_samples) .eq. .false.) then 
+    if(allocated(other.m_signal_samples) .eq. .false.) then 
        ier = -4_i4 
+       return 
+    end if 
+    if(allocated(this.m_signal_samples) .eq. .false.) then 
+       ier = -5_i4 
        return 
     end if 
 #if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
