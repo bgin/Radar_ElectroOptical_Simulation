@@ -246,7 +246,55 @@ subroutine destroy(this,to_clear_values,ier)
 #endif
 end subroutine destroy 
 
-
+subroutine clear_samples(this,use_memset,def_c4,ier)
+implicit none   
+    #if (PM_BB_CMPLX_COS_SIGNAL_R4_EXEC_TRACE) == 1
+       interface 
+              function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                  use iso_c_binding, only : c_long_long 
+                  integer(c_long_long) :: rdtsc_wrap 
+              end function rdtsc_wrap 
+       end interface
+#endif           
+                            
+#if (PM_BB_CMPLX_COS_SIGNAL_R4_EXEC_TRACE) == 1
+       character(*), parameter :: sub_name = "clear_samples"
+#endif 
+    type(pm_bb_cmplx_cos_signal_c4_t), intent(inout)     :: this
+    logical(kind=i4),                  intent(in), value :: use_memset 
+    complex(kind=sp),                  intent(in), value :: def_c4 
+    integer(kind=i4),                  intent(inout)     :: ier 
+    integer(kind=i4), automatic :: i,j 
+    ier = -9999_i4 
+    if(this.m_build_state .eq. .false.) then 
+       ier = -1_i4 
+       return 
+    end if 
+    if(allocated(this.m_signal_samples) .eq. .false.) then 
+       ier = -2_i4 
+       return 
+    end if 
+#if (PM_BB_CMPLX_COS_SIGNAL_R4_EXEC_TRACE) == 1
+       PM_BB_CMPLX_COS_SIGNAL_R4_TRACE_START
+#endif
+    if(use_memset .eq. .true.) then 
+       this.m_signal_samples = def_c4 
+    else 
+       do i=1,iand(this.m_nsamples,inot(3_i4)),4_i4
+          this.m_signal_samples(i+0_i4) = def_c4 
+          this.m_signal_samples(i+1_i4) = def_c4 
+          this.m_signal_samples(i+2_i4) = def_c4 
+          this.m_signal_samples(i+3_i4) = def_c4 
+       end do 
+       do j=i,this.m_nsamples 
+          this.m_signal_samples(j) = def_c4 
+       end do 
+    end if 
+    ier = 0
+#if (PM_BB_CMPLX_COS_SIGNAL_R4_EXEC_TRACE) == 1
+       PM_BB_CMPLX_COS_SIGNAL_R4_TRACE_END
+#endif
+end subroutine clear_samples
 
 
 end module mod_pm_bb_cmplx_cos_signal_c4
