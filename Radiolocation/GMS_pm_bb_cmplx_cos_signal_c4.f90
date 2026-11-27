@@ -274,14 +274,11 @@ subroutine clear_samples(this,use_memset,def_c4,ier)
     integer(kind=i4),                  intent(inout)     :: ier 
     integer(kind=i4), automatic :: i,j 
     ier = -9999_i4 
-    if(this.m_build_state .eq. .false.) then 
-       ier = -1_i4 
-       return 
-    end if 
-    if(allocated(this.m_signal_samples) .eq. .false.) then 
-       ier = -2_i4 
-       return 
-    end if 
+    if((this.m_build_state .eq. .false.) .AND. &
+       (allocated(this.m_signal_samples) .eq. .false.)) then
+        ier = -1_i4 
+        return 
+    end if
 #if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
        PM_BB_CMPLX_COS_SIGNAL_C4_TRACE_START
 #endif
@@ -408,22 +405,16 @@ subroutine copy_assign(this,other,use_memset,ier)
        ier = -1_i4 
        return 
     end if 
-    if(this.m_build_state .eq. .false.) then 
-       ier = -2_i4
-       return 
-    end if 
-    if(other.m_build_state .eq. .false.) then 
-       ier = -3_i4 
-       return 
-    end if 
-    if(allocated(other.m_signal_samples) .eq. .false.) then 
-       ier = -4_i4 
-       return 
-    end if 
-    if(allocated(this.m_signal_samples) .eq. .false.) then 
-       ier = -5_i4 
-       return 
-    end if 
+    if((this.m_build_state .eq. .false.) .AND. &
+       (allocated(this.m_signal_samples) .eq. .false.)) then
+        ier = -1_i4 
+        return 
+    end if
+    if((other.m_build_state .eq. .false.) .AND. &
+       (allocated(other.m_signal_samples) .eq. .false.)) then
+        ier = -1_i4 
+        return 
+    end if
 #if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
        PM_BB_CMPLX_COS_SIGNAL_C4_TRACE_START
 #endif
@@ -529,6 +520,178 @@ subroutine show(this,ier)
                        print*,"======================INFO==========================="
     end subroutine check_allocation_stats_complex1D
 end subroutine show 
+
+function cos_sample(A,n,t,invT) result(sample)
+    real(kind=sp), intent(in), value :: A 
+    real(kind=sp), intent(in), value :: n 
+    real(kind=sp), intent(in), value :: t 
+    real(kind=sp), intent(in), value :: invT 
+    real(kind=sp), parameter :: C628318530717958647692528676656 = 6.28318530717958647692528676656_sp 
+    real(kind=sp), automatic :: arg 
+    real(kind=sp) :: sample 
+    arg     = n*C628318530717958647692528676656*t*invT 
+    sample  = 0.5_sp*A*(1.0_sp-cos(arg))
+end function cos_sample 
+
+#if 0
+TO DO: Update to include the full complex exponential
+\(I=\cos (\omega _{c}t+\phi _{m})=\cos (\phi _{m})\cos (\omega _{c}t)-\sin (\phi _{m})\sin (\omega _{c}t)\)
+\(Q=\sin (\omega _{c}t+\phi _{m})=\sin (\phi _{m})\cos (\omega _{c}t)+\cos (\phi _{m})\sin (\omega _{c}t)\)
+#endif 
+
+subroutine generate_with_user_data(this,user_symbols,n_T,n_K,ier)
+    implicit none   
+#if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
+       interface 
+              function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                  use iso_c_binding, only : c_long_long 
+                  integer(c_long_long) :: rdtsc_wrap 
+              end function rdtsc_wrap 
+       end interface
+#endif                         
+#if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
+       character(*), parameter :: sub_name = "generate_with_user_data"
+#endif 
+    type(pm_bb_cmplx_cos_signal_c4_t), intent(inout)     :: this
+    real(kind=sp), dimension(:,:),     intent(in)        :: user_symbols 
+    integer(kind=i4),                  intent(in), value :: n_T 
+    integer(kind=i4),                  intent(in), value :: n_K 
+    integer(kind=i4),                  intent(inout)     :: ier 
+    ! Locals 
+    complex(kind=sp), automatic :: sum, sample 
+    real(kind=sp),    automatic :: T, invTc
+    real(kind=sp),    automatic :: invT, t_i 
+    real(kind=sp),    automatic :: carrier_arg,cos_carrier, sin_carrier 
+    real(kind=sp),    automatic :: k_j, arg,sym  
+    real(kind=sp),    automatic :: pm, I, Q 
+    integer(kind=i4), automatic :: i,j 
+    real(kind=sp),    parameter :: C141421356237309504880168872421  = 1.41421356237309504880168872421_sp 
+    real(kind=sp),    parameter :: C6283185307179586476925286766559 = 6.283185307179586476925286766559_sp
+    ier = -9999_i4 
+    if((this.m_build_state .eq. .false.) .AND. &
+       (allocated(this.m_signal_samples) .eq. .false.)) then
+        ier = -1_i4 
+        return 
+    end if
+    if((this.m_nsamples /= n_T) .OR. &
+       (this.m_nK /= n_K)) then 
+       ier = -2_i4 
+       return 
+    end if 
+#if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
+     PM_BB_CMPLX_COS_SIGNAL_C4_TRACE_START
+#endif
+    T     = nint(this.m_nsamples,kind=i4)
+    invTc = 1.0_sp/T 
+    invT  = this.m_P/T 
+    do i=1_i4,n_T 
+        t_i = real(i,kind=sp)
+        carrier_arg = this.m_ph+(C6283185307179586476925286766559* &
+                                this.m_w0*t_i*invTc)
+        cos_carrier = cos(carrier_arg)
+        sin_carrier = sin(carrier_arg)
+        sum = (0.0_sp,0.0_sp)
+        do j=1,n_K 
+           k_j = real(j,kind=sp)
+           arg = t_i-k_j*T 
+           sym = user_symbols(j,i)
+           pm  = cos_sample(this.m_A,this.m_n,arg,invT)*sym 
+           I   = cos(pm)*cos_carrier 
+           Q   = sin(pm)*sin_carrier 
+           sample = cmplx(I,-Q)
+           sum = sum+sample
+        end do 
+        this.m_signal_samples(i) = sum 
+    end do 
+    ier = 0_i4 
+#if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
+     PM_BB_CMPLX_COS_SIGNAL_C4_TRACE_END 
+#endif
+end subroutine generate_with_user_data
+
+subroutine generate_with_user_data_v2(this,user_symbols,n_T,n_K,ier)
+    implicit none   
+#if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
+       interface 
+              function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                  use iso_c_binding, only : c_long_long 
+                  integer(c_long_long) :: rdtsc_wrap 
+              end function rdtsc_wrap 
+       end interface
+#endif                         
+#if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
+       character(*), parameter :: sub_name = "generate_with_user_data_v2"
+#endif 
+    type(pm_bb_cmplx_cos_signal_c4_t), intent(inout)     :: this
+    real(kind=sp), dimension(:,:),     intent(in)        :: user_symbols 
+    integer(kind=i4),                  intent(in), value :: n_T 
+    integer(kind=i4),                  intent(in), value :: n_K 
+    integer(kind=i4),                  intent(inout)     :: ier 
+    ! Locals 
+    complex(kind=sp), automatic :: sum, sample 
+    real(kind=sp),    automatic :: T, invTc
+    real(kind=sp),    automatic :: invT, t_i 
+    real(kind=sp),    automatic :: carrier_arg, cos_carrier, sin_carrier 
+    real(kind=sp),    automatic :: k_j, arg, sym  
+    real(kind=sp),    automatic :: pm, I, Q 
+    integer(kind=i4), automatic :: ii, jj 
+    real(kind=sp),    parameter :: C6283185307179586476925286766559 = 6.283185307179586476925286766559_sp
+
+    ier = -9999_i4 
+    if(this.m_build_state .eq. .false.) then 
+       ier = -1_i4 
+       return 
+    end if 
+    if(allocated(this.m_signal_samples) .eq. .false.) then 
+       ier = -2_i4 
+       return 
+    end if 
+    if((this.m_nsamples /= n_T) .OR. &
+       (this.m_nK /= n_K)) then 
+       ier = -3_i4 
+       return 
+    end if 
+    if((n_T <= 0_i4) .OR. (n_K <= 0_i4)) then 
+       ier = -4_i4 
+       return 
+    end if 
+    if((size(user_symbols, 1) < n_K) .OR. &
+       (size(user_symbols, 2) < n_T)) then 
+       ier = -5_i4 
+       return 
+    end if 
+
+#if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
+     PM_BB_CMPLX_COS_SIGNAL_C4_TRACE_START
+#endif
+    T     = real(this.m_nsamples, kind=sp)
+    invTc = 1.0_sp/T 
+    invT  = this.m_P/T 
+    do ii = 0_i4, n_T - 1_i4 
+        t_i = real(ii, kind=sp)
+        carrier_arg = this.m_ph + (C6283185307179586476925286766559 * &
+                                   this.m_w0 * t_i * invTc)
+        cos_carrier = cos(carrier_arg)
+        sin_carrier = sin(carrier_arg)
+        sum = (0.0_sp, 0.0_sp)
+        do jj = 0_i4, n_K - 1_i4 
+           k_j = real(jj, kind=sp)
+           arg = t_i - k_j*T 
+           sym = user_symbols(jj + 1_i4, ii + 1_i4)
+           pm  = cos_sample(this.m_A, this.m_n, arg, invT) * sym 
+           I   = cos(pm)*cos_carrier 
+           Q   = sin(pm)*sin_carrier 
+           sample = cmplx(I, -Q, kind=sp)
+           sum = sum + sample
+        end do 
+        this.m_signal_samples(ii + 1_i4) = sum 
+    end do 
+    ier = 0_i4 
+#if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
+     PM_BB_CMPLX_COS_SIGNAL_C4_TRACE_END 
+#endif
+end subroutine generate_with_user_data_v2 
+
 
 
 end module mod_pm_bb_cmplx_cos_signal_c4
