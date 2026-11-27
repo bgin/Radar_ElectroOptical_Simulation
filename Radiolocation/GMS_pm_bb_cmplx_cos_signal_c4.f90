@@ -368,5 +368,82 @@ subroutine copy_create(this,other,use_memset,ier)
 #endif   
 end subroutine copy_create 
 
+subroutine copy_assign(this,other,use_memset,ier)
+    implicit none   
+#if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
+       interface 
+              function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                  use iso_c_binding, only : c_long_long 
+                  integer(c_long_long) :: rdtsc_wrap 
+              end function rdtsc_wrap 
+       end interface
+#endif           
+                            
+#if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
+       character(*), parameter :: sub_name = "copy_assign"
+#endif 
+    type(pm_bb_cmplx_cos_signal_c4_t), intent(inout)     :: this
+    type(pm_bb_cmplx_cos_signal_c4_t), intent(in)        :: other 
+    logical(kind=i4),                  intent(in), value :: use_memset 
+    integer(kind=i4),                  intent(inout)     :: ier 
+    complex(kind=sp), automatic :: c0
+    complex(kind=sp), automatic :: c1 
+    complex(kind=sp), automatic :: c2 
+    complex(kind=sp), automatic :: c3 
+    integer(kind=i4), automatic :: i,j 
+    ier = -9999_i4 
+    if(this.m_build_state .eq. .false.) then 
+       ier = -1_i4
+       return 
+    end if 
+    if(other.m_build_state .eq. .false.) then 
+       ier = -2_i4 
+       return 
+    end if 
+    if(allocated(other.m_signal_samples) .eq. .false.) then 
+       ier = -3_i4 
+       return 
+    end if 
+    if(allocated(this.m_signal_samples) .eq. .false.) then 
+       ier = -4_i4 
+       return 
+    end if 
+#if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
+       PM_BB_CMPLX_COS_SIGNAL_C4_TRACE_START
+#endif
+    this.m_nsamples = other.m_nsamples 
+    this.m_nK       = other.m_nK 
+    this.m_w0       = other.m_w0 
+    this.m_ph       = other.m_ph 
+    this.m_n        = other.m_n 
+    this.m_A        = other.m_A 
+    this.m_P        = other.m_P 
+    deallocate(this.m_signal_samples)
+    allocate(this.m_nsignal_samples(1:this.m_nsamples))
+    if(use_memset .eq. .true.) then 
+       this.m_signal_samples = other.m_signal_samples 
+    else 
+       do i=1,iand(this.m_nsamples,inot(3_i4)),4_i4
+          c0 = other.m_signal_samples(i+0_i4)
+          c1 = other.m_signal_samples(i+1_i4)
+          c2 = other.m_signal_samples(i+2_i4)
+          c3 = other.m_signal_samples(i+3_i4)
+          this.m_signal_samples(i+0_i4) = c0 
+          this.m_signal_samples(i+1_i4) = c1 
+          this.m_signal_samples(i+2_i4) = c2 
+          this.m_signal_samples(i+3_i4) = c3 
+       end do 
+       do j=i,this.m_nsamples 
+          c0 = other.m_signal_samples(j)
+          this.m_signal_samples(j) = c0 
+       end do 
+    end if 
+    this.m_build_state = .true. 
+    ier = 0
+#if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
+       PM_BB_CMPLX_COS_SIGNAL_C4_TRACE_END 
+#endif   
+end subroutine copy_assign 
+
 
 end module mod_pm_bb_cmplx_cos_signal_c4
