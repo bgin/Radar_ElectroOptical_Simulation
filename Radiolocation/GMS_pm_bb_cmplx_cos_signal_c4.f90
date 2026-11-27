@@ -153,6 +153,9 @@ type, public :: pm_bb_cmplx_cos_signal_c4_t
 #endif
 end type pm_bb_cmplx_cos_signal_c4_t
 
+contains 
+
+
 subroutine construct(this,nsamples,nK,w0,ph, &
                      n,A,P,ier)
     implicit none   
@@ -222,7 +225,7 @@ subroutine destroy(this,to_clear_values,ier)
         ier = -1_i4
         return 
     end if
-    if(allocated(this.m_signal_samples) .eq. true) then 
+    if(allocated(this.m_signal_samples) .eq. .true. ) then 
         ier = -2_i4
         return 
     end if 
@@ -419,7 +422,7 @@ subroutine copy_assign(this,other,use_memset,ier)
     this.m_A        = other.m_A 
     this.m_P        = other.m_P 
     deallocate(this.m_signal_samples)
-    allocate(this.m_nsignal_samples(1:this.m_nsamples))
+    allocate(this.m_signal_samples(1:this.m_nsamples))
     if(use_memset .eq. .true.) then 
        this.m_signal_samples = other.m_signal_samples 
     else 
@@ -444,6 +447,75 @@ subroutine copy_assign(this,other,use_memset,ier)
        PM_BB_CMPLX_COS_SIGNAL_C4_TRACE_END 
 #endif   
 end subroutine copy_assign 
+
+subroutine show(this,ier)
+    implicit none   
+#if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
+       interface 
+              function rdtsc_wrap() bind(C,name="rdtsc_wrap")
+                  use iso_c_binding, only : c_long_long 
+                  integer(c_long_long) :: rdtsc_wrap 
+              end function rdtsc_wrap 
+       end interface
+#endif           
+                            
+#if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
+       character(*), parameter :: sub_name = "show"
+#endif 
+    type(pm_bb_cmplx_cos_signal_c4_t), intent(in)     :: this
+    integer(kind=i4),                  intent(inout)  :: ier
+#if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
+     PM_BB_CMPLX_COS_SIGNAL_C4_TRACE_START
+#endif
+    ier = -9999
+    if(this.m_build_state .eq. .false.) then 
+       ier = -1_i4 
+       return 
+    end if 
+    print*, "object-vaddr=", LOC(this)
+    print*, "object-size =", SIZEOF(this), "bytes"
+    call check_allocation_stats_complex1D(this.m_signal_samples,"m_nsamples")
+    print*, "====================================================================================="
+    print*, "[INFO]: Phase Modulated Base-Band Complex Cosine (Waveform) Signal -- Scalar Members:"
+    print*, "m_nsamples           =",  this.m_nsamples  
+    print*, "m_nK                 =",  this.m_nK 
+    print*, "m_w0                 =",  this.m_w0 
+    print*, "m_ph                 =",  this.m_ph  
+    print*, "m_n                  =",  this.m_n 
+    print*, "m_A                  =",  this.m_A  
+    print*, "m_P                  =",  this.m_P 
+    print*, "m_build_state        =",  this.m_build_state 
+    print*, "======================================================================================"
+    ier = 0
+#if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
+     PM_BB_CMPLX_COS_SIGNAL_C4_TRACE_END 
+#endif
+    contains 
+    subroutine check_allocation_stats_complex1D(array,name)
+                       implicit none
+                       complex(kind=sp), allocatable, dimension(:), intent(in) :: array 
+                       character(len=*),                         intent(in) :: name 
+                       ! Locals
+                       integer(kind=i8), automatic :: vaddr 
+                       integer(kind=i8), automatic :: size 
+                       integer(kind=i4), automatic :: lo_bound
+                       integer(kind=i4), automatic :: hi_bound 
+                       logical(kind=i1), automatic :: is_allocated 
+                       vaddr        = LOC(array)
+                       size         = SIZEOF(array)
+                       lo_bound     = LBOUND(array,DIM=1)
+                       hi_bound     = UBOUND(array,DIM=1)
+                       is_allocated = allocated(array)
+                       print*, "======================INFO==========================="
+                       print*, "Array member name:", name 
+                       print*, "vaddr=",vaddr
+                       print*, "size=",size
+                       print*, "allocated=",is_allocated
+                       print*, "lo_bound=",lo_bound
+                       print*, "hi_bound=",hi_bound 
+                       print*,"======================INFO==========================="
+    end subroutine check_allocation_stats_complex1D
+end subroutine show 
 
 
 end module mod_pm_bb_cmplx_cos_signal_c4
