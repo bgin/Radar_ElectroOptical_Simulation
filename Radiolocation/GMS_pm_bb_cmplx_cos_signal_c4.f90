@@ -554,8 +554,8 @@ subroutine generate_with_user_data(this,user_symbols,n_T,n_K,ier)
 #endif 
     type(pm_bb_cmplx_cos_signal_c4_t), intent(inout)     :: this
     real(kind=sp), dimension(:,:),     intent(in)        :: user_symbols 
-    integer(kind=i4),                  intent(in), value :: n_T 
-    integer(kind=i4),                  intent(in), value :: n_K 
+    integer(kind=i4),                  intent(in), value :: n_T ! size of user_symbols
+    integer(kind=i4),                  intent(in), value :: n_K ! size of user_symbols
     integer(kind=i4),                  intent(inout)     :: ier 
     ! Locals 
     complex(kind=sp), automatic :: sum, sample 
@@ -576,6 +576,10 @@ subroutine generate_with_user_data(this,user_symbols,n_T,n_K,ier)
     if((this.m_nsamples /= n_T) .OR. &
        (this.m_nK /= n_K)) then 
        ier = -2_i4 
+       return 
+    end if 
+    if(allocated(user_symbols) .eq. .false.) then 
+       ier = -3_i4 
        return 
     end if 
 #if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
@@ -609,7 +613,7 @@ subroutine generate_with_user_data(this,user_symbols,n_T,n_K,ier)
 #endif
 end subroutine generate_with_user_data
 
-subroutine generate_with_user_data_v2(this,user_symbols,n_T,n_K,ier)
+subroutine generate_with_user_data_simd(this,user_symbols,n_T,n_K,ier)
     implicit none   
 #if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
        interface 
@@ -620,7 +624,7 @@ subroutine generate_with_user_data_v2(this,user_symbols,n_T,n_K,ier)
        end interface
 #endif                         
 #if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
-       character(*), parameter :: sub_name = "generate_with_user_data_v2"
+       character(*), parameter :: sub_name = "generate_with_user_data_simd"
 #endif 
     type(pm_bb_cmplx_cos_signal_c4_t), intent(inout)     :: this
     real(kind=sp), dimension(:,:),     intent(in)        :: user_symbols 
@@ -674,6 +678,7 @@ subroutine generate_with_user_data_v2(this,user_symbols,n_T,n_K,ier)
         cos_carrier = cos(carrier_arg)
         sin_carrier = sin(carrier_arg)
         sum = (0.0_sp, 0.0_sp)
+!$omp simd linear(k:1) aligned(user_symbols:64) reduction(+:sum) 
         do jj = 0_i4, n_K - 1_i4 
            k_j = real(jj, kind=sp)
            arg = t_i - k_j*T 
@@ -690,7 +695,7 @@ subroutine generate_with_user_data_v2(this,user_symbols,n_T,n_K,ier)
 #if (PM_BB_CMPLX_COS_SIGNAL_C4_EXEC_TRACE) == 1
      PM_BB_CMPLX_COS_SIGNAL_C4_TRACE_END 
 #endif
-end subroutine generate_with_user_data_v2 
+end subroutine generate_with_user_data_simd 
 
 
 
